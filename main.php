@@ -14,10 +14,11 @@
     http_response_code(500);
     header('Content-Type: text/html;charset=utf-8');
     $sFullURL = BnetDocs::fGetCurrentFullURL();
-    $sTimestamp = date('F d Y H:i T');
+    $sMethod = $_SERVER['REQUEST_METHOD'];
+    $sTimestamp = date('F d Y H:i:s T');
     $sIPAddress = $_SERVER['REMOTE_ADDR'];
     $sGitHubIssueTitle = '500 Internal Server Error';
-    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately, when the page loaded, the server told me an internal server error occurred.\n\nURL: " . BnetDocs::fGetCurrentFullURL() . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (hide if you want)\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
+    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\nURL: " . $sFullURL . "\nMethod: " . $sMethod . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (hide if you want)\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
     $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/new?" . http_build_query(array("title" => $sGitHubIssueTitle, "body" => $sGitHubIssueBody));
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
