@@ -33,7 +33,7 @@
     $sEncryptedData = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), $sUnencryptedData, MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))));
     //$sDecryptedData = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), base64_decode($encrypted), MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))), "\0");
     
-    $sGitHubIssueTitle = '500 Internal Server Error';
+    $sGitHubIssueTitle = 'Automatic Unhandled Error Report';
     $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\nCollected Metadata:\n\n```\nURL: " . $sFullURL . "\nMethod: " . $sMethod . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (you can omit this)\n```\n\nError Data:\n\n```\n" . $sEncryptedData . "\n```\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
     $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/new?" . http_build_query(array("title" => $sGitHubIssueTitle, "body" => $sGitHubIssueBody));
     
