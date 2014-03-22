@@ -18,7 +18,7 @@
     $sIPAddress = $_SERVER['REMOTE_ADDR'];
     $sGitHubIssueTitle = '500 Internal Server Error';
     $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately, when the page loaded, the server told me an internal server error occurred.\n\nURL: " . BnetDocs::fGetCurrentFullURL() . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (hide if you want)\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
-    $sGitHubURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/new?" . http_build_query(array("title" => $sGitHubTitle, "body" => $sGitHubBody));
+    $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/new?" . http_build_query(array("title" => $sGitHubIssueTitle, "body" => $sGitHubIssueBody));
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "  <head>\n";
@@ -33,7 +33,7 @@
     echo "  <body>\n";
     echo "    <div>\n";
     echo "      <h1>500 Internal Server Error</h1>\n";
-    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sGitHubURL . "\" target=\"_blank\">report this</a>.</p>\n";
+    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sGitHubIssueURL . "\" target=\"_blank\">report this</a>.</p>\n";
     echo "      <p class=\"s\">" . $sTimestamp . " &ndash; " . $sIPAddress . "</p>\n";
     echo "    </div>\n";
     echo "  </body>\n";
