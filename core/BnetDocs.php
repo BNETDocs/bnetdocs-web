@@ -4,7 +4,7 @@
     
     public static $oDB;
     
-    private BnetDocs() {} // We don't want to create objects of this class.
+    private function __construct() {} // We don't want to create objects of this class.
     
     public static function fExecute(HTTPContext $oContext) {
       
