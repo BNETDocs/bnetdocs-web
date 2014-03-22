@@ -7,7 +7,7 @@
     public function __construct() {
       parent::__construct();
       
-      $this->oLink = mysqli::init();
+      $this->oLink = mysqli_init();
     }
     
     public function fClose() {
