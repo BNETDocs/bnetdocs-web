@@ -19,7 +19,7 @@
       $iPort = 3306;
       $iPos = strpos($sHostname, ':');
       if ($iPos) {
-        $iPort = substr($sHostname, 0, $iPos - 1);
+        $iPort = (int)substr($sHostname, 0, $iPos - 1);
         $sHostname = substr($sHostname, $iPos + 1);
       }
       $this->oLink->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->fGetConnectTimeout());
