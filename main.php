@@ -13,13 +13,30 @@
   set_error_handler(function($iErrorNumber, $sErrorMessage, $sErrorFile, $iErrorLine, $oErrorContext){
     http_response_code(500);
     header('Content-Type: text/html;charset=utf-8');
+    
     $sFullURL = BnetDocs::fGetCurrentFullURL();
     $sMethod = $_SERVER['REQUEST_METHOD'];
     $sTimestamp = date('F d Y H:i:s T');
     $sIPAddress = $_SERVER['REMOTE_ADDR'];
+    
+    $sUnencryptedData = json_encode(array(
+      "errno" => $iErrorNumber,
+      "errstr" => $sErrorMessage,
+      "errfile" => $sErrorFile,
+      "errline" => $iErrorLine,
+      "errcontext_meta" => array(
+        "gettype" => gettype($oErrorContext),
+        "get_class" => (is_object($oErrorContext) ? get_class($oErrorContext) : false),
+      ),
+    ), JSON_PRETTY_PRINT);
+    $sEncryptedKey = 'bnetdocs+dev$!'; // if you steal this, you're more than welcome to try and break the server ;)
+    $sEncryptedData = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), $sUnencryptedData, MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))));
+    //$sDecryptedData = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), base64_decode($encrypted), MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))), "\0");
+    
     $sGitHubIssueTitle = '500 Internal Server Error';
-    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\nURL: " . $sFullURL . "\nMethod: " . $sMethod . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (hide if you want)\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
+    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\n```\nURL: " . $sFullURL . "\nMethod: " . $sMethod . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (you can omit this)\n```\n\nError Data:\n\n```\n" . $sEncryptedData . "\n```\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
     $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/new?" . http_build_query(array("title" => $sGitHubIssueTitle, "body" => $sGitHubIssueBody));
+    
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "  <head>\n";
@@ -39,6 +56,7 @@
     echo "    </div>\n";
     echo "  </body>\n";
     echo "</html>\n";
+    
     exit(1);
   }, E_ALL | E_STRICT);
   
