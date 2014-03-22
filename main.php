@@ -12,8 +12,13 @@
    * provide a GitHub link to create a new issue for this.
    */
   set_error_handler(function($iErrorNumber, $sErrorMessage, $sErrorFile, $iErrorLine, $oErrorContext){
+    global $_CONFIG;
     http_response_code(500);
     header('Content-Type: text/html;charset=utf-8');
+    
+    $aErrorHandling = (isset($_CONFIG) && is_array($_CONFIG) && array_key_exists('error_handling', $_CONFIG) ? $_CONFIG['error_handling'] : array('debug_mode' => false, 'encryption_key' => 'bnetdocs+dev$!'));
+    $bDebugMode = $aErrorHandling['debug_mode'];
+    $sEncryptedKey = $aErrorHandling['encryption_key'];
     
     $sFullURL = BnetDocs::fGetCurrentFullURL();
     $sMethod = $_SERVER['REQUEST_METHOD'];
@@ -30,12 +35,16 @@
         "get_class" => (is_object($oErrorContext) ? get_class($oErrorContext) : false),
       ),
     ), JSON_PRETTY_PRINT);
-    $sEncryptedKey = 'bnetdocs+dev$!'; // if you steal this, you're more than welcome to try and break the server ;)
-    $sEncryptedData = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), $sUnencryptedData, MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))));
-    //$sDecryptedData = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), base64_decode($encrypted), MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))), "\0");
+    if ($bDebugMode) {
+      $sErrorData = $sUnencryptedData;
+    } else {
+      $sEncryptedData = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), $sUnencryptedData, MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))));
+      //$sDecryptedData = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), base64_decode($encrypted), MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))), "\0");
+      $sErrorData = $sEncryptedData;
+    }
     
     $sGitHubIssueTitle = 'Automatic Unhandled Error Report';
-    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\nCollected Metadata:\n\n```\nURL: " . $sFullURL . "\nMethod: " . $sMethod . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (you can omit this)\n```\n\nError Data:\n\n```\n" . $sEncryptedData . "\n```\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
+    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\nCollected Metadata:\n\n```\nURL: " . $sFullURL . "\nMethod: " . $sMethod . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (you can omit this)\n```\n\nError Data:\n\n```\n" . $sErrorData . "\n```\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
     $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/new?" . http_build_query(array("title" => $sGitHubIssueTitle, "body" => $sGitHubIssueBody));
     
     echo "<!DOCTYPE html>\n";
@@ -93,6 +102,11 @@
       || !array_key_exists('name', $_CONFIG['database'])
       || !array_key_exists('connect_timeout', $_CONFIG['database'])
       || !array_key_exists('character_set', $_CONFIG['database'])
+      || !array_key_exists('error_handling', $_CONFIG)
+      || !array_key_exists('debug_mode', $_CONFIG['error_handling'])
+      || !array_key_exists('encryption_key', $_CONFIG['error_handling'])
+      || !is_bool($_CONFIG['error_handling']['debug_mode'])
+      || !is_string($_CONFIG['error_handling']['encryption_key'])
       || !array_key_exists('maintenance', $_CONFIG)
       || count($_CONFIG['maintenance']) != 2
       || !is_bool($_CONFIG['maintenance'][0])
