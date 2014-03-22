@@ -8,6 +8,34 @@
   header('X-Remote-Host: ' . $_SERVER['REMOTE_ADDR'] . ':' . $_SERVER['REMOTE_PORT']);
   
   /**
+   * configure a simple error handler that returns a simple HTTP 500 error.
+   */
+  set_error_handler(function($iErrorNumber, $sErrorMessage, $sErrorFile, $iErrorLine, $oErrorContext){
+    http_response_code(500);
+    header('Content-Type: text/html;charset=utf-8');
+    echo "<!DOCTYPE html>\n";
+    echo "<html>\n";
+    echo "  <head>\n";
+    echo "    <title>BnetDocs</title>\n";
+    echo "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />\n";
+    echo "    <style type=\"text/css\">\n";
+    echo "      body { background: #fafafa; color: #000; font: 11pt sans-serif; margin: 0; padding: 0; text-align: center; }\n";
+    echo "      div { background: #eaeaea; border-radius: 16px; box-sizing: border-box; margin: 32px auto; padding: 4px 10px; width: 600px; }\n";
+    echo "      p.s { font-size: 8pt; }\n";
+    echo "    </style>\n";
+    echo "  </head>\n";
+    echo "  <body>\n";
+    echo "    <div>\n";
+    echo "      <h1>500 Internal Server Error</h1>\n";
+    echo "      <p>An internal server error occurred while processing your request.</p>\n";
+    echo "      <p class=\"s\">" . date('F d Y H:i T') . " by " . $_SERVER['REMOTE_ADDR'] . "</p>\n";
+    echo "    </div>\n";
+    echo "  </body>\n";
+    echo "</html>\n";
+    exit(1);
+  }, E_ALL | E_STRICT);
+  
+  /**
    * this project uses code that is only available in PHP 5.4 (and possibly newer).
    * we give a warning instead of an error because the specific PHP 5.4 changes might not get ran.
    */
