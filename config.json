@@ -8,6 +8,10 @@
     "connect_timeout": 3,
     "character_set": "utf8_unicode_ci"
   },
+  "error_handling": {
+    "debug_mode": false,
+    "encryption_key": "bnetdocs+dev$!"
+  },
   "maintenance": [
     false,
     ""
