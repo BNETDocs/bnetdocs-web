@@ -7,7 +7,10 @@
     private function __construct() {} // We don't want to create objects of this class.
     
     public static function fExecute(HTTPContext $oContext) {
-      echo 'Dummy content.';
+      
+      echo 'Work in progress.';
+      http_response_code(200);
+      
     }
     
     public static function fFinalize() {
