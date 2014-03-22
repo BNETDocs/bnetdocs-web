@@ -8,13 +8,21 @@
   header('X-Remote-Host: ' . $_SERVER['REMOTE_ADDR'] . ':' . $_SERVER['REMOTE_PORT']);
   
   /**
+   * this project uses code that is only available in PHP 5.4 (and possibly newer).
+   */
+  if (PHP_VERSION < 5.4) {
+    trigger_error('PHP version installed on this server is older than 5.4.', E_USER_ERROR);
+  }
+  
+  /**
    * configure an error handler that returns a HTTP 500 error.
    * provide a GitHub link to create a new issue for this.
    */
   set_error_handler(function($iErrorNumber, $sErrorMessage, $sErrorFile, $iErrorLine, $oErrorContext){
-    global $_CONFIG;
     http_response_code(500);
+    header('Cache-Control: max-age=0, must-revalidate, no-cache, no-store');
     header('Content-Type: text/html;charset=utf-8');
+    global $_CONFIG;
     
     $aErrorHandling = (isset($_CONFIG) && is_array($_CONFIG) && array_key_exists('error_handling', $_CONFIG) ? $_CONFIG['error_handling'] : array('debug_mode' => false, 'encryption_key' => 'bnetdocs+dev$!'));
     $bDebugMode = $aErrorHandling['debug_mode'];
@@ -26,31 +34,39 @@
     $sIPAddress = $_SERVER['REMOTE_ADDR'];
     
     $sUnencryptedData = json_encode(array(
-      "errno" => $iErrorNumber,
-      "errstr" => $sErrorMessage,
-      "errfile" => $sErrorFile,
-      "errline" => $iErrorLine,
-      "errcontext_meta" => array(
-        "gettype" => gettype($oErrorContext),
-        "get_class" => (is_object($oErrorContext) ? get_class($oErrorContext) : false),
+      "collected_data" => array(
+        "ip_address" => $sIPAddress,
+        "method" => $sMethod,
+        "timestamp" => $sTimestamp,
+        "url" => $sFullURL,
+      ),
+      "error_data" => array(
+        "errno" => $iErrorNumber,
+        "errstr" => $sErrorMessage,
+        "errfile" => $sErrorFile,
+        "errline" => $iErrorLine,
+        "errcontext_meta" => array(
+          "gettype" => gettype($oErrorContext),
+          "get_class" => (is_object($oErrorContext) ? get_class($oErrorContext) : false),
+        ),
       ),
     ), JSON_PRETTY_PRINT);
     if ($bDebugMode) {
       $sErrorData = $sUnencryptedData;
     } else {
       $sEncryptedData = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), $sUnencryptedData, MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))));
-      //$sDecryptedData = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), base64_decode($encrypted), MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))), "\0");
+      //$sDecryptedData = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), base64_decode($sEncryptedData), MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))), "\0");
       $sErrorData = $sEncryptedData;
     }
     
     $sGitHubIssueTitle = 'Automatic Unhandled Error Report';
-    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\nCollected Metadata:\n\n```\nURL: " . $sFullURL . "\nMethod: " . $sMethod . "\nTimestamp: " . $sTimestamp . "\nMy IP: " . $sIPAddress . " (you can omit this)\n```\n\nError Data:\n\n```\n" . $sErrorData . "\n```\n\nPlease investigate this issue asap so I can continue to use the website.\n\nThanks!\n";
+    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\nError Data:\n\n```\n" . $sErrorData . "\n```\n\nPlease investigate this issue so I can continue to use the website.\n\nThanks!\n";
     $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/new?" . http_build_query(array("title" => $sGitHubIssueTitle, "body" => $sGitHubIssueBody));
     
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "  <head>\n";
-    echo "    <title>BnetDocs</title>\n";
+    echo "    <title>Server Error - BnetDocs</title>\n";
     echo "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />\n";
     echo "    <style type=\"text/css\">\n";
     echo "      body { background: #fafafa; color: #000; font: 11pt sans-serif; margin: 0; padding: 0; text-align: center; }\n";
@@ -59,9 +75,10 @@
     echo "    </style>\n";
     echo "  </head>\n";
     echo "  <body>\n";
+    echo "<!-- this error page isn't from nginx, so it couldn't have been too terrible. -->\n";
     echo "    <div>\n";
     echo "      <h1>500 Internal Server Error</h1>\n";
-    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sGitHubIssueURL . "\" target=\"_blank\">report this</a>.</p>\n";
+    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sGitHubIssueURL . "\" target=\"_blank\">report this to GitHub</a>.</p>\n";
     echo "      <p class=\"s\">" . $sTimestamp . " &ndash; " . $sIPAddress . "</p>\n";
     echo "    </div>\n";
     echo "  </body>\n";
@@ -69,14 +86,6 @@
     
     exit(1);
   }, E_ALL | E_STRICT);
-  
-  /**
-   * this project uses code that is only available in PHP 5.4 (and possibly newer).
-   * we give a warning instead of an error because the specific PHP 5.4 changes might not get ran.
-   */
-  if (PHP_VERSION < 5.4) {
-    trigger_error('PHP version installed on this server is older than 5.4.', E_USER_WARNING);
-  }
   
   /**
    * the default response code is '200 OK', and probably no care as to caching.
