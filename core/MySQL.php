@@ -22,8 +22,8 @@
         $iPort = substr($sHostname, 0, $iPos - 1);
         $sHostname = substr($sHostname, $iPos + 1);
       }
-      $oLink->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->fGetConnectTimeout());
-      $bConnectedState = $oLink->real_connect(
+      $this->oLink->options(MYSQLI_OPT_CONNECT_TIMEOUT, $this->fGetConnectTimeout());
+      $bConnectedState = $this->oLink->real_connect(
         $sHostname,
         $this->fGetUsername(),
         $this->fGetPassword(),
