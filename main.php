@@ -31,23 +31,23 @@
   }
   
   if (!isset($_CONFIG) || !is_array($_CONFIG)
-      || !array_key_exists($_CONFIG, 'database')
-      || !array_key_exists($_CONFIG['database'], 'engine')
-      || !array_key_exists($_CONFIG['database'], 'hostname')
-      || !array_key_exists($_CONFIG['database'], 'username')
-      || !array_key_exists($_CONFIG['database'], 'password')
-      || !array_key_exists($_CONFIG['database'], 'name')
-      || !array_key_exists($_CONFIG['database'], 'connect_timeout')
-      || !array_key_exists($_CONFIG['database'], 'character_set')
-      || !array_key_exists($_CONFIG, 'maintenance')
+      || !array_key_exists('database', $_CONFIG)
+      || !array_key_exists('engine', $_CONFIG['database'])
+      || !array_key_exists('hostname', $_CONFIG['database'])
+      || !array_key_exists('username', $_CONFIG['database'])
+      || !array_key_exists('password', $_CONFIG['database'])
+      || !array_key_exists('name', $_CONFIG['database'])
+      || !array_key_exists('connect_timeout', $_CONFIG['database'])
+      || !array_key_exists('character_set', $_CONFIG['database'])
+      || !array_key_exists('maintenance', $_CONFIG)
       || count($_CONFIG['maintenance']) != 2
       || !is_bool($_CONFIG['maintenance'][0])
       || !is_string($_CONFIG['maintenance'][1])
-      || !array_key_exists($_CONFIG, 'paths')
-      || !array_key_exists($_CONFIG['paths'], 'base_dir')
-      || !array_key_exists($_CONFIG['paths'], 'core_dir')
-      || !array_key_exists($_CONFIG['paths'], 'static_dir')
-      || !array_key_exists($_CONFIG['paths'], 'template_dir')
+      || !array_key_exists('paths', $_CONFIG)
+      || !array_key_exists('base_dir', $_CONFIG['paths'])
+      || !array_key_exists('core_dir', $_CONFIG['paths'])
+      || !array_key_exists('static_dir', $_CONFIG['paths'])
+      || !array_key_exists('template_dir', $_CONFIG['paths'])
       || substr($_CONFIG['paths']['base_dir'], -1) != '/'
       || substr($_CONFIG['paths']['core_dir'], -1) != '/'
       || substr($_CONFIG['paths']['static_dir'], -1) != '/'
