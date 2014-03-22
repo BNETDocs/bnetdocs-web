@@ -29,6 +29,9 @@
     
     abstract public function fClose();
     abstract public function fConnect();
+    abstract public function fErrorMessage();
+    abstract public function fErrorNumber();
+    abstract public function fEscapeValue($mValue);
     
     public function fGetCharacterSet() {
       return $this->sCharacterSet;
