@@ -8,7 +8,8 @@
   header('X-Remote-Host: ' . $_SERVER['REMOTE_ADDR'] . ':' . $_SERVER['REMOTE_PORT']);
   
   /**
-   * configure a simple error handler that returns a simple HTTP 500 error.
+   * configure an error handler that returns a HTTP 500 error.
+   * provide a GitHub link to create a new issue for this.
    */
   set_error_handler(function($iErrorNumber, $sErrorMessage, $sErrorFile, $iErrorLine, $oErrorContext){
     http_response_code(500);
