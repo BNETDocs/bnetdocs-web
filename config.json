@@ -1,0 +1,21 @@
+{
+  "database": {
+    "engine": "MySQL",
+    "hostname": "p:127.0.0.1",
+    "username": "bnetdocs",
+    "password": "",
+    "name": "bnetdocs_phoenix",
+    "connect_timeout": 3,
+    "character_set": "utf8_unicode_ci"
+  },
+  "maintenance": [
+    false,
+    ""
+  ],
+  "paths": {
+    "base_dir": "./",
+    "core_dir": "core/",
+    "static_dir": "static/",
+    "template_dir": "templates/"
+  }
+}
