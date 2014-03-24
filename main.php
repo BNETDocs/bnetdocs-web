@@ -6,6 +6,7 @@
   
   header('X-Frame-Options: DENY');
   header('X-Remote-Host: ' . $_SERVER['REMOTE_ADDR'] . ':' . $_SERVER['REMOTE_PORT']);
+  error_reporting(E_ALL | E_STRICT);
   
   /**
    * this project uses code that is only available in PHP 5.4 (and possibly newer).
@@ -19,49 +20,82 @@
    * provide a GitHub link to create a new issue for this.
    */
   set_error_handler(function($iErrorNumber, $sErrorMessage, $sErrorFile, $iErrorLine, $oErrorContext){
+    // The following values may have been overridden before we got here:
     http_response_code(500);
     header('Cache-Control: max-age=0, must-revalidate, no-cache, no-store');
     header('Content-Type: text/html;charset=utf-8');
+    
     global $_CONFIG;
     
-    $aErrorHandling = (isset($_CONFIG) && is_array($_CONFIG) && array_key_exists('error_handling', $_CONFIG) ? $_CONFIG['error_handling'] : array('debug_mode' => false, 'encryption_key' => 'bnetdocs+dev$!'));
-    $bDebugMode = $aErrorHandling['debug_mode'];
+    $aErrorHandling = (
+      isset($_CONFIG)
+      && is_array($_CONFIG)
+      && array_key_exists('error_handling', $_CONFIG)
+      ? $_CONFIG['error_handling']
+      : array(
+        'debug_mode' => false,
+        'encryption_key' => 'bnetdocs+dev$!'
+      )
+    );
+    $bDebugMode    = $aErrorHandling['debug_mode'];
     $sEncryptedKey = $aErrorHandling['encryption_key'];
     
-    $sFullURL = BnetDocs::fGetCurrentFullURL();
-    $sMethod = $_SERVER['REQUEST_METHOD'];
+    $sFullURL   = BnetDocs::fGetCurrentFullURL();
+    $sMethod    = $_SERVER['REQUEST_METHOD'];
     $sTimestamp = date('F d Y H:i:s T');
     $sIPAddress = $_SERVER['REMOTE_ADDR'];
     
     $sUnencryptedData = json_encode(array(
-      "collected_data" => array(
-        "ip_address" => $sIPAddress,
-        "method" => $sMethod,
-        "timestamp" => $sTimestamp,
-        "url" => $sFullURL,
+      "collected_data"    => array(
+        "ip_address"      => $sIPAddress,
+        "method"          => $sMethod,
+        "timestamp"       => $sTimestamp,
+        "url"             => $sFullURL,
       ),
       "error_data" => array(
-        "errno" => $iErrorNumber,
-        "errstr" => $sErrorMessage,
-        "errfile" => $sErrorFile,
-        "errline" => $iErrorLine,
+        "errno"           => $iErrorNumber,
+        "errstr"          => $sErrorMessage,
+        "errfile"         => $sErrorFile,
+        "errline"         => $iErrorLine,
         "errcontext_meta" => array(
-          "gettype" => gettype($oErrorContext),
-          "get_class" => (is_object($oErrorContext) ? get_class($oErrorContext) : false),
+          "gettype"       => gettype($oErrorContext),
+          "get_class"     => (is_object($oErrorContext) ? get_class($oErrorContext) : false),
         ),
       ),
     ), JSON_PRETTY_PRINT);
     if ($bDebugMode) {
       $sErrorData = $sUnencryptedData;
     } else {
-      $sEncryptedData = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), $sUnencryptedData, MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))));
-      //$sDecryptedData = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($sEncryptedKey), base64_decode($sEncryptedData), MCRYPT_MODE_CBC, md5(md5($sEncryptedKey))), "\0");
+      $sEncryptedData = base64_encode(mcrypt_encrypt(
+        MCRYPT_RIJNDAEL_256,
+        md5($sEncryptedKey),
+        $sUnencryptedData,
+        MCRYPT_MODE_CBC,
+        md5(md5($sEncryptedKey))
+      ));
+      /*
+      $sDecryptedData = rtrim(mcrypt_decrypt(
+        MCRYPT_RIJNDAEL_256,
+        md5($sEncryptedKey),
+        base64_decode($sEncryptedData),
+        MCRYPT_MODE_CBC,
+        md5(md5($sEncryptedKey))
+      ), "\0");
+      */
       $sErrorData = $sEncryptedData;
     }
     
     $sGitHubIssueTitle = 'Automatic Unhandled Error Report';
-    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, but unfortunately when the page loaded, the server told me an internal server error occurred.\n\nError Data:\n\n```\n" . $sErrorData . "\n```\n\nPlease investigate this issue so I can continue to use the website.\n\nThanks!\n";
-    $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/new?" . http_build_query(array("title" => $sGitHubIssueTitle, "body" => $sGitHubIssueBody));
+    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, "
+      ."but unfortunately when the page loaded, the server told me an internal "
+      ."server error occurred.\n\nError Data:\n\n```\n" . $sErrorData . "\n```"
+      ."\n\nPlease investigate this issue so I can continue to use the website."
+      ."\n\nThanks!\n";
+    $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/"
+      ."new?" . http_build_query(array(
+        "title" => $sGitHubIssueTitle,
+        "body" => $sGitHubIssueBody
+      ));
     
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
@@ -98,8 +132,12 @@
   try {
     $_CONFIG = file_get_contents('config.json');
     $_CONFIG = json_decode($_CONFIG, true);
-  } catch (Exception $error) {
-    trigger_error('An unhandled ' . get_class($error) . ' error occurred while trying to read the global config.', E_USER_ERROR);
+  } catch (Exception $oError) {
+    throw new Exception(
+      'The global config failed to be read or parsed correctly.',
+      0,
+      $oError
+    );
   }
   
   if (!isset($_CONFIG) || !is_array($_CONFIG)
@@ -129,7 +167,7 @@
       || substr($_CONFIG['paths']['core_dir'], -1) != '/'
       || substr($_CONFIG['paths']['static_dir'], -1) != '/'
       || substr($_CONFIG['paths']['template_dir'], -1) != '/'
-      ) trigger_error('The global config failed its verification check.', E_USER_ERROR);
+      ) throw new Exception('The global config failed its verification check.', E_USER_ERROR);
   
   function __autoload($sClassName) {
     global $_CONFIG;
