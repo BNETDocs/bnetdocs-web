@@ -48,20 +48,32 @@
       $oContext->fSetResponseHeader('Content-Type', 'text/plain;charset=utf-8');
       
       global $_CONFIG;
-      
+            
       $sRootPath = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['template_dir'];
+      
+      $sPrevCwd = getcwd();
+      if (!chdir($sRootPath))
+        throw new Exception('Cannot change directory to the template directory');
+      
       $sRelPath  = $oContext->fGetRequestPath();
+      if (substr($sRelPath, 0, 1) != '/') {
+        $oContext->fSetResponseCode(400);
+        $oContext->fSetResponseContent('Bad request.');
+        return;
+      }
       
       if (substr($sRelPath, -1) == '/')
         $sRelPath .= 'index';
       
-      $sFullPath = $sRootPath . substr($sRelPath, 1) . '.php';
+      $sFullPath = '.' . $sRelPath . '.php';
       
       // TODO: Advanced confirmation that their path is inside our root path.
       
       if (file_exists($sFullPath) && is_file($sFullPath)) {
         include_once($sFullPath);
       }
+      
+      chdir($sPrevCwd);
       
     }
     
