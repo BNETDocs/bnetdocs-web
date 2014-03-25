@@ -175,7 +175,9 @@
   }
   
   if (BnetDocs::fInitialize()) {
-    BnetDocs::fExecute(new HTTPContext());
+    $oContext = new HTTPContext();
+    $oContext->fSetRequestByServerGlobals();
+    BnetDocs::fExecute($oContext);
     BnetDocs::fFinalize();
   }
   

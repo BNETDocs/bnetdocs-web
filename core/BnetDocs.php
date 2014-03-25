@@ -6,10 +6,23 @@
     
     private function __construct() {} // We don't want to create objects of this class.
     
-    public static function fExecute(HTTPContext $oContext) {
+    public static function fExecute(HTTPContext &$oContext) {
       
-      echo 'Work in progress.';
-      http_response_code(200);
+      $oContext->fSetResponseCode(404);
+      $oContext->fSetResponseContent('Page not found.');
+      $oContext->fSetResponseHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+      $oContext->fSetResponseHeader('Content-Type', 'text/plain;charset=utf-8');
+      
+      global $_CONFIG;
+      
+      $sRootPath = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['template_dir'];
+      $sFullPath = $sRootPath . substr($oContext->fGetRequestPath(), 1) . '.php';
+      
+      // TODO: Advanced confirmation that their path is inside our root path.
+      
+      if (file_exists($sFullPath) && is_file($sFullPath)) {
+        include_once($sFullPath);
+      }
       
     }
     
