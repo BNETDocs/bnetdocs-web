@@ -15,6 +15,9 @@
   );
   
   ob_start();
+  XMLEncoder::$bAddTypeAttributes       = false;
+  XMLEncoder::$sInvalidKeyAttributeName = '';
+  XMLEncoder::$sInvalidKeyName          = 'item';
   echo RSSEncoder::fEncode($aData);
   $sFeed = ob_get_clean();
   

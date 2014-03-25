@@ -2,10 +2,6 @@
   
   final class RSSEncoder extends XMLEncoder {
     
-    public static $bAddTypeAttributes = false;
-    public static $sInvalidKeyAttributeName = 'id'; // Blank means to not add the attribute
-    public static $sInvalidKeyName = 'item'; // Blank means to inherit sibling key
-    
     public static function fEncode($aData, $sRootName = 'rss', $bPrettyPrint = false) {
       
       $oRoot = new SimpleXMLElement(
