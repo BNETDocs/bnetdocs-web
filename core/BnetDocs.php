@@ -50,7 +50,12 @@
       global $_CONFIG;
       
       $sRootPath = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['template_dir'];
-      $sFullPath = $sRootPath . substr($oContext->fGetRequestPath(), 1) . '.php';
+      $sRelPath  = $oContext->fGetRequestPath();
+      
+      if (substr($sRelPath, -1) == '/')
+        $sRelPath .= 'index';
+      
+      $sFullPath = $sRootPath . substr($sRelPath, 1) . '.php';
       
       // TODO: Advanced confirmation that their path is inside our root path.
       
