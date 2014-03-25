@@ -55,7 +55,7 @@
       if (!chdir($sRootPath))
         throw new Exception('Cannot change directory to the template directory');
       
-      $sRelPath  = $oContext->fGetRequestPath();
+      $sRelPath = $oContext->fGetRequestPath();
       if (substr($sRelPath, 0, 1) != '/') {
         $oContext->fSetResponseCode(400);
         $oContext->fSetResponseContent('Bad request.');
@@ -65,7 +65,7 @@
       if (substr($sRelPath, -1) == '/')
         $sRelPath .= 'index';
       
-      $sFullPath = '.' . $sRelPath . '.php';
+      $sFullPath = './pages/' . $sRelPath . '.php';
       
       // TODO: Advanced confirmation that their path is inside our root path.
       
