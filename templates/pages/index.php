@@ -1,6 +1,9 @@
 <?php
   
-  $sRedirectURL = BnetDocs::fGetCurrentFullURL('/news');
+  $sQueryString = $oContext->fGetRequestQueryString();
+  if (!empty($sQueryString)) $sQueryString = '?' . $sQueryString;
+  
+  $sRedirectURL = BnetDocs::fGetCurrentFullURL('/news' . $sQueryString);
   $sRedirectPage = ''
     ."<!DOCTYPE html>\n"
     ."<html>\n"
