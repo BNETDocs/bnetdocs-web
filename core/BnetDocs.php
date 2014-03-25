@@ -6,6 +6,40 @@
     
     private function __construct() {} // We don't want to create objects of this class.
     
+    public static function fCurlRequest($sURL, $sPostContentData = null) {
+      
+      if (!\is_string($sURL))
+        throw new \Exception('URL is not of type string');
+      if (\strlen($sURL) == 0)
+        throw new \Exception('URL cannot be an empty string');
+      if (!\is_null($sPostContentData) && !\is_array($sPostContentData))
+        throw new \Exception('PostContentData is not of type null or array');
+      
+      $oCurl = \curl_init();
+      
+      \curl_setopt($oCurl, \CURLOPT_CONNECTTIMEOUT, 5);
+      
+      \curl_setopt($oCurl, \CURLOPT_FOLLOWLOCATION, true);
+      \curl_setopt($oCurl, \CURLOPT_MAXREDIRS, 10);
+      
+      \curl_setopt($oCurl, \CURLOPT_URL, $sURL);
+      
+      if (!\is_null($sPostContentData) && \is_array($sPostContentData)) {
+        \curl_setopt($oCurl, \CURLOPT_POST, true);
+        \curl_setopt($oCurl, \CURLOPT_POSTFIELDS, \http_build_query($sPostContentData));
+      }
+      
+      \curl_setopt($oCurl, \CURLOPT_RETURNTRANSFER, true);
+      
+      $sResponseData = \curl_exec($oCurl);
+      $sResponseType = \curl_getinfo($oCurl, \CURLINFO_CONTENT_TYPE);
+      
+      \curl_close($oCurl);
+      
+      return array($sResponseData, $sResponseType);
+      
+    }
+    
     public static function fExecute(HTTPContext &$oContext) {
       
       $oContext->fSetResponseCode(404);
@@ -23,6 +57,16 @@
       if (file_exists($sFullPath) && is_file($sFullPath)) {
         include_once($sFullPath);
       }
+      
+    }
+    
+    public static function fExpandIPv6($sIPAddress) {
+      
+      $aHex = \unpack("H*hex", \inet_pton($sIPAddress)); 
+      
+      return \substr(
+        \preg_replace("/([A-f0-9]{4})/", "$1:", $aHex['hex']), 0, -1
+      );
       
     }
     
@@ -89,6 +133,12 @@
       
     }
     
+    public static function fGetServerPort() {
+      
+      return (isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : 80);
+      
+    }
+    
     public static function fInitialize() {
       global $_CONFIG;
       
@@ -104,6 +154,46 @@
       /* Other Stuff? */
       
       return true;
+    }
+    
+    public static function fNormalizeIP($sIPAddress) {
+      
+      return \strtoupper(\bin2hex(\inet_pton($sIPAddress)));
+      
+    }
+    
+    public static function fTranslateArrayByKeyStart(
+      array &$aOldArray,
+      $sSubstring,
+      $bTrimSubstring
+    ) {
+      
+      if (!\is_string($sSubstring))
+        throw new \Exception('Substring is not of type string');
+      if (\strlen($sSubstring) == 0)
+        throw new \Exception('Substring cannot be an empty string');
+      if (!\is_bool($bTrimSubstring))
+        throw new \Exception('TrimSubstring is not of type bool');
+      
+      $aNewArray  = array();
+      $iSubstring = \strlen($sSubstring);
+      
+      if (!$bTrimSubstring) {
+        foreach ($aOldArray as $sKey => $mVal) {
+          if (\substr($sKey, 0, $iSubstring) == $sSubstring) {
+            $aNewArray[$sKey] = $mVal;
+          }
+        }
+      } else {
+        foreach ($aOldArray as $sKey => $mVal) {
+          if (\substr($sKey, 0, $iSubstring) == $sSubstring) {
+            $aNewArray[\substr($sKey, $iSubstring)] = $mVal;
+          }
+        }
+      }
+      
+      return $aNewArray;
+      
     }
     
   }
