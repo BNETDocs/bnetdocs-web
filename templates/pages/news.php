@@ -1,11 +1,5 @@
 <?php
   
-  $sQueryString = $oContext->fGetRequestQueryString();
-  if (!empty($sQueryString)) $sQueryString = '?' . $sQueryString;
-  
-  $sRedirectURL = BnetDocs::fGetCurrentFullURL('/news' . $sQueryString);
-  $sSafeRedirectURL = urlencode($sRedirectURL);
-  
   ob_start();
   include_once('./includes/news.php');
   $sPage = ob_get_clean();
