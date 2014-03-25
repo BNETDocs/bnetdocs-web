@@ -11,9 +11,9 @@
   
   $aData = array(
     'channel'       => array(
-      'title'       => 'News - BnetDocs: Phoenix',
+      'title'       => 'Logs - BnetDocs: Phoenix',
       'link'        => BnetDocs::fGetCurrentFullURL(),
-      'description' => 'A summary of news articles on BNETDocs',
+      'description' => 'Summarized logs of activities on BNETDocs',
       'language'    => 'en-us',
       'docs'        => 'http://blogs.law.harvard.edu/tech/rss',
       'copyright'   => 'BnetDocs and its assets are property of the Battle.net community members. '.
