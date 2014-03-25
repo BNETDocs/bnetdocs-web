@@ -178,6 +178,6 @@
     $oContext = new HTTPContext();
     $oContext->fSetRequestByServerGlobals();
     BnetDocs::fExecute($oContext);
-    BnetDocs::fFinalize();
+    BnetDocs::fFinalize($oContext);
   }
   

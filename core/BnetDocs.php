@@ -70,7 +70,63 @@
       
     }
     
-    public static function fFinalize() {
+    public static function fFinalize(HTTPContext &$oContext) {
+      
+      http_response_code($oContext->fGetResponseCode());
+      
+      $aHeaders = $oContext->fGetResponseHeaders();
+      foreach ($aHeaders as $sHeaderName => $sHeaderValue) {
+        header($sHeaderName . ': ' . $sHeaderValue, true);
+      }
+      
+      $aCookies = $oContext->fGetResponseCookies();
+      foreach ($aCookies as $oCookie) {
+        setcookie(
+          $oCookie->fGetName(),
+          $oCookie->fGetValue(),
+          $oCookie->fGetExpire(),
+          $oCookie->fGetPath(),
+          $oCookie->fGetDomain(),
+          $oCookie->fGetSecure(),
+          $oCookie->fGetHTTPOnly()
+        );
+      }
+      
+      $mContent = $oContext->fGetResponseContent();
+      if (is_resource($mContent) && get_resource_type($mContent) == 'stream') {
+        
+        // Response content is within a stream object:
+        while (!feof($mContent)) {
+          echo fread($mContent, 1048576); // 1048576 B == 1 MiB
+        }
+        fclose($mContent);
+        
+      } else if (is_array($mContent)) {
+        
+        // Response content is within an array.
+        throw new Exception('Content is of type array, and should have been translated earlier');
+        
+      } else {
+        
+        // Hopefully the response is displayable through echo:
+        
+        /*if (function_exists('\gzencode')
+         && stripos(
+           $oContext->fGetRequestHeader('ACCEPT_ENCODING', ''), 'gzip'
+         ) !== false) {
+          $sCompressedContent = gzencode($mContent);
+          $iCompressedContent = strlen($sCompressedContent);
+          $iContent           = strlen($mContent);
+          header('Content-Encoding: gzip');
+          header('Content-Length: ' . strlen($sCompressedContent));
+          header('X-Compression-Rate: ' .
+            sprintf("%d", 100 - ($iCompressedContent / $iContent * 100)) . '%');
+          echo $sCompressedContent;
+        } else {*/
+          echo $mContent;
+        /*}*/
+        
+      }
       
     }
     
