@@ -6,7 +6,7 @@
   $sRedirectURL = BnetDocs::fGetCurrentFullURL('/news' . $sQueryString);
   $sSafeRedirectURL = urlencode($sRedirectURL);
   
-  ob_start();
+  ob_start('ob_gzhandler');
   include_once('./includes/redirect.php');
   $sRedirectPage = ob_get_clean();
   

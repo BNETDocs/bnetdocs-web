@@ -1,6 +1,6 @@
 <?php
   
-  ob_start();
+  ob_start('ob_gzhandler');
   include_once('./includes/news.php');
   $sPage = ob_get_clean();
   

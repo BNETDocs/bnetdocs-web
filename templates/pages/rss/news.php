@@ -23,7 +23,7 @@
     ),
   );
   
-  ob_start();
+  ob_start('ob_gzhandler');
   XMLEncoder::$bAddTypeAttributes       = false;
   XMLEncoder::$sInvalidKeyAttributeName = '';
   XMLEncoder::$sInvalidKeyName          = 'item';
