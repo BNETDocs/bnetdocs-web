@@ -6,11 +6,11 @@
     public static $sInvalidKeyAttributeName = 'id'; // Blank means to not add the attribute
     public static $sInvalidKeyName = 'item'; // Blank means to inherit sibling key
     
-    public static function fEncode($aData, $bPrettyPrint = false) {
-            
+    public static function fEncode($aData, $sRootName = 'rss', $bPrettyPrint = false) {
+      
       $oRoot = new SimpleXMLElement(
         '<?xml version="1.0" encoding="UTF-8"?>'.
-        '<rss version="2.0" />'
+        '<' . $sRootName . ' version="2.0" />'
       );
       
       self::fEncoder($oRoot, $aData);

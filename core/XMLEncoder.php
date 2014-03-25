@@ -6,7 +6,7 @@
     public static $sInvalidKeyAttributeName = 'key'; // Blank means to not add the attribute
     public static $sInvalidKeyName = ''; // Blank means to inherit sibling key
     
-    public static function fEncode($sRootName, $aData, $bPrettyPrint = false) {
+    public static function fEncode($aData, $sRootName, $bPrettyPrint = false) {
       
       if (!$sRootName || $sRootName == '') return false;
       if (!self::fValidKey($sRootName)) return false;
@@ -29,7 +29,7 @@
       
     }
     
-    private static function fEncoder(&$oNode, $aData) {
+    protected static function fEncoder(&$oNode, $aData) {
       
       if (is_null($oNode))
         throw new Exception('Node is of type null');
@@ -80,7 +80,7 @@
       
     }
     
-    private static function fEncoderAddKey(&$oNode, $sKey) {
+    protected static function fEncoderAddKey(&$oNode, $sKey) {
       
       if (func_num_args() >= 3) {
         $mValue = func_get_arg(2);
@@ -119,7 +119,7 @@
       
     }
     
-    private static function fEncodeKey($sKey) {
+    protected static function fEncodeKey($sKey) {
       // ENT_XML1 only exists in PHP versions >= 5.4.
       if (PHP_VERSION >= 5.4) {
         return htmlspecialchars($sKey, ENT_XML1, 'UTF-8');
@@ -128,7 +128,7 @@
       }
     }
     
-    private static function fIsAssocArray($aValue) {
+    protected static function fIsAssocArray($aValue) {
       foreach ($aValue as $sKey => $mValue)
       {
         if (!is_numeric($sKey)) return true;
@@ -136,7 +136,7 @@
       return false;
     }
     
-    private static function fValidKey($sKey) {
+    protected static function fValidKey($sKey) {
       //$sMask = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_';
       //if (strpos($sMask, substr($key, 0, 1)) === false) return false;
       return (preg_match('/\A(?!XML)[a-z][\w0-9-]*/i', $sKey));
