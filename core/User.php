@@ -17,7 +17,7 @@
         . '\' ORDER BY `id` ASC;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult)
-        throw new Exception('An SQL query error occurred while finding a user by id');
+        throw new Exception('An SQL query error occurred while finding users by email');
       return ($oSQLResult->fRowCount() ? true : false);
     }
     
@@ -29,7 +29,7 @@
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult)
-        throw new Exception('An SQL query error occurred while finding a user by id');
+        throw new Exception('An SQL query error occurred while finding user by username');
       return new self((int)$oSQLResult->fFieldValue());
     }
     
