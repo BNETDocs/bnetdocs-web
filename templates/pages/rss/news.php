@@ -18,7 +18,7 @@
   XMLEncoder::$bAddTypeAttributes       = false;
   XMLEncoder::$sInvalidKeyAttributeName = '';
   XMLEncoder::$sInvalidKeyName          = 'item';
-  echo RSSEncoder::fEncode($aData);
+  echo RSSEncoder::fEncode($aData, true);
   $sFeed = ob_get_clean();
   
   $oContext->fSetResponseCode(200);
