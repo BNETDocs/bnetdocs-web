@@ -1,7 +1,7 @@
 <?php
   
   $sRequestMethod = $oContext->fGetRequestMethod();
-  if (!array_key_exists($sRequestMethod, array('GET', 'HEAD', 'OPTIONS'))) {
+  if (!in_array($sRequestMethod, array('GET', 'HEAD', 'OPTIONS'))) {
     $oContext->fSetResponseCode(405);
     $oContext->fSetResponseHeader('Allow', 'GET, HEAD, OPTIONS');
     $oContext->fSetResponseHeader('Content-Type', 'text/plain;charset=utf-8');
