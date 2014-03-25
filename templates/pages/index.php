@@ -4,19 +4,11 @@
   if (!empty($sQueryString)) $sQueryString = '?' . $sQueryString;
   
   $sRedirectURL = BnetDocs::fGetCurrentFullURL('/news' . $sQueryString);
-  $sRedirectPage = ''
-    ."<!DOCTYPE html>\n"
-    ."<html>\n"
-    ."  <head>\n"
-    ."    <title>Redirect</title>\n"
-    ."    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">\n"
-    ."    <meta http-equiv=\"Location\" content=\"$sRedirectURL\">\n"
-    ."    <meta http-equiv=\"Refresh\" content=\"0;url=".urlencode($sRedirectURL)."\">\n"
-    ."  </head>\n"
-    ."  <body>\n"
-    ."    <a href=\"".urlencode($sRedirectURL)."\">$sRedirectURL</a>\n"
-    ."  </body>\n"
-    ."</html>";
+  $sSafeRedirectURL = urlencode($sRedirectURL);
+  
+  ob_start();
+  include_once('./includes/redirect.php');
+  $sRedirectPage = ob_get_clean();
   
   $oContext->fSetResponseCode(302);
   //$oContext->fSetResponseHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
