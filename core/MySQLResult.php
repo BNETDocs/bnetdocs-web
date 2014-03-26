@@ -14,10 +14,10 @@
         throw new Exception('Wrong resource object type given to MySQLResult constructor');
       
       $this->oResource     = $oResource;
-      $this->iCurrentField = $oResource->$current_field;
-      $this->iFieldCount   = $oResource->$field_count;
-      $this->aLengths      = $oResource->$lengths;
-      $this->iNumRows      = $oResource->$num_rows;
+      $this->iCurrentField = $oResource->current_field;
+      $this->iFieldCount   = $oResource->field_count;
+      $this->aLengths      = $oResource->lengths;
+      $this->iNumRows      = $oResource->num_rows;
     }
     
     public function __destruct() {
