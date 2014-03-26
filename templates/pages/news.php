@@ -1,25 +1,28 @@
 <?php
 
-  $oResult = BnetDocs::$oDB->fQuery('SELECT n.id, u.username, n.date_posted, n.edit_count, n.edit_date, n.title, n.content FROM news n LEFT JOIN users u ON n.creator_uid = u.id ORDER BY n.date_posted DESC LIMIT 0,3;');
+  $oResult = BnetDocs::$oDB->fQuery('SELECT '
+    . 'n.id AS `id`,'
+    . 'IFNULL(u.display_name, u.username) AS `creator`,'
+    . 'n.date_posted AS `date_posted`,'
+    . 'n.edit_count AS `edit_count`,'
+    . 'n.edit_date AS `edit_date`,'
+    . 'n.title AS `title`,'
+    . 'n.content AS `content` '
+    . 'FROM news n '
+    . 'LEFT JOIN users u '
+    . 'ON n.creator_uid = u.id '
+    . 'ORDER BY n.date_posted DESC '
+    . 'LIMIT 0,3;');
 
-  if (!$oResult || !$oResult instanceof MySQLResult) {
-    $aNews = array();
-  } else {
-    $aNews = array(
-      0 => array(
-        'id' => 0,
-        'username' => 'hardcoded-test',
-        'date_posted' => date('Y-m-d H:i:s T'),
-        'edit_count' => 1,
-        'edit_date' => date('Y-m-d H:i:s T'),
-        'title' => 'hardcoded test title',
-        'content' => 'this is a hardcoded test',
-      ),
-    );
+  $aNews = array();
+  if ($oResult && $oResult instanceof MySQLResult) {
+    while ($aRow = $oResult->fFetchAssoc()) {
+      $aNews[] = $aRow;
+    }
   }
   
   ob_start('ob_gzhandler');
-  include_once('./includes/news.php');
+  include('./includes/news.php');
   $sPage = ob_get_clean();
   
   $oContext->fSetResponseCode(200);
