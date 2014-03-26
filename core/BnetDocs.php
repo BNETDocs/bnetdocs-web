@@ -65,6 +65,8 @@
       if (substr($sRelPath, -1) == '/')
         $sRelPath .= 'index';
       
+      // TODO: Handle virtual files, like /news/123 goes to ./pages/news.php if ./pages/news/123.php doesn't exist
+      
       $sFullPath = './pages/' . $sRelPath . '.php';
       
       // TODO: Advanced confirmation that their path is inside our root path.
