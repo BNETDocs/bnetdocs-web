@@ -9,7 +9,7 @@
     
     private $oResource;
     
-    public function __construct(&$oResource) {
+    public function __construct($oResource) {
       if (!($oResource instanceof mysqli_result))
         throw new Exception('Wrong resource object type given to MySQLResult constructor');
       
