@@ -1,19 +1,24 @@
 <?php
-
-  $oResult = BnetDocs::$oDB->fQuery('SELECT '
-    . 'n.id AS `id`,'
-    . 'IFNULL(u.display_name, u.username) AS `creator`,'
-    . 'n.date_posted AS `date_posted`,'
-    . 'n.edit_count AS `edit_count`,'
-    . 'n.edit_date AS `edit_date`,'
-    . 'n.title AS `title`,'
-    . 'n.content AS `content` '
-    . 'FROM news n '
-    . 'LEFT JOIN users u '
-    . 'ON n.creator_uid = u.id '
-    . 'ORDER BY n.date_posted DESC '
-    . 'LIMIT 0,3;');
-
+  
+  try {
+    $oResult = BnetDocs::$oDB->fQuery('SELECT '
+      . 'n.id AS `id`,'
+      . 'IFNULL(u.display_name, u.username) AS `creator`,'
+      . 'n.post_date AS `post_date`,'
+      . 'n.edit_count AS `edit_count`,'
+      . 'n.edit_date AS `edit_date`,'
+      . 'n.title AS `title`,'
+      . 'n.content AS `content` '
+      . 'FROM news n '
+      . 'LEFT JOIN users u '
+      . 'ON n.creator_uid = u.id '
+      . 'ORDER BY n.date_posted DESC '
+      . 'LIMIT 0,3;');
+  } catch (RecoverableException $oError) {
+    if ($oError->getMessage() != 'Wrong resource object type given to MySQLResult constructor')
+      throw new Exception('An SQL error occurred while retrieving the news summary.', 0, $oError);
+  }
+  
   $aNews = array();
   if ($oResult && $oResult instanceof MySQLResult) {
     while ($aRow = $oResult->fFetchAssoc()) {

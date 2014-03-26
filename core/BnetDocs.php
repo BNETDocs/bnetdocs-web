@@ -70,7 +70,7 @@
       // TODO: Advanced confirmation that their path is inside our root path.
       
       if (file_exists($sFullPath) && is_file($sFullPath)) {
-        include_once($sFullPath);
+        include($sFullPath);
       }
       
       chdir($sPrevCwd);
