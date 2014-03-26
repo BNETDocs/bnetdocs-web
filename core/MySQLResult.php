@@ -21,7 +21,7 @@
     }
     
     public function __destruct() {
-      $oResource->free();
+      $this->oResource->free();
     }
     
     public function fDataSeek($iOffset) {
