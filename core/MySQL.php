@@ -49,7 +49,11 @@
     }
     
     public function fQuery($sQuery) {
-      return new MySQLResult($this->oLink->query($sQuery, MYSQLI_STORE_RESULT));
+      $mResult = $this->oLink->query($sQuery, MYSQLI_STORE_RESULT);
+      if ($mResult instanceof mysqli_result)
+        return new MySQLResult($mResult);
+      else
+        return $mResult;
     }
     
   }

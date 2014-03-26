@@ -11,7 +11,7 @@
     
     public function __construct($oResource) {
       if (!($oResource instanceof mysqli_result))
-        throw new RecoverableException('Wrong resource object type given to MySQLResult constructor');
+        throw new Exception('Wrong resource object type given to MySQLResult constructor');
       
       $this->oResource     = $oResource;
       $this->iCurrentField = $oResource->current_field;
