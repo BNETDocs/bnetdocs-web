@@ -1,5 +1,8 @@
 <?php
   
+  $oResult = false;
+  $aNews   = array();
+  
   try {
     $oResult = BnetDocs::$oDB->fQuery('SELECT '
       . 'n.id AS `id`,'
@@ -19,7 +22,6 @@
       throw new Exception('An SQL error occurred while retrieving the news summary.', 0, $oError);
   }
   
-  $aNews = array();
   if ($oResult && $oResult instanceof MySQLResult) {
     while ($aRow = $oResult->fFetchAssoc()) {
       $aNews[] = $aRow;
