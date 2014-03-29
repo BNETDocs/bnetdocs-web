@@ -35,13 +35,9 @@
       $aTrace      = debug_backtrace();
       $sCallerFile = $aTrace[1]['file'];
       $sCallerLine = $aTrace[1]['line'];
-      $sCallerFunc = $aTrace[1]['function'];
-      $sCallerArgs = '"' . implode('","', $aTrace[1]['args']) . '"';
       unset($aTrace);
       
-      if ($sCallerArgs == '""') $sCallerArgs = '';
-      
-      $sLogLine = "[$sTimestamp] $sCallerFile:$sCallerLine $sCallerFunc($sCallerArgs): $sQuery\n";
+      $sLogLine = "[$sTimestamp] $sCallerFile:$sCallerLine $sQuery\n";
       
       global $_CONFIG;
       $sFile = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['audit_dir'] . 'audited_queries.log';
