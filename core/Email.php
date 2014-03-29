@@ -103,7 +103,7 @@
       
       $oEmail->fAddRecipient(self::$oBNETDocsRecipient);
       $oEmail->fAddRecipient(new EmailRecipient(
-        $sEmail, EmailRecipient::$TYPE_TO, $sDisplayName, false
+        $sEmail, EmailRecipient::TYPE_TO, $sDisplayName, false
       ));
       
       $oEmail->fSetSubject('Welcome to BNETDocs!');
