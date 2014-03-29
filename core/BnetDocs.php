@@ -255,7 +255,7 @@
       
       Email::$oBNETDocsRecipient = new EmailRecipient(
         'bnetdocs@bnetdocs.org',    // Email address
-        EmailRecipient::$TYPE_FROM, // Designation of address
+        EmailRecipient::TYPE_FROM, // Designation of address
         'BNETDocs',                 // Display name
         false                       // Prefers plaintext
       );
