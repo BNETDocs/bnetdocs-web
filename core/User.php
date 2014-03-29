@@ -19,7 +19,7 @@
     /**
      * Internal class variables used for storing info.
      **/
-    private $iId;
+    private $iUId;
     private $sEmail;
     private $sUsername;
     private $sDisplayName;
@@ -54,7 +54,7 @@
       return new self((int)$oSQLResult->fFetchObject()->id);
     }
     
-    public function __construct($iId) {
+    public function __construct($iUId) {
       $aFields = array(
         'uid',
         'email',
@@ -68,23 +68,23 @@
       );
       $sQuery = 'SELECT `' . implode('`,`', $aFields) . '`,'
         . 'HEX(`password_hash`) AS `password_hash` FROM `users`'
-        . ' WHERE `uid` = \'' . BnetDocs::$oDB->fEscapeValue($iId)
+        . ' WHERE `uid` = \'' . BnetDocs::$oDB->fEscapeValue($iUId)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
         throw new Exception('An SQL query error occurred while retrieving user by id');
       $oResult = $oSQLResult->fFetchObject();
       // CAUTION: May have to typecast here. Tried to avoid it by using fetch object.
-      $this->$iId             = $oResult->uid;
-      $this->$sEmail          = $oResult->email;
-      $this->$sUsername       = $oResult->username;
-      $this->$sDisplayName    = $oResult->display_name;
-      $this->$sPasswordHash   = $oResult->password_hash;
-      $this->$iPasswordSalt   = $oResult->password_salt;
-      $this->$iStatus         = $oResult->status;
-      $this->$sRegisteredDate = $oResult->registered_date;
-      $this->$mVerifiedDate   = $oResult->verified_date;
-      $this->$sVerifiedId     = $oResult->verified_id;
+      $this->iUId             = $oResult->uid;
+      $this->sEmail          = $oResult->email;
+      $this->sUsername       = $oResult->username;
+      $this->sDisplayName    = $oResult->display_name;
+      $this->sPasswordHash   = $oResult->password_hash;
+      $this->iPasswordSalt   = $oResult->password_salt;
+      $this->iStatus         = $oResult->status;
+      $this->sRegisteredDate = $oResult->registered_date;
+      $this->mVerifiedDate   = $oResult->verified_date;
+      $this->sVerifiedId     = $oResult->verified_id;
     }
     
     public function fCheckPassword($sTargetPassword) {
@@ -94,7 +94,7 @@
     }
     
     public function fGetId() {
-      return $this->iId;
+      return $this->iUId;
     }
     
     public function fGetEmail() {
@@ -155,7 +155,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `email` = \''
         . BnetDocs::$oDB->fEscapeValue($sEmail)
         . '\' WHERE `uid` = \''
-        . $this->iId
+        . $this->iUId
         . '\' LIMIT 1;'
       )) {
         $this->sEmail = $sEmail;
@@ -172,7 +172,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `username` = \''
         . BnetDocs::$oDB->fEscapeValue($sUsername)
         . '\' WHERE `uid` = \''
-        . $this->iId
+        . $this->iUId
         . '\' LIMIT 1;'
       )) {
         $this->sUsername = $sUsername;
@@ -189,7 +189,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `display_name` = \''
         . BnetDocs::$oDB->fEscapeValue($sDisplayName)
         . '\' WHERE `uid` = \''
-        . $this->iId
+        . $this->iUId
         . '\' LIMIT 1;'
       )) {
         $this->sDisplayName = $sDisplayName;
@@ -214,7 +214,7 @@
         . '\'), `password_salt` = \''
         . BnetDocs::$oDB->fEscapeValue($iPasswordSalt)
         . '\' WHERE `uid` = \''
-        . $this->iId
+        . $this->iUId
         . '\' LIMIT 1;'
       )) {
         $this->sPasswordHash = $sPasswordHash;
@@ -230,7 +230,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `status` = \''
         . BnetDocs::$oDB->fEscapeValue($iStatus)
         . '\' WHERE `uid` = \''
-        . $this->iId
+        . $this->iUId
         . '\' LIMIT 1;'
       )) {
         $this->iStatus = $iStatus;
@@ -247,7 +247,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `registered_date` = \''
         . BnetDocs::$oDB->fEscapeValue($sRegisteredDate)
         . '\' WHERE `uid` = \''
-        . $this->iId
+        . $this->iUId
         . '\' LIMIT 1;'
       )) {
         $this->sRegisteredDate = $sRegisteredDate;
@@ -266,7 +266,7 @@
         . BnetDocs::$oDB->fEscapeValue($mVerifiedDate)
         . '\'' : 'NULL')
         . ' WHERE `uid` = \''
-        . $this->iId
+        . $this->iUId
         . '\' LIMIT 1;'
       )) {
         $this->mVerifiedDate = $mVerifiedDate;
@@ -283,7 +283,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
         . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
         . '\' WHERE `uid` = \''
-        . $this->iId
+        . $this->iUId
         . '\' LIMIT 1;'
       )) {
         $this->sVerifiedId = $sVerifiedId;
