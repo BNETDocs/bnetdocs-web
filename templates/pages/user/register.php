@@ -1,7 +1,15 @@
 <?php
   
-  $usr = new User(63);
-  $stat = Email::fSendWelcome($usr);
+  $aQuery = $oContext->fGetRequestQueryArray();
+  $sVerifiedId = (isset($aQuery['id']) ? $aQuery['id'] : '');
+  
+  $usr = User::fFindUserByVerifiedId($sVerifiedId);
+  if ($usr) {
+    $usr->fSetVerifiedDate(date('Y-m-d H:i:s'));
+    $stat = Email::fSendWelcome($usr);
+  } else {
+    $stat = false;
+  }
   
   ob_start('ob_gzhandler');
   include('./includes/user/register.php');
