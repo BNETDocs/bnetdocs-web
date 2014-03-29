@@ -167,7 +167,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `email` = \''
         . BnetDocs::$oDB->fEscapeValue($sEmail)
         . '\' WHERE `uid` = \''
-        . $this->iUId
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sEmail = $sEmail;
@@ -184,7 +184,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `username` = \''
         . BnetDocs::$oDB->fEscapeValue($sUsername)
         . '\' WHERE `uid` = \''
-        . $this->iUId
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sUsername = $sUsername;
@@ -201,7 +201,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `display_name` = \''
         . BnetDocs::$oDB->fEscapeValue($sDisplayName)
         . '\' WHERE `uid` = \''
-        . $this->iUId
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sDisplayName = $sDisplayName;
@@ -226,7 +226,7 @@
         . '\'), `password_salt` = \''
         . BnetDocs::$oDB->fEscapeValue($iPasswordSalt)
         . '\' WHERE `uid` = \''
-        . $this->iUId
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sPasswordHash = $sPasswordHash;
@@ -242,7 +242,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `status` = \''
         . BnetDocs::$oDB->fEscapeValue($iStatus)
         . '\' WHERE `uid` = \''
-        . $this->iUId
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->iStatus = $iStatus;
@@ -259,7 +259,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `registered_date` = \''
         . BnetDocs::$oDB->fEscapeValue($sRegisteredDate)
         . '\' WHERE `uid` = \''
-        . $this->iUId
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sRegisteredDate = $sRegisteredDate;
@@ -278,7 +278,7 @@
         . BnetDocs::$oDB->fEscapeValue($mVerifiedDate)
         . '\'' : 'NULL')
         . ' WHERE `uid` = \''
-        . $this->iUId
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->mVerifiedDate = $mVerifiedDate;
@@ -295,7 +295,7 @@
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
         . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
         . '\' WHERE `uid` = \''
-        . $this->iUId
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sVerifiedId = $sVerifiedId;
