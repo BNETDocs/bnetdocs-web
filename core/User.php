@@ -68,7 +68,7 @@
       );
       $sQuery = 'SELECT `' . implode('`,`', $aFields) . '`,'
         . 'HEX(`password_hash`) AS `password_hash` FROM `users`'
-        . ' WHERE `id` = \'' . BnetDocs::$oDB->fEscapeValue($iId)
+        . ' WHERE `uid` = \'' . BnetDocs::$oDB->fEscapeValue($iId)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
@@ -154,7 +154,7 @@
         throw new RecoverableException('Email address is an empty string');
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `email` = \''
         . BnetDocs::$oDB->fEscapeValue($sEmail)
-        . '\' WHERE `id` = \''
+        . '\' WHERE `uid` = \''
         . $this->iId
         . '\' LIMIT 1;'
       )) {
@@ -171,7 +171,7 @@
         throw new RecoverableException('Username is an empty string');
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `username` = \''
         . BnetDocs::$oDB->fEscapeValue($sUsername)
-        . '\' WHERE `id` = \''
+        . '\' WHERE `uid` = \''
         . $this->iId
         . '\' LIMIT 1;'
       )) {
@@ -188,7 +188,7 @@
         throw new RecoverableException('Display Name is an empty string');
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `display_name` = \''
         . BnetDocs::$oDB->fEscapeValue($sDisplayName)
-        . '\' WHERE `id` = \''
+        . '\' WHERE `uid` = \''
         . $this->iId
         . '\' LIMIT 1;'
       )) {
@@ -213,7 +213,7 @@
         . BnetDocs::$oDB->fEscapeValue($sPasswordHash)
         . '\'), `password_salt` = \''
         . BnetDocs::$oDB->fEscapeValue($iPasswordSalt)
-        . '\' WHERE `id` = \''
+        . '\' WHERE `uid` = \''
         . $this->iId
         . '\' LIMIT 1;'
       )) {
@@ -229,7 +229,7 @@
         throw new Exception('Status is not of type numeric');
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `status` = \''
         . BnetDocs::$oDB->fEscapeValue($iStatus)
-        . '\' WHERE `id` = \''
+        . '\' WHERE `uid` = \''
         . $this->iId
         . '\' LIMIT 1;'
       )) {
@@ -246,7 +246,7 @@
         throw new RecoverableException('Registered Date is an empty string');
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `registered_date` = \''
         . BnetDocs::$oDB->fEscapeValue($sRegisteredDate)
-        . '\' WHERE `id` = \''
+        . '\' WHERE `uid` = \''
         . $this->iId
         . '\' LIMIT 1;'
       )) {
@@ -265,7 +265,7 @@
         . (is_string($mVerifiedDate) ? '\''
         . BnetDocs::$oDB->fEscapeValue($mVerifiedDate)
         . '\'' : 'NULL')
-        . ' WHERE `id` = \''
+        . ' WHERE `uid` = \''
         . $this->iId
         . '\' LIMIT 1;'
       )) {
@@ -282,7 +282,7 @@
         throw new RecoverableException('Verified Id is an empty string');
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
         . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
-        . '\' WHERE `id` = \''
+        . '\' WHERE `uid` = \''
         . $this->iId
         . '\' LIMIT 1;'
       )) {
