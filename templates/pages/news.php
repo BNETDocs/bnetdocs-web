@@ -11,7 +11,7 @@
     . 'n.edit_date AS `edit_date`,'
     . 'n.title AS `title`,'
     . 'n.content AS `content` '
-    . 'FROM news n '
+    . 'FROM news_posts n '
     . 'LEFT JOIN users u '
     . 'ON n.creator_uid = u.id '
     . 'ORDER BY n.date_posted DESC '
