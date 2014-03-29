@@ -75,7 +75,7 @@
         throw new Exception('An SQL query error occurred while retrieving user by id');
       $oResult = $oSQLResult->fFetchObject();
       // CAUTION: May have to typecast here. Tried to avoid it by using fetch object.
-      $this->$iId             = $oResult->id;
+      $this->$iId             = $oResult->uid;
       $this->$sEmail          = $oResult->email;
       $this->$sUsername       = $oResult->username;
       $this->$sDisplayName    = $oResult->display_name;
