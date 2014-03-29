@@ -13,8 +13,8 @@
     . 'n.content AS `content` '
     . 'FROM news_posts n '
     . 'LEFT JOIN users u '
-    . 'ON n.creator_uid = u.id '
-    . 'ORDER BY n.date_posted DESC '
+    . 'ON n.creator_uid = u.uid '
+    . 'ORDER BY n.post_date DESC '
     . 'LIMIT 0,3;');
   
   if ($oResult && $oResult instanceof MySQLResult) {
