@@ -56,17 +56,21 @@
         }
       }
       
-      $sHeaders .= 'From: ' . implode(',', $aFrom) . "\n";
-      $sHeaders .= 'To: '   . implode(',', $aTo)   . "\n";
-      $sHeaders .= 'Cc: '   . implode(',', $aCc)   . "\n";
-      $sHeaders .= 'Bcc: '  . implode(',', $aBcc)  . "\n";
+      if ($aFrom)
+        $sHeaders .= 'From: ' . implode(',', $aFrom) . "\n";
+      if ($aTo)
+        $sHeaders .= 'To: '   . implode(',', $aTo)   . "\n";
+      if ($aCc)
+        $sHeaders .= 'Cc: '   . implode(',', $aCc)   . "\n";
+      if ($aBcc)
+        $sHeaders .= 'Bcc: '  . implode(',', $aBcc)  . "\n";
       
       // Build messages:
       
-      $sBoundary = BnetDocs::fGenerateUUIDv4();
+      $sBoundary = str_replace('-', '', BnetDocs::fGenerateUUIDv4());
       
       $sHeaders .= "Content-Type: multipart/alternative; "
-               .  "boundary=\"" . $sBoundary . "\"\n";
+               .  "boundary=" . $sBoundary . "\n";
       
       $sMessage = '';
       
