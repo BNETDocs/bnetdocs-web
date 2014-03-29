@@ -19,7 +19,7 @@
   ],
   "paths": {
     "audit_dir": "./",
-    "base_dir": "./",
+    "base_dir": "/home/nginx/bnetdocs-dev/",
     "core_dir": "core/",
     "static_dir": "static/",
     "template_dir": "templates/"
