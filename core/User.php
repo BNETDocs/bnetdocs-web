@@ -7,14 +7,14 @@
      * database allows for the exact length that the algorithm gives.
      * (ex.: sha256 yields 256 bits which means a binary(32) field.)
      **/
-    const $sPasswordHashAlgorithm = 'sha256';
+    const PASSWORD_HASH_ALGORITHM = 'sha256';
     
     /**
      * Password length requirements are irrespective of the database
      * design, since passwords are salted hashes.
      **/
-    const $iPasswordLengthMinimum = 6;
-    const $iPasswordLengthMaximum = 48;
+    const PASSWORD_LENGTH_MINIMUM = 6;
+    const PASSWORD_LENGTH_MAXIMUM = 48;
     
     /**
      * Internal class variables used for storing info.
@@ -137,9 +137,9 @@
       if (!is_string($sPassword))
         throw new Exception('Password is not of type string');
       return hash(
-        self::$sPasswordHashAlgorithm,
+        self::PASSWORD_HASH_ALGORITHM,
         hash(
-          self::$sPasswordHashAlgorithm,
+          self::PASSWORD_HASH_ALGORITHM,
           $sPassword,
           false
         ) . (string)$iSalt . 'bnetdocs+db~$!',
@@ -202,10 +202,10 @@
       if (!is_string($sPassword))
         throw new Exception('Password is not of type string');
       $iPasswordLength = strlen($sPassword);
-      if ($iPasswordLength < self::$iPasswordLengthMinimum && self::$iPasswordLengthMinimum > 0)
-        throw new RecoverableException('Password is less than ' . self::$iPasswordLengthMinimum . ' characters');
-      if ($iPasswordLength > self::$iPasswordLengthMaximum && self::$iPasswordLengthMaximum >= self::$iPasswordLengthMinimum)
-        throw new RecoverableException('Password is more than ' . self::$iPasswordLengthMaximum . ' characters');
+      if ($iPasswordLength < self::PASSWORD_LENGTH_MINIMUM && self::PASSWORD_LENGTH_MINIMUM > 0)
+        throw new RecoverableException('Password is less than ' . self::PASSWORD_LENGTH_MINIMUM . ' characters');
+      if ($iPasswordLength > self::PASSWORD_LENGTH_MAXIMUM && self::PASSWORD_LENGTH_MAXIMUM >= self::PASSWORD_LENGTH_MINIMUM)
+        throw new RecoverableException('Password is more than ' . self::PASSWORD_LENGTH_MAXIMUM . ' characters');
       mt_srand(microtime(true)*100000 + memory_get_usage(true));
       $iPasswordSalt = mt_rand(0, 0xFFFFFFFFFFFFFFFF);
       $sPasswordHash = self::fHashPassword($sPassword, $iPasswordSalt);

@@ -2,10 +2,10 @@
   
   class EmailRecipient {
     
-    const $TYPE_FROM = 0;
-    const $TYPE_TO   = 1;
-    const $TYPE_CC   = 2;
-    const $TYPE_BCC  = 3;
+    const TYPE_FROM = 0;
+    const TYPE_TO   = 1;
+    const TYPE_CC   = 2;
+    const TYPE_BCC  = 3;
     
     private $sAddress;
     private $iType;
@@ -14,7 +14,7 @@
     
     public function __construct($sAddress) {
       $this->fSetAddress($sAddress);
-      $this->fSetType((func_num_args() > 1 ? func_get_arg(1) : self::$TYPE_TO));
+      $this->fSetType((func_num_args() > 1 ? func_get_arg(1) : self::TYPE_TO));
       $this->fSetName((func_num_args() > 2 ? func_get_arg(2) : ''));
       $this->fSetPrefersPlaintext((func_num_args() > 3 ? func_get_arg(3) : ''));
     }

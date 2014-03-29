@@ -45,13 +45,13 @@
       
       foreach ($this->aRecipients as $oRecipient) {
         switch ($oRecipient->fGetType()) {
-          case EmailRecipient::$TYPE_FROM:
+          case EmailRecipient::TYPE_FROM:
             $aFrom[] = $oRecipient->__toString(); break;
-          case EmailRecipient::$TYPE_TO:
+          case EmailRecipient::TYPE_TO:
             $aTo[]   = $oRecipient->__toString(); break;
-          case EmailRecipient::$TYPE_CC:
+          case EmailRecipient::TYPE_CC:
             $aCc[]   = $oRecipient->__toString(); break;
-          case EmailRecipient::$TYPE_BCC:
+          case EmailRecipient::TYPE_BCC:
             $aBcc[]  = $oRecipient->__toString(); break;
         }
       }
