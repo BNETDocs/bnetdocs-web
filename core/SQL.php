@@ -46,7 +46,7 @@
       global $_CONFIG;
       $sFile = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['audit_dir'] . 'audited_queries.log';
       $oFile = fopen($sFile, 'a');
-      fwrite($sLogLine, $oFile);
+      fwrite($oFile, $sLogLine);
       fclose($oFile);
     }
     
