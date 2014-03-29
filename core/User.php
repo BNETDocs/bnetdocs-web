@@ -7,14 +7,14 @@
      * database allows for the exact length that the algorithm gives.
      * (ex.: sha256 yields 256 bits which means a binary(32) field.)
      **/
-    private static const $sPasswordHashAlgorithm = 'sha256';
+    private const $sPasswordHashAlgorithm = 'sha256';
     
     /**
      * Password length requirements are irrespective of the database
      * design, since passwords are salted hashes.
      **/
-    private static const $iPasswordLengthMinimum = 6;
-    private static const $iPasswordLengthMaximum = 48;
+    private const $iPasswordLengthMinimum = 6;
+    private const $iPasswordLengthMaximum = 48;
     
     /**
      * Internal class variables used for storing info.

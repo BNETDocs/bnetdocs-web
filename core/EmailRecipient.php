@@ -2,10 +2,10 @@
   
   class EmailRecipient {
     
-    public static const $TYPE_FROM = 0;
-    public static const $TYPE_TO   = 1;
-    public static const $TYPE_CC   = 2;
-    public static const $TYPE_BCC  = 3;
+    public const $TYPE_FROM = 0;
+    public const $TYPE_TO   = 1;
+    public const $TYPE_CC   = 2;
+    public const $TYPE_BCC  = 3;
     
     private $sAddress;
     private $iType;
