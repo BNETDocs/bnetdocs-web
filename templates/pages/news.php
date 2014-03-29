@@ -14,8 +14,8 @@
     . 'FROM news_posts n '
     . 'LEFT JOIN users u '
     . 'ON n.creator_uid = u.uid '
-    . 'ORDER BY n.post_date DESC '
-    . 'LIMIT 0,3;');
+    . 'ORDER BY n.post_date DESC, n.id DESC '
+    . 'LIMIT 3;');
   
   if ($oResult && $oResult instanceof MySQLResult) {
     while ($aRow = $oResult->fFetchAssoc()) {
