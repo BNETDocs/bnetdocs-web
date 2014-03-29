@@ -8,6 +8,7 @@
     private $sDatabase;
     private $iConnectTimeout;
     private $sCharacterSet;
+    private $bAudit;
     
     public function __construct() {
       global $_CONFIG;
@@ -17,6 +18,7 @@
       $this->fSetDatabase($_CONFIG['database']['name']);
       $this->fSetConnectTimeout($_CONFIG['database']['connect_timeout']);
       $this->fSetCharacterSet($_CONFIG['database']['character_set']);
+      $this->fSetAudit($_CONFIG['database']['audit']);
       
       $aArgs = func_get_args();
       if (isset($aArgs[0])) $this->fSetHostname($aArgs[0]);
@@ -25,6 +27,7 @@
       if (isset($aArgs[3])) $this->fSetDatabase($aArgs[3]);
       if (isset($aArgs[4])) $this->fSetConnectTimeout($aArgs[4]);
       if (isset($aArgs[5])) $this->fSetCharacterSet($aArgs[5]);
+      if (isset($aArgs[6])) $this->fSetAudit($aArgs[6]);
     }
     
     abstract public function fClose();
@@ -57,6 +60,10 @@
       return $this->sUsername;
     }
     
+    public function fGetAudit() {
+      return $this->bAudit;
+    }
+    
     public function fSetCharacterSet($sValue) {
       $this->sCharacterSet = $sValue;
       return true;
@@ -84,6 +91,11 @@
     
     public function fSetUsername($sValue) {
       $this->sUsername = $sValue;
+      return true;
+    }
+    
+    public function fSetAudit($bValue) {
+      $this->bAudit = $bValue;
       return true;
     }
     
