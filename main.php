@@ -91,7 +91,7 @@
       ."server error occurred.\n\nError Data:\n\n```\n" . $sErrorData . "\n```"
       ."\n\nPlease investigate this issue so I can continue to use the website."
       ."\n\nThanks!\n";
-    $sGitHubIssueURL = "https://github.com/Jailout2000/bnetdocs-phoenix/issues/"
+    $sGitHubIssueURL = "https://github.com/BNETDocs/bnetdocs-phoenix/issues/"
       ."new?" . http_build_query(array(
         "title" => $sGitHubIssueTitle,
         "body" => $sGitHubIssueBody
