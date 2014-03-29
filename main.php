@@ -168,10 +168,12 @@
       || !is_bool($_CONFIG['maintenance'][0])
       || !is_string($_CONFIG['maintenance'][1])
       || !array_key_exists('paths', $_CONFIG)
+      || !array_key_exists('audit_dir', $_CONFIG['paths'])
       || !array_key_exists('base_dir', $_CONFIG['paths'])
       || !array_key_exists('core_dir', $_CONFIG['paths'])
       || !array_key_exists('static_dir', $_CONFIG['paths'])
       || !array_key_exists('template_dir', $_CONFIG['paths'])
+      || substr($_CONFIG['paths']['audit_dir'], -1) != '/'
       || substr($_CONFIG['paths']['base_dir'], -1) != '/'
       || substr($_CONFIG['paths']['core_dir'], -1) != '/'
       || substr($_CONFIG['paths']['static_dir'], -1) != '/'
@@ -180,7 +182,7 @@
   
   function __autoload($sClassName) {
     global $_CONFIG;
-    require_once($_CONFIG['paths']['core_dir'] . $sClassName . '.php');
+    require_once($_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['core_dir'] . $sClassName . '.php');
   }
   
   if (BnetDocs::fInitialize()) {

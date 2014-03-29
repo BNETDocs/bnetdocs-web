@@ -49,6 +49,7 @@
     }
     
     public function fQuery($sQuery) {
+      if ($this->bAudit) $this->fAuditQuery($sQuery);
       $mResult = $this->oLink->query($sQuery, MYSQLI_STORE_RESULT);
       if ($mResult instanceof mysqli_result)
         return new MySQLResult($mResult);

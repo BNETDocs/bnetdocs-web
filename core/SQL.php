@@ -30,11 +30,30 @@
       if (isset($aArgs[6])) $this->fSetAudit($aArgs[6]);
     }
     
+    protected function fAuditQuery($sQuery) {
+      $sTimestamp = date('Y-m-d H:i:s O');
+      $aTrace     = debug_backtrace();
+      $sCaller    = $aTrace[1];
+      unset($aTrace);
+      
+      $sLogLine = "[$sTimestamp] $sCaller $sQuery\n";
+      
+      global $_CONFIG;
+      $sFile = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['audit_dir'] . 'audited_queries.log';
+      $oFile = fopen($sFile, 'a');
+      fwrite($sLogLine, $oFile);
+      fclose($oFile);
+    }
+    
     abstract public function fClose();
     abstract public function fConnect();
     abstract public function fErrorMessage();
     abstract public function fErrorNumber();
     abstract public function fEscapeValue($mValue);
+    
+    public function fGetAudit() {
+      return $this->bAudit;
+    }
     
     public function fGetCharacterSet() {
       return $this->sCharacterSet;
@@ -60,8 +79,9 @@
       return $this->sUsername;
     }
     
-    public function fGetAudit() {
-      return $this->bAudit;
+    public function fSetAudit($bValue) {
+      $this->bAudit = $bValue;
+      return true;
     }
     
     public function fSetCharacterSet($sValue) {
@@ -91,11 +111,6 @@
     
     public function fSetUsername($sValue) {
       $this->sUsername = $sValue;
-      return true;
-    }
-    
-    public function fSetAudit($bValue) {
-      $this->bAudit = $bValue;
       return true;
     }
     
