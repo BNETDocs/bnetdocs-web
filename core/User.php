@@ -56,7 +56,7 @@
     
     public function __construct($iId) {
       $aFields = array(
-        'id',
+        'uid',
         'email',
         'username',
         'display_name',
