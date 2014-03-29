@@ -18,6 +18,7 @@
     ""
   ],
   "paths": {
+    "audit_dir": "./",
     "base_dir": "./",
     "core_dir": "core/",
     "static_dir": "static/",
