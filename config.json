@@ -6,7 +6,8 @@
     "password": "",
     "name": "bnetdocs_phoenix",
     "connect_timeout": 3,
-    "character_set": "utf8_unicode_ci"
+    "character_set": "utf8_unicode_ci",
+    "audit": false
   },
   "error_handling": {
     "debug_mode": false,
