@@ -33,9 +33,9 @@
     public static function fFindUsersByEmail($sEmail) {
       if (!is_string($sEmail))
         throw new Exception('Email address is not of type string');
-      $sQuery = 'SELECT `id` FROM `users` WHERE `email` = \''
+      $sQuery = 'SELECT `uid` FROM `users` WHERE `email` = \''
         . BnetDocs::$oDB->fEscapeValue($sEmail)
-        . '\' ORDER BY `id` ASC;';
+        . '\' ORDER BY `uid` ASC;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
         throw new Exception('An SQL query error occurred while finding users by email');
@@ -45,7 +45,7 @@
     public static function fFindUserByUsername($sUsername) {
       if (!is_string($sUsername))
         throw new Exception('Username is not of type string');
-      $sQuery = 'SELECT `id` FROM `users` WHERE `username` = \''
+      $sQuery = 'SELECT `uid` FROM `users` WHERE `username` = \''
         . BnetDocs::$oDB->fEscapeValue($sUsername)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
@@ -57,7 +57,7 @@
     public static function fFindUserByVerifiedId($sVerifiedId) {
       if (!is_string($sVerifiedId))
         throw new Exception('Verified Id is not of type string');
-      $sQuery = 'SELECT `id` FROM `users` WHERE `verified_id` = \''
+      $sQuery = 'SELECT `uid` FROM `users` WHERE `verified_id` = \''
         . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
