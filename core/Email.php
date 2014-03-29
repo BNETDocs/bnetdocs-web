@@ -75,12 +75,12 @@
       $sMessage = '';
       
       foreach ($this->aMessageFlavors as $oMessage) {
-        $sMessage .= $oMessage->fGetBody() . "\n\n";
         $sMessage .= "--" . $sBoundary . "\n";
         $sMessage .= "Content-Type: " . $oMessage->fGetContentType() . "\n\n";
+        $sMessage .= $oMessage->fGetBody() . "\n\n";
       }
       
-      $sMessage .= "\n\n--" . $sBoundary . "--";
+      $sMessage .= "--" . $sBoundary . "--";
       
       return mail('', $this->sSubject, $sMessage, $sHeaders);
     }
@@ -121,7 +121,7 @@
         . "<a href=\"" . $sVerifiedURL . "\">" . $sVerifiedURL . "</a><br><br>\n\n"
         . "If you did not create this account, simply ignore this email.<br><br><br>\n\n\n"
         . "Thanks,<br><br>\n\n"
-        . "BNETDocs<br>\n"
+        . "BNETDocs"
       ));
       
       // Text version:
@@ -133,7 +133,7 @@
         . $sVerifiedURL . "\n\n"
         . "If you did not create this account, simply ignore this email.\n\n\n"
         . "Thanks,\n\n"
-        . "BNETDocs\n"
+        . "BNETDocs"
       ));
       
       return $oEmail->fSend();
