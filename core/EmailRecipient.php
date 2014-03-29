@@ -28,7 +28,7 @@
         return htmlspecialchars($this->sAddress, ENT_QUOTES, 'UTF-8');
       else
         return htmlspecialchars($this->sName, ENT_QUOTES, 'UTF-8') .
-          '" <' . htmlspecialchars($this->sAddress, ENT_QUOTES, 'UTF-8') . '>';
+          ' <' . htmlspecialchars($this->sAddress, ENT_QUOTES, 'UTF-8') . '>';
     }
     
     public function fGetAddress() {
