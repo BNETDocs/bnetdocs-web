@@ -28,6 +28,7 @@
     private $iStatus;
     private $sRegisteredDate;
     private $mVerifiedDate;
+    private $sVerifiedId;
     
     public static function fFindUsersByEmail($sEmail) {
       if (!is_string($sEmail))
@@ -63,6 +64,7 @@
         'status',
         'registered_date',
         'verified_date',
+        'verified_id',
       );
       $sQuery = 'SELECT `' . implode('`,`', $aFields) . '`,'
         . 'HEX(`password_hash`) AS `password_hash` FROM `users`'
@@ -82,6 +84,7 @@
       $this->$iStatus         = $oResult->status;
       $this->$sRegisteredDate = $oResult->registered_date;
       $this->$mVerifiedDate   = $oResult->verified_date;
+      $this->$sVerifiedId     = $oResult->verified_id;
     }
     
     public function fCheckPassword($sTargetPassword) {
@@ -124,6 +127,10 @@
     
     public function fGetVerifiedDate() {
       return $this->mVerifiedDate;
+    }
+    
+    public function fGetVerifiedId() {
+      return $this->sVerifiedId;
     }
     
     public static function fHashPassword($sPassword, $iSalt) {
@@ -263,6 +270,23 @@
         . '\' LIMIT 1;'
       )) {
         $this->mVerifiedDate = $mVerifiedDate;
+        return true;
+      } else
+        return false;
+    }
+    
+    public function fSetVerifiedId($sVerifiedId) {
+      if (!is_string($sVerifiedId))
+        throw new Exception('Verified Id is not of type string');
+      if (empty($sVerifiedId))
+        throw new RecoverableException('Verified Id is an empty string');
+      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
+        . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
+        . '\' WHERE `id` = \''
+        . $this->iId
+        . '\' LIMIT 1;'
+      )) {
+        $this->sVerifiedId = $sVerifiedId;
         return true;
       } else
         return false;
