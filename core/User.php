@@ -51,7 +51,19 @@
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
         throw new Exception('An SQL query error occurred while finding user by username');
-      return new self((int)$oSQLResult->fFetchObject()->id);
+      return new self((int)$oSQLResult->fFetchObject()->uid);
+    }
+    
+    public static function fFindUserByVerifiedId($sVerifiedId) {
+      if (!is_string($sVerifiedId))
+        throw new Exception('Verified Id is not of type string');
+      $sQuery = 'SELECT `id` FROM `users` WHERE `verified_id` = \''
+        . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
+        . '\' LIMIT 1;';
+      $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
+      if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
+        throw new Exception('An SQL query error occurred while finding user by verified id');
+      return new self((int)$oSQLResult->fFetchObject()->uid);
     }
     
     public function __construct($iUId) {
