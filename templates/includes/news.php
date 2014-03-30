@@ -8,12 +8,12 @@
         echo "      <div class=\"newsitem\">\n";
         echo "        <div class=\"title\">"
                    .   "<a href=\"" . BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id'])) . "\">"
-                   .   htmlspecialchars($aNewsItem['title'], ENT_QUOTES | ENT_DISALLOWED)
+                   .   ContentFilter::fFilterHTML($aNewsItem['title'])
                    .   "</a>"
                    . "</div>\n";
         echo "        <div class=\"content\">" . ContentFilter::fFilterBBCode(ContentFilter::fFilterHTML($aNewsItem['content'])) . "</div>\n";
-        echo "        <div class=\"creator\">" . htmlspecialchars($aNewsItem['creator'], ENT_QUOTES | ENT_DISALLOWED) . "</div>\n";
-        echo "        <div class=\"post_date\">" . htmlspecialchars($aNewsItem['post_date'], ENT_QUOTES | ENT_DISALLOWED) . "</div>\n";
+        echo "        <div class=\"creator\">" . ContentFilter::fFilterHTML($aNewsItem['creator']) . "</div>\n";
+        echo "        <div class=\"post_date\">" . ContentFilter::fFilterHTML($aNewsItem['post_date']) . "</div>\n";
         echo "      </div>\n";
       }
 ?>    </div>

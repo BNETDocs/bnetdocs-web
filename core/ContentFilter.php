@@ -11,8 +11,8 @@
       
       $sParsedContent = $sContent;
       
-      $sParsedContent = htmlspecialchars($sParsedContent, ENT_QUOTES | ENT_DISALLOWED);
-      $sParsedContent = preg_replace('/\r\n|\r|\n+/', "<br/>\n", trim($sParsedContent));
+      $sParsedContent = htmlspecialchars($sParsedContent, ENT_QUOTES | ENT_DISALLOWED, 'UTF-8');
+      //$sParsedContent = preg_replace('/\r\n|\r|\n+/', "<br/>\n", trim($sParsedContent));
       
       return $sParsedContent;
       
