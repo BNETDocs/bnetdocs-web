@@ -11,15 +11,16 @@
   
   $aData = array(
     'channel'       => array(
-      'title'       => 'News - BnetDocs: Phoenix',
-      'link'        => BnetDocs::fGetCurrentFullURL(),
-      'description' => 'A summary of news articles on BNETDocs',
-      'language'    => 'en-us',
-      'docs'        => 'http://blogs.law.harvard.edu/tech/rss',
+      'category'    => 'IT/Internet/Development',
       'copyright'   => 'BnetDocs and its assets are property of the Battle.net community members. '.
                        'Blizzard and its other assets are copyrighted to Blizzard and/or its parent corporation Vivendi. '.
                        'Copyright infringements will be prosecuted to the fullest extent allowable by law. '.
                        'Please view our legal disclaimer and terms of service.',
+      'description' => 'A summary of news articles on BNETDocs',
+      'docs'        => 'http://blogs.law.harvard.edu/tech/rss',
+      'link'        => BnetDocs::fGetCurrentFullURL(),
+      'language'    => 'en-us',
+      'title'       => 'BNETDocs News',
     ),
   );
   
@@ -60,6 +61,7 @@
     $sPermalink = BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']));
     $aData['channel'][$i] = array(
       'author'      => 'no-reply@bnetdocs.org (' . $aNewsItem['creator'] . ')',
+      'category'    => 'News',
       'description' => $aNewsItem['content'],
       'comments'    => $sPermalink,
       'guid'        => $sPermalink,
