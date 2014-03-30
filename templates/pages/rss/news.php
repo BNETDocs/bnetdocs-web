@@ -80,6 +80,6 @@
   
   $oContext->fSetResponseCode(200);
   //$oContext->fSetResponseHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
-  $oContext->fSetResponseHeader('Content-Type', 'application/xml;charset=utf-8');
+  $oContext->fSetResponseHeader('Content-Type', 'application/rss+xml;charset=utf-8');
   $oContext->fSetResponseContent($sFeed);
   
