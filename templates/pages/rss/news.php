@@ -23,15 +23,61 @@
     ),
   );
   
+  $oResult = false;
+  $aNews   = array();
+  
+  $oResult = BnetDocs::$oDB->fQuery('SELECT '
+    . 'n.id AS `id`,'
+    . 'IFNULL(u.display_name, u.username) AS `creator`,'
+    . 'IFNULL(n.edit_date, n.post_date) AS `pub_date`,'
+    . 'n.title AS `title`,'
+    . 'n.content AS `content` '
+    . 'FROM news_posts n '
+    . 'LEFT JOIN users u '
+    . 'ON n.creator_uid = u.uid '
+    . 'ORDER BY n.post_date DESC, n.id DESC '
+    . 'LIMIT 30;');
+  
+  if ($oResult && $oResult instanceof MySQLResult) {
+    while ($aRow = $oResult->fFetchAssoc()) {
+      $aNews[] = $aRow;
+    }
+  } else {
+    $aNews[] = array(
+      'id'         => 0,
+      'creator'    => 'n/a',
+      'post_date'  => date('Y-m-d H:i:s T'),
+      'edit_count' => 0,
+      'edit_date'  => null,
+      'title'      => 'ERROR RETRIEVING NEWS',
+      'content'    => 'An error has occurred while retrieving the news.',
+    );
+  }
+  
+  $i = 0;
+  foreach ($aNews as $aNewsItem) {
+    ++$i;
+    $sPermalink = BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']));
+    $aData['channel'][$i] = array(
+      'author'      => $aNewsItem['creator'] . ' <no-reply@bnetdocs.org>',
+      'description' => $aNewsItem['content'],
+      'comments'    => $sPermalink,
+      'guid'        => $sPermalink,
+      'link'        => $sPermalink,
+      'pubDate'     => date('D, F jS, Y g:i:s A T', strtotime($aNewsItem['pub_date'])),
+      'title'       => $aNewsItem['title'],
+    );
+  }
+  
   ob_start('ob_gzhandler');
   XMLEncoder::$bAddTypeAttributes       = false;
-  XMLEncoder::$sInvalidKeyAttributeName = '';
+  XMLEncoder::$sInvalidKeyAttributeName = 'id';
   XMLEncoder::$sInvalidKeyName          = 'item';
   echo RSSEncoder::fEncode($aData, 'rss', true);
   $sFeed = ob_get_clean();
   
   $oContext->fSetResponseCode(200);
   //$oContext->fSetResponseHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
-  $oContext->fSetResponseHeader('Content-Type', 'application/rss+xml;charset=utf-8');
+  $oContext->fSetResponseHeader('Content-Type', 'application/xml;charset=utf-8');
   $oContext->fSetResponseContent($sFeed);
   
