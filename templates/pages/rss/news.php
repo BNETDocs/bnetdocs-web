@@ -59,19 +59,19 @@
     ++$i;
     $sPermalink = BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']));
     $aData['channel'][$i] = array(
-      'author'      => $aNewsItem['creator'] . ' <no-reply@bnetdocs.org>',
+      'author'      => 'no-reply@bnetdocs.org (' . $aNewsItem['creator'] . ')',
       'description' => $aNewsItem['content'],
       'comments'    => $sPermalink,
       'guid'        => $sPermalink,
       'link'        => $sPermalink,
-      'pubDate'     => date('D, F jS, Y g:i:s A T', strtotime($aNewsItem['pub_date'])),
+      'pubDate'     => date('D, d M Y H:i:s O', strtotime($aNewsItem['pub_date'])),
       'title'       => $aNewsItem['title'],
     );
   }
   
   ob_start('ob_gzhandler');
   XMLEncoder::$bAddTypeAttributes       = false;
-  XMLEncoder::$sInvalidKeyAttributeName = 'id';
+  XMLEncoder::$sInvalidKeyAttributeName = '';
   XMLEncoder::$sInvalidKeyName          = 'item';
   echo RSSEncoder::fEncode($aData, 'rss', true);
   $sFeed = ob_get_clean();
