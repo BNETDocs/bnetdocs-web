@@ -11,7 +11,7 @@
     <meta name="keywords" content="battle.net, starcraft, warcraft, diablo, blizzard, logon sequences, packets, information, protocols, reference, programming, coding" />
     <meta property="og:site_name" content="BNETDocs" />
     <meta property="og:title" content="<?php if (isset($sPageTitle) && !empty($sPageTitle)) echo $sPageTitle . ' - '; ?>BNETDocs" />
-    <meta property="og:url" content="<?php echo BnetDocs::fGetCurrentFullURL(); ?>" />
+    <meta property="og:url" content="<?php echo BnetDocs::fGetCurrentFullURL('', true); ?>" />
     <meta property="og:locale" content="en-us" />
   </head>
   <body>

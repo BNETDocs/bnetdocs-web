@@ -4,15 +4,23 @@
     
     private function __construct() {}
     
-    public static function fFilterHTML($sContent) {
+    public static function fFilterHTML($sContent, $bAllowTags = false) {
       
       if (!is_string($sContent))
         throw new Exception('Content is not of type string');
       
       $sParsedContent = $sContent;
       
-      $sParsedContent = htmlspecialchars($sParsedContent, ENT_QUOTES | ENT_DISALLOWED, 'UTF-8');
+      $sParsedContent = htmlspecialchars($sParsedContent, ENT_QUOTES | ENT_DISALLOWED | ENT_XML1, 'UTF-8');
       $sParsedContent = preg_replace('/\r\n|\r|\n+/', "<br/>\n", trim($sParsedContent));
+      
+      if ($bAllowTags) {
+        $sParsedContent = str_replace(
+          array('&lt;', '&gt;', '&quot;', '&apos;'),
+          array('<', '>', '"', "'"),
+          $sParsedContent
+        );
+      }
       
       return $sParsedContent;
       

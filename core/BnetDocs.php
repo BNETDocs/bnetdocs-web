@@ -174,7 +174,7 @@
       );
     }
     
-    public static function fGetCurrentFullURL($sForceURI = '') {
+    public static function fGetCurrentFullURL($sForceURI = '', $bFilterAmpersand = false) {
       
       if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) {
         $sShareURL = 'https://';
@@ -228,6 +228,9 @@
         }
         
       }
+      
+      if ($bFilterAmpersand)
+        $sShareURL = \str_replace('&', '&amp;', $sShareURL);
       
       return $sShareURL;
       
