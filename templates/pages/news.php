@@ -8,22 +8,28 @@
     . 'IFNULL(u.`display_name`, u.`username`) AS `creator`,'
     . 'IFNULL(n.`edit_date`, n.`post_date`) AS `pub_date`,'
     . 'n.`edit_count` AS `edit_count`,'
+    . 'c.`id` AS `category_id`,'
+    . 'c.`display_name` AS `category_name`,'
     . 'n.`title` AS `title`,'
     . 'n.`content` AS `content` '
     . 'FROM `news_posts` n '
     . 'LEFT JOIN `users` u '
-    . 'ON n.`creator_uid` = u.uid '
+    . 'ON n.`creator_uid` = u.`uid` '
+    . 'LEFT JOIN `news_categories` c '
+    . 'ON n.`category` = c.`id` '
     . 'ORDER BY `pub_date` DESC, n.`id` DESC '
     . 'LIMIT 10;');
   
   if ($oResult && $oResult instanceof MySQLResult) {
     $aNews[] = array(
-      'id'         => 0,
-      'creator'    => 'Carl Bennett',
-      'pub_date'   => date('Y-m-d H:i:s T'),
-      'edit_count' => 0,
-      'title'      => 'New BNETDocs Site!',
-      'content'    => "Hi there, BNETDocs user!\r\n\r\n"
+      'id'            => 0,
+      'creator'       => 'Carl Bennett',
+      'pub_date'      => date('Y-m-d H:i:s T'),
+      'edit_count'    => 0,
+      'category_id'   => 6,
+      'category_name' => 'BNETDocs',
+      'title'         => 'New BNETDocs Site!',
+      'content'       => "Hi there, BNETDocs user!\r\n\r\n"
         . "If you are a commoner, you should have noticed that there has been some changes. "
         . "The old BNETDocs has been scrapped in favor of this new one. The reasons for this "
         . "were because of many security holes in the older core, so it was deemed better to "
@@ -45,12 +51,14 @@
     }
   } else {
     $aNews[] = array(
-      'id'         => 0,
-      'creator'    => 'n/a',
-      'pub_date'   => date('Y-m-d H:i:s T'),
-      'edit_count' => 0,
-      'title'      => 'ERROR RETRIEVING NEWS',
-      'content'    => 'An error has occurred while retrieving the news.',
+      'id'            => 0,
+      'creator'       => 'n/a',
+      'pub_date'      => date('Y-m-d H:i:s T'),
+      'edit_count'    => 0,
+      'category_id'   => 6,
+      'category_name' => 'BNETDocs',
+      'title'         => 'ERROR RETRIEVING NEWS',
+      'content'       => 'An error has occurred while retrieving the news.',
     );
   }
   

@@ -25,6 +25,12 @@
   padding: 10px;
 }
 
+.news_item > .content > img {
+  border: 0px;
+  float: left;
+  vertical-align: top;
+}
+
 .news_item > .footer {
   background-color: rgba(64, 64, 64, 0.6);
   border-radius: 0px 0px 8px 8px;
