@@ -1,4 +1,8 @@
 {
+  "_comments": [
+    "Be sure to edit this file to your environment!",
+    "This is not a live representation of the bnetdocs.org website."
+  ],
   "database": {
     "engine": "MySQL",
     "hostname": "p:127.0.0.1",
