@@ -28,15 +28,19 @@
   $aNews   = array();
   
   $oResult = BnetDocs::$oDB->fQuery('SELECT '
-    . 'n.id AS `id`,'
-    . 'IFNULL(u.display_name, u.username) AS `creator`,'
-    . 'IFNULL(n.edit_date, n.post_date) AS `pub_date`,'
-    . 'n.title AS `title`,'
-    . 'n.content AS `content` '
-    . 'FROM news_posts n '
-    . 'LEFT JOIN users u '
-    . 'ON n.creator_uid = u.uid '
-    . 'ORDER BY n.pub_date DESC, n.id DESC '
+    . 'n.`id` AS `id`,'
+    . 'IFNULL(u.`display_name`, u.`username`) AS `creator`,'
+    . 'IFNULL(n.`edit_date`, n.`post_date`) AS `pub_date`,'
+    . 'c.`id` AS `category_id`,'
+    . 'c.`display_name` AS `category_name`,'
+    . 'n.`title` AS `title`,'
+    . 'n.`content` AS `content` '
+    . 'FROM `news_posts` n '
+    . 'LEFT JOIN `users` u '
+    . 'ON n.`creator_uid` = u.`uid` '
+    . 'LEFT JOIN `news_categories` c '
+    . 'ON n.`category` = c.`id` '
+    . 'ORDER BY `pub_date` DESC, n.`id` DESC '
     . 'LIMIT 100;');
   
   if ($oResult && $oResult instanceof MySQLResult) {
@@ -45,11 +49,13 @@
     }
   } else {
     $aNews[] = array(
-      'id'         => 0,
-      'creator'    => 'n/a',
-      'pub_date'   => date('Y-m-d H:i:s T'),
-      'title'      => 'ERROR RETRIEVING NEWS',
-      'content'    => 'An error has occurred while retrieving the news.',
+      'id'            => 0,
+      'creator'       => 'n/a',
+      'pub_date'      => date('Y-m-d H:i:s T'),
+      'category_id'   => 6,
+      'category_name' => 'BNETDocs',
+      'title'         => 'ERROR RETRIEVING NEWS',
+      'content'       => 'An error has occurred while retrieving the news.',
     );
   }
   
@@ -59,7 +65,7 @@
     $sPermalink = BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']));
     $aData['channel'][$i] = array(
       'author'      => 'no-reply@bnetdocs.org (' . $aNewsItem['creator'] . ')',
-      'category'    => 'News',
+      'category'    => $aNewsItem['category_name'] ? $aNewsItem['category_name'] : 'News',
       'description' => ContentFilter::fFilterNewLines($aNewsItem['content']),
       'comments'    => $sPermalink,
       'guid'        => $sPermalink,
