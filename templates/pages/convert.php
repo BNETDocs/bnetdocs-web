@@ -30,14 +30,14 @@
   $oResult = false;
   $aNews   = array();
   
-  $oResult = BnetDocs::$oDB->fQuery('SELECT id,content FROM news_posts;');
+  $oResult = BnetDocs::$oDB->fQuery('SELECT `id`,`content` FROM `news_posts`;');
   $oResults = array();
   
   if ($oResult && $oResult instanceof MySQLResult) {
     while ($aRow = $oResult->fFetchAssoc()) {
-      $oResults[] = BnetDocs::$oDB->fQuery('UPDATE news_posts SET content = \''
+      $oResults[] = BnetDocs::$oDB->fQuery('UPDATE `news_posts` SET `content` = \''
         . BnetDocs::$oDB->fEscapeValue(Codify($aRow['content'])) . '\' WHERE '
-        . 'id=\'' . BnetDocs::$oDB->fEscapeValue($aRow['id']) . '\' LIMIT 1;');
+        . '`id` = \'' . BnetDocs::$oDB->fEscapeValue($aRow['id']) . '\' LIMIT 1;');
       $aNews[] = $aRow;
     }
   }
