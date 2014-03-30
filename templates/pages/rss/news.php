@@ -37,7 +37,7 @@
     . 'LEFT JOIN users u '
     . 'ON n.creator_uid = u.uid '
     . 'ORDER BY n.post_date DESC, n.id DESC '
-    . 'LIMIT 30;');
+    . 'LIMIT 100;');
   
   if ($oResult && $oResult instanceof MySQLResult) {
     while ($aRow = $oResult->fFetchAssoc()) {
