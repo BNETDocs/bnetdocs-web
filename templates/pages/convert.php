@@ -24,7 +24,6 @@
                 ksort($patterns);
                 ksort($replacements);
                 $text = preg_replace($patterns, $replacements, $text);
-                $text = nl2brex($text);
                 return $text;
         }
   
