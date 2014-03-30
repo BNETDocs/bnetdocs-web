@@ -36,7 +36,7 @@
     . 'FROM news_posts n '
     . 'LEFT JOIN users u '
     . 'ON n.creator_uid = u.uid '
-    . 'ORDER BY n.post_date DESC, n.id DESC '
+    . 'ORDER BY n.pub_date DESC, n.id DESC '
     . 'LIMIT 100;');
   
   if ($oResult && $oResult instanceof MySQLResult) {
@@ -47,9 +47,7 @@
     $aNews[] = array(
       'id'         => 0,
       'creator'    => 'n/a',
-      'post_date'  => date('Y-m-d H:i:s T'),
-      'edit_count' => 0,
-      'edit_date'  => null,
+      'pub_date'   => date('Y-m-d H:i:s T'),
       'title'      => 'ERROR RETRIEVING NEWS',
       'content'    => 'An error has occurred while retrieving the news.',
     );

@@ -2,19 +2,16 @@
   $sPageTitle = 'News';
   $sPageAdditionalStyle = BnetDocs::fGetCurrentFullURL('/news_item.css', true);
   include('./includes/header.php');
-?>    <div style="margin-top:20px;margin-bottom:20px;background:#f0f0f0;border-radius:8px;padding:8px;">
-<?php
-      foreach ($aNews as $aNewsItem) {
-        echo "      <div class=\"newsitem\">\n";
-        echo "        <div class=\"title\">"
-                   .   "<a href=\"" . BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']), true) . "\">"
-                   .   ContentFilter::fFilterHTML($aNewsItem['title'])
-                   .   "</a>"
-                   . "</div>\n";
-        echo "        <div class=\"content\">" . ContentFilter::fFilterNewLines(ContentFilter::fFilterHTML($aNewsItem['content'], true)) . "</div>\n";
-        echo "        <div class=\"creator\">" . ContentFilter::fFilterHTML($aNewsItem['creator']) . "</div>\n";
-        echo "        <div class=\"post_date\">" . ContentFilter::fFilterHTML($aNewsItem['post_date']) . "</div>\n";
-        echo "      </div>\n";
-      }
-?>    </div>
-<?php include('./includes/footer.php'); ?>
+  foreach ($aNews as $aNewsItem) {
+    echo "      <div class=\"news_item\">\n";
+    echo "        <a class=\"title\" href=\"" . BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']), true) . "\">"
+                  . ContentFilter::fFilterHTML($aNewsItem['title'])
+                  . "</a>\n";
+    echo "        <div class=\"content\">" . ContentFilter::fFilterNewLines(ContentFilter::fFilterHTML($aNewsItem['content'], true)) . "</div>\n";
+    echo "        <div class=\"footer\">\n";
+    echo "          <span class=\"left\">" . ContentFilter::fFilterHTML($aNewsItem['creator']) . "</span>\n";
+    echo "          <span class=\"right\">" . ContentFilter::fFilterHTML(date('D, M jS, Y g:i:s A T', strtotime($aNewsItem['pub_date']))) . "</span>\n";
+    echo "        </div>\n";
+    echo "      </div>\n";
+  }
+  include('./includes/footer.php'); ?>

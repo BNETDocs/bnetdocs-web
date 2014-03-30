@@ -15,3 +15,13 @@
     <meta property="og:locale" content="en-us" />
   </head>
   <body>
+    <div id="header">
+      Battle.net Documentation
+    </div>
+    <div id="container">
+      <div class="sidebar" id="sidebar_left">
+        <div>Quicklinks</div>
+        <a href="/">Home</a>
+        <a href="/news">News</a>
+      </div>
+      <div id="content">
