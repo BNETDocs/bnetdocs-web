@@ -36,6 +36,12 @@ body > #header {
   position: fixed;
   right: 0px;
   top: 0px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 body > #container {
@@ -53,6 +59,12 @@ body > #container > .sidebar {
   margin: 0px 8px;
   padding: 10px;
   width: 200px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 body > #container > .sidebar > a {

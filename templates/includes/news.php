@@ -3,7 +3,7 @@
   $sPageAdditionalStyle = BnetDocs::fGetCurrentFullURL('/news_item.css', true);
   include('./includes/header.php');
   foreach ($aNews as $aNewsItem) {
-    echo "      <div class=\"news_item\">\n";
+    echo "      <div class=\"news_item\" id=\"" . urlencode($aNewsItem['id']) . "\">\n";
     echo "        <a class=\"title\" href=\"" . BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']), true) . "\">"
                   . ContentFilter::fFilterHTML($aNewsItem['title'])
                   . "</a>\n";

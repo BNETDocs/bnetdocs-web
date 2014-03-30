@@ -17,6 +17,29 @@
     . 'LIMIT 10;');
   
   if ($oResult && $oResult instanceof MySQLResult) {
+    $aNews[] = array(
+      'id'         => 0,
+      'creator'    => 'Carl Bennett',
+      'pub_date'   => date('Y-m-d H:i:s T'),
+      'edit_count' => 0,
+      'title'      => 'New BNETDocs Site!',
+      'content'    => "Hi there, BNETDocs user!\r\n\r\n"
+        . "If you are a commoner, you should have noticed that there has been some changes. "
+        . "The old BNETDocs has been scrapped in favor of this new one. The reasons for this "
+        . "were because of many security holes in the older core, so it was deemed better to "
+        . "just start over fresh and convert the data over.\r\n\r\n"
+        . "As with any conversion of data, there may be a few hiccups along the way. The "
+        . "biggest hiccup I noticed was that the new design, while being more sturdy and "
+        . "having room for more data analytics, doesn't have the analytics for the data "
+        . "that was converted; an example of this is news posts that have been edited—"
+        . "there is no original publication date for these posts. Please take note of this "
+        . "as you explore the new site.\r\n\r\n"
+        . "As part of the conversion process, I have reset the passwords for everyone. The "
+        . "new site uses a different hashing algorithm than the old one, so this was a "
+        . "necessary change. Follow the instructions at the login page to get your account "
+        . "back.\r\n\r\n"
+        . "Thanks!",
+    );
     while ($aRow = $oResult->fFetchAssoc()) {
       $aNews[] = $aRow;
     }
