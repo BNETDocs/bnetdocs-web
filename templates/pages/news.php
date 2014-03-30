@@ -18,7 +18,7 @@
     . 'LEFT JOIN `news_categories` c '
     . 'ON n.`category` = c.`id` '
     . 'ORDER BY `pub_date` DESC, n.`id` DESC '
-    . 'LIMIT 10;');
+    . 'LIMIT 5;');
   
   if ($oResult && $oResult instanceof MySQLResult) {
     $aNews[] = array(

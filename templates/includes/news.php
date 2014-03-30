@@ -17,4 +17,5 @@
     echo "        </div>\n";
     echo "      </div>\n";
   }
-  include('./includes/footer.php'); ?>
+  include('./includes/footer.php');
+  

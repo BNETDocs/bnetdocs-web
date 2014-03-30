@@ -1,0 +1,63 @@
+form {
+  background-color: rgba(64, 64, 64, 0.4);
+  border-radius: 8px;
+  margin: 10px 0px;
+}
+
+form:first-child {
+  margin-top: 0px;
+}
+
+form > .title {
+  background-color: rgba(64, 64, 64, 0.6);
+  border-radius: 8px 8px 0px 0px;
+  display: block;
+  font: 14pt source sans pro;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+form > .content {
+  padding: 10px;
+}
+
+form label {
+  display: block;
+  width: 100%;
+}
+
+form input[type="text"],
+form input[type="password"] {
+  background-color: rgba(64, 64, 64, 0.6);
+  border: 0px;
+  box-sizing: border-box;
+  color: inherit;
+  display: block;
+  margin-bottom: 10px;
+  outline: none;
+  padding: 4px;
+  width: 100%;
+}
+
+form input[type="text"]:focus,
+form input[type="password"]:focus {
+  background-color: rgba(128, 128, 128, 0.4);
+}
+
+form input[type="reset"],
+button {
+  float: right;
+}
+
+form input[type="submit"],
+form input[type="reset"],
+button {
+  background-color: rgba(128, 128, 128, 0.4);
+  border: 0px;
+  box-sizing: border-box;
+  color: inherit;
+  min-height: 24px;
+  min-width: 80px;
+  outline: none;
+  padding: 4px 8px;
+}
