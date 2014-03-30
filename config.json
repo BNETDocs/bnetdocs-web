@@ -3,14 +3,14 @@
     "engine": "MySQL",
     "hostname": "p:127.0.0.1",
     "username": "bnetdocs",
-    "password": "",
+    "password": "HvsTVNQfAT93f45mDCFmddRA",
     "name": "bnetdocs_phoenix",
     "connect_timeout": 3,
     "character_set": "utf8_unicode_ci",
-    "audit": false
+    "audit": true
   },
   "error_handling": {
-    "debug_mode": false,
+    "debug_mode": true,
     "encryption_key": "bnetdocs+dev$!"
   },
   "maintenance": [
@@ -19,7 +19,7 @@
   ],
   "paths": {
     "audit_dir": "./",
-    "base_dir": "/home/nginx/bnetdocs-dev/",
+    "base_dir": "/home/nginx/bnetdocs-local/",
     "core_dir": "core/",
     "static_dir": "static/",
     "template_dir": "templates/"
