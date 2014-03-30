@@ -1,6 +1,6 @@
 <?php
   $sPageTitle = 'News';
-  $sPageAdditionalStyle = BnetDocs::fGetCurrentFullURL('/news_full.css', true);
+  $sPageAdditionalStyle = BnetDocs::fGetCurrentFullURL('/news_item.css', true);
   include('./includes/header.php');
 ?>    <div style="margin-top:20px;margin-bottom:20px;background:#f0f0f0;border-radius:8px;padding:8px;">
 <?php
