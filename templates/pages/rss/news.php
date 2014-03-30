@@ -62,7 +62,7 @@
     $aData['channel'][$i] = array(
       'author'      => 'no-reply@bnetdocs.org (' . $aNewsItem['creator'] . ')',
       'category'    => 'News',
-      'description' => ContentFilter::fFilterBBCode($aNewsItem['content']),
+      'description' => ContentFilter::fFilterNewLines(ContentFilter::fFilterBBCode($aNewsItem['content'])),
       'comments'    => $sPermalink,
       'guid'        => $sPermalink,
       'link'        => $sPermalink,
