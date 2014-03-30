@@ -39,7 +39,7 @@
         . BnetDocs::$oDB->fEscapeValue(Codify($aRow['content'])) . '\' WHERE '
         . '`id` = \'' . BnetDocs::$oDB->fEscapeValue($aRow['id']) . '\' LIMIT 1;';
       echo $query . "\n";
-      echo (BnetDocs::$oDB->fQuery($query) ? 'true' : 'false') . "\n\n";
+      echo (BnetDocs::$oDB->fQuery($query) ? 'true' : 'false: ' . BnetDocs::$oDB->fErrorMessage()) . "\n\n";
       $aNews[] = $aRow;
     }
   }
