@@ -35,9 +35,11 @@
   
   if ($oResult && $oResult instanceof MySQLResult) {
     while ($aRow = $oResult->fFetchAssoc()) {
-      $oResults[] = BnetDocs::$oDB->fQuery('UPDATE `news_posts` SET `content` = \''
+      $query = 'UPDATE `news_posts` SET `content` = \''
         . BnetDocs::$oDB->fEscapeValue(Codify($aRow['content'])) . '\' WHERE '
-        . '`id` = \'' . BnetDocs::$oDB->fEscapeValue($aRow['id']) . '\' LIMIT 1;');
+        . '`id` = \'' . BnetDocs::$oDB->fEscapeValue($aRow['id']) . '\' LIMIT 1;';
+      echo $query . "\n";
+      echo (BnetDocs::$oDB->fQuery($query) ? 'true' : 'false') . "\n\n";
       $aNews[] = $aRow;
     }
   }
