@@ -11,7 +11,7 @@
                    .   ContentFilter::fFilterHTML($aNewsItem['title'])
                    .   "</a>"
                    . "</div>\n";
-        echo "        <div class=\"content\">" . ContentFilter::fFilterNewLines(ContentFilter::fFilterBBCode(ContentFilter::fFilterHTML($aNewsItem['content'], true))) . "</div>\n";
+        echo "        <div class=\"content\">" . ContentFilter::fFilterNewLines(ContentFilter::fFilterHTML($aNewsItem['content'], true)) . "</div>\n";
         echo "        <div class=\"creator\">" . ContentFilter::fFilterHTML($aNewsItem['creator']) . "</div>\n";
         echo "        <div class=\"post_date\">" . ContentFilter::fFilterHTML($aNewsItem['post_date']) . "</div>\n";
         echo "      </div>\n";
