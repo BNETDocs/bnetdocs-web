@@ -17,6 +17,19 @@
     const PASSWORD_LENGTH_MAXIMUM = 48;
     
     /**
+     * Password strength requirements. If these are all set to false,
+     * then there are NO requirements. If these are all set to true,
+     * then there are VERY STRICT requirements.
+     **/
+    const PASSWORD_CANNOT_CONTAIN_USERNAME    = true;
+    const PASSWORD_CANNOT_CONTAIN_DISPLAYNAME = true;
+    const PASSWORD_CANNOT_CONTAIN_EMAIL       = true;
+    const PASSWORD_REQUIRES_UPPERCASE_LETTERS = true;
+    const PASSWORD_REQUIRES_LOWERCASE_LETTERS = true;
+    const PASSWORD_REQUIRES_NUMBERS           = true;
+    const PASSWORD_REQUIRES_SYMBOLS           = true;
+    
+    /**
      * Internal class variables used for storing info.
      **/
     private $iUId;

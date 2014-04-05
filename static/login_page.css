@@ -41,6 +41,7 @@ form label {
 }
 
 form input[type="text"],
+form input[type="email"],
 form input[type="password"] {
   background-color: rgba(64, 64, 64, 0.6);
   border: 0px;
@@ -55,6 +56,7 @@ form input[type="password"] {
 }
 
 form input[type="text"]:focus,
+form input[type="email"]:focus,
 form input[type="password"]:focus {
   background-color: rgba(128, 128, 128, 0.4);
 }

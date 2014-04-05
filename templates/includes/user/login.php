@@ -43,6 +43,7 @@
     echo "      <form method=\"GET\" action=\"/user/register\">\n";
     echo "        <div class=\"title\">Create Account</div>\n";
     echo "        <div class=\"content\" id=\"register_form\">\n";
+    echo "          <input type=\"hidden\" name=\"username\" value=\"" . $sUsername . "\" />\n";
     echo "          <input id=\"register\" type=\"submit\" tabindex=\"6\" value=\"Go to Registration Form\" />\n";
     echo "        </div>\n";
     echo "      </form>\n";
