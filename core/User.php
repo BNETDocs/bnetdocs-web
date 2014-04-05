@@ -47,6 +47,22 @@
     /*const PASSWORD_REQUIRES_SYMBOLS           = "/['\":;^£$%&*()}{\\[\\]@#~\\?><>,.\\/|=_+¬\\-]/";*/
     
     /**
+     * SQL column names for this object. Used in constructing new object.
+     **/
+    protected static $SQL_COLUMN_NAMES = [
+      'uid',
+      'email',
+      'username',
+      'display_name',
+      // password_hash is excluded because it's a little more complex.
+      'password_salt',
+      'status',
+      'registered_date',
+      'verified_date',
+      'verified_id',
+    ];
+    
+    /**
      * Internal class variables used for storing info.
      **/
     private $iUId;
@@ -63,7 +79,8 @@
     public static function fFindUsersByEmail($sEmail) {
       if (!is_string($sEmail))
         throw new Exception('Email address is not of type string');
-      $sQuery = 'SELECT `uid` FROM `users` WHERE `email` = \''
+      $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
+          . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `email` = \''
         . BnetDocs::$oDB->fEscapeValue($sEmail)
         . '\' ORDER BY `uid` ASC;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
@@ -71,7 +88,7 @@
         throw new Exception('An SQL query error occurred while finding users by email');
       $aUsers = array();
       while ($oUser = $oSQLResult->fFetchObject()) {
-        $aUsers[] = $oUser;
+        $aUsers[] = new self($oUser);
       }
       return $aUsers;
     }
@@ -79,7 +96,8 @@
     public static function fFindUserByUsername($sUsername) {
       if (!is_string($sUsername))
         throw new Exception('Username is not of type string');
-      $sQuery = 'SELECT `uid` FROM `users` WHERE `username` = \''
+      $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
+          . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `username` = \''
         . BnetDocs::$oDB->fEscapeValue($sUsername)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
@@ -87,13 +105,14 @@
         throw new Exception('An SQL query error occurred while finding user by username');
       if ($oSQLResult->iNumRows != 1)
         return false;
-      return new self((int)$oSQLResult->fFetchObject()->uid);
+      return new self($oSQLResult->fFetchObject());
     }
     
     public static function fFindUserByVerifiedId($iVerifiedId) {
       if (!is_numeric($iVerifiedId))
         throw new Exception('Verified Id is not of type numeric');
-      $sQuery = 'SELECT `uid` FROM `users` WHERE `verified_id` = \''
+      $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
+          . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `verified_id` = \''
         . BnetDocs::$oDB->fEscapeValue($iVerifiedId)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
@@ -101,40 +120,53 @@
         throw new Exception('An SQL query error occurred while finding user by verified id');
       if ($oSQLResult->iNumRows != 1)
         return false;
-      return new self((int)$oSQLResult->fFetchObject()->uid);
+      return new self($oSQLResult->fFetchObject());
     }
     
-    public function __construct($iUId) {
-      $aFields = array(
-        'uid',
-        'email',
-        'username',
-        'display_name',
-        'password_salt',
-        'status',
-        'registered_date',
-        'verified_date',
-        'verified_id',
-      );
-      $sQuery = 'SELECT `' . implode('`,`', $aFields) . '`,'
-        . 'HEX(`password_hash`) AS `password_hash` FROM `users`'
-        . ' WHERE `uid` = \'' . BnetDocs::$oDB->fEscapeValue($iUId)
-        . '\' LIMIT 1;';
-      $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
-      if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
-        throw new Exception('An SQL query error occurred while retrieving user by id');
-      $oResult = $oSQLResult->fFetchObject();
-      // CAUTION: May have to typecast here. Tried to avoid it by using fetch object.
-      $this->iUId             = $oResult->uid;
-      $this->sEmail          = $oResult->email;
-      $this->sUsername       = $oResult->username;
-      $this->sDisplayName    = $oResult->display_name;
-      $this->sPasswordHash   = $oResult->password_hash;
-      $this->iPasswordSalt   = $oResult->password_salt;
-      $this->iStatus         = $oResult->status;
-      $this->sRegisteredDate = $oResult->registered_date;
-      $this->mVerifiedDate   = $oResult->verified_date;
-      $this->iVerifiedId     = $oResult->verified_id;
+    public function __construct() {
+      $aFuncArgs = func_get_args();
+      $iFuncArgs = count($aFuncArgs);
+      if ($iFuncArgs == 1 && (is_numeric($aFuncArgs[0]) || is_object($aFuncArgs[0]))) {
+        if (!is_object($aFuncArgs[0])) {
+          // Create User object by result object. Need to get it by user id.
+          $iUId = $aFuncArgs[0];
+          $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
+            . 'HEX(`password_hash`) AS `password_hash` FROM `users`'
+            . ' WHERE `uid` = \'' . BnetDocs::$oDB->fEscapeValue($iUId)
+            . '\' LIMIT 1;';
+          $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
+          if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
+            throw new Exception('An SQL query error occurred while retrieving user by id');
+          $oResult = $oSQLResult->fFetchObject();
+        } else {
+          // Create User object by result object. Object already gotten, no SQL query needed.
+          $oResult = $aFuncArgs[0];
+        }
+        // CAUTION: May have to typecast here. Tried to avoid it by using fetch object.
+        $this->iUId            = $oResult->uid;
+        $this->sEmail          = $oResult->email;
+        $this->sUsername       = $oResult->username;
+        $this->sDisplayName    = $oResult->display_name;
+        $this->sPasswordHash   = $oResult->password_hash;
+        $this->iPasswordSalt   = $oResult->password_salt;
+        $this->iStatus         = $oResult->status;
+        $this->sRegisteredDate = $oResult->registered_date;
+        $this->mVerifiedDate   = $oResult->verified_date;
+        $this->iVerifiedId     = $oResult->verified_id;
+      } else if ($iFuncArgs == 10) {
+        $this->iUId            = (int)$aFuncArgs[0];
+        $this->sEmail          = (string)$aFuncArgs[1];
+        $this->sUsername       = (string)$aFuncArgs[2];
+        $this->sDisplayName    = (string)$aFuncArgs[3];
+        $this->sPasswordHash   = (string)$aFuncArgs[4];
+        $this->iPasswordSalt   = (int)$aFuncArgs[5];
+        $this->iStatus         = (int)$aFuncArgs[6];
+        $this->sRegisteredDate = (string)$aFuncArgs[7];
+        $this->mVerifiedDate   = $aFuncArgs[8];
+        $this->iVerifiedId     = (int)$aFuncArgs[9];
+      } else {
+        throw new Exception('Wrong number of arguments given to constructor');
+      }
     }
     
     public function fCheckPassword($sTargetPassword) {
