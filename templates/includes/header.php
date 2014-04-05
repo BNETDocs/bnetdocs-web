@@ -6,6 +6,7 @@
 ?>    <link rel="stylesheet" href="<?php echo $sPageAdditionalStyle; ?>" type="text/css" media="all" />
 <?php }
 ?>    <link rel="stylesheet" href="/main.css" type="text/css" media="all" />
+    <script type="application/javascript" src="/BNETDocs.js" />
     <link rel="alternate" href="/rss/news" type="application/rss+xml" title="BNETDocs News" />
     <meta name="description" content="Battle.net logon sequences, packets, information, and protocols reference site." />
     <meta name="keywords" content="battle.net, starcraft, warcraft, diablo, blizzard, logon sequences, packets, information, protocols, reference, programming, coding" />
