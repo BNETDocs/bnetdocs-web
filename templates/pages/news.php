@@ -1,7 +1,8 @@
 <?php
   
-  $oResult = false;
-  $aNews   = array();
+  $aGetQuery = $oContext->fGetRequestQueryArray();
+  $oResult   = false;
+  $aNews     = array();
   
   $oResult = BnetDocs::$oDB->fQuery('SELECT '
     . 'n.`id` AS `id`,'
@@ -63,7 +64,11 @@
   }
   
   ob_start('ob_gzhandler');
-  include('./includes/news.php');
+  if (isset($aGetQuery['ajax'])) {
+    include('./includes/news-ajax.php');
+  } else {
+    include('./includes/news.php');
+  }
   $sPage = ob_get_clean();
   
   $oContext->fSetResponseCode(200);
