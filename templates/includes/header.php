@@ -23,6 +23,6 @@
         <div>Quicklinks</div>
         <a href="/">Home</a>
         <a href="/news">News</a>
-        <a href="/login">Login</a>
+        <a href="/user/login">Login</a>
       </div>
       <div id="content">
