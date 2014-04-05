@@ -2,7 +2,10 @@
   $sPageTitle = 'Login';
   $sPageAdditionalStyle = BnetDocs::fGetCurrentFullURL('/login_page.css', true);
   include('./includes/header.php');
-    echo "      <form method=\"POST\" action=\"/login\"" . (!empty($sUserLoginFailed) ? " class=\"red\"" : "") . ">\n";
+    $sLoginFormClass = "";
+    if (!empty($sUserLoginFailed)) $sLoginFormClass = " class=\"red\"";
+    else if ($bUserLoginSuccess) $sLoginFormClass = " class=\"green\"";
+    echo "      <form method=\"POST\" action=\"/login\"" . $sLoginFormClass . ">\n";
     echo "        <input type=\"hidden\" name=\"mode\" value=\"login\" />\n";
     echo "        <div class=\"title\">Account Login</div>\n";
     echo "        <div class=\"content\" id=\"login_form\">\n";
@@ -18,14 +21,17 @@
     echo "          <input id=\"login\" type=\"submit\" tabindex=\"3\" value=\"Log In\" />\n";
     echo "        </div>\n";
     echo "      </form>\n";
-    echo "      <form method=\"POST\" action=\"/login\"" . (!empty($sPasswordResetFailed) ? " class=\"red\"" : "") . ">\n";
+    $sPasswordResetFormClass = "";
+    if (!empty($sPasswordResetFailed)) $sPasswordResetFormClass = " class=\"red\"";
+    else if ($bPasswordResetSuccess) $sPasswordResetFormClass = " class=\"green\"";
+    echo "      <form method=\"POST\" action=\"/login\"" . $sPasswordResetFormClass . ">\n";
     echo "        <input type=\"hidden\" name=\"mode\" value=\"reset_password\" />\n";
     echo "        <div class=\"title\">Reset Password</div>\n";
     echo "        <div class=\"content\" id=\"reset_password_form\">\n";
     if (!empty($sPasswordResetFailed)) {
       echo "        <p>" . $sPasswordResetFailed . "</p>\n";
     } else if ($bPasswordResetSuccess) {
-      echo "        <p>An email has been sent to the email assigned that username.</p>\n";
+      echo "        <p>An email has been sent to the address on that username.</p>\n";
     } else {
       echo "        <p>Submit your username below and an email will be sent.</p>\n";
     }
