@@ -232,7 +232,10 @@
     public function fResetVerifiedId() {
       mt_srand(microtime(true)*100000 + memory_get_usage(true));
       $iVerifiedId = mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
-      return $this->fSetVerifiedId($iVerifiedId);
+      if ($this->fSetVerifiedId($iVerifiedId))
+        return true;
+      else
+        return false;
     }
     
     public function fSetEmail($sEmail) {
