@@ -230,23 +230,9 @@
     }
     
     public function fResetVerifiedId() {
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = '
-        . 'FLOOR(RAND() * 0xFFFFFFFFFFFFFFFF) WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
-        . '\' LIMIT 1;'
-      )) {
-        $sQuery = 'SELECT `verified_id` FROM `users` WHERE `uid` = \''
-          . BnetDocs::$oDB->fEscapeValue($this->iUId)
-          . '\' LIMIT 1;';
-        $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
-        if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
-          throw new Exception('An SQL query error occurred while finding verified id by user id');
-        if ($oSQLResult->iNumRows != 1)
-          return false;
-        $this->iVerifiedId = (int)$oSQLResult->fFetchObject()->verified_id;
-        return true;
-      } else
-        return false;
+      mt_srand(microtime(true)*100000 + memory_get_usage(true));
+      $iVerifiedId = mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
+      return $this->fSetVerifiedId($iVerifiedId);
     }
     
     public function fSetEmail($sEmail) {
