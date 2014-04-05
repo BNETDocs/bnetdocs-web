@@ -103,7 +103,7 @@
       if (empty($sDisplayName)) $sDisplayName = $sUsername;
       $sVerifiedId = $oUser->fGetVerifiedId();
       
-      $sVerifiedURL = BnetDocs::fGetCurrentFullURL('/user/reset_password?id=' . rawurlencode($sVerifiedId));
+      $sVerifiedURL = BnetDocs::fGetCurrentFullURL('/user/password_reset?id=' . rawurlencode($sVerifiedId));
       
       $oEmail = new self();
       
