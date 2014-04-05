@@ -43,7 +43,11 @@
   }
   
   ob_start('ob_gzhandler');
-  include('./includes/user/login.php');
+  if (isset($aGetQuery['ajax'])) {
+    include('./includes/user/login-ajax.php');
+  } else {
+    include('./includes/user/login.php');
+  }
   $sPage = ob_get_clean();
   
   $oContext->fSetResponseCode(200);
