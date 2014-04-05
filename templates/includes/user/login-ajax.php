@@ -1,8 +1,8 @@
 <?php
   $sPageTitle = 'Login - BNETDocs';
   $sPageAdditionalStyle = BnetDocs::fGetCurrentFullURL('/login_page.css', true);
-  header('X-Page-Title: ' . $sPageTitle);
-  header('X-Page-Extra-Style: ' . $sPageAdditionalStyle);
+  $oContext->fSetResponseHeader('X-Page-Title', $sPageTitle);
+  $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
     $sLoginFormClass = "";
     if (!empty($sUserLoginFailed)) $sLoginFormClass = " class=\"red\"";
     else if ($bUserLoginSuccess) $sLoginFormClass = " class=\"green\"";
