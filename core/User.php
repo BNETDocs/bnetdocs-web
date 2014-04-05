@@ -58,7 +58,7 @@
     private $iStatus;
     private $sRegisteredDate;
     private $mVerifiedDate;
-    private $sVerifiedId;
+    private $iVerifiedId;
     
     public static function fFindUsersByEmail($sEmail) {
       if (!is_string($sEmail))
@@ -90,11 +90,11 @@
       return new self((int)$oSQLResult->fFetchObject()->uid);
     }
     
-    public static function fFindUserByVerifiedId($sVerifiedId) {
-      if (!is_string($sVerifiedId))
-        throw new Exception('Verified Id is not of type string');
+    public static function fFindUserByVerifiedId($iVerifiedId) {
+      if (!is_numeric($iVerifiedId))
+        throw new Exception('Verified Id is not of type numeric');
       $sQuery = 'SELECT `uid` FROM `users` WHERE `verified_id` = \''
-        . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
+        . BnetDocs::$oDB->fEscapeValue($iVerifiedId)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
@@ -134,7 +134,7 @@
       $this->iStatus         = $oResult->status;
       $this->sRegisteredDate = $oResult->registered_date;
       $this->mVerifiedDate   = $oResult->verified_date;
-      $this->sVerifiedId     = $oResult->verified_id;
+      $this->iVerifiedId     = $oResult->verified_id;
     }
     
     public function fCheckPassword($sTargetPassword) {
@@ -180,7 +180,7 @@
     }
     
     public function fGetVerifiedId() {
-      return $this->sVerifiedId;
+      return $this->iVerifiedId;
     }
     
     public static function fHashPassword($sPassword, $iSalt) {
@@ -195,6 +195,26 @@
         ) . (string)$iSalt . 'bnetdocs+db~$!',
         false
       );
+    }
+    
+    public function fResetVerifiedId() {
+      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = '
+        . 'FLOOR(RAND() * 0xFFFFFFFFFFFFFFFF) WHERE `uid` = \''
+        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . '\' LIMIT 1;'
+      )) {
+        $sQuery = 'SELECT `verified_id` FROM `users` WHERE `uid` = \''
+          . BnetDocs::$oDB->fEscapeValue($this->iUId)
+          . '\' LIMIT 1;';
+        $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
+        if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
+          throw new Exception('An SQL query error occurred while finding verified id by user id');
+        if ($oSQLResult->iNumRows != 1)
+          return false;
+        $this->iVerifiedId = (int)$oSQLResult->fFetchObject()->verified_id;
+        return true;
+      } else
+        return false;
     }
     
     public function fSetEmail($sEmail) {
@@ -325,18 +345,16 @@
         return false;
     }
     
-    public function fSetVerifiedId($sVerifiedId) {
-      if (!is_string($sVerifiedId))
-        throw new Exception('Verified Id is not of type string');
-      if (empty($sVerifiedId))
-        throw new RecoverableException('Verified Id is an empty string');
+    public function fSetVerifiedId($iVerifiedId) {
+      if (!is_numeric($iVerifiedId))
+        throw new Exception('Verified Id is not of type numeric');
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
-        . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
+        . BnetDocs::$oDB->fEscapeValue($iVerifiedId)
         . '\' WHERE `uid` = \''
         . BnetDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
-        $this->sVerifiedId = $sVerifiedId;
+        $this->iVerifiedId = $iVerifiedId;
         return true;
       } else
         return false;

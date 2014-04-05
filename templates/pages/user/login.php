@@ -31,8 +31,10 @@
       $oUser = User::fFindUserByUsername($sUsername);
       if (!$oUser) {
         $sPasswordResetFailed = "Unable to locate that username in our database.";
+      } else if (!$oUser->fResetVerifiedId()) {
+        $sPasswordResetFailed = "Failed to create a verification identifier for the account.";
       } else if (!Email::fSendPasswordReset($oUser)) {
-        $sPasswordResetFailed = "Failed to send a password reset email to that user.";
+        $sPasswordResetFailed = "Failed to send a password reset email to that account.";
       } else {
         $bPasswordResetSuccess = true;
       }
