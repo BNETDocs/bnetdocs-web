@@ -295,7 +295,7 @@
       if ($iPasswordLength > self::PASSWORD_LENGTH_MAXIMUM && self::PASSWORD_LENGTH_MAXIMUM >= self::PASSWORD_LENGTH_MINIMUM)
         throw new RecoverableException('Password is more than ' . self::PASSWORD_LENGTH_MAXIMUM . ' characters');
       mt_srand(microtime(true)*100000 + memory_get_usage(true));
-      $iPasswordSalt = mt_rand(0, 0xFFFFFFFFFFFFFFFF);
+      $iPasswordSalt = mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
       $sPasswordHash = self::fHashPassword($sPassword, $iPasswordSalt);
       if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `password_hash` = UNHEX(\''
         . BnetDocs::$oDB->fEscapeValue($sPasswordHash)
