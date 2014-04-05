@@ -24,6 +24,7 @@
         <div>Quicklinks</div>
         <a href="<?php echo BnetDocs::fGetCurrentFullURL('/'); ?>">Home</a>
         <a href="<?php echo BnetDocs::fGetCurrentFullURL('/news'); ?>">News</a>
-        <a href="<?php echo BnetDocs::fGetCurrentFullURL('/user/login'); ?>">Login</a>
+        <a href="<?php echo BnetDocs::fGetCurrentFullURL('/user/login'); ?>">Account Login</a>
+        <a href="<?php echo BnetDocs::fGetCurrentFullURL('/user/register'); ?>">Create Account</a>
       </div>
       <div id="content">

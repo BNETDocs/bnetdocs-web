@@ -58,7 +58,11 @@
   }
   
   ob_start('ob_gzhandler');
-  include('./includes/user/register.php');
+  if (isset($aGetQuery['ajax'])) {
+    include('./includes/user/register-ajax.php');
+  } else {
+    include('./includes/user/register.php');
+  }
   $sPage = ob_get_clean();
   
   $oContext->fSetResponseCode(200);
