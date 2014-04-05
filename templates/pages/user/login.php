@@ -41,7 +41,7 @@
   }
   
   ob_start('ob_gzhandler');
-  include('./includes/login.php');
+  include('./includes/user/login.php');
   $sPage = ob_get_clean();
   
   $oContext->fSetResponseCode(200);

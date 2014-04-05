@@ -5,7 +5,7 @@
     $sLoginFormClass = "";
     if (!empty($sUserLoginFailed)) $sLoginFormClass = " class=\"red\"";
     else if ($bUserLoginSuccess) $sLoginFormClass = " class=\"green\"";
-    echo "      <form method=\"POST\" action=\"/login\"" . $sLoginFormClass . ">\n";
+    echo "      <form method=\"POST\" action=\"/user/login\"" . $sLoginFormClass . ">\n";
     echo "        <input type=\"hidden\" name=\"mode\" value=\"login\" />\n";
     echo "        <div class=\"title\">Account Login</div>\n";
     echo "        <div class=\"content\" id=\"login_form\">\n";
@@ -24,7 +24,7 @@
     $sPasswordResetFormClass = "";
     if (!empty($sPasswordResetFailed)) $sPasswordResetFormClass = " class=\"red\"";
     else if ($bPasswordResetSuccess) $sPasswordResetFormClass = " class=\"green\"";
-    echo "      <form method=\"POST\" action=\"/login\"" . $sPasswordResetFormClass . ">\n";
+    echo "      <form method=\"POST\" action=\"/user/login\"" . $sPasswordResetFormClass . ">\n";
     echo "        <input type=\"hidden\" name=\"mode\" value=\"reset_password\" />\n";
     echo "        <div class=\"title\">Reset Password</div>\n";
     echo "        <div class=\"content\" id=\"reset_password_form\">\n";
@@ -40,7 +40,7 @@
     echo "          <input id=\"reset_password\" type=\"submit\" tabindex=\"5\" value=\"Reset Password\" />\n";
     echo "        </div>\n";
     echo "      </form>\n";
-    echo "      <form method=\"GET\" action=\"/register\">\n";
+    echo "      <form method=\"GET\" action=\"/user/register\">\n";
     echo "        <div class=\"title\">Create Account</div>\n";
     echo "        <div class=\"content\" id=\"register_form\">\n";
     echo "          <input id=\"register\" type=\"submit\" tabindex=\"6\" value=\"Go to Registration Form\" />\n";
