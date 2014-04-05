@@ -112,7 +112,7 @@
         $sEmail, EmailRecipient::TYPE_TO, $sDisplayName, false
       ));
       
-      $oEmail->fSetSubject('Reset your BNETDocs account password');
+      $oEmail->fSetSubject('Reset your account password');
       
       // Text version:
       $oEmail->fAddMessage(new EmailMessage(
