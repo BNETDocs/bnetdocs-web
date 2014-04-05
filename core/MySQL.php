@@ -51,8 +51,6 @@
     public function fQuery($sQuery) {
       if ($this->fGetAudit()) $this->fAuditQuery($sQuery);
       $mResult = $this->oLink->query($sQuery, MYSQLI_STORE_RESULT);
-      if (!$mResult && $this->oLink->errno == 1142)
-        throw new RecoverableException('Cannot execute SQL statement because access was denied.');
       if ($mResult instanceof mysqli_result)
         return new MySQLResult($mResult);
       else
