@@ -31,7 +31,7 @@
     if (!empty($sPasswordResetFailed)) {
       echo "        <p>" . $sPasswordResetFailed . "</p>\n";
     } else if ($bPasswordResetSuccess) {
-      echo "        <p>An email has been sent to the address on that username.</p>\n";
+      echo "        <p>An email has been sent to the address given on the account.</p>\n";
     } else {
       echo "        <p>Submit your username below and an email will be sent.</p>\n";
     }
