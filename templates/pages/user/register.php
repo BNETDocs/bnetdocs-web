@@ -10,8 +10,9 @@
   $sPasswordTwo = (isset($aQuery['password_2'])   ? $aQuery['password_2']   : '');
   $sEmailOne    = (isset($aQuery['email_1'])      ? $aQuery['email_1']      : '');
   $sEmailTwo    = (isset($aQuery['email_2'])      ? $aQuery['email_2']      : '');
+  $sRegister    = (isset($aQuery['submit'])       ? $aQuery['submit']       : '');
   
-  if (!$aQuery) {
+  if (!$sRegister) {
     $sUserRegisterFailed = "";
   } else {
     if (strtolower($sEmailOne) != strtolower($sEmailTwo)) {

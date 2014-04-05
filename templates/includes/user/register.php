@@ -6,6 +6,7 @@
     if (!empty($sUserRegisterFailed)) $sRegisterFormClass = " class=\"red\"";
     else if ($sUserRegisterFailed) $sRegisterFormClass = " class=\"green\"";
     echo "      <form method=\"POST\" action=\"/user/register\"" . $sRegisterFormClass . ">\n";
+    echo "        <input type=\"hidden\" name=\"submit\" value=\"1\" />\n";
     echo "        <div class=\"title\">Create Account</div>\n";
     echo "        <div class=\"content\" id=\"register_form\">\n";
     if (!empty($sUserRegisterFailed)) {
