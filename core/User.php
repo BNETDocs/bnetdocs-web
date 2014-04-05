@@ -17,9 +17,25 @@
     const PASSWORD_LENGTH_MAXIMUM = 48;
     
     /**
+     * Characters allowed to be in a username. This string is given
+     * directly to php's preg_match() function. Be mindful that this
+     * string may be displayed in more than just page content.
+     **/
+    const USERNAME_ALLOWED_CHARACTERS = "/^[A-Za-z0-9()}{\\[\\]._\\-]+$/s";
+    
+    /**
+     * Characters allowed to be in a display name. This string is given
+     * directly to php's preg_match() function. Be mindful that this
+     * string may be displayed in more than just page content.
+     **/
+    const DISPLAYNAME_ALLOWED_CHARACTERS = "/^[ A-Za-z0-9()}{\\[\\]._\\-]+$/s";
+    
+    /**
      * Password strength requirements. If these are all set to false,
      * then there are NO requirements. If these are all set to true,
      * then there are VERY STRICT requirements.
+     *
+     * PASSWORD_REQUIRES_SYMBOLS is given directly to php's preg_match().
      **/
     const PASSWORD_CANNOT_CONTAIN_USERNAME    = true;
     const PASSWORD_CANNOT_CONTAIN_DISPLAYNAME = true;
@@ -27,7 +43,8 @@
     const PASSWORD_REQUIRES_UPPERCASE_LETTERS = true;
     const PASSWORD_REQUIRES_LOWERCASE_LETTERS = true;
     const PASSWORD_REQUIRES_NUMBERS           = true;
-    const PASSWORD_REQUIRES_SYMBOLS           = true;
+    const PASSWORD_REQUIRES_SYMBOLS           = false;
+    /*const PASSWORD_REQUIRES_SYMBOLS           = "/['\":;^£$%&*()}{\\[\\]@#~\\?><>,.\\/|=_+¬\\-]/";*/
     
     /**
      * Internal class variables used for storing info.
