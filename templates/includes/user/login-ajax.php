@@ -6,8 +6,7 @@
     $sLoginFormClass = "";
     if (!empty($sUserLoginFailed)) $sLoginFormClass = " class=\"red\"";
     else if ($bUserLoginSuccess) $sLoginFormClass = " class=\"green\"";
-    echo "      <form method=\"POST\" action=\"/user/login\"" . $sLoginFormClass . ">\n";
-    echo "        <input type=\"hidden\" name=\"mode\" value=\"login\" />\n";
+    echo "      <form method=\"POST\" action=\"/user/login?mode=login\"" . $sLoginFormClass . ">\n";
     echo "        <div class=\"title\">Account Login</div>\n";
     echo "        <div class=\"content\" id=\"login_form\">\n";
     if (!empty($sUserLoginFailed)) {
@@ -25,8 +24,7 @@
     $sPasswordResetFormClass = "";
     if (!empty($sPasswordResetFailed)) $sPasswordResetFormClass = " class=\"red\"";
     else if ($bPasswordResetSuccess) $sPasswordResetFormClass = " class=\"green\"";
-    echo "      <form method=\"POST\" action=\"/user/login\"" . $sPasswordResetFormClass . ">\n";
-    echo "        <input type=\"hidden\" name=\"mode\" value=\"reset_password\" />\n";
+    echo "      <form method=\"POST\" action=\"/user/login?mode=reset_password\"" . $sPasswordResetFormClass . ">\n";
     echo "        <div class=\"title\">Reset Password</div>\n";
     echo "        <div class=\"content\" id=\"reset_password_form\">\n";
     if (!empty($sPasswordResetFailed)) {
