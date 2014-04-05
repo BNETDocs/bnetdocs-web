@@ -21,6 +21,10 @@ form.red {
   background-color: rgba(192, 64, 64, 0.4);
 }
 
+form.green {
+  background-color: rgba(64, 192, 64, 0.4);
+}
+
 form > .content {
   padding: 10px;
 }
