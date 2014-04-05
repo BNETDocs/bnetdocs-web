@@ -3,6 +3,7 @@
   final class BnetDocs {
     
     public static $oDB;
+    public static $oUser;
     
     private function __construct() {} // We don't want to create objects of this class.
     
@@ -257,8 +258,8 @@
       /* Global Email Recipient */
       
       Email::$oBNETDocsRecipient = new EmailRecipient(
-        'bnetdocs@bnetdocs.org',    // Email address
-        EmailRecipient::TYPE_FROM, // Designation of address
+        'no-reply@bnetdocs.org',    // Email address
+        EmailRecipient::TYPE_FROM,  // Designation of address
         'BNETDocs',                 // Display name
         false                       // Prefers plaintext
       );

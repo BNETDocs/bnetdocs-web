@@ -39,7 +39,11 @@
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
         throw new Exception('An SQL query error occurred while finding users by email');
-      return ($oSQLResult->fRowCount() ? true : false);
+      $aUsers = array();
+      while ($oUser = $oSQLResult->fFetchObject()) {
+        $aUsers[] = $oUser;
+      }
+      return $aUsers;
     }
     
     public static function fFindUserByUsername($sUsername) {
@@ -49,8 +53,10 @@
         . BnetDocs::$oDB->fEscapeValue($sUsername)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
-      if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
+      if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
         throw new Exception('An SQL query error occurred while finding user by username');
+      if ($oSQLResult->iNumRows != 1)
+        return false;
       return new self((int)$oSQLResult->fFetchObject()->uid);
     }
     
@@ -61,8 +67,10 @@
         . BnetDocs::$oDB->fEscapeValue($sVerifiedId)
         . '\' LIMIT 1;';
       $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
-      if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
+      if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
         throw new Exception('An SQL query error occurred while finding user by verified id');
+      if ($oSQLResult->iNumRows != 1)
+        return false;
       return new self((int)$oSQLResult->fFetchObject()->uid);
     }
     

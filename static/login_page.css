@@ -17,8 +17,18 @@ form > .title {
   text-transform: uppercase;
 }
 
+form.red {
+  background-color: rgba(192, 64, 64, 0.4);
+}
+
 form > .content {
   padding: 10px;
+}
+
+form p {
+  font-weight: bold;
+  margin: 0px 10px 10px 10px;
+  text-align: center;
 }
 
 form label {
