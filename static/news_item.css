@@ -63,11 +63,13 @@
   text-transform: uppercase;
 }
 
-.news_item > .footer > .left {
+.news_item > .footer > .left,
+.news_comment .left {
   float: left;
 }
 
-.news_item > .footer > .right {
+.news_item > .footer > .right,
+.news_comment .right {
   float: right;
 }
 
@@ -99,7 +101,7 @@
 .news_comment {
   background-color: rgba(64, 64, 64, 0.4);
   border-radius: 8px;
-  margin: 10px 0px;
+  margin: 10px 100px;
 }
 
 .news_comment > .title {
@@ -107,7 +109,8 @@
   border-radius: 8px 8px 0px 0px;
   cursor: default;
   display: block;
-  font: 14pt source sans pro;
+  font: 12pt source sans pro;
+  min-height: 20px;
   padding: 10px;
   text-transform: uppercase;
   -webkit-touch-callout: none;

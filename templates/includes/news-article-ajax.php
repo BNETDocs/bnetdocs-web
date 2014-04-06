@@ -30,6 +30,18 @@
     echo "      </div>\n";
   }
   
+    $oCommentsResult = BNETDocs::$oDB->fQuery('SELECT '
+      . 'c.`id` AS `id`,'
+      . 'IFNULL(u.`display_name`, u.`username`) AS `creator`,'
+      . 'IFNULL(c.`edit_date`, c.`comment_date`) AS `pub_date`,'
+      . 'c.`edit_count` AS `edit_count`,'
+      . 'c.`content` AS `content` '
+      . 'FROM `news_comments` c '
+      . 'LEFT JOIN `users` u '
+      . 'ON c.`author_uid` = u.`uid` '
+      . 'WHERE c.`post_id` = \'' . BNETDocs::$oDB->fEscapeValue($iNewsId) . '\' '
+      . 'ORDER BY `pub_date` DESC, c.`id` DESC;');
+      
   if (!$aComments) {
     echo "      <div class=\"news_comment\">\n";
     echo "        <div class=\"title\">No Comments</div>\n";
@@ -37,18 +49,14 @@
     echo "      </div>\n";
   } else {
     foreach ($aComments as $aComment) {
-      echo "      <div class=\"news_item\" id=\"" . urlencode($aArticle['id']) . "\">\n";
-      echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aArticle['id']), true) . "\">"
-                    . ContentFilter::fFilterHTML($aArticle['title'])
-                    . "</a>\n";
-      echo "        <div class=\"content\">"
-                    . "<img title=\"" . ContentFilter::fFilterHTML($aArticle['category_name']) . "\" src=\"/news_category_" . urlencode($aArticle['category_id']) . ".png\" />"
-                    . ContentFilter::fFilterNewLines(ContentFilter::fFilterHTML($aArticle['content'], true))
-                    . "</div>\n";
-      echo "        <div class=\"footer\">\n";
-      echo "          <span class=\"left\">" . ContentFilter::fFilterHTML($aArticle['creator']) . "</span>\n";
-      echo "          <span class=\"right\">" . ContentFilter::fFilterHTML(date('D, M jS, Y g:i:s A T', strtotime($aArticle['pub_date']))) . "</span>\n";
+      echo "      <div class=\"news_comment\" id=\"c" . urlencode($aComment['id']) . "\">\n";
+      echo "        <div class=\"title\">\n";
+      echo "          <span class=\"left\">" . ContentFilter::fFilterHTML($aComment['creator']) . "</span>\n";
+      echo "          <span class=\"right\">" . ContentFilter::fFilterHTML(date('D, M jS, Y g:i:s A T', strtotime($aComment['pub_date']))) . "</span>\n";
       echo "        </div>\n";
+      echo "        <div class=\"content\">"
+                    . ContentFilter::fFilterNewLines(ContentFilter::fFilterHTML($aComment['content'], true))
+                    . "</div>\n";;
       echo "      </div>\n";
     }
   }

@@ -53,7 +53,7 @@
       . 'LEFT JOIN `users` u '
       . 'ON c.`author_uid` = u.`uid` '
       . 'WHERE c.`post_id` = \'' . BNETDocs::$oDB->fEscapeValue($iNewsId) . '\' '
-      . 'ORDER BY `pub_date` DESC, c.`id` DESC;');
+      . 'ORDER BY `pub_date` ASC, c.`id` ASC;');
     if ($oCommentsResult && $oCommentsResult instanceof SQLResult) {
       while ($aRow = $oCommentsResult->fFetchAssoc()) {
         $aComments[] = $aRow;
