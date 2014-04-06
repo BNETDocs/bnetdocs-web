@@ -195,12 +195,16 @@
         . ') VALUES (\''
         . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\',\''
         . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\',\''
-        . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\',UNHEX(\''
-        . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),\''
+        . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
+        . (is_null($this->sPasswordHash) ?
+          'NULL,\'' :
+          'UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),\'')
         . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\',\''
         . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\',\''
-        . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\',\''
-        . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
+        . (is_null($this->mVerifiedDate) ?
+          'NULL,\'' :
+          '\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\',\'')
         . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId)
         . '\');';
       } else {
