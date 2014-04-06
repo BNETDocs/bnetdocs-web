@@ -17,6 +17,7 @@
     "debug_mode": true,
     "encryption_key": "bnetdocs+dev$!"
   },
+  "force_ssl": false,
   "maintenance": [
     false,
     ""

@@ -163,6 +163,8 @@
       || !array_key_exists('encryption_key', $_CONFIG['error_handling'])
       || !is_bool($_CONFIG['error_handling']['debug_mode'])
       || !is_string($_CONFIG['error_handling']['encryption_key'])
+      || !array_key_exists('force_ssl', $_CONFIG)
+      || !is_bool($_CONFIG['force_ssl'])
       || !array_key_exists('maintenance', $_CONFIG)
       || count($_CONFIG['maintenance']) != 2
       || !is_bool($_CONFIG['maintenance'][0])

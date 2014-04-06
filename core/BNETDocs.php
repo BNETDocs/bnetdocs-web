@@ -43,10 +43,12 @@
     
     public static function fExecute(HTTPContext &$oContext) {
       
-      /* Check if we're on SSL or not */
+      global $_CONFIG;
+      
+      /* Check if we're enforcing SSL, and if we are, if we're on SSL or not */
       
       $sHostname = $oContext->fGetRequestHost();
-      if (!$oContext->fGetRequestSecure() || $sHostname == 'www.bnetdocs.org') {
+      if ($_CONFIG['force_ssl'] && (!$oContext->fGetRequestSecure() || $sHostname == 'www.bnetdocs.org')) {
         if (substr($sHostname, 0, 4) == 'www.') $sHostname = substr($sHostname, 4);
         $oContext->fSetResponseCode(301);
         $oContext->fSetResponseHeader('Location',
@@ -61,8 +63,6 @@
       $oContext->fSetResponseContent('Page not found.');
       $oContext->fSetResponseHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
       $oContext->fSetResponseHeader('Content-Type', 'text/plain;charset=utf-8');
-      
-      global $_CONFIG;
             
       $sRootPath = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['template_dir'];
       
