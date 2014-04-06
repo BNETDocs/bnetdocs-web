@@ -47,6 +47,17 @@
     /*const PASSWORD_REQUIRES_SYMBOLS           = "/['\":;^£$%&*()}{\\[\\]@#~\\?><>,.\\/|=_+¬\\-]/";*/
     
     /**
+     * User status bitfields.
+     **/
+    const STATUS_DISABLED_BY_SYSTEM   =    1; // System disabled the account.
+    const STATUS_DISABLED_BY_STAFF    =    2; // A staff member disabled the account.
+    const STATUS_DISABLED_BY_SELF     =    4; // The account owner disabled their own account.
+    const STATUS_PRIVILEGES_COMMENTS  =    8; // Allows creating, modifying, and deleting comments.
+    const STATUS_PRIVILEGES_DOCUMENTS =   16; // Allows creating, modifying, and deleting documents.
+    const STATUS_PRIVILEGES_NEWS      =   32; // Allows creating, modifying, and deleting news.
+    const STATUS_PRIVILEGES_PACKETS   =   64; // Allows creating, modifying, and deleting packets.
+    
+    /**
      * SQL column names for this object. Used in constructing new object.
      **/
     protected static $SQL_COLUMN_NAMES = [

@@ -21,6 +21,14 @@
         $sUserLoginFailed = "Unable to locate that username in our database.";
       } else if (!$oUser->fCheckPassword($sPassword)) {
         $sUserLoginFailed = "Incorrect password.";
+      } else if (is_null($oUser->fGetVerifiedDate())) {
+        $sUserLoginFailed = "You have not verified your account yet. If you did not receive the email, perform a password reset on your account.";
+      } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_SYSTEM) {
+        $sUserLoginFailed = "Your account has been disabled automatically by our system. Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> to continue further.";
+      } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_STAFF) {
+        $sUserLoginFailed = "Your account has been disabled by one of our staff members. Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> to continue further.";
+      } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_SELF) {
+        $sUserLoginFailed = "Your account was disabled by yourself at an earlier date. Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> to continue further.";
       } else {
         $bUserLoginSuccess = true;
         BNETDocs::$oUser = $oUser;

@@ -258,7 +258,7 @@
       /* Global Email Recipient */
       
       Email::$oBNETDocsRecipient = new EmailRecipient(
-        'no-reply@bnetdocs.org',    // Email address
+        'staff@bnetdocs.org',       // Email address
         EmailRecipient::TYPE_FROM,  // Designation of address
         'BNETDocs',                 // Display name
         false                       // Prefers plaintext
