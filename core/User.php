@@ -81,9 +81,9 @@
         throw new Exception('Email address is not of type string');
       $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
           . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `email` = \''
-        . BnetDocs::$oDB->fEscapeValue($sEmail)
+        . BNETDocs::$oDB->fEscapeValue($sEmail)
         . '\' ORDER BY `uid` ASC;';
-      $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
+      $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
         throw new Exception('An SQL query error occurred while finding users by email');
       $aUsers = array();
@@ -98,9 +98,9 @@
         throw new Exception('Username is not of type string');
       $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
           . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `username` = \''
-        . BnetDocs::$oDB->fEscapeValue($sUsername)
+        . BNETDocs::$oDB->fEscapeValue($sUsername)
         . '\' LIMIT 1;';
-      $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
+      $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
         throw new Exception('An SQL query error occurred while finding user by username');
       if ($oSQLResult->iNumRows != 1)
@@ -113,9 +113,9 @@
         throw new Exception('Verified Id is not of type numeric');
       $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
           . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `verified_id` = \''
-        . BnetDocs::$oDB->fEscapeValue($iVerifiedId)
+        . BNETDocs::$oDB->fEscapeValue($iVerifiedId)
         . '\' LIMIT 1;';
-      $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
+      $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
         throw new Exception('An SQL query error occurred while finding user by verified id');
       if ($oSQLResult->iNumRows != 1)
@@ -132,9 +132,9 @@
           $iUId = $aFuncArgs[0];
           $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
             . 'HEX(`password_hash`) AS `password_hash` FROM `users`'
-            . ' WHERE `uid` = \'' . BnetDocs::$oDB->fEscapeValue($iUId)
+            . ' WHERE `uid` = \'' . BNETDocs::$oDB->fEscapeValue($iUId)
             . '\' LIMIT 1;';
-          $oSQLResult = BnetDocs::$oDB->fQuery($sQuery);
+          $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
           if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
             throw new Exception('An SQL query error occurred while retrieving user by id');
           $oResult = $oSQLResult->fFetchObject();
@@ -240,10 +240,10 @@
         throw new Exception('Email address is not of type string');
       if (empty($sEmail))
         throw new RecoverableException('Email address is an empty string');
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `email` = \''
-        . BnetDocs::$oDB->fEscapeValue($sEmail)
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `email` = \''
+        . BNETDocs::$oDB->fEscapeValue($sEmail)
         . '\' WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sEmail = $sEmail;
@@ -257,10 +257,10 @@
         throw new Exception('Username is not of type string');
       if (empty($sUsername))
         throw new RecoverableException('Username is an empty string');
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `username` = \''
-        . BnetDocs::$oDB->fEscapeValue($sUsername)
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `username` = \''
+        . BNETDocs::$oDB->fEscapeValue($sUsername)
         . '\' WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sUsername = $sUsername;
@@ -274,10 +274,10 @@
         throw new Exception('Display Name is not of type string');
       if (empty($sDisplayName))
         throw new RecoverableException('Display Name is an empty string');
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `display_name` = \''
-        . BnetDocs::$oDB->fEscapeValue($sDisplayName)
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `display_name` = \''
+        . BNETDocs::$oDB->fEscapeValue($sDisplayName)
         . '\' WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sDisplayName = $sDisplayName;
@@ -297,12 +297,12 @@
       mt_srand(microtime(true)*100000 + memory_get_usage(true));
       $iPasswordSalt = mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
       $sPasswordHash = self::fHashPassword($sPassword, $iPasswordSalt);
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `password_hash` = UNHEX(\''
-        . BnetDocs::$oDB->fEscapeValue($sPasswordHash)
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `password_hash` = UNHEX(\''
+        . BNETDocs::$oDB->fEscapeValue($sPasswordHash)
         . '\'), `password_salt` = \''
-        . BnetDocs::$oDB->fEscapeValue($iPasswordSalt)
+        . BNETDocs::$oDB->fEscapeValue($iPasswordSalt)
         . '\' WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sPasswordHash = $sPasswordHash;
@@ -315,10 +315,10 @@
     public function fSetStatus($iStatus) {
       if (!is_numeric($iStatus))
         throw new Exception('Status is not of type numeric');
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `status` = \''
-        . BnetDocs::$oDB->fEscapeValue($iStatus)
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `status` = \''
+        . BNETDocs::$oDB->fEscapeValue($iStatus)
         . '\' WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->iStatus = $iStatus;
@@ -332,10 +332,10 @@
         throw new Exception('Registered Date is not of type string');
       if (empty($sRegisteredDate))
         throw new RecoverableException('Registered Date is an empty string');
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `registered_date` = \''
-        . BnetDocs::$oDB->fEscapeValue($sRegisteredDate)
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `registered_date` = \''
+        . BNETDocs::$oDB->fEscapeValue($sRegisteredDate)
         . '\' WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sRegisteredDate = $sRegisteredDate;
@@ -349,12 +349,12 @@
         throw new Exception('Verified Date is not of type string or null');
       if (is_string($mVerifiedDate) && empty($mVerifiedDate))
         throw new RecoverableException('Verified Date is an empty string');
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_date` = '
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `verified_date` = '
         . (is_string($mVerifiedDate) ? '\''
-        . BnetDocs::$oDB->fEscapeValue($mVerifiedDate)
+        . BNETDocs::$oDB->fEscapeValue($mVerifiedDate)
         . '\'' : 'NULL')
         . ' WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->mVerifiedDate = $mVerifiedDate;
@@ -366,10 +366,10 @@
     public function fSetVerifiedId($iVerifiedId) {
       if (!is_numeric($iVerifiedId))
         throw new Exception('Verified Id is not of type numeric');
-      if (BnetDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
-        . BnetDocs::$oDB->fEscapeValue($iVerifiedId)
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
+        . BNETDocs::$oDB->fEscapeValue($iVerifiedId)
         . '\' WHERE `uid` = \''
-        . BnetDocs::$oDB->fEscapeValue($this->iUId)
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->iVerifiedId = $iVerifiedId;

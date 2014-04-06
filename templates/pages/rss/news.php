@@ -12,13 +12,13 @@
   $aData = array(
     'channel'       => array(
       'category'    => 'IT/Internet/Development',
-      'copyright'   => 'BnetDocs and its assets are property of the Battle.net community members. '.
+      'copyright'   => 'BNETDocs and its assets are property of the Battle.net community members. '.
                        'Blizzard and its other assets are copyrighted to Blizzard and/or its parent corporation Vivendi. '.
                        'Copyright infringements will be prosecuted to the fullest extent allowable by law. '.
                        'Please view our legal disclaimer and terms of service.',
       'description' => 'A summary of news articles on BNETDocs',
       'docs'        => 'http://blogs.law.harvard.edu/tech/rss',
-      'link'        => BnetDocs::fGetCurrentFullURL(),
+      'link'        => BNETDocs::fGetCurrentFullURL(),
       'language'    => 'en-us',
       'title'       => 'BNETDocs News',
     ),
@@ -27,7 +27,7 @@
   $oResult = false;
   $aNews   = array();
   
-  $oResult = BnetDocs::$oDB->fQuery('SELECT '
+  $oResult = BNETDocs::$oDB->fQuery('SELECT '
     . 'n.`id` AS `id`,'
     . 'IFNULL(u.`display_name`, u.`username`) AS `creator`,'
     . 'IFNULL(n.`edit_date`, n.`post_date`) AS `pub_date`,'
@@ -62,7 +62,7 @@
   $i = 0;
   foreach ($aNews as $aNewsItem) {
     ++$i;
-    $sPermalink = BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']));
+    $sPermalink = BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']));
     $aData['channel'][$i] = array(
       'author'      => 'no-reply@bnetdocs.org (' . $aNewsItem['creator'] . ')',
       'category'    => $aNewsItem['category_name'] ? $aNewsItem['category_name'] : 'News',

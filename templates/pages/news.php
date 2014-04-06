@@ -4,7 +4,7 @@
   $oResult   = false;
   $aNews     = array();
   
-  $oResult = BnetDocs::$oDB->fQuery('SELECT '
+  $oResult = BNETDocs::$oDB->fQuery('SELECT '
     . 'n.`id` AS `id`,'
     . 'IFNULL(u.`display_name`, u.`username`) AS `creator`,'
     . 'IFNULL(n.`edit_date`, n.`post_date`) AS `pub_date`,'

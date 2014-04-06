@@ -40,7 +40,7 @@
     $bDebugMode    = $aErrorHandling['debug_mode'];
     $sEncryptedKey = $aErrorHandling['encryption_key'];
     
-    $sFullURL   = BnetDocs::fGetCurrentFullURL();
+    $sFullURL   = BNETDocs::fGetCurrentFullURL();
     $sMethod    = $_SERVER['REQUEST_METHOD'];
     $sTimestamp = date('F d Y H:i:s T');
     $sIPAddress = $_SERVER['REMOTE_ADDR'];
@@ -86,7 +86,7 @@
     }
     
     $sGitHubIssueTitle = 'Automatic Unhandled Error Report';
-    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BnetDocs, "
+    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BNETDocs, "
       ."but unfortunately when the page loaded, the server told me an internal "
       ."server error occurred.\n\nError Data:\n\n```\n" . $sErrorData . "\n```"
       ."\n\nPlease investigate this issue so I can continue to use the website."
@@ -100,7 +100,7 @@
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "  <head>\n";
-    echo "    <title>Server Error - BnetDocs</title>\n";
+    echo "    <title>Server Error - BNETDocs</title>\n";
     echo "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />\n";
     echo "    <style type=\"text/css\">\n";
     echo "      body { background: #fafafa; color: #000; font: 11pt sans-serif; margin: 0; padding: 0; text-align: center; }\n";
@@ -185,10 +185,10 @@
     require_once($_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['core_dir'] . $sClassName . '.php');
   }
   
-  if (BnetDocs::fInitialize()) {
+  if (BNETDocs::fInitialize()) {
     $oContext = new HTTPContext();
     $oContext->fSetRequestByServerGlobals();
-    BnetDocs::fExecute($oContext);
-    BnetDocs::fFinalize($oContext);
+    BNETDocs::fExecute($oContext);
+    BNETDocs::fFinalize($oContext);
   }
   

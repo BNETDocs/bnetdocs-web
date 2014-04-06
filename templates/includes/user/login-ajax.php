@@ -1,6 +1,6 @@
 <?php
   $sPageTitle = 'Login - BNETDocs';
-  $sPageAdditionalStyle = BnetDocs::fGetCurrentFullURL('/login_page.css', true);
+  $sPageAdditionalStyle = BNETDocs::fGetCurrentFullURL('/login_page.css', true);
   $oContext->fSetResponseHeader('X-Page-Title', $sPageTitle);
   $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
     $sLoginFormClass = "";

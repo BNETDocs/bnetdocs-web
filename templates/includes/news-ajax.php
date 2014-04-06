@@ -1,11 +1,11 @@
 <?php
   $sPageTitle = 'News - BNETDocs';
-  $sPageAdditionalStyle = BnetDocs::fGetCurrentFullURL('/news_item.css', true);
+  $sPageAdditionalStyle = BNETDocs::fGetCurrentFullURL('/news_item.css', true);
   $oContext->fSetResponseHeader('X-Page-Title', $sPageTitle);
   $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
   foreach ($aNews as $aNewsItem) {
     echo "      <div class=\"news_item\" id=\"" . urlencode($aNewsItem['id']) . "\">\n";
-    echo "        <a class=\"title\" href=\"" . BnetDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']), true) . "\">"
+    echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']), true) . "\">"
                   . ContentFilter::fFilterHTML($aNewsItem['title'])
                   . "</a>\n";
     echo "        <div class=\"content\">"

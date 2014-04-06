@@ -3,7 +3,7 @@
   $sQueryString = $oContext->fGetRequestQueryString();
   if (!empty($sQueryString)) $sQueryString = '?' . $sQueryString;
   
-  $sRedirectURL = BnetDocs::fGetCurrentFullURL('/news' . $sQueryString);
+  $sRedirectURL = BNETDocs::fGetCurrentFullURL('/news' . $sQueryString);
   $sSafeRedirectURL = urlencode($sRedirectURL);
   
   ob_start('ob_gzhandler');

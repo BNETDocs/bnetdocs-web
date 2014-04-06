@@ -23,7 +23,7 @@
         $sUserLoginFailed = "Incorrect password.";
       } else {
         $bUserLoginSuccess = true;
-        BnetDocs::$oUser = $oUser;
+        BNETDocs::$oUser = $oUser;
       }
       break;
     }

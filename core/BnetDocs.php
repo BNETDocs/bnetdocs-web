@@ -1,6 +1,6 @@
 <?php
   
-  final class BnetDocs {
+  final class BNETDocs {
     
     public static $oDB;
     public static $oUser;

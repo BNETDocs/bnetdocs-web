@@ -11,12 +11,12 @@
   
   $aData = array(
     'channel'       => array(
-      'title'       => 'Logs - BnetDocs: Phoenix',
-      'link'        => BnetDocs::fGetCurrentFullURL(),
+      'title'       => 'Logs - BNETDocs: Phoenix',
+      'link'        => BNETDocs::fGetCurrentFullURL(),
       'description' => 'Summarized logs of activities on BNETDocs',
       'language'    => 'en-us',
       'docs'        => 'http://blogs.law.harvard.edu/tech/rss',
-      'copyright'   => 'BnetDocs and its assets are property of the Battle.net community members. '.
+      'copyright'   => 'BNETDocs and its assets are property of the Battle.net community members. '.
                        'Blizzard and its other assets are copyrighted to Blizzard and/or its parent corporation Vivendi. '.
                        'Copyright infringements will be prosecuted to the fullest extent allowable by law. '.
                        'Please view our legal disclaimer and terms of service.',

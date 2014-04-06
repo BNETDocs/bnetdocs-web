@@ -114,7 +114,7 @@
         throw new \Exception('$_SERVER variable is not set');
       
       $this->fRequestTimestamp   = \microtime(true);
-      $this->bRequestSecure      = (BnetDocs::fGetServerPort() == 443);
+      $this->bRequestSecure      = (BNETDocs::fGetServerPort() == 443);
       $this->sRequestMethod      = $_SERVER['REQUEST_METHOD'];
       $this->sRequestURI         = $_SERVER['REQUEST_URI'];
       $this->sRequestPath        = \parse_url(
@@ -127,7 +127,7 @@
         \parse_url($this->sRequestURI, \PHP_URL_QUERY)
       );
       $this->aRequestQueryArray  = $_GET;
-      $this->aRequestHeaders     = BnetDocs::fTranslateArrayByKeyStart(
+      $this->aRequestHeaders     = BNETDocs::fTranslateArrayByKeyStart(
         $_SERVER,
         'HTTP_',
         true

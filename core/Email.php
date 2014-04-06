@@ -69,7 +69,7 @@
       
       // Build messages:
       
-      $sBoundary = str_replace('-', '', BnetDocs::fGenerateUUIDv4());
+      $sBoundary = str_replace('-', '', BNETDocs::fGenerateUUIDv4());
       
       $sHeaders .= "Content-Type: multipart/alternative;"
                .  "boundary=" . $sBoundary . "\n";
@@ -103,7 +103,7 @@
       if (empty($sDisplayName)) $sDisplayName = $sUsername;
       $sVerifiedId = $oUser->fGetVerifiedId();
       
-      $sVerifiedURL = BnetDocs::fGetCurrentFullURL('/user/password_reset?id=' . rawurlencode($sVerifiedId));
+      $sVerifiedURL = BNETDocs::fGetCurrentFullURL('/user/password_reset?id=' . rawurlencode($sVerifiedId));
       
       $oEmail = new self();
       
@@ -146,7 +146,7 @@
       if (empty($sDisplayName)) $sDisplayName = $sUsername;
       $sVerifiedId = $oUser->fGetVerifiedId();
       
-      $sVerifiedURL = BnetDocs::fGetCurrentFullURL('/user/verify?id=' . rawurlencode($sVerifiedId));
+      $sVerifiedURL = BNETDocs::fGetCurrentFullURL('/user/verify?id=' . rawurlencode($sVerifiedId));
       
       $oEmail = new self();
       
