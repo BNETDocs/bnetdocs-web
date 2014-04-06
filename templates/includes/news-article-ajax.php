@@ -29,18 +29,6 @@
     echo "        </div>\n";
     echo "      </div>\n";
   }
-  
-    $oCommentsResult = BNETDocs::$oDB->fQuery('SELECT '
-      . 'c.`id` AS `id`,'
-      . 'IFNULL(u.`display_name`, u.`username`) AS `creator`,'
-      . 'IFNULL(c.`edit_date`, c.`comment_date`) AS `pub_date`,'
-      . 'c.`edit_count` AS `edit_count`,'
-      . 'c.`content` AS `content` '
-      . 'FROM `news_comments` c '
-      . 'LEFT JOIN `users` u '
-      . 'ON c.`author_uid` = u.`uid` '
-      . 'WHERE c.`post_id` = \'' . BNETDocs::$oDB->fEscapeValue($iNewsId) . '\' '
-      . 'ORDER BY `pub_date` DESC, c.`id` DESC;');
       
   if (!$aComments) {
     echo "      <div class=\"news_comment\">\n";
