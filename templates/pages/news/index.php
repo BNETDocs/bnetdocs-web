@@ -70,7 +70,7 @@
     }
     $sPage = ob_get_clean();
     
-    $oContext->fSetResponseHeader('Cache-Control', 'max-age=3600');
+    $oContext->fSetResponseHeader('Cache-Control', 'max-age=300');
     $oContext->fSetResponseHeader('Content-Type', 'application/xml;charset=utf-8');
     $oContext->fSetResponseContent($sPage);
   }
