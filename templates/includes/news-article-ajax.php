@@ -5,7 +5,7 @@
   $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
   
   echo "      <div class=\"news_back\">\n";
-  echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news#' . urlencode($aArticle['id']), true) . "\">&lt; Back to news articles</a>\n";
+  echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news#n' . urlencode($aArticle['id']), true) . "\">&lt; Back to news articles</a>\n";
   echo "      </div>\n";
   
   if (!$aArticle) {
@@ -15,12 +15,13 @@
     echo "        <div class=\"content\">The article you tried accessing could not be found in our database.</div>\n";
     echo "      </div>\n";
   } else {
-    echo "      <div class=\"news_item\" id=\"" . urlencode($aArticle['id']) . "\">\n";
+    echo "      <div class=\"news_item\" id=\"n" . urlencode($aArticle['id']) . "\">\n";
+    echo "        <a href=\"javascript:alert('Not yet implemented.');\"><img class=\"social-button\" title=\"Share on Facebook\" alt=\"Share on Facebook\" src=\"/Social-Facebook-28x28.png\" /></a>\n";
     echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aArticle['id']), true) . "\">"
                   . ContentFilter::fFilterHTML($aArticle['title'])
                   . "</a>\n";
     echo "        <div class=\"content\">"
-                  . "<img title=\"" . ContentFilter::fFilterHTML($aArticle['category_name']) . "\" src=\"/news_category_" . urlencode($aArticle['category_id']) . ".png\" />"
+                  . "<img title=\"" . ContentFilter::fFilterHTML($aArticle['category_name']) . "\" alt=\"" . ContentFilter::fFilterHTML($aArticle['category_name']) . "\" src=\"/news_category_" . urlencode($aArticle['category_id']) . ".png\" />"
                   . ContentFilter::fFilterNewLines(ContentFilter::fFilterHTML($aArticle['content'], true))
                   . "</div>\n";
     echo "        <div class=\"footer\">\n";
