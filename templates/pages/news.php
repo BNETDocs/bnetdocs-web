@@ -21,7 +21,7 @@
     . 'ORDER BY `pub_date` DESC, n.`id` DESC '
     . 'LIMIT 5;');
   
-  if ($oResult && $oResult instanceof MySQLResult) {
+  if ($oResult && $oResult instanceof SQLResult) {
     $aNews[] = array(
       'id'            => 0,
       'creator'       => 'Carl Bennett',

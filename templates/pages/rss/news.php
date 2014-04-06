@@ -43,7 +43,7 @@
     . 'ORDER BY `pub_date` DESC, n.`id` DESC '
     . 'LIMIT 100;');
   
-  if ($oResult && $oResult instanceof MySQLResult) {
+  if ($oResult && $oResult instanceof SQLResult) {
     while ($aRow = $oResult->fFetchAssoc()) {
       $aNews[] = $aRow;
     }
