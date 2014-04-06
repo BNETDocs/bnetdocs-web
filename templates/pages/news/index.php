@@ -1,6 +1,6 @@
 <?php
   
-  $sNewsId   = basename($oContext->fGetRequestURI());
+  $sNewsId   = basename($oContext->fGetRequestPath());
   $iNewsId   = (int)$sNewsId;
   $aArticle  = array();
   $aComments = array();

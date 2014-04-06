@@ -19,6 +19,32 @@ function BNETDocs() {
         }
       }
     }
+    /*var news_back = document.getElementsByClassName('news_back');
+    for (var id in news_back) {
+      var tag = news_back[id];
+      for (var anchor_id in tag.children) {
+        var anchor = tag.children[anchor_id];
+        if (anchor.tagName == 'a') {
+          anchor.onclick = function() {
+            self.fPageLoadAjax(this.href);
+            return false;
+          }
+        }
+      }
+    }
+    var news_items = document.getElementsByClassName('news_item');
+    for (var id in news_items) {
+      var tag = news_items[id];
+      for (var anchor_id in tag.children) {
+        var anchor = tag.children[anchor_id];
+        if (anchor.tagName == 'a') {
+          anchor.onclick = function() {
+            self.fPageLoadAjax(this.href);
+            return false;
+          }
+        }
+      }
+    }*/
   }
   
   this.fSetExtraStyle = function(styleHref) {
@@ -64,10 +90,17 @@ function BNETDocs() {
       }
     }
     url = href;
+    var url_hashpos = url.indexOf("#");
     if (url.indexOf("?") != -1) {
-      url += "&ajax";
+      if (url_hashpos != -1)
+        url = url.substring(0, url_hashpos) + "&ajax" + url.substring(url_hashpos);
+      else
+        url += "&ajax";
     } else {
-      url += "?ajax";
+      if (url_hashpos != -1)
+        url = url.substring(0, url_hashpos) + "?ajax" + url.substring(url_hashpos);
+      else
+        url += "?ajax";
     }
     xhr.open("GET", url, true);
     xhr.send();
