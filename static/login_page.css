@@ -19,10 +19,17 @@ form.green {
 form > .title {
   background-color: rgba(64, 64, 64, 0.6);
   border-radius: 8px 8px 0px 0px;
+  cursor: default;
   display: block;
   font: 14pt source sans pro;
   padding: 10px;
   text-transform: uppercase;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 form > .content {
@@ -36,6 +43,7 @@ form p {
 }
 
 form label {
+  cursor: pointer;
   display: block;
   width: 100%;
 }
