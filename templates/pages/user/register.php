@@ -12,8 +12,9 @@
   $sEmailTwo    = (isset($aQuery['email_2'])      ? $aQuery['email_2']      : '');
   $sRegister    = (isset($aQuery['submit'])       ? $aQuery['submit']       : '');
   
-  $sUserRegisterFailed = "";
-  $sFocusField = "username";
+  $sUserRegisterFailed  = "";
+  $bUserRegisterSuccess = false;
+  $sFocusField          = "username";
   
   if ($sRegister) {
     if (empty($sUsername)) {
@@ -45,11 +46,35 @@
     } else if (strtolower($sEmailOne) != strtolower($sEmailTwo)) {
       $sFocusField = "email_1"; $sUserRegisterFailed = "The two email addresses do not match.";
     } else {
-      
       $oUser = User::fFindUserByUsername($sUsername);
-      
       if ($oUser) {
         $sUserRegisterFailed = "That username is already registered. Pick a unique name.";
+      } else {
+        $iPasswordSalt = User::fGeneratePasswordSalt();
+        $sPasswordHash = User::fHashPassword($sPasswordOne, $iPasswordSalt);
+        $oUser = new User(
+          $sEmailOne,
+          $sUsername,
+          $sDisplayName,
+          $sPasswordHash,
+          $iPasswordSalt,
+          0,
+          date('Y-m-d H:i:s.000000'),
+          null,
+          User::fGenerateVerifiedId()
+        );
+        if (!$oUser->fSave()) {
+          $sUserRegisterFailed = "Failed to put your new account into our database. Try again later.";
+        } else {
+          BNETDocs::$oUser = $oUser;
+          if (!Email::fSendWelcome($oUser)) {
+            $sFocusField         = "email_1";
+            $sUserRegisterFailed = "Your account has been created, but we failed to send an email to your email address. You must immediately proceed with a password reset operation in order to log in.";
+          } else {
+            $sUserRegisterFailed  = "";
+            $bUserRegisterSuccess = true;
+          }
+        }
       }
       
       //} else if (!Email::fSendWelcome($oUser)) {

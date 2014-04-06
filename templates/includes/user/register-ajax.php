@@ -5,13 +5,15 @@
   $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
     $sRegisterFormClass = "";
     if (!empty($sUserRegisterFailed)) $sRegisterFormClass = " class=\"red\"";
-    else if ($sUserRegisterFailed) $sRegisterFormClass = " class=\"green\"";
+    else if ($bUserRegisterSuccess) $sRegisterFormClass = " class=\"green\"";
     echo "      <form method=\"POST\" action=\"/user/register\"" . $sRegisterFormClass . ">\n";
     echo "        <input type=\"hidden\" name=\"submit\" value=\"1\" />\n";
     echo "        <div class=\"title\">Create Account</div>\n";
     echo "        <div class=\"content\" id=\"register_form\">\n";
     if (!empty($sUserRegisterFailed)) {
       echo "        <p>" . $sUserRegisterFailed . "</p>\n";
+    } else if ($bUserRegisterSuccess) {
+      echo "        <p>Your account has been created. Verify your new account by opening the link in the email that was sent your email address.</p>\n";
     } else {
       echo "        <p>All fields except for display name are required.</p>\n";
     }

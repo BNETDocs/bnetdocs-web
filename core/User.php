@@ -153,6 +153,17 @@
         $this->sRegisteredDate = $oResult->registered_date;
         $this->mVerifiedDate   = $oResult->verified_date;
         $this->iVerifiedId     = $oResult->verified_id;
+      } else if ($iFuncArgs == 9) {
+        $this->iUId            = null;
+        $this->sEmail          = (string)$aFuncArgs[0];
+        $this->sUsername       = (string)$aFuncArgs[1];
+        $this->sDisplayName    = (string)$aFuncArgs[2];
+        $this->sPasswordHash   = (string)$aFuncArgs[3];
+        $this->iPasswordSalt   = (int)$aFuncArgs[4];
+        $this->iStatus         = (int)$aFuncArgs[5];
+        $this->sRegisteredDate = (string)$aFuncArgs[6];
+        $this->mVerifiedDate   = $aFuncArgs[7];
+        $this->iVerifiedId     = (int)$aFuncArgs[8];
       } else if ($iFuncArgs == 10) {
         $this->iUId            = (int)$aFuncArgs[0];
         $this->sEmail          = (string)$aFuncArgs[1];
@@ -169,10 +180,62 @@
       }
     }
     
+    public function fSave() {
+      if (!isset($this->iUId) || is_null($this->iUId)) {
+        $sQuery = 'INSERT INTO `users` ('
+        . '`email`,'
+        . '`username`,'
+        . '`display_name`,'
+        . '`password_hash`,'
+        . '`password_salt`,'
+        . '`status`,'
+        . '`registered_date`,'
+        . '`verified_date`,'
+        . '`verified_id`'
+        . ') VALUES (\''
+        . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\',UNHEX(\''
+        . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),\''
+        . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId)
+        . '\');';
+      } else {
+        $sQuery = 'UPDATE `users` SET '
+        . '`email`=\'' . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\','
+        . '`username`=\'' . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\','
+        . '`display_name`=\'' . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
+        . '`password_hash`=UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),'
+        . '`password_salt`=\'' . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\','
+        . '`status`=\'' . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\','
+        . '`registered_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
+        . '`verified_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\','
+        . '`verified_id`=\'' . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId) . '\' '
+        . 'WHERE `uid`=\'' . BNETDocs::$oDB->fEscapeValue($this->iUId) . '\' LIMIT 1;';
+      }
+      if (BNETDocs::$oDB->fQuery($sQuery))
+        return true;
+      else
+        return false;
+    }
+    
     public function fCheckPassword($sTargetPassword) {
       $sCurrentPasswordHash = $this->fGetPasswordHash();
       $iCurrentPasswordSalt = $this->fGetPasswordSalt();
       return false; // TODO: check password, return false/true.
+    }
+    
+    public static function fGeneratePasswordSalt() {
+      mt_srand(microtime(true)*100000 + memory_get_usage(true));
+      return mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
+    }
+    
+    public static function fGenerateVerifiedId() {
+      mt_srand(microtime(true)*100000 + memory_get_usage(true));
+      return mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
     }
     
     public function fGetId() {
@@ -230,8 +293,7 @@
     }
     
     public function fResetVerifiedId() {
-      mt_srand(microtime(true)*100000 + memory_get_usage(true));
-      $iVerifiedId = mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
+      $iVerifiedId = self::fGenerateVerifiedId();
       return $this->fSetVerifiedId($iVerifiedId);
     }
     
@@ -294,8 +356,7 @@
         throw new RecoverableException('Password is less than ' . self::PASSWORD_LENGTH_MINIMUM . ' characters');
       if ($iPasswordLength > self::PASSWORD_LENGTH_MAXIMUM && self::PASSWORD_LENGTH_MAXIMUM >= self::PASSWORD_LENGTH_MINIMUM)
         throw new RecoverableException('Password is more than ' . self::PASSWORD_LENGTH_MAXIMUM . ' characters');
-      mt_srand(microtime(true)*100000 + memory_get_usage(true));
-      $iPasswordSalt = mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
+      $iPasswordSalt = self::fGeneratePasswordSalt();
       $sPasswordHash = self::fHashPassword($sPassword, $iPasswordSalt);
       if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `password_hash` = UNHEX(\''
         . BNETDocs::$oDB->fEscapeValue($sPasswordHash)
