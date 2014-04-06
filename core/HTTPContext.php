@@ -5,6 +5,7 @@
     protected $fRequestTimestamp;
     protected $bRequestSecure;
     protected $sRequestMethod;
+    protected $sRequestHost;
     protected $sRequestURI;
     protected $sRequestPath;
     protected $sRequestQueryString;
@@ -26,6 +27,7 @@
       $this->fRequestTimestamp   = 0.0;
       $this->bRequestSecure      = false;
       $this->sRequestMethod      = '';
+      $this->sRequestHost        = '';
       $this->sRequestURI         = '';
       $this->sRequestPath        = '';
       $this->sRequestQueryString = '';
@@ -51,6 +53,10 @@
     
     public function fGetRequestMethod() {
       return $this->sRequestMethod;
+    }
+    
+    public function fGetRequestHost() {
+      return $this->sRequestHost;
     }
     
     public function fGetRequestURI() {
@@ -116,6 +122,13 @@
       $this->fRequestTimestamp   = \microtime(true);
       $this->bRequestSecure      = (BNETDocs::fGetServerPort() == 443);
       $this->sRequestMethod      = $_SERVER['REQUEST_METHOD'];
+      $this->sRequestHost        = (
+        isset($_SERVER['HTTP_HOST']) ?
+        $_SERVER['HTTP_HOST'] : (
+          isset($_SERVER['SCRIPT_NAME']) ?
+          $_SERVER['SCRIPT_NAME'] :
+          "bnetdocs.org"
+      ));
       $this->sRequestURI         = $_SERVER['REQUEST_URI'];
       $this->sRequestPath        = \parse_url(
         $this->sRequestURI,

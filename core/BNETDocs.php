@@ -43,6 +43,20 @@
     
     public static function fExecute(HTTPContext &$oContext) {
       
+      /* Check if we're on SSL or not */
+      
+      $sHostname = $oContext->fGetRequestHost();
+      if (!$oContext->fGetRequestSecure() || $sHostname == 'www.bnetdocs.org') {
+        if (substr($sHostname, 0, 4) == 'www.') $sHostname = substr($sHostname, 4);
+        $oContext->fSetResponseCode(301);
+        $oContext->fSetResponseHeader('Location',
+          'https://' . $sHostname . $oContext->fGetRequestURI()
+        );
+        return;
+      }
+      
+      /* Continue */
+      
       $oContext->fSetResponseCode(404);
       $oContext->fSetResponseContent('Page not found.');
       $oContext->fSetResponseHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
