@@ -11,6 +11,8 @@
     echo "        <div class=\"content\" id=\"login_form\">\n";
     if (!empty($sUserLoginFailed)) {
       echo "        <p>" . $sUserLoginFailed . "</p>\n";
+    } else if ($bUserLoginSuccess) {
+      echo "        <p>You have successfully logged in to your account.</p>\n";
     } else {
       echo "        <p>Submit your username and password below to log in.</p>\n";
     }

@@ -229,7 +229,8 @@
     public function fCheckPassword($sTargetPassword) {
       $sCurrentPasswordHash = $this->fGetPasswordHash();
       $iCurrentPasswordSalt = $this->fGetPasswordSalt();
-      return false; // TODO: check password, return false/true.
+      $sTargetPasswordHash  = self::fHashPassword($sTargetPassword, $iCurrentPasswordSalt);
+      return (strtoupper($sCurrentPasswordHash) == strtoupper($sTargetPasswordHash));
     }
     
     public static function fGeneratePasswordSalt() {
