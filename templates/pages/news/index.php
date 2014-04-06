@@ -25,7 +25,7 @@
     
     $oArticleResult = BNETDocs::$oDB->fQuery('SELECT '
       . 'n.`id` AS `id`,'
-      . 'IFNULL(u.`display_name`, u.`username`) AS `creator`,'
+      . 'IFNULL(u.`display_name`, IFNULL(u.`username`, \'Anonymous\')) AS `creator`,'
       . 'IFNULL(n.`edit_date`, n.`post_date`) AS `pub_date`,'
       . 'n.`edit_count` AS `edit_count`,'
       . 'c.`id` AS `category_id`,'
@@ -45,7 +45,7 @@
     
     $oCommentsResult = BNETDocs::$oDB->fQuery('SELECT '
       . 'c.`id` AS `id`,'
-      . 'IFNULL(u.`display_name`, u.`username`) AS `creator`,'
+      . 'IFNULL(u.`display_name`, IFNULL(u.`username`, \'Anonymous\')) AS `creator`,'
       . 'IFNULL(c.`edit_date`, c.`comment_date`) AS `pub_date`,'
       . 'c.`edit_count` AS `edit_count`,'
       . 'c.`content` AS `content` '
