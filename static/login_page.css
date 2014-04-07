@@ -50,7 +50,8 @@ form label {
 
 form input[type="text"],
 form input[type="email"],
-form input[type="password"] {
+form input[type="password"],
+form input[type="number"] {
   background-color: rgba(64, 64, 64, 0.6);
   border: 0px;
   -moz-box-sizing: border-box;
@@ -65,7 +66,8 @@ form input[type="password"] {
 
 form input[type="text"]:focus,
 form input[type="email"]:focus,
-form input[type="password"]:focus {
+form input[type="password"]:focus,
+form input[type="number"]:focus {
   background-color: rgba(128, 128, 128, 0.4);
 }
 
