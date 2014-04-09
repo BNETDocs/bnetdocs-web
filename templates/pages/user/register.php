@@ -19,6 +19,10 @@
   if ($sRegister) {
     if (empty($sUsername)) {
       $sFocusField = "username"; $sUserRegisterFailed = "Your username cannot be blank.";
+    } else if (strlen($sUsername) < User::USERNAME_LENGTH_MINIMUM) {
+      $sFocusField = "username"; $sUserRegisterFailed = "Your username must be at least " . User::USERNAME_LENGTH_MINIMUM . " characters.";
+    } else if (strlen($sUsername) > User::USERNAME_LENGTH_MAXIMUM) {
+      $sFocusField = "username"; $sUserRegisterFailed = "Your username must be at most " . User::USERNAME_LENGTH_MAXIMUM ." characters.";
     } else if (!preg_match(User::USERNAME_ALLOWED_CHARACTERS, $sUsername)) {
       $sFocusField = "username"; $sUserRegisterFailed = "Your username must not contain special characters.";
     } else if (!preg_match(User::DISPLAYNAME_ALLOWED_CHARACTERS, $sUsername)) {
@@ -45,6 +49,8 @@
       $sFocusField = "password_1"; $sUserRegisterFailed = "Your password must use at least one symbol.";
     } else if (strtolower($sEmailOne) != strtolower($sEmailTwo)) {
       $sFocusField = "email_1"; $sUserRegisterFailed = "The two email addresses do not match.";
+    } else if (!EmailRecipient::fValidateAgainstMX($sEmailOne)) {
+      $sFocusField = "email_1"; $sUserRegisterFailed = "Your email address is not a valid address.";
     } else {
       $oUser = User::fFindUserByUsername($sUsername);
       if ($oUser) {

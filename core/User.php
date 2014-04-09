@@ -3,18 +3,11 @@
   final class User {
     
     /**
-     * The hashing algorithm to use. Ensure the users table in the
-     * database allows for the exact length that the algorithm gives.
-     * (ex.: sha256 yields 256 bits which means a binary(32) field.)
+     * Username length requirements. If the field length in the table changes,
+     * the maximum should change to match the length of the field.
      **/
-    const PASSWORD_HASH_ALGORITHM = 'sha256';
-    
-    /**
-     * Password length requirements are irrespective of the database
-     * design, since passwords are salted hashes.
-     **/
-    const PASSWORD_LENGTH_MINIMUM = 6;
-    const PASSWORD_LENGTH_MAXIMUM = 48;
+    const USERNAME_LENGTH_MINIMUM = 3;
+    const USERNAME_LENGTH_MAXIMUM = 31;
     
     /**
      * Characters allowed to be in a username. This string is given
@@ -29,6 +22,20 @@
      * string may be displayed in more than just page content.
      **/
     const DISPLAYNAME_ALLOWED_CHARACTERS = "/^[ A-Za-z0-9()}{\\[\\]._\\-]+$/s";
+    
+    /**
+     * The hashing algorithm to use. Ensure the users table in the
+     * database allows for the exact length that the algorithm gives.
+     * (ex.: sha256 yields 256 bits which means a binary(32) field.)
+     **/
+    const PASSWORD_HASH_ALGORITHM = 'sha256';
+    
+    /**
+     * Password length requirements are irrespective of the database
+     * design, since passwords are salted hashes.
+     **/
+    const PASSWORD_LENGTH_MINIMUM = 6;
+    const PASSWORD_LENGTH_MAXIMUM = 48;
     
     /**
      * Password strength requirements. If these are all set to false,

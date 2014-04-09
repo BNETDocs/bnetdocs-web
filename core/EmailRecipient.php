@@ -75,5 +75,22 @@
       return true;
     }
     
+    public static function fValidateAgainstMX($sEmail) {
+      if ($sEmail instanceof self)
+        $sEmail = $sEmail->fGetAddress();
+      $aMatches = array();
+      if (preg_match('/^[A-Z0-9._-]+@([A-Z0-9.-]+\.[A-Z0-9-]{2,})$/i', $sEmail, $aMatches)) {
+        $sHostname = $aMatches[1];
+        $aHosts    = array();
+        if (getmxrr($sHostname, $aHosts)) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    
   }
   
