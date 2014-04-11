@@ -187,6 +187,29 @@
     require_once($_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['core_dir'] . $sClassName . '.php');
   }
   
+  if ($_CONFIG['maintenance'][0]) {
+?><!DOCTYPE html>
+<html>
+  <head>
+    <title>Site Maintenance - BNETDocs</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <style type="text/css">
+      body { background: #fafafa; color: #000; font: 11pt sans-serif; margin: 0; padding: 0; text-align: center; }
+      div { background: #eaeaea; border-radius: 16px; box-sizing: border-box; margin: 32px auto; padding: 4px 10px; width: 600px; }
+      p.s { font-size: 8pt; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>Site Maintenance</h1>
+      <p><?php echo $_CONFIG['maintenance'][1]; ?></p>
+      <p class="s">Site Maintenance &ndash; <?php echo $_SERVER['REMOTE_ADDR']; ?></p>
+    </div>
+  </body>
+</html><?php
+    exit;
+  }
+  
   if (BNETDocs::fInitialize()) {
     $oContext = new HTTPContext();
     $oContext->fSetRequestByServerGlobals();
