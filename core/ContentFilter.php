@@ -5,7 +5,6 @@
     private function __construct() {}
     
     public static function fTrimArticleContent($sContent, $iSentences = 2) {
-      $sContent = "this is a test. for your safety.";
       $i = 0;
       $j = 0;
       $k = 0;
