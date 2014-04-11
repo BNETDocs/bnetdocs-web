@@ -13,7 +13,7 @@
     if (is_string($mResult)) {
       echo "        <p>" . $mResult . "</p>\n";
     } else if ($mResult === true) {
-      echo "        <p>You account has been activated and you may now log in.</p>\n";
+      echo "        <p>Your account has been activated and you may now <a href=\"/user/login?username=" . urlencode($oUser->fGetUsername()) . "\">log in</a>.</p>\n";
     } else {
       echo "        <p>Enter the verification id given to you in your email.</p>\n";
     }
