@@ -13,7 +13,8 @@ function BNETDocs() {
     for (var id in sidebar_left.children) {
       var tag = sidebar_left.children[id];
       if (tag.tagName == 'a') {
-        tag.onclick = function() {
+        tag.onclick = function(e) {
+          if (e.which == 2 || e.metaKey || e.ctrlKey) return true;
           self.fPageLoadAjax(this.href);
           return false;
         }
