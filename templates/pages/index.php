@@ -1,5 +1,13 @@
 <?php
   
+  if (!in_array($oContext->fGetRequestPath(), array(
+    '/',
+    '/home',
+    '/index',
+  ))) {
+    return;
+  }
+  
   $sQueryString = $oContext->fGetRequestQueryString();
   if (!empty($sQueryString)) $sQueryString = '?' . $sQueryString;
   
