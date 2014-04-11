@@ -8,6 +8,14 @@
   margin-top: 0px;
 }
 
+.news_item[class~="red"] {
+  background-color: rgba(192, 64, 64, 0.4);
+}
+
+.news_item[class~="green"] {
+  background-color: rgba(64, 192, 64, 0.4);
+}
+
 .news_item > a.title {
   background-color: rgba(64, 64, 64, 0.6);
   border-radius: 8px 8px 0px 0px;
