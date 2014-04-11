@@ -16,7 +16,13 @@
   $bUserRegisterSuccess = false;
   $sFocusField          = "username";
   
-  if ($sRegister) {
+  global $_CONFIG;
+  
+  if ($_CONFIG['security']['disable_user_registration']) {
+    $sUserRegisterFailed = "User registration has been temporarily disabled on our website.<br /><br />You can email us at "
+                         . "<a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> "
+                         . "if you need something.";
+  } else if ($sRegister) {
     $mCheckForm = User::fCheckForm($sUsername, $sDisplayName, $sPasswordOne, $sPasswordTwo, $sEmailOne, $sEmailTwo, true, true, true, true);
     if ($mCheckForm !== true) {
       if (stripos($mCheckForm, "username") !== false) {
@@ -76,8 +82,8 @@
   }
   $sPage = ob_get_clean();
   
-  $oContext->fSetResponseCode(200);
-  if ($aQuery)
+  $oContext->fSetResponseCode(($_CONFIG['security']['disable_user_registration'] ? 503 : 200));
+  if ($aQuery || $_CONFIG['security']['disable_user_registration'])
     $oContext->fSetResponseHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
   $oContext->fSetResponseHeader('Content-Type', 'application/xml;charset=utf-8');
   $oContext->fSetResponseContent($sPage);

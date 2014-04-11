@@ -3,6 +3,14 @@
   $sPageAdditionalStyle = BNETDocs::fGetCurrentFullURL('/login_page.css', true);
   $oContext->fSetResponseHeader('X-Page-Title', $sPageTitle);
   $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
+  if ($_CONFIG['security']['disable_user_registration']) {
+    echo "      <form class=\"red\">\n";
+    echo "        <div class=\"title\">Create Account</div>\n";
+    echo "        <div class=\"content\" id=\"register_form\">\n";
+    echo "          <p style=\"margin-bottom:0px;\">" . $sUserRegisterFailed . "</p>\n";
+    echo "        </div>\n";
+    echo "      </form>\n";
+  } else {
     $sRegisterFormClass = "";
     if (!empty($sUserRegisterFailed)) $sRegisterFormClass = " class=\"red\"";
     else if ($bUserRegisterSuccess) $sRegisterFormClass = " class=\"green\"";
@@ -39,4 +47,5 @@
     echo "          <input id=\"login\" type=\"submit\" tabindex=\"8\" title=\"Click to be taken to the account login form.\" value=\"Go to Login Form\" />\n";
     echo "        </div>\n";
     echo "      </form>\n";
+  }
   
