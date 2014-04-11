@@ -3,7 +3,7 @@
   $sPageAdditionalStyle = BNETDocs::fGetCurrentFullURL('/news_item.css', true);
   
   $aOpenGraphItems["og:type"]                 = "article";
-  if (empty($aArticle))
+  if (empty($aArticle)) {
     $aOpenGraphItems["og:title"]                = "No Article";
     $aOpenGraphItems["og:description"]          = "The article you tried accessing could not be found in our database.";
     $aOpenGraphItems["og:image"]                = BNETDocs::fGetCurrentFullURL('/news_category_6.png', true);
