@@ -9,6 +9,7 @@
   
   $sUsername  = ($bUsername ? $aQuery['username'] : '');
   $sId        = ($bId       ? $aQuery['id']       : '');
+  $iId        = ($bId       ? (int)$sId           : null);
   
   $mResult    = false;
   
