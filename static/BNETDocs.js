@@ -134,6 +134,7 @@ function BNETDocs() {
     } else {
       self.fSetExtraStyle(event.state.extraStyle);
       obj.innerHTML = event.state.content;
+      self.fHookExternalAnchors();
     }
   }
   
