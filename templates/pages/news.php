@@ -7,6 +7,7 @@
   $oResult = BNETDocs::$oDB->fQuery('SELECT '
     . 'n.`id` AS `id`,'
     . 'IFNULL(u.`display_name`, IFNULL(u.`username`, \'Anonymous\')) AS `creator`,'
+    . '0 AS `options`, '
     . 'IFNULL(n.`edit_date`, n.`post_date`) AS `pub_date`,'
     . 'n.`edit_count` AS `edit_count`,'
     . 'IFNULL(c.`id`, 0) AS `category_id`,'
@@ -25,6 +26,7 @@
     $aNews[] = array(
       'id'            => 0,
       'creator'       => 'Carl Bennett',
+      'options'       => 3,
       'pub_date'      => date('Y-m-d H:i:s T'),
       'edit_count'    => 0,
       'category_id'   => 6,
@@ -54,6 +56,7 @@
     $aNews[] = array(
       'id'            => 0,
       'creator'       => 'n/a',
+      'options'       => 3,
       'pub_date'      => date('Y-m-d H:i:s T'),
       'edit_count'    => 0,
       'category_id'   => 6,
