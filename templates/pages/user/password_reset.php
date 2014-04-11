@@ -4,19 +4,34 @@
   $aPostQuery = $oContext->fGetRequestPostArray();
   $aQuery     = array_merge($aGetQuery, $aPostQuery);
   
-  $sId = (isset($aQuery['id']) ? $aQuery['id'] : '');
-  $iId = (int)$sId;
+  $bUsername  = (isset($aQuery['username']));
+  $bId        = (isset($aQuery['id']));
   
-  $sPasswordResetFailed  = "";
-  $bPasswordResetSuccess = false;
+  $sUsername  = ($bUsername ? $aQuery['username'] : '');
+  $sId        = ($bId       ? $aQuery['id']       : '');
   
-  $oUser = User::fFindUserByVerifiedId($iId);
-  if (!$oUser) {
-    $sPasswordResetFailed = "We could not find that identifier. It may be possible that the identifier was changed since you received your email. Ensure that the identifier has not been mistyped.";
-  } else {
-    $bPasswordResetSuccess = true;
-    BNETDocs::$oUser = $oUser;
-    $oUser->fSetVerifiedDate(date('Y-m-d H:i:s'));
+  $mResult    = false;
+  
+  if ($bUsername) {
+    $oUser = User::fFindUserByUsername($sUsername);
+    if (!$oUser) {
+      $mResult = "Unable to locate that username in our database.";
+    } else if (!$oUser->fResetVerifiedId()) {
+      $mResult = "Failed to create a verification identifier for your account.";
+    } else if (!Email::fSendPasswordReset($oUser)) {
+      $mResult = "Failed to send a password reset email to your account.";
+    } else {
+      $mResult = true;
+    }
+  } else if ($bId) {
+    $oUser = User::fFindUserByVerifiedId($iId);
+    if (!$oUser) {
+      $mResult = "We could not find that identifier. It may be possible that the identifier was changed since you received your email. Ensure that the identifier has not been mistyped.";
+    } else {
+      $mResult = true;
+      BNETDocs::$oUser = $oUser;
+      $oUser->fSetVerifiedDate(date('Y-m-d H:i:s'));
+    }
   }
   
   ob_start('ob_gzhandler');
