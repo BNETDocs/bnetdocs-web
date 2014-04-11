@@ -8,6 +8,18 @@ function BNETDocs() {
   
   var self = this;
   
+  this.fHookExternalAnchors = function() {
+    for (var id in document.links) {
+      var link = document.links[id];
+      if (link.rel && link.rel.indexOf('external') != 1) {
+        link.onclick = function(e) {
+          window.open(this.href);
+          return false;
+        }
+      }
+    }
+  }
+  
   this.fOverrideNavigationAnchors = function() {
     var sidebar_left = document.getElementById('sidebar_left');
     for (var id in sidebar_left.children) {
@@ -109,6 +121,7 @@ function BNETDocs() {
   
   window.onload = function() {
     self.fOverrideNavigationAnchors();
+    self.fHookExternalAnchors();
   }
   
   window.onpopstate = function(event) {

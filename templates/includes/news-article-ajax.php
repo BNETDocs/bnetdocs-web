@@ -16,7 +16,7 @@
     echo "      </div>\n";
   } else {
     echo "      <div class=\"news_item\" id=\"n" . urlencode($aArticle['id']) . "\">\n";
-    echo "        <a href=\"javascript:alert('Not yet implemented.');\"><img class=\"social-button\" title=\"Share on Facebook\" alt=\"Share on Facebook\" src=\"/Social-Facebook-28x28.png\" /></a>\n";
+    echo "        <a href=\"https://www.facebook.com/sharer/sharer.php?u=" . urlencode(BNETDocs::fGetCurrentFullURL()) . "\" rel=\"external\"><img class=\"social-button\" title=\"Share on Facebook\" alt=\"Share on Facebook\" src=\"/Social-Facebook-28x28.png\" /></a>\n";
     echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aArticle['id']), true) . "\">"
                   . ContentFilter::fFilterHTML($aArticle['title'])
                   . "</a>\n";
