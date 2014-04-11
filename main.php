@@ -180,6 +180,15 @@
       || substr($_CONFIG['paths']['core_dir'], -1) != '/'
       || substr($_CONFIG['paths']['static_dir'], -1) != '/'
       || substr($_CONFIG['paths']['template_dir'], -1) != '/'
+      || !array_key_exists('security', $_CONFIG)
+      || !array_key_exists('disable_comments', $_CONFIG['security'])
+      || !array_key_exists('disable_user_login', $_CONFIG['security'])
+      || !array_key_exists('disable_user_registration', $_CONFIG['security'])
+      || !array_key_exists('user_password_salt', $_CONFIG['security'])
+      || !is_bool($_CONFIG['security']['disable_comments'])
+      || !is_bool($_CONFIG['security']['disable_user_login'])
+      || !is_bool($_CONFIG['security']['disable_user_registration'])
+      || !is_string($_CONFIG['security']['user_password_salt'])
       ) throw new Exception('The global config failed its verification check.', E_USER_ERROR);
   
   function __autoload($sClassName) {

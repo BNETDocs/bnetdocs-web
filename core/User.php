@@ -300,13 +300,16 @@
     public static function fHashPassword($sPassword, $iSalt) {
       if (!is_string($sPassword))
         throw new Exception('Password is not of type string');
+      global $_CONFIG;
+      $sHardcodedSalt = ($_CONFIG['security']['user_password_salt']);
+      if (empty($sHardcodedSalt)) $sHardcodedSalt = "bnetdocs+db~$!";
       return hash(
         self::PASSWORD_HASH_ALGORITHM,
         hash(
           self::PASSWORD_HASH_ALGORITHM,
           $sPassword,
           false
-        ) . (string)$iSalt . 'bnetdocs+db~$!',
+        ) . (string)$iSalt . $sHardcodedSalt,
         false
       );
     }
