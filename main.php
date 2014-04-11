@@ -66,13 +66,13 @@
     if ($bDebugMode) {
       $sErrorData = $sUnencryptedData;
     } else {
-      $sEncryptedData = base64_encode(mcrypt_encrypt(
+      $sEncryptedData = wordwrap(base64_encode(mcrypt_encrypt(
         MCRYPT_RIJNDAEL_256,
         md5($sEncryptedKey),
         $sUnencryptedData,
         MCRYPT_MODE_CBC,
         md5(md5($sEncryptedKey))
-      ));
+      )), 80, "\n", true);
       /*
       $sDecryptedData = rtrim(mcrypt_decrypt(
         MCRYPT_RIJNDAEL_256,
