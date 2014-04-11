@@ -48,11 +48,12 @@
       /* Check if we're enforcing SSL, and if we are, if we're on SSL or not */
       
       $sHostname = $oContext->fGetRequestHost();
-      if ($_CONFIG['force_ssl'] && (!$oContext->fGetRequestSecure() || $sHostname == 'www.bnetdocs.org')) {
+      if (($_CONFIG['force_ssl'] && !$oContext->fGetRequestSecure()) || (substr($sHostname, 0, 4) == 'www.')) {
+        $sProtocol = ($_CONFIG['force_ssl'] || $oContext->fGetRequestSecure() ? 'https' : 'http');
         if (substr($sHostname, 0, 4) == 'www.') $sHostname = substr($sHostname, 4);
         $oContext->fSetResponseCode(301);
         $oContext->fSetResponseHeader('Location',
-          'https://' . $sHostname . $oContext->fGetRequestURI()
+          $sProtocol . '://' . $sHostname . $oContext->fGetRequestURI()
         );
         return;
       }
