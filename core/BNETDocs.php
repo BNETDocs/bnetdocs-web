@@ -92,7 +92,7 @@
       $aOpenGraphItems = array(
         "og:site_name" => "BNETDocs",
         "og:title"     => "BNETDocs",
-        "og:url"       => self::fGetCurrentFullURL('', true),
+        "og:url"       => self::fGetCurrentFullURL('?', true),
         "og:locale"    => "en_US",
       );
       

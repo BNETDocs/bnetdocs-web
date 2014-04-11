@@ -13,7 +13,7 @@ function BNETDocs() {
       var link = document.links[id];
       if (link.rel && link.rel.indexOf('external') != 1) {
         link.onclick = function(e) {
-          window.open(this.href);
+          window.open(this.href, '', 'width=600,height=300,left=100,top=100');
           return false;
         }
       }
