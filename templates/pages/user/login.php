@@ -13,7 +13,7 @@
   $mResult     = false;
   $sFocusField = "username";
   
-  if ($bUsername) {
+  if ($bUsername && $bPassword) {
     $oUser = User::fFindUserByUsername($sUsername);
     if (!$oUser) {
       $mResult = "Unable to locate that username in our database.";
