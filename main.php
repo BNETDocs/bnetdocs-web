@@ -188,6 +188,9 @@
   }
   
   if ($_CONFIG['maintenance'][0]) {
+    http_response_code(503);
+    header('Cache-Control: max-age=0, must-revalidate, no-cache, no-store');
+    header('Content-Type: text/html;charset=utf-8');
 ?><!DOCTYPE html>
 <html>
   <head>
