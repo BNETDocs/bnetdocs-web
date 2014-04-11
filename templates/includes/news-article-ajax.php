@@ -15,7 +15,8 @@
     echo "      </div>\n";
   } else {
     echo "      <div class=\"news_item\" id=\"n" . urlencode($aArticle['id']) . "\">\n";
-    echo "        <a href=\"https://www.facebook.com/sharer/sharer.php?u=" . urlencode(BNETDocs::fGetCurrentFullURL()) . "\" rel=\"external\"><img class=\"social-button\" title=\"Share on Facebook\" alt=\"Share on Facebook\" src=\"/Social-Facebook-28x28.png\" /></a>\n";
+    echo "        <a href=\"https://twitter.com/share?text=" . urlencode($aArticle['title']) . "&amp;url=" . urlencode(BNETDocs::fGetCurrentFullURL('', true)) . "\" rel=\"external\"><img class=\"social-button\" title=\"Share on Twitter\" alt=\"Share on Twitter\" src=\"/Social-Twitter-24x24.png\" /></a>\n";
+    echo "        <a href=\"https://facebook.com/sharer/sharer.php?u=" . urlencode(BNETDocs::fGetCurrentFullURL('', true)) . "\" rel=\"external\"><img class=\"social-button\" title=\"Share on Facebook\" alt=\"Share on Facebook\" src=\"/Social-Facebook-24x24.png\" /></a>\n";
     echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aArticle['id']), true) . "\">"
                   . ContentFilter::fFilterHTML($aArticle['title'])
                   . "</a>\n";

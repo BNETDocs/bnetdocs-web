@@ -5,9 +5,9 @@
 <?php if (isset($sPageAdditionalStyle) && !empty($sPageAdditionalStyle)) {
 ?>    <link rel="stylesheet" href="<?php echo $sPageAdditionalStyle; ?>" type="text/css" media="all" />
 <?php }
-?>    <link rel="stylesheet" href="<?php echo BNETDocs::fGetCurrentFullURL('/main.css'); ?>" type="text/css" media="all" />
-    <script type="application/javascript" src="<?php echo BNETDocs::fGetCurrentFullURL('/BNETDocs.js'); ?>" />
-    <link rel="alternate" href="<?php echo BNETDocs::fGetCurrentFullURL('/rss/news'); ?>" type="application/rss+xml" title="BNETDocs News" />
+?>    <link rel="stylesheet" href="<?php echo BNETDocs::fGetCurrentFullURL('/main.css', true); ?>" type="text/css" media="all" />
+    <script type="application/javascript" src="<?php echo BNETDocs::fGetCurrentFullURL('/BNETDocs.js', true); ?>" />
+    <link rel="alternate" href="<?php echo BNETDocs::fGetCurrentFullURL('/rss/news', true); ?>" type="application/rss+xml" title="BNETDocs News" />
     <meta name="description" content="Battle.net logon sequences, packets, information, and protocols reference site." />
     <meta name="keywords" content="battle.net, starcraft, warcraft, diablo, blizzard, logon sequences, packets, information, protocols, reference, programming, coding" />
 <?php
@@ -22,9 +22,9 @@
     <div id="container">
       <div class="sidebar" id="sidebar_left">
         <div>Quicklinks</div>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/'); ?>">Home</a>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/news'); ?>">News</a>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/login'); ?>">Account Login</a>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/register'); ?>">Create Account</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/', true); ?>">Home</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/news', true); ?>">News</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/login', true); ?>">Account Login</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/register', true); ?>">Create Account</a>
       </div>
       <div id="content">

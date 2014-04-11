@@ -5,7 +5,8 @@
   $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
   foreach ($aNews as $aNewsItem) {
     echo "      <div class=\"news_item\" id=\"n" . urlencode($aNewsItem['id']) . "\">\n";
-    echo "        <a href=\"https://www.facebook.com/sharer/sharer.php?u=" . urlencode(BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']))) . "\" rel=\"external\"><img class=\"social-button\" title=\"Share on Facebook\" alt=\"Share on Facebook\" src=\"/Social-Facebook-28x28.png\" /></a>\n";
+    echo "        <a href=\"https://twitter.com/share?text=" . urlencode($aNewsItem['title']) . "&amp;url=" . BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']), true) . "\" rel=\"external\"><img class=\"social-button\" title=\"Share on Twitter\" alt=\"Share on Twitter\" src=\"/Social-Twitter-24x24.png\" /></a>\n";
+    echo "        <a href=\"https://facebook.com/sharer/sharer.php?u=" . BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']), true) . "\" rel=\"external\"><img class=\"social-button\" title=\"Share on Facebook\" alt=\"Share on Facebook\" src=\"/Social-Facebook-24x24.png\" /></a>\n";
     echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news/' . urlencode($aNewsItem['id']), true) . "\">"
                   . ContentFilter::fFilterHTML($aNewsItem['title'])
                   . "</a>\n";
