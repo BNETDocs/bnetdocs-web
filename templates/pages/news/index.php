@@ -27,6 +27,8 @@
       . 'n.`id` AS `id`,'
       . 'IFNULL(u.`display_name`, IFNULL(u.`username`, \'Anonymous\')) AS `creator`,'
       . 'IFNULL(n.`edit_date`, n.`post_date`) AS `pub_date`,'
+      . 'n.`post_date`,'
+      . 'n.`edit_date`,'
       . 'n.`edit_count` AS `edit_count`,'
       . 'c.`id` AS `category_id`,'
       . 'c.`display_name` AS `category_name`,'

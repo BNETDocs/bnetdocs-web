@@ -89,6 +89,13 @@
       
       // TODO: Advanced confirmation that their path is inside our root path.
       
+      $aOpenGraphItems = array(
+        "og:site_name" => "BNETDocs",
+        "og:title"     => "BNETDocs",
+        "og:url"       => self::fGetCurrentFullURL('', true),
+        "og:locale"    => "en_US",
+      );
+      
       if (file_exists($sFullPath) && is_file($sFullPath)) {
         include($sFullPath);
       }

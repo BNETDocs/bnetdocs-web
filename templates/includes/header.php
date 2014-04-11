@@ -10,10 +10,10 @@
     <link rel="alternate" href="<?php echo BNETDocs::fGetCurrentFullURL('/rss/news'); ?>" type="application/rss+xml" title="BNETDocs News" />
     <meta name="description" content="Battle.net logon sequences, packets, information, and protocols reference site." />
     <meta name="keywords" content="battle.net, starcraft, warcraft, diablo, blizzard, logon sequences, packets, information, protocols, reference, programming, coding" />
-    <meta property="og:site_name" content="BNETDocs" />
-    <meta property="og:title" content="<?php if (isset($sPageTitle) && !empty($sPageTitle)) echo $sPageTitle . ' - '; ?>BNETDocs" />
-    <meta property="og:url" content="<?php echo BNETDocs::fGetCurrentFullURL('', true); ?>" />
-    <meta property="og:locale" content="en-us" />
+<?php if (isset($sPageTitle) && !empty($sPageTitle)) $aOpenGraphItems["og:title"] = $sPageTitle . " - " . $aOpenGraphItems["og:title"];
+    foreach ($aOpenGraphItems as $sKey => $sVal) { ?>
+    <meta property="<?php echo $sKey; ?>" content="<?php echo $sVal; ?>" />
+<?php } ?>
   </head>
   <body>
     <div id="header">

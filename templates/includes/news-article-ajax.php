@@ -3,7 +3,6 @@
   $sPageAdditionalStyle = BNETDocs::fGetCurrentFullURL('/news_item.css', true);
   $oContext->fSetResponseHeader('X-Page-Title', $sPageTitle);
   $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
-  
   echo "      <div class=\"news_back\">\n";
   echo "        <a class=\"title\" href=\"" . BNETDocs::fGetCurrentFullURL('/news#n' . urlencode($aArticle['id']), true) . "\">&lt; Back to news articles</a>\n";
   echo "      </div>\n";
