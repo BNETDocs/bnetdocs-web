@@ -11,7 +11,7 @@
     $aOpenGraphItems["article:section"]         = "BNETDocs";
   } else {
     $aOpenGraphItems["og:title"]                = ContentFilter::fFilterHTML($aArticle['title']);
-    $aOpenGraphItems["og:description"]          = ContentFilter::fFilterNewLines(ContentFilter::fFilterHTML(ContentFilter::fTrimArticleContent($aArticle['content'], 2)), true, " ");
+    $aOpenGraphItems["og:description"]          = ContentFilter::fFilterNewLines(ContentFilter::fFilterHTML(ContentFilter::fTrimByLength($aArticle['content'])), true, " ");
     $aOpenGraphItems["og:image"]                = BNETDocs::fGetCurrentFullURL('/news_category_' . urlencode($aArticle['category_id']) . '.png', true);
     $aOpenGraphItems["article:published_time"]  = date("c", strtotime($aArticle['post_date']));
     if (!is_null($aArticle['edit_date']))

@@ -4,21 +4,6 @@
     
     private function __construct() {}
     
-    public static function fTrimArticleContent($sContent, $iSentences = 2) {
-      $i = 0;
-      $j = 0;
-      $k = 0;
-      do {
-        $j = strpos($sContent, '.', $i + 1);
-        if ($j) {
-          $i = $j;
-          ++$k;
-        }
-      } while ($k < $iSentences);
-      $sEllpsis = ($i + 1 < strlen($sContent) ? '..' : '');
-      return substr($sContent, 0, $i + 1) . $sEllpsis;
-    }
-    
     public static function fFilterHTML($sContent, $bAllowTags = false) {
       
       if (!is_string($sContent))
@@ -54,6 +39,32 @@
       
       return $sParsedContent;
       
+    }
+    
+    public static function fTrimByLength($sContent, $iLength = 300) {
+      $iContentLength = strlen($sContent);
+      if ($iLength >= $iContentLength) return $sContent;
+      
+      $i = $iLength;
+      while (substr($sContent, $i, 1) != ' ' && $i > 0) {
+        $i--;
+      }
+      return ($i < 1 ? $sContent : substr($sContent, 0, $i) . '...');
+    }
+    
+    public static function fTrimBySentence($sContent, $iSentences = 2) {
+      $i = 0;
+      $j = 0;
+      $k = 0;
+      do {
+        $j = strpos($sContent, '.', $i + 1);
+        if ($j) {
+          $i = $j;
+          ++$k;
+        }
+      } while ($k < $iSentences);
+      $sEllpsis = ($i + 1 < strlen($sContent) ? '..' : '');
+      return substr($sContent, 0, $i + 1) . $sEllpsis;
     }
     
   }
