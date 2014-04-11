@@ -71,6 +71,12 @@ form input[type="number"]:focus {
   background-color: rgba(128, 128, 128, 0.4);
 }
 
+form input[disabled] {
+  background-image: url('/Unable-20x20.png');
+  background-position: left top;
+  background-repeat: repeat;
+}
+
 form input[type="reset"],
 button {
   float: right;

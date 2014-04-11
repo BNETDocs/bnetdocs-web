@@ -17,40 +17,20 @@
   $sFocusField          = "username";
   
   if ($sRegister) {
-    if (empty($sUsername)) {
-      $sFocusField = "username"; $sUserRegisterFailed = "Your username cannot be blank.";
-    } else if (strlen($sUsername) < User::USERNAME_LENGTH_MINIMUM) {
-      $sFocusField = "username"; $sUserRegisterFailed = "Your username must be at least " . User::USERNAME_LENGTH_MINIMUM . " characters.";
-    } else if (strlen($sUsername) > User::USERNAME_LENGTH_MAXIMUM) {
-      $sFocusField = "username"; $sUserRegisterFailed = "Your username must be at most " . User::USERNAME_LENGTH_MAXIMUM ." characters.";
-    } else if (!preg_match(User::USERNAME_ALLOWED_CHARACTERS, $sUsername)) {
-      $sFocusField = "username"; $sUserRegisterFailed = "Your username must not contain special characters.";
-    } else if (!preg_match(User::DISPLAYNAME_ALLOWED_CHARACTERS, $sUsername)) {
-      $sFocusField = "display_name"; $sUserRegisterFailed = "Your display name must not contain special characters.";
-    } else if ($sPasswordOne != $sPasswordTwo) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "The two passwords do not match.";
-    } else if (strlen($sPasswordOne) < User::PASSWORD_LENGTH_MINIMUM) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password must be at least " . User::PASSWORD_LENGTH_MINIMUM . " characters.";
-    } else if (strlen($sPasswordOne) > User::PASSWORD_LENGTH_MAXIMUM) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password must be at most " . User::PASSWORD_LENGTH_MAXIMUM . " characters.";
-    } else if (User::PASSWORD_CANNOT_CONTAIN_USERNAME && stripos($sPasswordOne, $sUsername) !== false) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password cannot contain your username.";
-    } else if (User::PASSWORD_CANNOT_CONTAIN_DISPLAYNAME && stripos($sPasswordOne, $sDisplayName) !== false) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password cannot contain your display name.";
-    } else if (User::PASSWORD_CANNOT_CONTAIN_EMAIL && stripos($sPasswordOne, $sEmailOne) !== false) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password cannot contain your email address.";
-    } else if (User::PASSWORD_REQUIRES_UPPERCASE_LETTERS && !preg_match('/[A-Z]/', $sPasswordOne)) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password must use at least one uppercase letter.";
-    } else if (User::PASSWORD_REQUIRES_LOWERCASE_LETTERS && !preg_match('/[a-z]/', $sPasswordOne)) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password must use at least one lowercase letter.";
-    } else if (User::PASSWORD_REQUIRES_NUMBERS && !preg_match('/[0-9]/', $sPasswordOne)) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password must use at least one numeric character.";
-    } else if (User::PASSWORD_REQUIRES_SYMBOLS && !preg_match(User::PASSWORD_REQUIRES_SYMBOLS, $sPasswordOne)) {
-      $sFocusField = "password_1"; $sUserRegisterFailed = "Your password must use at least one symbol.";
-    } else if (strtolower($sEmailOne) != strtolower($sEmailTwo)) {
-      $sFocusField = "email_1"; $sUserRegisterFailed = "The two email addresses do not match.";
-    } else if (!EmailRecipient::fValidateAgainstMX($sEmailOne)) {
-      $sFocusField = "email_1"; $sUserRegisterFailed = "Your email address is not a valid address.";
+    $mCheckForm = User::fCheckForm($sUsername, $sDisplayName, $sPasswordOne, $sPasswordTwo, $sEmailOne, $sEmailTwo, true, true, true, true);
+    if ($mCheckForm !== true) {
+      if (stripos($mCheckForm, "username") !== false) {
+        $sFocusField = "username";
+      } else if (stripos($mCheckForm, "display name") !== false) {
+        $sFocusField = "display_name";
+      } else if (stripos($mCheckForm, "password") !== false) {
+        $sFocusField = "password_1";
+      } else if (stripos($mCheckForm, "email") !== false || stripos($mCheckForm, "e-mail") !== false) {
+        $sFocusField = "email_1";
+      } else {
+        $sFocusField = "";
+      }
+      $sUserRegisterFailed = $mCheckForm;
     } else {
       $oUser = User::fFindUserByUsername($sUsername);
       if ($oUser) {

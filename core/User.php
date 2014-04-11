@@ -198,50 +198,46 @@
       }
     }
     
-    public function fSave() {
-      if (!isset($this->iUId) || is_null($this->iUId)) {
-        $sQuery = 'INSERT INTO `users` ('
-        . '`email`,'
-        . '`username`,'
-        . '`display_name`,'
-        . '`password_hash`,'
-        . '`password_salt`,'
-        . '`status`,'
-        . '`registered_date`,'
-        . '`verified_date`,'
-        . '`verified_id`'
-        . ') VALUES (\''
-        . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\',\''
-        . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\',\''
-        . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
-        . (is_null($this->sPasswordHash) ?
-          'NULL,\'' :
-          'UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),\'')
-        . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\',\''
-        . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\',\''
-        . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
-        . (is_null($this->mVerifiedDate) ?
-          'NULL,\'' :
-          '\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\',\'')
-        . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId)
-        . '\');';
+    public static function fCheckForm($sUsername, $sDisplayName, $sPasswordOne, $sPasswordTwo, $sEmailOne, $sEmailTwo, $bCheckUsername, $bCheckDisplayName, $bCheckPassword, $bCheckEmail) {
+      $mResult   = false;
+      if ($bCheckUsername && empty($sUsername)) {
+        $mResult = "Your username cannot be blank.";
+      } else if ($bCheckUsername && strlen($sUsername) < User::USERNAME_LENGTH_MINIMUM) {
+        $mResult = "Your username must be at least " . User::USERNAME_LENGTH_MINIMUM . " characters.";
+      } else if ($bCheckUsername && strlen($sUsername) > User::USERNAME_LENGTH_MAXIMUM) {
+        $mResult = "Your username must be at most " . User::USERNAME_LENGTH_MAXIMUM ." characters.";
+      } else if ($bCheckUsername && !preg_match(User::USERNAME_ALLOWED_CHARACTERS, $sUsername)) {
+        $mResult = "Your username must not contain special characters.";
+      } else if ($bCheckDisplayName && !preg_match(User::DISPLAYNAME_ALLOWED_CHARACTERS, $sUsername)) {
+        $mResult = "Your display name must not contain special characters.";
+      } else if ($bCheckPassword && $sPasswordOne != $sPasswordTwo) {
+        $mResult = "The two passwords do not match.";
+      } else if ($bCheckPassword && strlen($sPasswordOne) < self::PASSWORD_LENGTH_MINIMUM) {
+        $mResult = "Your password must be at least " . self::PASSWORD_LENGTH_MINIMUM . " characters.";
+      } else if ($bCheckPassword && strlen($sPasswordOne) > self::PASSWORD_LENGTH_MAXIMUM) {
+        $mResult = "Your password must be at most " . self::PASSWORD_LENGTH_MAXIMUM . " characters.";
+      } else if ($bCheckPassword && self::PASSWORD_CANNOT_CONTAIN_USERNAME && stripos($sPasswordOne, $sUsername) !== false) {
+        $mResult = "Your password cannot contain your username.";
+      } else if ($bCheckPassword && self::PASSWORD_CANNOT_CONTAIN_DISPLAYNAME && stripos($sPasswordOne, $sDisplayName) !== false) {
+        $mResult = "Your password cannot contain your display name.";
+      } else if ($bCheckPassword && self::PASSWORD_CANNOT_CONTAIN_EMAIL && stripos($sPasswordOne, $sEmailOne) !== false) {
+        $mResult = "Your password cannot contain your email address.";
+      } else if ($bCheckPassword && self::PASSWORD_REQUIRES_UPPERCASE_LETTERS && !preg_match('/[A-Z]/', $sPasswordOne)) {
+        $mResult = "Your password must use at least one uppercase letter.";
+      } else if ($bCheckPassword && self::PASSWORD_REQUIRES_LOWERCASE_LETTERS && !preg_match('/[a-z]/', $sPasswordOne)) {
+        $mResult = "Your password must use at least one lowercase letter.";
+      } else if ($bCheckPassword && self::PASSWORD_REQUIRES_NUMBERS && !preg_match('/[0-9]/', $sPasswordOne)) {
+        $mResult = "Your password must use at least one numeric character.";
+      } else if ($bCheckPassword && self::PASSWORD_REQUIRES_SYMBOLS && !preg_match(self::PASSWORD_REQUIRES_SYMBOLS, $sPasswordOne)) {
+        $mResult = "Your password must use at least one symbol.";
+      } else if ($bCheckEmail && strtolower($sEmailOne) != strtolower($sEmailTwo)) {
+        $mResult = "The two email addresses do not match.";
+      } else if ($bCheckEmail && !EmailRecipient::fValidateAgainstMX($sEmailOne)) {
+        $mResult = "Your email address is not a valid address.";
       } else {
-        $sQuery = 'UPDATE `users` SET '
-        . '`email`=\'' . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\','
-        . '`username`=\'' . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\','
-        . '`display_name`=\'' . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
-        . '`password_hash`=UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),'
-        . '`password_salt`=\'' . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\','
-        . '`status`=\'' . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\','
-        . '`registered_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
-        . '`verified_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\','
-        . '`verified_id`=\'' . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId) . '\' '
-        . 'WHERE `uid`=\'' . BNETDocs::$oDB->fEscapeValue($this->iUId) . '\' LIMIT 1;';
+        $mResult = true;
       }
-      if (BNETDocs::$oDB->fQuery($sQuery))
-        return true;
-      else
-        return false;
+      return $mResult;
     }
     
     public function fCheckPassword($sTargetPassword) {
@@ -318,6 +314,52 @@
     public function fResetVerifiedId() {
       $iVerifiedId = self::fGenerateVerifiedId();
       return $this->fSetVerifiedId($iVerifiedId);
+    }
+    
+    public function fSave() {
+      if (!isset($this->iUId) || is_null($this->iUId)) {
+        $sQuery = 'INSERT INTO `users` ('
+        . '`email`,'
+        . '`username`,'
+        . '`display_name`,'
+        . '`password_hash`,'
+        . '`password_salt`,'
+        . '`status`,'
+        . '`registered_date`,'
+        . '`verified_date`,'
+        . '`verified_id`'
+        . ') VALUES (\''
+        . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
+        . (is_null($this->sPasswordHash) ?
+          'NULL,\'' :
+          'UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),\'')
+        . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\',\''
+        . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
+        . (is_null($this->mVerifiedDate) ?
+          'NULL,\'' :
+          '\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\',\'')
+        . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId)
+        . '\');';
+      } else {
+        $sQuery = 'UPDATE `users` SET '
+        . '`email`=\'' . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\','
+        . '`username`=\'' . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\','
+        . '`display_name`=\'' . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
+        . '`password_hash`=UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),'
+        . '`password_salt`=\'' . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\','
+        . '`status`=\'' . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\','
+        . '`registered_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
+        . '`verified_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\','
+        . '`verified_id`=\'' . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId) . '\' '
+        . 'WHERE `uid`=\'' . BNETDocs::$oDB->fEscapeValue($this->iUId) . '\' LIMIT 1;';
+      }
+      if (BNETDocs::$oDB->fQuery($sQuery))
+        return true;
+      else
+        return false;
     }
     
     public function fSetEmail($sEmail) {
