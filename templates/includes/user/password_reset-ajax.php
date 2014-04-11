@@ -20,8 +20,6 @@
     echo "          <label for=\"id\" title=\"Enter the verification id given to you in your email.\">Verification Id:</label>\n";
     echo "          <input id=\"id\" name=\"id\" type=\"text\" tabindex=\"1\" autofocus=\"autofocus\" required=\"required\" title=\"Enter the verification id given to you in your email.\" value=\"" . htmlspecialchars($sId, ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <input type=\"submit\" tabindex=\"2\" title=\"Click to validate your account.\" value=\"Validate\" />\n";
-    echo "        </div>\n";
-    echo "      </form>\n";
   } else {
     if (is_string($mResult)) {
       echo "        <p>" . $mResult . "</p>\n";
