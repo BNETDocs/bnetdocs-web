@@ -21,10 +21,17 @@
     </div>
     <div id="container">
       <div class="sidebar" id="sidebar_left">
-        <div>Quicklinks</div>
+        <div>Portal</div>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/', true); ?>">Home</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/news', true); ?>">News</a>
+        <div>Account Management</div>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/login', true); ?>">Account Login</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/register', true); ?>">Create Account</a>
+        <div>Documents</div>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/search', true); ?>">Search</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/popular', true); ?>">Popular</a>
+        <div>Packets</div>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/search', true); ?>">Search</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/popular', true); ?>">Popular</a>
       </div>
       <div id="content">
