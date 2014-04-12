@@ -93,6 +93,7 @@ function BNETDocs() {
           var pageExtraStyle  = this.getResponseHeader('X-Page-Extra-Style');
           self.fSetExtraStyle(pageExtraStyle);
           content_element.innerHTML = pageContent;
+          self.fHookExternalAnchors();
           history.pushState({
             'extraStyle': pageExtraStyle,
             'content': pageContent
