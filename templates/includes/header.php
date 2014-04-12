@@ -6,7 +6,7 @@
 ?>    <link rel="stylesheet" href="<?php echo $sPageAdditionalStyle; ?>" type="text/css" media="all" />
 <?php }
 ?>    <link rel="stylesheet" href="<?php echo BNETDocs::fGetCurrentFullURL('/main.css', true); ?>" type="text/css" media="all" />
-    <script type="application/javascript" src="<?php echo BNETDocs::fGetCurrentFullURL('/BNETDocs.js', true); ?>" />
+    <script type="text/javascript" src="<?php echo BNETDocs::fGetCurrentFullURL('/BNETDocs.js', true); ?>"><![CDATA[]]></script>
     <link rel="alternate" href="<?php echo BNETDocs::fGetCurrentFullURL('/rss/news', true); ?>" type="application/rss+xml" title="BNETDocs News" />
     <meta name="description" content="Battle.net logon sequences, packets, information, and protocols reference site." />
     <meta name="keywords" content="battle.net, starcraft, warcraft, diablo, blizzard, logon sequences, packets, information, protocols, reference, programming, coding" />
@@ -24,14 +24,16 @@
         <div>Portal</div>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/', true); ?>">Home</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/news', true); ?>">News</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/credits', true); ?>">Contributors</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/legal', true); ?>">Terms of Service</a>
         <div>Account Management</div>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/login', true); ?>">Account Login</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/register', true); ?>">Create Account</a>
-        <div>Documents</div>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/search', true); ?>">Search</a>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/popular', true); ?>">Popular</a>
-        <div>Packets</div>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/search', true); ?>">Search</a>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/popular', true); ?>">Popular</a>
+        <div>Documentation</div>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/search', true); ?>">Search Documents</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/search', true); ?>">Search Packets</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/popular', true); ?>">View Popular Documents</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/popular', true); ?>">View Popular Packets</a>
+        <div> </div>
       </div>
       <div id="content">
