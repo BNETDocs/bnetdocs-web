@@ -1,22 +1,22 @@
-.news_item {
+article {
   background-color: rgba(64, 64, 64, 0.4);
   border-radius: 8px;
   margin: 10px 0px;
 }
 
-.news_item:first-child {
+article:first-child {
   margin-top: 0px;
 }
 
-.news_item[class~="red"] {
+article[class~="red"] {
   background-color: rgba(192, 64, 64, 0.4);
 }
 
-.news_item[class~="green"] {
+article[class~="green"] {
   background-color: rgba(64, 192, 64, 0.4);
 }
 
-.news_item > a.title {
+article > a.title {
   background-color: rgba(64, 64, 64, 0.6);
   border-radius: 8px 8px 0px 0px;
   display: block;
@@ -25,16 +25,17 @@
   text-transform: uppercase;
 }
 
-.news_item > a.title:hover {
+article > a.title:hover {
   text-decoration: none;
 }
 
-.news_item > div.title {
+article > h1 {
   background-color: rgba(64, 64, 64, 0.6);
   border-radius: 8px 8px 0px 0px;
   cursor: default;
   display: block;
   font: 14pt source sans pro;
+  margin: 0px;
   padding: 10px;
   text-transform: uppercase;
   -webkit-touch-callout: none;
@@ -45,12 +46,12 @@
   user-select: none;
 }
 
-.news_item > .content {
+article > section {
   min-height: 92px;
   padding: 10px;
 }
 
-.news_item > .content > img {
+article > section > img {
   background-color: rgba(0, 0, 0, 0.2);
   border: 0px;
   border-radius: 8px;
@@ -61,33 +62,35 @@
   vertical-align: top;
 }
 
-.news_item > .footer {
+article > footer {
   background-color: rgba(64, 64, 64, 0.6);
   border-radius: 0px 0px 8px 8px;
   display: block;
   font: 12pt source sans pro;
+  margin: 0px;
   min-height: 20px;
   padding: 10px;
   text-transform: uppercase;
 }
 
-.news_item > .footer > .left,
-.news_comment .left {
+article > footer > .left,
+article.comment .left {
   float: left;
 }
 
-.news_item > .footer > .right,
-.news_comment .right {
+article > footer > .right,
+article.comment .right {
   float: right;
 }
 
-.news_back {
+article.go_back {
   background-color: rgba(64, 64, 64, 0.4);
   border-radius: 8px;
   margin: 0px 0px;
 }
 
-.news_back > .title {
+article.go_back > h1,
+article.go_back > a.title {
   background-color: rgba(64, 64, 64, 0.4);
   border-radius: 8px;
   display: block;
@@ -102,17 +105,18 @@
   user-select: none;
 }
 
-.news_back > .title:hover {
+article.go_back > h1:hover,
+article.go_back > a.title:hover {
   text-decoration: none;
 }
 
-.news_comment {
+article.comment {
   background-color: rgba(64, 64, 64, 0.4);
   border-radius: 8px;
   margin: 10px 100px;
 }
 
-.news_comment > .title {
+article.comment > h1 {
   background-color: rgba(64, 64, 64, 0.6);
   border-radius: 8px 8px 0px 0px;
   cursor: default;
@@ -129,7 +133,8 @@
   user-select: none;
 }
 
-.news_comment > .content {
+article.comment > section {
+  min-height: 10px;
   padding: 10px;
 }
 

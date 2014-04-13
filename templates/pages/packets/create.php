@@ -4,9 +4,9 @@
   
   ob_start('ob_gzhandler');
   if (isset($aGetQuery['ajax'])) {
-    include('./includes/documents/popular-ajax.php');
+    include('./includes/packets/create-ajax.php');
   } else {
-    include('./includes/documents/popular.php');
+    include('./includes/packets/create.php');
   }
   $sPage = ob_get_clean();
   
