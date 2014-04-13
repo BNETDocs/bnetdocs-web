@@ -4,7 +4,7 @@
 }
 
 body {
-  background: url('/main_bg.png') repeat center;
+  background: url('/main_bg.png') repeat fixed center;
   color: #ddd;
   font: 11pt sans-serif;
   margin: 48px 0px 48px 0px;
