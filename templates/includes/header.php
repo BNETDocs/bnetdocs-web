@@ -35,15 +35,15 @@
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/search', true); ?>">Search Packets</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/popular', true); ?>">View Popular Documents</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/popular', true); ?>">View Popular Packets</a>
-<?php if (isset($oUser) && ($oUser instanceof User) && ($oUser->fHasWriteACLs() || $oUser->fIsSuperUser())) {
+<?php if (!is_null(BNETDocs::$oUserSession->fGetUserObject()) && (BNETDocs::$oUserSession->fGetUserObject()->fHasWriteACLs())) {
 ?>        <div>Administration</div>
-<?php   if ($oUser->fGetStatus() & User::STATUS_ACL_DOCUMENTS_WRITE) {
+<?php   if (BNETDocs::$oUserSession->fGetUserObject()->fGetStatus() & User::STATUS_ACL_DOCUMENTS_WRITE) {
 ?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/create', true); ?>">Create Document</a>
 <?php   }
-        if ($oUser->fGetStatus() & User::STATUS_ACL_NEWS_WRITE) {
+        if (BNETDocs::$oUserSession->fGetUserObject()->fGetStatus() & User::STATUS_ACL_NEWS_WRITE) {
 ?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/news/create', true); ?>">Create News Post</a>
 <?php   }
-        if ($oUser->fGetStatus() & User::STATUS_ACL_PACKETS_WRITE) {
+        if (BNETDocs::$oUserSession->fGetUserObject()->fGetStatus() & User::STATUS_ACL_PACKETS_WRITE) {
 ?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/create', true); ?>">Create Packet</a>
 <?php   }
       }

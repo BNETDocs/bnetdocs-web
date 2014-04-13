@@ -3,7 +3,7 @@
   final class BNETDocs {
     
     public static $oDB;
-    public static $oUser;
+    public static $oUserSession;
     
     private function __construct() {} // We don't want to create objects of this class.
     
@@ -57,6 +57,10 @@
         );
         return;
       }
+      
+      /* User Session */
+      
+      self::$oUserSession = new UserSession($oContext);
       
       /* Continue */
       

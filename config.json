@@ -33,6 +33,7 @@
     "disable_comments": false,
     "disable_user_login": false,
     "disable_user_registration": false,
-    "user_password_salt": "bnetdocs+db~$!"
+    "user_password_salt": "bnetdocs+db~$!",
+    "session_encryption_key": "bnetdocs+session~@$"
   }
 }

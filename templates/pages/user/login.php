@@ -42,7 +42,8 @@
                . "to continue further.";
     } else {
       $mResult = true;
-      BNETDocs::$oUser = $oUser;
+      BNETDocs::$oUserSession->fSetUserObjectByObject($oUser);
+      BNETDocs::$oUserSession->fSetSessionCookie();
     }
   }
   

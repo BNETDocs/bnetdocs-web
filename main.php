@@ -185,10 +185,12 @@
       || !array_key_exists('disable_user_login', $_CONFIG['security'])
       || !array_key_exists('disable_user_registration', $_CONFIG['security'])
       || !array_key_exists('user_password_salt', $_CONFIG['security'])
+      || !array_key_exists('session_encryption_key', $_CONFIG['security'])
       || !is_bool($_CONFIG['security']['disable_comments'])
       || !is_bool($_CONFIG['security']['disable_user_login'])
       || !is_bool($_CONFIG['security']['disable_user_registration'])
       || !is_string($_CONFIG['security']['user_password_salt'])
+      || !is_string($_CONFIG['security']['session_encryption_key'])
       ) throw new Exception('The global config failed its verification check.', E_USER_ERROR);
   
   function __autoload($sClassName) {

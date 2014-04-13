@@ -58,7 +58,8 @@
         if (!$oUser->fSave()) {
           $sUserRegisterFailed = "Failed to put your new account into our database. Try again later.";
         } else {
-          BNETDocs::$oUser = $oUser;
+          BNETDocs::$oUserSession->fSetUserObjectByObject($oUser);
+          BNETDocs::$oUserSession->fSetSessionCookie();
           if (!Email::fSendWelcome($oUser)) {
             $sFocusField         = "email_1";
             $sUserRegisterFailed = "Your account has been created, but we failed to send an email to your email address. You must immediately proceed with a password reset operation in order to log in.";

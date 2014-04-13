@@ -59,17 +59,18 @@
     const STATUS_DISABLED_BY_SYSTEM          =     1; // System disabled the account.
     const STATUS_DISABLED_BY_STAFF           =     2; // A staff member disabled the account.
     const STATUS_DISABLED_BY_SELF            =     4; // The account owner disabled their own account.
-    const STATUS_ACL_SUPERUSER               =     8; // Allows access to creating, modifying, and deleting non-content such as users.
-    const STATUS_ACL_DOCUMENTS_READ          =    16; // Allows viewing documents.
-    const STATUS_ACL_DOCUMENTS_WRITE         =    32; // Allows creating and modifying documents.
-    const STATUS_ACL_NEWS_READ               =    64; // Allows viewing news posts.
-    const STATUS_ACL_NEWS_WRITE              =   128; // Allows creating and modifying news posts.
-    const STATUS_ACL_PACKETS_READ            =   256; // Allows viewing packets.
-    const STATUS_ACL_PACKETS_WRITE           =   512; // Allows creating and modifying packets.
-    const STATUS_ACL_SERVERS_READ            =  1024; // Allows viewing servers.
-    const STATUS_ACL_SERVERS_WRITE           =  2048; // Allows creating and modifying servers.
-    const STATUS_ACL_LOGS_READ               =  4096; // Allows viewing logs.
-    const STATUS_ACL_LOGS_WRITE              =  8192; // Allows creating and modifying logs.
+    const STATUS_ACL_DOCUMENTS_READ          =     8; // Allows viewing documents.
+    const STATUS_ACL_DOCUMENTS_WRITE         =    16; // Allows creating and modifying documents.
+    const STATUS_ACL_NEWS_READ               =    32; // Allows viewing news posts.
+    const STATUS_ACL_NEWS_WRITE              =    64; // Allows creating and modifying news posts.
+    const STATUS_ACL_PACKETS_READ            =   128; // Allows viewing packets.
+    const STATUS_ACL_PACKETS_WRITE           =   256; // Allows creating and modifying packets.
+    const STATUS_ACL_SERVERS_READ            =   512; // Allows viewing servers.
+    const STATUS_ACL_SERVERS_WRITE           =  1024; // Allows creating and modifying servers.
+    const STATUS_ACL_LOGS_READ               =  2048; // Allows viewing logs.
+    const STATUS_ACL_LOGS_WRITE              =  4096; // Allows creating and modifying logs.
+    const STATUS_ACL_USERS_READ              =  8192; // Allows viewing private user data.
+    const STATUS_ACL_USERS_WRITE             = 16384; // Allows creating and modifying private user data.
     
     /**
      * SQL column names for this object. Used in constructing new object.
@@ -90,6 +91,7 @@
     /**
      * Internal class variables used for storing info.
      **/
+    private $oUserSession;
     private $iUId;
     private $sEmail;
     private $sUsername;
@@ -160,14 +162,17 @@
             . ' WHERE `uid` = \'' . BNETDocs::$oDB->fEscapeValue($iUId)
             . '\' LIMIT 1;';
           $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
-          if (!$oSQLResult || !($oSQLResult instanceof SQLResult) || $oSQLResult->iNumRows != 1)
+          if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
             throw new Exception('An SQL query error occurred while retrieving user by id');
+          if ($oSQLResult->iNumRows != 1)
+            throw new RecoverableException('There is no user by that id');
           $oResult = $oSQLResult->fFetchObject();
         } else {
           // Create User object by result object. Object already gotten, no SQL query needed.
           $oResult = $aFuncArgs[0];
         }
         // CAUTION: May have to typecast here. Tried to avoid it by using fetch object.
+        $this->oUserSession    = null;
         $this->iUId            = $oResult->uid;
         $this->sEmail          = $oResult->email;
         $this->sUsername       = $oResult->username;
@@ -179,6 +184,7 @@
         $this->mVerifiedDate   = $oResult->verified_date;
         $this->iVerifiedId     = $oResult->verified_id;
       } else if ($iFuncArgs == 9) {
+        $this->oUserSession    = null;
         $this->iUId            = null;
         $this->sEmail          = (string)$aFuncArgs[0];
         $this->sUsername       = (string)$aFuncArgs[1];
@@ -190,6 +196,7 @@
         $this->mVerifiedDate   = $aFuncArgs[7];
         $this->iVerifiedId     = (int)$aFuncArgs[8];
       } else if ($iFuncArgs == 10) {
+        $this->oUserSession    = null;
         $this->iUId            = (int)$aFuncArgs[0];
         $this->sEmail          = (string)$aFuncArgs[1];
         $this->sUsername       = (string)$aFuncArgs[2];
@@ -264,20 +271,16 @@
       return mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
     }
     
-    public function fGetId() {
-      return $this->iUId;
+    public function fGetDisplayName() {
+      return $this->sDisplayName;
     }
     
     public function fGetEmail() {
       return $this->sEmail;
     }
     
-    public function fGetUsername() {
-      return $this->sUsername;
-    }
-    
-    public function fGetDisplayName() {
-      return $this->sDisplayName;
+    public function fGetId() {
+      return $this->iUId;
     }
     
     public function fGetPasswordHash() {
@@ -288,12 +291,20 @@
       return $this->iPasswordSalt;
     }
     
+    public function fGetRegisteredDate() {
+      return $this->sRegisteredDate;
+    }
+    
     public function fGetStatus() {
       return $this->iStatus;
     }
     
-    public function fGetRegisteredDate() {
-      return $this->sRegisteredDate;
+    public function fGetUsername() {
+      return $this->sUsername;
+    }
+    
+    public function fGetUserSession() {
+      return $this->oUserSession;
     }
     
     public function fGetVerifiedDate() {
@@ -323,29 +334,23 @@
     
     public function fHasReadACLs() {
       return ($this->fGetStatus() & (
-        self::STATUS_ACL_SUPERUSER |
         self::STATUS_ACL_DOCUMENTS_READ |
         self::STATUS_ACL_NEWS_READ |
         self::STATUS_ACL_PACKETS_READ |
         self::STATUS_ACL_SERVERS_READ |
-        self::STATUS_ACL_LOGS_READ
+        self::STATUS_ACL_LOGS_READ |
+        self::STATUS_ACL_USERS_READ
       ));
     }
     
     public function fHasWriteACLs() {
       return ($this->fGetStatus() & (
-        self::STATUS_ACL_SUPERUSER |
         self::STATUS_ACL_DOCUMENTS_WRITE |
         self::STATUS_ACL_NEWS_WRITE |
         self::STATUS_ACL_PACKETS_WRITE |
         self::STATUS_ACL_SERVERS_WRITE |
-        self::STATUS_ACL_LOGS_WRITE
-      ));
-    }
-    
-    public function fIsSuperUser() {
-      return ($this->fGetStatus() & (
-        self::STATUS_ACL_SUPERUSER
+        self::STATUS_ACL_LOGS_WRITE |
+        self::STATUS_ACL_USERS_WRITE
       ));
     }
     
@@ -400,40 +405,6 @@
         return false;
     }
     
-    public function fSetEmail($sEmail) {
-      if (!is_string($sEmail))
-        throw new Exception('Email address is not of type string');
-      if (empty($sEmail))
-        throw new RecoverableException('Email address is an empty string');
-      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `email` = \''
-        . BNETDocs::$oDB->fEscapeValue($sEmail)
-        . '\' WHERE `uid` = \''
-        . BNETDocs::$oDB->fEscapeValue($this->iUId)
-        . '\' LIMIT 1;'
-      )) {
-        $this->sEmail = $sEmail;
-        return true;
-      } else
-        return false;
-    }
-    
-    public function fSetUsername($sUsername) {
-      if (!is_string($sUsername))
-        throw new Exception('Username is not of type string');
-      if (empty($sUsername))
-        throw new RecoverableException('Username is an empty string');
-      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `username` = \''
-        . BNETDocs::$oDB->fEscapeValue($sUsername)
-        . '\' WHERE `uid` = \''
-        . BNETDocs::$oDB->fEscapeValue($this->iUId)
-        . '\' LIMIT 1;'
-      )) {
-        $this->sUsername = $sUsername;
-        return true;
-      } else
-        return false;
-    }
-    
     public function fSetDisplayName($sDisplayName) {
       if (!is_string($sDisplayName))
         throw new Exception('Display Name is not of type string');
@@ -446,6 +417,23 @@
         . '\' LIMIT 1;'
       )) {
         $this->sDisplayName = $sDisplayName;
+        return true;
+      } else
+        return false;
+    }
+    
+    public function fSetEmail($sEmail) {
+      if (!is_string($sEmail))
+        throw new Exception('Email address is not of type string');
+      if (empty($sEmail))
+        throw new RecoverableException('Email address is an empty string');
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `email` = \''
+        . BNETDocs::$oDB->fEscapeValue($sEmail)
+        . '\' WHERE `uid` = \''
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
+        . '\' LIMIT 1;'
+      )) {
+        $this->sEmail = $sEmail;
         return true;
       } else
         return false;
@@ -476,21 +464,6 @@
         return false;
     }
     
-    public function fSetStatus($iStatus) {
-      if (!is_numeric($iStatus))
-        throw new Exception('Status is not of type numeric');
-      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `status` = \''
-        . BNETDocs::$oDB->fEscapeValue($iStatus)
-        . '\' WHERE `uid` = \''
-        . BNETDocs::$oDB->fEscapeValue($this->iUId)
-        . '\' LIMIT 1;'
-      )) {
-        $this->iStatus = $iStatus;
-        return true;
-      } else
-        return false;
-    }
-    
     public function fSetRegisteredDate($sRegisteredDate) {
       if (!is_string($sRegisteredDate))
         throw new Exception('Registered Date is not of type string');
@@ -506,6 +479,45 @@
         return true;
       } else
         return false;
+    }
+    
+    public function fSetStatus($iStatus) {
+      if (!is_numeric($iStatus))
+        throw new Exception('Status is not of type numeric');
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `status` = \''
+        . BNETDocs::$oDB->fEscapeValue($iStatus)
+        . '\' WHERE `uid` = \''
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
+        . '\' LIMIT 1;'
+      )) {
+        $this->iStatus = $iStatus;
+        return true;
+      } else
+        return false;
+    }
+    
+    public function fSetUsername($sUsername) {
+      if (!is_string($sUsername))
+        throw new Exception('Username is not of type string');
+      if (empty($sUsername))
+        throw new RecoverableException('Username is an empty string');
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `username` = \''
+        . BNETDocs::$oDB->fEscapeValue($sUsername)
+        . '\' WHERE `uid` = \''
+        . BNETDocs::$oDB->fEscapeValue($this->iUId)
+        . '\' LIMIT 1;'
+      )) {
+        $this->sUsername = $sUsername;
+        return true;
+      } else
+        return false;
+    }
+    
+    public function fSetUserSession($oUserSession) {
+      if (!$oUserSession instanceof UserSession)
+        throw new Exception('First argument is not of type UserSession class');
+      $this->oUserSession = $oUserSession;
+      return true;
     }
     
     public function fSetVerifiedDate($mVerifiedDate) {
