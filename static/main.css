@@ -56,7 +56,7 @@ body > #container > .sidebar {
   cursor: default;
   float: left;
   font: 12pt arial, verdana, sans-serif;
-  line-height: 22px;
+  line-height: 20px;
   margin: 0px 8px;
   padding: 10px;
   width: 200px;
@@ -68,10 +68,27 @@ body > #container > .sidebar {
   user-select: none;
 }
 
+body > #container > .sidebar > div {
+  font-size: 11pt;
+  font-weight: bold;
+  padding-top: 10px;
+}
+
+body > #container > .sidebar > div:first-child {
+  padding-top: 0px;
+}
+
 body > #container > .sidebar > a {
   cursor: pointer;
   display: block;
+  font-family: source sans pro, arial, verdana, sans-serif;
   padding-left: 10px;
+}
+
+body > #container > .sidebar > a#current {
+  background-image: url('/arrow.png');
+  background-position: left center;
+  background-repeat: no-repeat;
 }
 
 body > #container > .sidebar > a:hover {

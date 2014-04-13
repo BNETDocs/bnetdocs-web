@@ -56,13 +56,20 @@
     /**
      * User status bitfields.
      **/
-    const STATUS_DISABLED_BY_SYSTEM   =    1; // System disabled the account.
-    const STATUS_DISABLED_BY_STAFF    =    2; // A staff member disabled the account.
-    const STATUS_DISABLED_BY_SELF     =    4; // The account owner disabled their own account.
-    const STATUS_PRIVILEGES_COMMENTS  =    8; // Allows creating, modifying, and deleting comments.
-    const STATUS_PRIVILEGES_DOCUMENTS =   16; // Allows creating, modifying, and deleting documents.
-    const STATUS_PRIVILEGES_NEWS      =   32; // Allows creating, modifying, and deleting news.
-    const STATUS_PRIVILEGES_PACKETS   =   64; // Allows creating, modifying, and deleting packets.
+    const STATUS_DISABLED_BY_SYSTEM          =     1; // System disabled the account.
+    const STATUS_DISABLED_BY_STAFF           =     2; // A staff member disabled the account.
+    const STATUS_DISABLED_BY_SELF            =     4; // The account owner disabled their own account.
+    const STATUS_ACL_SUPERUSER               =     8; // Allows access to creating, modifying, and deleting non-content such as users.
+    const STATUS_ACL_DOCUMENTS_READ          =    16; // Allows viewing documents.
+    const STATUS_ACL_DOCUMENTS_WRITE         =    32; // Allows creating and modifying documents.
+    const STATUS_ACL_NEWS_READ               =    64; // Allows viewing news posts.
+    const STATUS_ACL_NEWS_WRITE              =   128; // Allows creating and modifying news posts.
+    const STATUS_ACL_PACKETS_READ            =   256; // Allows viewing packets.
+    const STATUS_ACL_PACKETS_WRITE           =   512; // Allows creating and modifying packets.
+    const STATUS_ACL_SERVERS_READ            =  1024; // Allows viewing servers.
+    const STATUS_ACL_SERVERS_WRITE           =  2048; // Allows creating and modifying servers.
+    const STATUS_ACL_LOGS_READ               =  4096; // Allows viewing logs.
+    const STATUS_ACL_LOGS_WRITE              =  8192; // Allows creating and modifying logs.
     
     /**
      * SQL column names for this object. Used in constructing new object.
@@ -312,6 +319,34 @@
         ) . (string)$iSalt . $sHardcodedSalt,
         false
       );
+    }
+    
+    public function fHasReadACLs() {
+      return ($this->fGetStatus() & (
+        self::STATUS_ACL_SUPERUSER |
+        self::STATUS_ACL_DOCUMENTS_READ |
+        self::STATUS_ACL_NEWS_READ |
+        self::STATUS_ACL_PACKETS_READ |
+        self::STATUS_ACL_SERVERS_READ |
+        self::STATUS_ACL_LOGS_READ
+      ));
+    }
+    
+    public function fHasWriteACLs() {
+      return ($this->fGetStatus() & (
+        self::STATUS_ACL_SUPERUSER |
+        self::STATUS_ACL_DOCUMENTS_WRITE |
+        self::STATUS_ACL_NEWS_WRITE |
+        self::STATUS_ACL_PACKETS_WRITE |
+        self::STATUS_ACL_SERVERS_WRITE |
+        self::STATUS_ACL_LOGS_WRITE
+      ));
+    }
+    
+    public function fIsSuperUser() {
+      return ($this->fGetStatus() & (
+        self::STATUS_ACL_SUPERUSER
+      ));
     }
     
     public function fResetVerifiedId() {
