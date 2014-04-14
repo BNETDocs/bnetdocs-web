@@ -8,6 +8,7 @@
 ?>    <link rel="stylesheet" href="<?php echo BNETDocs::fGetCurrentFullURL('/main.css', true); ?>" type="text/css" media="all" />
     <script type="text/javascript" src="<?php echo BNETDocs::fGetCurrentFullURL('/BNETDocs.js', true); ?>"><![CDATA[]]></script>
     <link rel="icon" href="<?php echo BNETDocs::fGetCurrentFullURL('/favicon.png', true); ?>" type="image/png" sizes="32x32" />
+    <link rel="icon" href="<?php echo BNETDocs::fGetCurrentFullURL('/opera-icon.png', true); ?>" type="image/png" sizes="256x160" />
     <link rel="alternate" href="<?php echo BNETDocs::fGetCurrentFullURL('/rss/news', true); ?>" type="application/rss+xml" title="BNETDocs News" />
     <link rel="license" href="<?php echo BNETDocs::fGetCurrentFullURL('/legal', true); ?>" />
     <meta name="description" content="Battle.net logon sequences, packets, information, and protocols reference site." />
