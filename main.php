@@ -112,7 +112,7 @@
     echo "<!-- this error page isn't from nginx, so it couldn't have been too terrible. -->\n";
     echo "    <div>\n";
     echo "      <h1>500 Internal Server Error</h1>\n";
-    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sGitHubIssueURL . "\" target=\"_blank\">report this to Github</a>.</p>\n";
+    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sGitHubIssueURL . "\" target=\"_blank\">report this to GitHub</a>.</p>\n";
     echo "      <p class=\"s\">" . $sTimestamp . " &ndash; " . $sIPAddress . "</p>\n";
     echo "    </div>\n";
     echo "  </body>\n";
@@ -130,7 +130,7 @@
   
   global $_CONFIG;
   try {
-    $_CONFIG = file_get_contents('config.json');
+    $_CONFIG = file_get_contents('./config.json');
     $_CONFIG = json_decode($_CONFIG, true);
   } catch (Exception $oError) {
     throw new Exception(
@@ -221,7 +221,7 @@
     </div>
   </body>
 </html><?php
-    exit;
+    exit(1);
   }
   
   if (BNETDocs::fInitialize()) {
