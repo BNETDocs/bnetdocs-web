@@ -80,7 +80,7 @@
       /* Blizzard Visit? */
       
       $sRemoteAddress = $_SERVER['REMOTE_ADDR'];
-      if (!self::fBlizzardVisit($sRemoteAddress)) {
+      if (self::fBlizzardVisit($sRemoteAddress)) {
         $sContext = (string)$oContext;
         $aProps = json_decode($sContext, true);
         foreach ($aProps as $sKey => $mValue) {
