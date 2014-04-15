@@ -59,6 +59,7 @@ body > #container > .sidebar {
   line-height: 20px;
   margin: 0px 8px;
   padding: 10px;
+  position: fixed;
   width: 200px;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
