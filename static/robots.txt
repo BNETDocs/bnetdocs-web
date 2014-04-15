@@ -1,1 +1,5 @@
 User-agent: *
+Disallow: /document/create
+Disallow: /news/create
+Disallow: /packet/create
+Disallow: /user/profile/edit

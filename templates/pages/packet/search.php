@@ -4,9 +4,9 @@
   
   ob_start('ob_gzhandler');
   if (isset($aGetQuery['ajax'])) {
-    include('./includes/packets/search-ajax.php');
+    include('./includes/packet/search-ajax.php');
   } else {
-    include('./includes/packets/search.php');
+    include('./includes/packet/search.php');
   }
   $sPage = ob_get_clean();
   
