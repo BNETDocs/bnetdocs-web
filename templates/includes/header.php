@@ -32,20 +32,20 @@
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/login', true); ?>">Account Login</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/register', true); ?>">Create Account</a>
         <div>Documentation</div>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/search', true); ?>">Search Documents</a>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/search', true); ?>">Search Packets</a>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/popular', true); ?>">View Popular Documents</a>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/popular', true); ?>">View Popular Packets</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/document/search', true); ?>">Search Documents</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packet/search', true); ?>">Search Packets</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/document/popular', true); ?>">View Popular Documents</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packet/popular', true); ?>">View Popular Packets</a>
 <?php if (!is_null(BNETDocs::$oUserSession->fGetUserObject()) && (BNETDocs::$oUserSession->fGetUserObject()->fHasWriteACLs())) {
 ?>        <div>Administration</div>
 <?php   if (BNETDocs::$oUserSession->fGetUserObject()->fGetStatus() & User::STATUS_ACL_DOCUMENTS_WRITE) {
-?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/documents/create', true); ?>">Create Document</a>
+?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/document/create', true); ?>">Create Document</a>
 <?php   }
         if (BNETDocs::$oUserSession->fGetUserObject()->fGetStatus() & User::STATUS_ACL_NEWS_WRITE) {
 ?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/news/create', true); ?>">Create News Post</a>
 <?php   }
         if (BNETDocs::$oUserSession->fGetUserObject()->fGetStatus() & User::STATUS_ACL_PACKETS_WRITE) {
-?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packets/create', true); ?>">Create Packet</a>
+?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packet/create', true); ?>">Create Packet</a>
 <?php   }
       }
 ?>      </div>
