@@ -3,9 +3,28 @@
   final class BNETDocs {
     
     public static $oDB;
+    public static $oLogger;
     public static $oUserSession;
     
     private function __construct() {} // We don't want to create objects of this class.
+    
+    public static function fBlizzardVisit($sRemoteAddress) {
+      $sQuery = 'SELECT TRUE FROM `blizzard_addresses` WHERE `';
+      
+      if (strpos($sRemoteAddress, ':') !== false) {
+        $sQuery .= 'ipv6';
+      } else {
+        $sQuery .= 'ipv4';
+      }
+      
+      $sQuery .= '` = UNHEX(\'' . self::fNormalizeIP($sRemoteAddress) . '\') LIMIT 1;';
+      
+      $mResult = self::$oDB->fQuery($sQuery);
+      if (!$mResult || !($mResult instanceof SQLResult))
+        throw new Exception('An SQL error occurred while checking if address is a Blizzard visit. SQL error ' . self::$oDB->fErrorMessage());
+      
+      return ($mResult->iNumRows > 0);
+    }
     
     public static function fCurlRequest($sURL, $sPostContentData = null) {
       
@@ -56,6 +75,20 @@
           $sProtocol . '://' . $sHostname . $oContext->fGetRequestURI()
         );
         return;
+      }
+      
+      /* Blizzard Visit? */
+      
+      $sRemoteAddress = $_SERVER['REMOTE_ADDR'];
+      if (!self::fBlizzardVisit($sRemoteAddress)) {
+        $sContext = (string)$oContext;
+        $aProps = json_decode($sContext, true);
+        foreach ($aProps as $sKey => $mValue) {
+          if (substr($sKey, 1, 8) == 'Response')
+            unset($aProps[$sKey]);
+        }
+        $sContext = json_encode($aProps);
+        self::$oLogger->fLogEvent('blizzard_visit', null, $sContext);
       }
       
       /* User Session */
@@ -282,6 +315,11 @@
       
       if (!self::$oDB->fConnect())
         throw new Exception('Unable to connect to the database server');
+      
+      /* Logger */
+      
+      self::$oLogger = new Logger();
+      self::$oLogger->fLoadLogTypes();
       
       /* Global Email Recipient */
       

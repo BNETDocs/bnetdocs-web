@@ -43,6 +43,10 @@
       
     }
     
+    public function __toString() {
+      return json_encode(get_object_vars($this));
+    }
+    
     public function fGetRequestTimestamp() {
       return $this->fRequestTimestamp;
     }
