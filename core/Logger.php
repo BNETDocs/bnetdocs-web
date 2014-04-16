@@ -37,7 +37,7 @@
       }
       
       if (!$iTypeId)
-        throw new RecoverableException('Cannot find a type id for that log type');
+        throw new Exception('Cannot find a type id for that log type');
       
       if (is_string($mContent) || $mContent instanceof HTTPContext) {
         $sContent = $mContent;
