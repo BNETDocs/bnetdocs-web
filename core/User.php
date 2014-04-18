@@ -287,6 +287,26 @@
       return $this->iPasswordSalt;
     }
     
+    public static function fGetReadACLs($bLimited) {
+      if (!$bLimited) {
+        return (
+          self::STATUS_ACL_DOCUMENTS_READ |
+          self::STATUS_ACL_NEWS_READ |
+          self::STATUS_ACL_PACKETS_READ |
+          self::STATUS_ACL_SERVERS_READ |
+          self::STATUS_ACL_LOGS_READ |
+          self::STATUS_ACL_USERS_READ
+        );
+      } else {
+        return (
+          self::STATUS_ACL_DOCUMENTS_READ |
+          self::STATUS_ACL_NEWS_READ |
+          self::STATUS_ACL_PACKETS_READ |
+          self::STATUS_ACL_SERVERS_READ
+        );
+      }
+    }
+    
     public function fGetRegisteredDate() {
       return $this->sRegisteredDate;
     }
@@ -315,6 +335,26 @@
       return $this->iVerifiedId;
     }
     
+    public static function fGetWriteACLs($bLimited) {
+      if (!$bLimited) {
+        return (
+          self::STATUS_ACL_DOCUMENTS_WRITE |
+          self::STATUS_ACL_NEWS_WRITE |
+          self::STATUS_ACL_PACKETS_WRITE |
+          self::STATUS_ACL_SERVERS_WRITE |
+          self::STATUS_ACL_LOGS_WRITE |
+          self::STATUS_ACL_USERS_WRITE
+        );
+      } else {
+        return (
+          self::STATUS_ACL_DOCUMENTS_WRITE |
+          self::STATUS_ACL_NEWS_WRITE |
+          self::STATUS_ACL_PACKETS_WRITE |
+          self::STATUS_ACL_SERVERS_WRITE
+        );
+      }
+    }
+    
     public static function fHashPassword($sPassword, $iSalt) {
       if (!is_string($sPassword))
         throw new Exception('Password is not of type string');
@@ -333,25 +373,11 @@
     }
     
     public function fHasReadACLs() {
-      return ($this->fGetStatus() & (
-        self::STATUS_ACL_DOCUMENTS_READ |
-        self::STATUS_ACL_NEWS_READ |
-        self::STATUS_ACL_PACKETS_READ |
-        self::STATUS_ACL_SERVERS_READ |
-        self::STATUS_ACL_LOGS_READ |
-        self::STATUS_ACL_USERS_READ
-      ));
+      return ($this->fGetStatus() & self::fGetReadACLs(false));
     }
     
     public function fHasWriteACLs() {
-      return ($this->fGetStatus() & (
-        self::STATUS_ACL_DOCUMENTS_WRITE |
-        self::STATUS_ACL_NEWS_WRITE |
-        self::STATUS_ACL_PACKETS_WRITE |
-        self::STATUS_ACL_SERVERS_WRITE |
-        self::STATUS_ACL_LOGS_WRITE |
-        self::STATUS_ACL_USERS_WRITE
-      ));
+      return ($this->fGetStatus() & self::fGetWriteACLs(false));
     }
     
     public function fResetVerifiedId() {

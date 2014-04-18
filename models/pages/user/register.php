@@ -50,7 +50,7 @@
           $sDisplayName,
           $sPasswordHash,
           $iPasswordSalt,
-          0, // TODO: set default statuses
+          User::fGetReadACLs(true),
           date('Y-m-d H:i:s.000000'),
           null,
           User::fGenerateVerifiedId()
