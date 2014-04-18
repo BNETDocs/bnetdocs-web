@@ -79,7 +79,7 @@
       
       /* Blizzard Visit? */
       
-      $sRemoteAddress = $_SERVER['REMOTE_ADDR'];
+      $sRemoteAddress = $oContext->fGetRequestIPAddress();
       if (self::fBlizzardVisit($sRemoteAddress)) {
         $sContext = (string)$oContext;
         $aProps = json_decode($sContext, true);
@@ -88,7 +88,7 @@
             unset($aProps[$sKey]);
         }
         $sContext = json_encode($aProps);
-        self::$oLogger->fLogEvent('blizzard_visit', null, $sContext);
+        self::$oLogger->fLogEvent('blizzard_visit', $sRemoteAddress, null, $sContext);
       }
       
       /* User Session */
@@ -102,7 +102,7 @@
       $oContext->fSetResponseHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
       $oContext->fSetResponseHeader('Content-Type', 'text/plain;charset=utf-8');
             
-      $sRootPath = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['template_dir'];
+      $sRootPath = $_CONFIG['paths']['base_dir'] . $_CONFIG['paths']['models_dir'];
       
       $sPrevCwd = getcwd();
       if (!chdir($sRootPath))

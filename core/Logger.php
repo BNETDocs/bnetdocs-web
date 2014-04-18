@@ -25,7 +25,7 @@
       return true;
     }
     
-    public function fLogEvent($mLogType, $iAuthorUId, $mContent) {
+    public function fLogEvent($mLogType, $sRemoteAddress, $iAuthorUId, $mContent) {
       $sEventDate = date('Y-m-d H:i:s.000000');
       
       if (is_string($mLogType)) {
@@ -39,15 +39,36 @@
       if (!$iTypeId)
         throw new Exception('Cannot find a type id for that log type');
       
-      if (is_string($mContent) || $mContent instanceof HTTPContext) {
-        $sContent = $mContent;
+      if (!is_null($sRemoteAddress) && !is_string($sRemoteAddress))
+        throw new Exception('Remote Address is not of type null or numeric');
+      
+      if (!empty($sRemoteAddress) && strpos($sRemoteAddress, ':') !== false) {
+        $sIPv4Address = null;
+        $sIPv6Address = BNETDocs::fNormalizeIP($sRemoteAddress);
+      } else if (!empty($sRemoteAddress) && strpos($sRemoteAddress, '.') !== false) {
+        $sIPv4Address = BNETDocs::fNormalizeIP($sRemoteAddress);
+        $sIPv6Address = null;
       } else {
-        throw new Exception('Content is not of type string or HTTPContext object');
+        $sIPv4Address = null;
+        $sIPv6Address = null;
       }
       
-      $sQuery = 'INSERT INTO `logs` (`type_id`, `author_uid`, `event_date`, `content`) VALUES ('
+      if (!is_null($iAuthorUId) && !is_numeric($iAuthorUId))
+        throw new Exception('Author UId is not of type null or numeric');
+      
+      if (is_string($mContent) || $mContent instanceof HTTPContext) {
+        $sContent = $mContent;
+      } else if (is_array($mContent) {
+        $sContent = json_encode($mContent);
+      } else {
+        throw new Exception('Content is not of type string, array, or HTTPContext object');
+      }
+      
+      $sQuery = 'INSERT INTO `logs` (`type_id`, `author_uid`, `author_ipv4`, `author_ipv6`, `event_date`, `content`) VALUES ('
               . '\'' . BNETDocs::$oDB->fEscapeValue($iTypeId) . '\','
               . (is_null($iAuthorUId) ? 'NULL' : '\'' . BNETDocs::$oDB->fEscapeValue($iAuthorUId) . '\'') . ','
+              . (is_null($sIPv4Address) ? 'NULL' : 'CONV(\'' . BNETDocs::$oDB->fEscapeValue($sIPv4Address) . '\',16,10)') . ','
+              . (is_null($sIPv6Address) ? 'NULL' : 'UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($sIPv6Address) . '\')') . ','
               . '\'' . BNETDocs::$oDB->fEscapeValue($sEventDate) . '\','
               . '\'' . BNETDocs::$oDB->fEscapeValue($sContent) . '\''
               . ');';

@@ -3,6 +3,7 @@
   class HTTPContext {
     
     protected $fRequestTimestamp;
+    protected $sRequestIPAddress;
     protected $bRequestSecure;
     protected $sRequestMethod;
     protected $sRequestHost;
@@ -25,6 +26,7 @@
         throw new \Exception('Constructor does not take any parameters');
       
       $this->fRequestTimestamp   = 0.0;
+      $this->sRequestIPAddress   = '';
       $this->bRequestSecure      = false;
       $this->sRequestMethod      = '';
       $this->sRequestHost        = '';
@@ -49,6 +51,10 @@
     
     public function fGetRequestTimestamp() {
       return $this->fRequestTimestamp;
+    }
+    
+    public function fGetRequestIPAddress() {
+      return $this->sRequestIPAddress;
     }
     
     public function fGetRequestSecure() {
@@ -124,6 +130,7 @@
         throw new \Exception('$_SERVER variable is not set');
       
       $this->fRequestTimestamp   = \microtime(true);
+      $this->sRequestIPAddress   = $_SERVER['REMOTE_ADDR'];
       $this->bRequestSecure      = (BNETDocs::fGetServerPort() == 443);
       $this->sRequestMethod      = $_SERVER['REQUEST_METHOD'];
       $this->sRequestHost        = (

@@ -279,10 +279,6 @@
       return $this->sEmail;
     }
     
-    public function fGetId() {
-      return $this->iUId;
-    }
-    
     public function fGetPasswordHash() {
       return $this->sPasswordHash;
     }
@@ -297,6 +293,10 @@
     
     public function fGetStatus() {
       return $this->iStatus;
+    }
+    
+    public function fGetUId() {
+      return $this->iUId;
     }
     
     public function fGetUsername() {

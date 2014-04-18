@@ -25,7 +25,7 @@
   if ($oResult && $oResult instanceof SQLResult) {
     $aNews[] = array(
       'id'            => 0,
-      'creator'       => 'Carl Bennett',
+      'creator'       => 'Jailout2000',
       'options'       => 3,
       'pub_date'      => date('Y-m-d H:i:s T'),
       'edit_count'    => 0,

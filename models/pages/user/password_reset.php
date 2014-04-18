@@ -54,8 +54,10 @@
         BNETDocs::$oUserSession->fSetSessionCookie();
         $sFocusField     = "username";
         if (!($oUser->fSetVerifiedDate(date('Y-m-d H:i:s')) && $oUser->fSetPassword($sPasswordOne))) {
+          BNETDocs::$oLogger->fLogEvent('user_pw_reset', $oContext->fGetRequestIPAddress(), $oUser->fGetUId(), array('success' => false));
           $mResult = "A server error occurred while trying to save your account changes into our database.";
         } else {
+          BNETDocs::$oLogger->fLogEvent('user_pw_reset', $oContext->fGetRequestIPAddress(), $oUser->fGetUId(), array('success' => true));
           $mResult = true;
         }
       }

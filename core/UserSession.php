@@ -65,7 +65,7 @@
       $sHash = User::fHashPassword($this->oUser->fGetPasswordHash(), $iSalt);
       return implode(';',
         array(
-          $this->oUser->fGetId(),
+          $this->oUser->fGetUId(),
           $sHash,
           $iSalt
         )

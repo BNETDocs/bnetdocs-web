@@ -44,6 +44,7 @@
       $mResult = true;
       BNETDocs::$oUserSession->fSetUserObjectByObject($oUser);
       BNETDocs::$oUserSession->fSetSessionCookie();
+      BNETDocs::$oLogger->fLogEvent('user_logged_in', $oContext->fGetRequestIPAddress(), $oUser->fGetUId(), array());
     }
   }
   
