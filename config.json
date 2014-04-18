@@ -26,8 +26,8 @@
     "audit_dir": "./",
     "base_dir": "/home/nginx/bnetdocs-local/",
     "core_dir": "core/",
-    "static_dir": "static/",
-    "template_dir": "templates/"
+    "models_dir": "models/",
+    "static_dir": "static/"
   },
   "security": {
     "disable_comments": false,

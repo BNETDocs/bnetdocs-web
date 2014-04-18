@@ -173,13 +173,13 @@
       || !array_key_exists('audit_dir', $_CONFIG['paths'])
       || !array_key_exists('base_dir', $_CONFIG['paths'])
       || !array_key_exists('core_dir', $_CONFIG['paths'])
+      || !array_key_exists('models_dir', $_CONFIG['paths'])
       || !array_key_exists('static_dir', $_CONFIG['paths'])
-      || !array_key_exists('template_dir', $_CONFIG['paths'])
       || substr($_CONFIG['paths']['audit_dir'], -1) != '/'
       || substr($_CONFIG['paths']['base_dir'], -1) != '/'
       || substr($_CONFIG['paths']['core_dir'], -1) != '/'
+      || substr($_CONFIG['paths']['models_dir'], -1) != '/'
       || substr($_CONFIG['paths']['static_dir'], -1) != '/'
-      || substr($_CONFIG['paths']['template_dir'], -1) != '/'
       || !array_key_exists('security', $_CONFIG)
       || !array_key_exists('disable_comments', $_CONFIG['security'])
       || !array_key_exists('disable_user_login', $_CONFIG['security'])
