@@ -13,6 +13,11 @@
     "character_set": "utf8_unicode_ci",
     "audit": true
   },
+  "email_recipient": {
+    "address": "staff@bnetdocs.org",
+    "name": "BNETDocs Staff",
+    "prefers_plaintext": false
+  },
   "error_handling": {
     "debug_mode": true,
     "encryption_key": "bnetdocs+dev$!"

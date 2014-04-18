@@ -324,10 +324,10 @@
       /* Global Email Recipient */
       
       Email::$oBNETDocsRecipient = new EmailRecipient(
-        'staff@bnetdocs.org',       // Email address
-        EmailRecipient::TYPE_FROM,  // Designation of address
-        'BNETDocs',                 // Display name
-        false                       // Prefers plaintext
+        $_CONFIG["email_recipient"]["address"],
+        EmailRecipient::TYPE_FROM,
+        $_CONFIG["email_recipient"]["name"],
+        $_CONFIG["email_recipient"]["prefers_plaintext"]
       );
       
       /* Other Stuff? */
