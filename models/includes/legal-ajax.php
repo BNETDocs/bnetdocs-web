@@ -4,7 +4,7 @@
   $oContext->fSetResponseHeader('X-Page-Title', $sPageTitle);
   $oContext->fSetResponseHeader('X-Page-Extra-Style', $sPageAdditionalStyle);
   
-  $sPublisherName = "BNETDocs Staff";
+  $sPublisherName = Email::$oBNETDocsRecipient->fGetName();
   $sPublishedDate = date('D, M jS, Y g:i:s A T', filemtime(__FILE__));
   
   echo "        <article>\n";
