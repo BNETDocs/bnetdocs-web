@@ -58,7 +58,7 @@
       
       if (is_string($mContent) || $mContent instanceof HTTPContext) {
         $sContent = $mContent;
-      } else if (is_array($mContent) {
+      } else if (is_array($mContent)) {
         $sContent = json_encode($mContent);
       } else {
         throw new Exception('Content is not of type string, array, or HTTPContext object');
