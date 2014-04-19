@@ -4,16 +4,23 @@
   $aPostQuery  = $oContext->fGetRequestPostArray();
   $aQuery      = array_merge($aGetQuery, $aPostQuery);
   
+  $bCSRFToken  = (isset($aQuery['csrf']));
   $bLogout     = (isset($aQuery['logout']));
+  
+  $sCSRFToken  = ($bCSRFToken ? $aQuery['csrf'] : '');
   
   $mResult     = false;
   
   if (!BNETDocs::$oUserSession || is_null(BNETDocs::$oUserSession->fGetUserObject())) {
     $mResult = "You are not currently logged in. <a href=\"/user/login\">Click here</a> to log in to your account.";
-  } else if ($bLogout) {
-    BNETDocs::$oUserSession->fSetUserObjectByObject(null);
-    BNETDocs::$oUserSession->fSetSessionCookie();
-    $mResult = true;
+  } else if ($bCSRFToken && $bLogout) {
+    if (!AntiCSRF::fCheckToken($sCSRFToken)) {
+      $mResult = "Cross-Site Request Forgery detected. Try logging out again.";
+    } else {
+      BNETDocs::$oUserSession->fSetUserObjectByObject(null);
+      BNETDocs::$oUserSession->fSetSessionCookie();
+      $mResult = true;
+    }
   }
   
   ob_start('ob_gzhandler');

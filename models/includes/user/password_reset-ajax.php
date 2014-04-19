@@ -17,6 +17,7 @@
     } else {
       echo "        <p>Enter the verification id given to you in your email, followed by your new password.</p>\n";
     }
+    echo "          <input type=\"hidden\" name=\"csrf\" value=\"" . htmlspecialchars(AntiCSRF::fGetToken(), ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <label for=\"id\" title=\"Enter the verification id given to you in your email here.\">Verification Id:</label>\n";
     echo "          <input id=\"id\" name=\"id\" type=\"text\" tabindex=\"1\"" . ($sFocusField == "id" ? " autofocus=\"autofocus\"" : "") . " required=\"required\" title=\"Enter the verification id given to you in your email.\" value=\"" . htmlspecialchars($sId, ENT_XML1, "UTF-8") . "\" />\n";
     if ($oUser) {
@@ -36,6 +37,7 @@
     } else {
       echo "        <p>Enter the username you used when you created the account.</p>\n";
     }
+    echo "          <input type=\"hidden\" name=\"csrf\" value=\"" . htmlspecialchars(AntiCSRF::fGetToken(), ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <label for=\"username\" title=\"Enter the username you used when you created the account.\">Username:</label>\n";
     echo "          <input id=\"username\" name=\"username\" type=\"text\" tabindex=\"1\" autofocus=\"autofocus\" required=\"required\" title=\"Enter the username you used when you created the account.\" value=\"" . htmlspecialchars($sUsername, ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <input type=\"submit\" tabindex=\"2\" title=\"Click to send an email to the email address on the account.\" value=\"Reset Password\" />\n";

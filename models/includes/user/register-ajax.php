@@ -25,6 +25,7 @@
     } else {
       echo "        <p>All fields except for display name are required.</p>\n";
     }
+    echo "          <input type=\"hidden\" name=\"csrf\" value=\"" . htmlspecialchars(AntiCSRF::fGetToken(), ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <label for=\"username\" title=\"Enter your username for the new account.\">Username:</label>\n";
     echo "          <input id=\"username\" name=\"username\" type=\"text\" tabindex=\"1\" ".($sFocusField=="username"?"autofocus=\"autofocus\" ":"")."required=\"required\" maxlength=\"31\" title=\"Enter your username for the new account.\" value=\"" . htmlspecialchars($sUsername, ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <label for=\"display_name\" title=\"Optionally, enter a display name for the new account.\">Display Name:</label>\n";

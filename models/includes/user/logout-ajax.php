@@ -17,6 +17,7 @@
     echo "        <p>If you really want to log out, click the button below.</p>\n";
   }
   if (BNETDocs::$oUserSession && !is_null(BNETDocs::$oUserSession->fGetUserObject())) {
+    echo "          <input type=\"hidden\" name=\"csrf\" value=\"" . htmlspecialchars(AntiCSRF::fGetToken(), ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <input name=\"logout\" type=\"submit\" tabindex=\"1\" title=\"Click to log out of your account.\" value=\"Log Out\" />\n";
   }
   echo "        </div>\n";
