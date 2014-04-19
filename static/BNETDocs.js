@@ -8,6 +8,15 @@ function BNETDocs() {
   
   var self = this;
   
+  /**
+   * endsWith Source: http://stackoverflow.com/questions/280634/endswith-in-javascript
+   **/
+  if (typeof String.prototype.endsWith !== 'function') {
+    String.prototype.endsWith = function(suffix) {
+      return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+  }
+  
   this.fHookExternalAnchors = function() {
     for (var id in document.links) {
       var link = document.links[id];
@@ -60,6 +69,19 @@ function BNETDocs() {
     }*/
   }
   
+  this.fGetExtraStyle = function() {
+    var link_elements = document.getElementsByTagName('link');
+    var link_found = false;
+    for (var id in link_elements) {
+      if (link_elements[id].href.endsWith('.css') {
+        link_found = true;
+        break;
+      }
+    }
+    if (!link_found) return '';
+    return link_elements[id].href;
+  }
+  
   this.fSetExtraStyle = function(styleHref) {
     var link_elements = document.getElementsByTagName('link');
     var link_found = false;
@@ -87,17 +109,25 @@ function BNETDocs() {
       if (this.readyState == 4) {
         try {
           if (this.status != 200) throw new Error;
+          
+          var title_element   = document.getElementsByTagName('title')[0];
           var content_element = document.getElementById('content');
           var pageContent     = this.response;
           var pageTitle       = this.getResponseHeader('X-Page-Title');
           var pageExtraStyle  = this.getResponseHeader('X-Page-Extra-Style');
+          
+          title_element.innerHTML = pageTitle;
           self.fSetExtraStyle(pageExtraStyle);
           content_element.innerHTML = pageContent;
+          
           self.fHookExternalAnchors();
+          
           history.pushState({
+            'title': pageTitle,
             'extraStyle': pageExtraStyle,
             'content': pageContent
           }, pageTitle, href);
+          
         } catch (e) {
           window.location = href;
         }
@@ -126,15 +156,20 @@ function BNETDocs() {
   }
   
   window.onpopstate = function(event) {
-    var obj = document.getElementById('content');
+    var title_element       = document.getElementsByTagName('title')[0];
+    var content_element     = document.getElementById('content');
+    
     if (!event.state) {
       history.replaceState({
-        'extraStyle': '',
-        'content': obj.innerHTML
+        'title': title_element.innerHTML,
+        'extraStyle': self.fGetExtraStyle(),
+        'content': content_element.innerHTML
       });
     } else {
+      title_element.innerHTML = event.state.title;
       self.fSetExtraStyle(event.state.extraStyle);
-      obj.innerHTML = event.state.content;
+      content_element.innerHTML = event.state.content;
+      
       self.fHookExternalAnchors();
     }
   }
