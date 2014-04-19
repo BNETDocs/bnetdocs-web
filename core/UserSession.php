@@ -60,7 +60,7 @@
     
     public function fGetSessionId() {
       if (!isset($this->oUser))
-        throw new Exception('No User object has been set yet');
+        return '';
       $iSalt = User::fGeneratePasswordSalt();
       $sHash = User::fHashPassword($this->oUser->fGetPasswordHash(), $iSalt);
       return implode(';',
@@ -79,8 +79,10 @@
     public function fSetSessionCookie() {
       if (!isset($this->oContext))
         throw new Exception('No HTTP context has been set yet');
+      $sValue = $this->fGetSessionId();
+      if (!empty($sValue)) $sValue = self::fEncryptCookieValue($sValue);
       $this->oContext->fSetResponseCookie(new HTTPCookie(
-        self::SESSION_COOKIE_NAME, self::fEncryptCookieValue($this->fGetSessionId()), 0, '/'
+        self::SESSION_COOKIE_NAME, $sValue, 0, '/'
       ));
       return true;
     }
@@ -122,7 +124,9 @@
       }
     }
     
-    public function fSetUserObjectByObject(User $oUser) {
+    public function fSetUserObjectByObject($oUser) {
+      if (!is_null($oUser) && !($oUser instanceof User))
+        throw new Exception('User is not of type null or User object');
       $this->oUser = $oUser;
       return true;
     }

@@ -29,9 +29,14 @@
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/credits', true); ?>">Contributors</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/legal', true); ?>">Terms of Service</a>
         <div>Account Management</div>
-        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/login', true); ?>">Account Login</a>
+<?php if (is_null(BNETDocs::$oUserSession->fGetUserObject())) {
+?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/login', true); ?>">Account Login</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/register', true); ?>">Create Account</a>
-        <div>Documentation</div>
+<?php } else {
+?>        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/logout', true); ?>">Logout</a>
+        <a href="<?php echo BNETDocs::fGetCurrentFullURL('/user/profile/edit', true); ?>">Edit Profile</a>
+<?php }
+?>        <div>Documentation</div>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/document/search', true); ?>">Search Documents</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/packet/search', true); ?>">Search Packets</a>
         <a href="<?php echo BNETDocs::fGetCurrentFullURL('/document/popular', true); ?>">View Popular Documents</a>
