@@ -4,11 +4,13 @@
   $aPostQuery  = $oContext->fGetRequestPostArray();
   $aQuery      = array_merge($aGetQuery, $aPostQuery);
   
+  $bCSRFToken  = (isset($aQuery['csrf']));
   $bUsername   = (isset($aQuery['username']));
   $bPassword   = (isset($aQuery['password']));
   
-  $sUsername   = ($bUsername ? $aQuery['username'] : '');
-  $sPassword   = ($bPassword ? $aQuery['password'] : '');
+  $sCSRFToken  = ($bCSRFToken ? $aQuery['csrf']     : '');
+  $sUsername   = ($bUsername  ? $aQuery['username'] : '');
+  $sPassword   = ($bPassword  ? $aQuery['password'] : '');
   
   $mResult     = false;
   $sFocusField = "username";
@@ -19,32 +21,36 @@
     $mResult = "Login has been temporarily disabled on our website.<br /><br />You can email us at "
              . "<a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> "
              . "if you need something.";
-  } else if ($bUsername && $bPassword) {
-    $oUser = User::fFindUserByUsername($sUsername);
-    if (!$oUser) {
-      $mResult = "Unable to locate that username in our database.";
-    } else if (!$oUser->fCheckPassword($sPassword)) {
-      $sFocusField = "password";
-      $mResult     = "Incorrect password.";
-    } else if (is_null($oUser->fGetVerifiedDate())) {
-      $mResult = "You have not verified your account yet. If you did not receive the email, perform a password reset on your account.";
-    } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_SYSTEM) {
-      $mResult = "Your account has been disabled automatically by our system. "
-               . "Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> "
-               . "to continue further.";
-    } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_STAFF) {
-      $mResult = "Your account has been disabled by one of our staff members. "
-               . "Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> "
-               . "to continue further.";
-    } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_SELF) {
-      $mResult = "Your account was disabled by yourself at an earlier date. "
-               . "Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> "
-               . "to continue further.";
+  } else if ($bCSRFToken && $bUsername && $bPassword) {
+    if (!AntiCSRF::fCheckToken($sCSRFToken)) {
+      $mResult = "Cross-Site Request Forgery detected. Try logging in again.";
     } else {
-      $mResult = true;
-      BNETDocs::$oUserSession->fSetUserObjectByObject($oUser);
-      BNETDocs::$oUserSession->fSetSessionCookie();
-      BNETDocs::$oLogger->fLogEvent('user_logged_in', $oContext->fGetRequestIPAddress(), $oUser->fGetUId(), array());
+      $oUser = User::fFindUserByUsername($sUsername);
+      if (!$oUser) {
+        $mResult = "Unable to locate that username in our database.";
+      } else if (!$oUser->fCheckPassword($sPassword)) {
+        $sFocusField = "password";
+        $mResult     = "Incorrect password.";
+      } else if (is_null($oUser->fGetVerifiedDate())) {
+        $mResult = "You have not verified your account yet. If you did not receive the email, perform a password reset on your account.";
+      } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_SYSTEM) {
+        $mResult = "Your account has been disabled automatically by our system. "
+                 . "Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> "
+                 . "to continue further.";
+      } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_STAFF) {
+        $mResult = "Your account has been disabled by one of our staff members. "
+                 . "Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> "
+                 . "to continue further.";
+      } else if ($oUser->fGetStatus() & User::STATUS_DISABLED_BY_SELF) {
+        $mResult = "Your account was disabled by yourself at an earlier date. "
+                 . "Email us at <a href=\"mailto:" . Email::$oBNETDocsRecipient->fGetAddress() . "\">" . Email::$oBNETDocsRecipient->fGetAddress() . "</a> "
+                 . "to continue further.";
+      } else {
+        $mResult = true;
+        BNETDocs::$oUserSession->fSetUserObjectByObject($oUser);
+        BNETDocs::$oUserSession->fSetSessionCookie();
+        BNETDocs::$oLogger->fLogEvent('user_logged_in', $oContext->fGetRequestIPAddress(), $oUser->fGetUId(), array());
+      }
     }
   }
   

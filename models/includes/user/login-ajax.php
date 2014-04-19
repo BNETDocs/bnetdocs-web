@@ -24,6 +24,7 @@
     } else {
       echo "        <p>Submit your username and password below to log in.</p>\n";
     }
+    echo "          <input type=\"hidden\" name=\"csrf\" value=\"" . htmlspecialchars(AntiCSRF::fGetToken(), ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <label for=\"username\" title=\"Enter the username you used when you created the account.\">Username:</label>\n";
     echo "          <input id=\"username\" name=\"username\" type=\"text\" tabindex=\"1\"" . ($sFocusField == "username" ? " autofocus=\"autofocus\"" : "") . " required=\"required\" title=\"Enter the username you used when you created the account.\" value=\"" . htmlspecialchars($sUsername, ENT_XML1, "UTF-8") . "\" />\n";
     echo "          <label for=\"password\" title=\"Enter the password you use with the account.\">Password:</label>\n";
