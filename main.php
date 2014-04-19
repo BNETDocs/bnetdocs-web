@@ -17,7 +17,7 @@
   
   /**
    * configure an error handler that returns a HTTP 500 error.
-   * provide a GitHub link to create a new issue for this.
+   * provide an email link to notify staff about this issue.
    */
   set_error_handler(function($iErrorNumber, $sErrorMessage, $sErrorFile, $iErrorLine, $oErrorContext){
     // The following values may have been overridden before we got here:
@@ -85,17 +85,14 @@
       $sErrorData = $sEncryptedData;
     }
     
-    $sGitHubIssueTitle = 'Automatic Unhandled Error Report';
-    $sGitHubIssueBody = "Hi,\n\nI just tried to access a page on BNETDocs, "
-      ."but unfortunately when the page loaded, the server told me an internal "
-      ."server error occurred.\n\nError Data:\n\n```\n" . $sErrorData . "\n```"
-      ."\n\nPlease investigate this issue so I can continue to use the website."
-      ."\n\nThanks!\n";
-    $sGitHubIssueURL = "https://github.com/BNETDocs/bnetdocs-phoenix/issues/"
-      ."new?" . http_build_query(array(
-        "title" => $sGitHubIssueTitle,
-        "body" => $sGitHubIssueBody
-      ));
+    $sIssueTitle = 'Automatic Unhandled Error Report';
+    $sIssueBody = "Hi,\n\nI just tried to access a page on BNETDocs, "
+      . "but unfortunately when the page loaded, the server told me an internal "
+      . "server error occurred.\n\nError Data:\n\n" . $sErrorData
+      . "\n\nPlease investigate this issue so I can continue to use the website."
+      . "\n\nThanks!\n";
+    $sIssueURL = "mailto:" . Email::$oBNETDocsRecipient . "?subject="
+      . rawurlencode($sIssueTitle) . "&amp;body=" . rawurlencode($sIssueBody);
     
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
@@ -112,7 +109,7 @@
     echo "<!-- this error page isn't from nginx, so it couldn't have been too terrible. -->\n";
     echo "    <div>\n";
     echo "      <h1>500 Internal Server Error</h1>\n";
-    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sGitHubIssueURL . "\" target=\"_blank\">report this to GitHub</a>.</p>\n";
+    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sIssueURL . "\">report this to us</a>.</p>\n";
     echo "      <p class=\"s\">" . $sTimestamp . " &ndash; " . $sIPAddress . "</p>\n";
     echo "    </div>\n";
     echo "  </body>\n";
