@@ -73,7 +73,7 @@ function BNETDocs() {
     var link_elements = document.getElementsByTagName('link');
     var link_found = false;
     for (var id in link_elements) {
-      if (link_elements[id].href.endsWith('.css') {
+      if (link_elements[id].href.endsWith('.css') && link_elements[id].href != '/main.css') {
         link_found = true;
         break;
       }
