@@ -35,6 +35,7 @@
     "static_dir": "static/"
   },
   "security": {
+    "csrf_salt": "bnetdocs+csrf$#!",
     "disable_comments": false,
     "disable_user_login": false,
     "disable_user_registration": false,
