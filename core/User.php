@@ -302,7 +302,8 @@
           self::STATUS_ACL_DOCUMENTS_READ |
           self::STATUS_ACL_NEWS_READ |
           self::STATUS_ACL_PACKETS_READ |
-          self::STATUS_ACL_SERVERS_READ
+          self::STATUS_ACL_SERVERS_READ |
+          self::STATUS_ACL_LOGS_READ
         );
       }
     }
