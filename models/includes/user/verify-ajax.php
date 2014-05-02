@@ -11,8 +11,10 @@
   echo "        <div class=\"content\" id=\"verify_account_form\">\n";
   if (is_string($mResult)) {
     echo "        <p>" . $mResult . "</p>\n";
+  } else if ($mResult === true && $oUser instanceof User) {
+    echo "        <p>Your account has been activated and you may now <a href=\"/user/login?username=" . urlencode($oUser->fGetUsername()) . "\">log in</a>.</p>\n";
   } else if ($mResult === true) {
-    echo "        <p>Your account has been activated and you are now logged in.</p>\n";
+    echo "        <p>Your account has been activated and you may now <a href=\"/user/login\">log in</a>.</p>\n";
   } else {
     echo "        <p>Enter the verification id given to you in your email.</p>\n";
   }

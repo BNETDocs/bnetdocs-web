@@ -17,8 +17,6 @@
     if (!$oUser) {
       $mResult = "We could not find that identifier. It may be possible that the identifier was changed since you received your email. You should also ensure that the identifier has not been mistyped if you typed it in manually.";
     } else {
-      BNETDocs::$oUserSession->fSetUserObjectByObject($oUser);
-      BNETDocs::$oUserSession->fSetSessionCookie();
       $sFocusField = "username";
       if (!($oUser->fSetVerifiedDate(date('Y-m-d H:i:s')))) {
         BNETDocs::$oLogger->fLogEvent('user_verified', $oContext->fGetRequestIPAddress(), $oUser->fGetUId(), array('success' => false));
