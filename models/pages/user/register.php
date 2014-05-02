@@ -62,8 +62,6 @@
           if (!$oUser->fSave()) {
             $sUserRegisterFailed = "Failed to put your new account into our database. Try again later.";
           } else {
-            BNETDocs::$oUserSession->fSetUserObjectByObject($oUser);
-            BNETDocs::$oUserSession->fSetSessionCookie();
             BNETDocs::$oLogger->fLogEvent('user_created', $oContext->fGetRequestIPAddress(), $oUser->fGetUId(), array());
             if (!Email::fSendWelcome($oUser)) {
               $sFocusField         = "email_1";
