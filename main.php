@@ -94,26 +94,14 @@
     $sIssueURL = "mailto:" . Email::$oBNETDocsRecipient . "?subject="
       . rawurlencode($sIssueTitle) . "&amp;body=" . rawurlencode($sIssueBody);
     
-    echo "<!DOCTYPE html>\n";
-    echo "<html>\n";
-    echo "  <head>\n";
-    echo "    <title>Server Error - BNETDocs</title>\n";
-    echo "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />\n";
-    echo "    <style type=\"text/css\">\n";
-    echo "      body { background: #fafafa; color: #000; font: 11pt sans-serif; margin: 0; padding: 0; text-align: center; }\n";
-    echo "      div { background: #eaeaea; border-radius: 16px; box-sizing: border-box; margin: 32px auto; padding: 4px 10px; width: 600px; }\n";
-    echo "      p.s { font-size: 8pt; }\n";
-    echo "    </style>\n";
-    echo "  </head>\n";
-    echo "  <body>\n";
-    echo "<!-- this error page isn't from nginx, so it couldn't have been too terrible. -->\n";
-    echo "    <div>\n";
-    echo "      <h1>500 Internal Server Error</h1>\n";
-    echo "      <p>An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sIssueURL . "\">report this to us</a>.</p>\n";
-    echo "      <p class=\"s\">" . $sTimestamp . " &ndash; " . $sIPAddress . "</p>\n";
-    echo "    </div>\n";
-    echo "  </body>\n";
-    echo "</html>\n";
+    echo "\n<!-- this error page isn't from nginx, so it couldn't have been too terrible. -->\n";
+    echo "<div style=\"display:block;position:fixed;top:0px;bottom:0px;left:0px;right:0px;background:#fafafa;color:#000;font:11pt sans-serif;margin:0;padding:0;text-align:center;\">\n";
+    echo "  <div style=\"background:#eaeaea;border-radius:16px;box-sizing:border-box;margin:32px auto;padding:4px 10px;width:600px;\">\n";
+    echo "    <h1 style=\"font-size:2em;-webkit-margin-before:0.67em;-webkit-margin-after:0.67em;\">500 Internal Server Error</h1>\n";
+    echo "    <p style=\"margin:10px;padding:0;\">An internal server error occurred while processing your request. This could indicate a more serious problem, so please <a href=\"" . $sIssueURL . "\" style=\"color:#0000f0;\">report this to us</a>.</p>\n";
+    echo "    <p style=\"font-size:8pt;margin:16px 0px 10px 0px;\">" . $sTimestamp . " &ndash; " . $sIPAddress . "</p>\n";
+    echo "  </div>\n";
+    echo "</div>\n\n";
     
     exit(1);
   }, E_ALL | E_STRICT);
