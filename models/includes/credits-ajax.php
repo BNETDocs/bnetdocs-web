@@ -26,7 +26,7 @@
         $sDisplayName = $aContributor[1]->fGetDisplayName();
       }
       $sName      = ContentFilter::fFilterHTML((empty($sDisplayName) ? $sUsername : $sDisplayName));
-      $sDocuments = $aContributor[0] . " document" . ($aContributor[0] != 1 ? "s" : "");
+      $sDocuments = number_format($aContributor[0]) . " document" . ($aContributor[0] != 1 ? "s" : "");
       echo "              <li><strong>" . $sName . "</strong> with <strong>" . $sDocuments . "</strong>.</li>\n";
     }
     echo "            </ol>\n";
@@ -49,7 +49,7 @@
         $sDisplayName = $aContributor[1]->fGetDisplayName();
       }
       $sName    = ContentFilter::fFilterHTML((empty($sDisplayName) ? $sUsername : $sDisplayName));
-      $sPackets = $aContributor[0] . " packet" . ($aContributor[0] != 1 ? "s" : "");
+      $sPackets = number_format($aContributor[0]) . " packet" . ($aContributor[0] != 1 ? "s" : "");
       echo "              <li><strong>" . $sName . "</strong> with <strong>" . $sPackets . "</strong>.</li>\n";
     }
     echo "            </ol>\n";
@@ -72,7 +72,7 @@
         $sDisplayName = $aContributor[1]->fGetDisplayName();
       }
       $sName    = ContentFilter::fFilterHTML((empty($sDisplayName) ? $sUsername : $sDisplayName));
-      $sServers = $aContributor[0] . " server" . ($aContributor[0] != 1 ? "s" : "");
+      $sServers = number_format($aContributor[0]) . " server" . ($aContributor[0] != 1 ? "s" : "");
       echo "              <li><strong>" . $sName . "</strong> with <strong>" . $sServers . "</strong>.</li>\n";
     }
     echo "            </ol>\n";
