@@ -8,6 +8,11 @@ article:first-child {
   margin-top: 0px;
 }
 
+article.statistic {
+  margin-left: 100px;
+  margin-right: 100px;
+}
+
 article[class~="red"] {
   background-color: rgba(192, 64, 64, 0.4);
 }
@@ -60,6 +65,12 @@ article > section p {
 
 article > section p:first-child {
   margin-top: 0px;
+}
+
+article > section p.none {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: bold;
+  text-align: center;
 }
 
 article > section li {

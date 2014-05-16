@@ -2,6 +2,10 @@
   
   $aGetQuery = $oContext->fGetRequestQueryArray();
   
+  $aTopDocumentContributors = Contributors::fGetTopDocumentAuthors();
+  $aTopPacketContributors   = Contributors::fGetTopPacketAuthors();
+  $aTopServerContributors   = Contributors::fGetTopServerOwners();
+  
   ob_start('ob_gzhandler');
   if (isset($aGetQuery['ajax'])) {
     include('./includes/credits-ajax.php');
