@@ -45,6 +45,7 @@ article > h1 {
 }
 
 article > section {
+  min-height: 0px;
   padding: 10px;
 }
 
