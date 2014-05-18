@@ -1,0 +1,183 @@
+html {
+	height:100%;
+}
+
+body  {
+	color: black;
+	background: white;
+	margin: 0px;
+	font-size: 14px;
+	height:100%;
+	width: 100%;
+	padding:0;
+}
+
+#logo {
+display: none;
+}
+
+#viewcode {
+	color: black;
+	font-size: 10px;
+}
+
+#content {
+	position:relative; 
+	z-index:1;
+}
+
+img{
+	border: none;
+}
+
+#container{
+	padding: 1px;
+	margin: 10px 0px 0px 0px;	
+	font-size: 12px;
+	border-width: 2px;
+	border-spacing: 2px;
+	border-style: solid;
+	border-color: blue;
+	border-collapse: collapse;
+	background-color: #EEEEEE;
+}
+
+#newscontainer{
+	min-height: 150px;
+	border: 1px solid black;
+	font-size: 14px;
+	padding: 1px;
+	margin: 10px 0px 0px 0px;	
+	text-align: left;
+	background-color: #EEEEEE;
+}
+
+div#punch2{
+	display: none;
+}
+
+div#punch2 img{
+	display: none;
+}
+
+div#main2 h2{
+	margin: 0; 
+	padding: 0.25em 1em 0.125em 0; 
+	background: blue; 
+	text-transform: uppercase; 
+	font-size: 120%;
+	border-bottom: 1px solid #000;
+	text-align: center; 
+	color: white;
+}
+
+div#author{
+	margin: 0; 
+	text-transform: uppercase; 
+	font-size: 10px;
+	text-align: right; 
+	padding: 0.25em 1em 0.125em 0; 
+	border-bottom: 1px solid #000;
+	font-weight: bold;
+	background-color: blue;
+	color: white;
+}
+
+div#main2 p{
+	padding: 0.5em 1em; 
+	margin: 0;
+}
+
+div#copyrights{
+	font-size: 10px;
+	text-align: center;
+	margin: 0;
+	border-top: 1px solid #000;
+	background-color: #EEEEEE;
+}
+
+#inputbox{
+	background-color: white;
+	border-bottom: 1px solid #333333;
+	border-left: 1px solid #666666;
+	border-right: 1px solid #333333;
+	border-top: 1px solid #666666;
+	color: black;
+	font-family: verdana, tahoma, arial, helvetica, sans-serif;
+	font-size: 9px;
+	text-align: left
+}
+
+#abutton{
+	font-family: verdana, tahoma, arial, helvetica, sans-serif;
+	font-size: 9px;
+	text-align: center
+}
+
+/* Hyperlinks */
+a:link{
+	color: blue;
+	text-decoration: underline;
+	text-transform: none; 
+}
+
+a:visited{
+	color: blue;
+	text-decoration: underline;
+	text-transform: none;
+}
+
+a:active{
+	color: blue;
+	text-decoration: underline;
+	text-transform: none;
+}
+
+a:hover{
+	color: #00CCCC;
+	text-decoration: underline;
+	text-transform: none;
+}
+
+#code{
+	color: black;				 /* Foreground color */
+	background: white;			 /* Background color */
+	overflow: auto;				 /* Puts code into scrollable frame if it's too long */
+	margin: 0.9em 0; padding: 8px; /* Padding */
+	/* Set up borders */
+	border-width: thin;
+	border-style: dotted;
+	border-color: #333;
+	max-width: 90%;
+	text-align: left;
+}
+
+#frills{
+display: none;
+}
+
+#important{
+	background: red;
+	font-weight: bold;
+	color: white;
+}
+
+/* CSS Buttons */
+
+div.menu a {
+	font: bold 8pt Arial;
+	margin: 0;
+	padding: 0;
+	background: #EEEEEE;
+	border: #333 1px solid;
+	color: #000000;
+	text-decoration:none;
+}
+
+div.menu span {
+	padding: 3px;
+}
+
+div.menu a:hover {
+	background: #ffcc33;
+}

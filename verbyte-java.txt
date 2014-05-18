@@ -1,0 +1,51 @@
+/*********************************
+ * http://pastebin.com/f16617044 *
+ *********************************/
+
+import java.io.*;
+
+public class Main{
+  public static void main(String[] arge){
+	vb = find_seeds("F:\\BNET\\SEXP\\Starcraft.exe", 
+	new byte[]{(byte)0xC7, (byte)0x46, (byte)0x10, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 
+	           (byte)0xC7, (byte)0x46, (byte)0x18, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 
+			   (byte)0xC7, (byte)0x46},
+	new int[]{3});
+	System.out.println("VerByte: 0x" + Integer.toHexString(vb[0]));
+  }
+  
+  /*****************************************
+  * This is converted from iago's lockdown *
+  * seedfinder. Its a basic pattern search.*
+  ******************************************/
+  public static int[] find_seeds(String file, byte[] values, int[] offsets){  
+    int[] ret = new int[offsets.length];
+    byte[] data = readFile(file);  
+    if(data == null) return ret;
+    for(int i = 0; i < data.length - values.length; i++){
+      boolean found = true;
+      for(int j = 0; j < values.length && found; j++)
+        if(values[j] != (byte)0xFF && (data[i + j] != values[j])) found = false;
+    
+      if(found){
+        for(int x = 0; x < offsets.length; x++){
+          ret[x] = ((data[i+offsets[x]+0] << 0)  & 0x000000FF) |
+               ((data[i+offsets[x]+1] << 8)  & 0x0000FF00) |
+               ((data[i+offsets[x]+2] << 16) & 0x00FF0000) |
+               ((data[i+offsets[x]+3] << 24) & 0xFF000000);
+        }
+        return ret;
+      }
+    }
+    return ret;
+  }
+  public static byte[] readFile(String file){
+    try{
+      byte[] ret = new byte[(int)(new File(file)).length()];
+      InputStream in = new FileInputStream(file);
+      in.read(ret);
+      in.close();
+      return ret;
+    }catch(Exception e){ return null; }
+  }
+}

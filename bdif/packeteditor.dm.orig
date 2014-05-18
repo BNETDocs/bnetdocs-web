@@ -1,0 +1,99 @@
+			<? 
+				global $userid, $rank, $postdate, $title, $content, $edit, $topictype, $action; 
+				if(!$topictype) $topictype = 'bnetdocs';
+			?>
+			<div id="newscontainer">
+			<div id="main2">
+			<h2>Packet Editor</h2>
+			<blockquote><form method="POST" name="packeteditor" action="/?op=packet&action=<?=$action;?><? if($action=='edit') echo '&pid='.$pid; ?>">
+			</center>
+			<table border=0 cellspacing=2 cellpadding=2 width=100%>
+				<tr>
+					<td width=0>Message ID:</td><td width=100%><input type="text" name="mid" value="<?=$messageid;?>" size=45 id="inputbox"></td>
+				</tr>
+				<tr>
+					<td>Message Name:</td><td><input type="text" name="mname" value="<?=$messagename;?>" size=45 id="inputbox"></td>
+				</tr>
+				<tr>
+					<td>Direction:</td>
+					<td>
+						<select name="mdirection" size="1">
+						<option <?=$pdsselected;?> value="1">Server to Client</option>
+						<option <?=$pdcselected;?> value="0">Client to Server</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td valign=top>Used By:</td><td>
+						<input name="scsw" <?=$cbscsw;?> value="1" type="checkbox"><img src="/images/games/sware.jpg">&nbsp;&nbsp;&nbsp;&nbsp;<input name="sc" <?=$cbsc;?> value="1" type="checkbox"><img src="/images/games/sc.jpg"><br>
+						<input name="bw" <?=$cbbw;?> value="1" type="checkbox"><img src="/images/games/starx.jpg">&nbsp;&nbsp;&nbsp;&nbsp;<input name="jsc" <?=$cbjsc;?> value="1" type="checkbox"><img src="/images/games/jsc.jpg"><br>
+						<input name="dsw" <?=$cbdsw;?> value="1" type="checkbox"><img src="/images/games/diablosw.jpg">&nbsp;&nbsp;&nbsp;&nbsp;<input name="diablo" <?=$cbdiablo;?> value="1" type="checkbox"><img src="/images/games/diablo.jpg"><br>
+						<input name="d2" <?=$cbd2;?> value="1" type="checkbox"><img src="/images/games/diablo2.jpg">&nbsp;&nbsp;&nbsp;&nbsp;<input name="d2lod" <?=$cbd2lod;?> value="1" type="checkbox"><img src="/images/games/d2exp.jpg"><br>
+						<input name="wc2" <?=$cbwc2;?> value="1" type="checkbox"><img src="/images/games/war2.jpg">&nbsp;&nbsp;&nbsp;&nbsp;<input name="wc3" <?=$cbwc3;?> value="1" type="checkbox"><img src="/images/games/war3.jpg"><br>
+						<input name="wc3tft" <?=$cbwc3tft;?> value="1" type="checkbox"><img src="/images/games/w3xp.jpg">&nbsp;&nbsp;&nbsp;&nbsp;<input name="wow" <?=$cbwow;?> value="1" type="checkbox"><img src="/images/games/wow.jpg"><br>
+						<input name="none" <?=$cnone;?> value="1" type="checkbox" onClick="this.checked=scheck(this.form.list)">None<br>
+					</td>
+				</tr>
+				<tr>
+					<td valign=top colspan=2>Format:<br>
+						<textarea onclick="sz(this);" onkeyup="sz(this)" style="width: 100%;" id="inputbox" name="mformat" rows="10"><?=$format;?></textarea><br>
+					</td>
+				</tr>
+				<tr>
+					<td valign=top colspan=2>Remarks:<br>
+						<textarea onclick="sz(this);" onkeyup="sz(this)" style="width: 100%;" id="inputbox" rows="10" name="mremarks"><?=$remarks;?></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>Related:</td><td><input type="text" name="mrelated" value="<?=$related;?>" size=45 id="inputbox"> <font size=1>[ <a href="/?op=help&topic=related links">HELP</a> ]</font></td>
+				</tr>
+				<tr>
+					<td nowrap>Packet Status:</td>
+					<td>
+						<select name="mstatus" size="1">
+						<option <?=$psrawselected;?> value="0">Raw</option>
+						<option <?=$psnorselected;?> value="1">Normal</option>
+						<option <?=$psresselected;?> value="2">Research</option>
+						<option <?=$psdefselected;?> value="3">Defunct</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td nowrap>Clearance Required:</td>
+					<td>
+						<select name="mclearance" size="1">
+						<option <?=$pcgueselected;?> value="0">Guest</option>
+						<option <?=$pcuseselected;?> value="1">User</option>
+						<option <?=$pcsupselected;?> value="2">Superuser</option>
+						<option <?=$pcediselected;?> value="3">Editor</option>
+						<option <?=$pcadmselected;?> value="4">Administrator</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td nowrap>Packet Group:</td>
+					<td>
+						<select name="mgroup" size="1">
+						<?
+						$sqlquerya = 'SELECT * FROM groups ORDER BY id';
+						$groupsarray = mysql_query($sqlquerya);
+						while($rowa = mysql_fetch_array($groupsarray)){
+							$gid = $rowa['id'];
+							$groupname = $rowa['groupname'];
+							if($gid == $pgroupid){
+								$pgselected = 'selected';
+							} else {
+								$pgselected = '';
+							}
+							?><option <?=$pgselected;?> value="<?=$gid;?>"><?=$groupname;?></option><?
+						}
+						?>
+						</select>
+					</td>
+				</tr>
+			</table>
+			<br>
+			<input type="submit" id="abutton" onclick="this.disabled=false;" value="Submit"></form>
+			</blockquote>
+			</div></div>
+			<br>

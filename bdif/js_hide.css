@@ -1,0 +1,7 @@
+div.togglable {
+	display: none;
+}
+
+div.disappear {
+	display: inline;
+}

@@ -1,0 +1,99 @@
+<?
+	$stealth=$_GET['stealth'];
+	if(!$stealth){
+		$stealth = true;
+	} else {
+		$stealth = false;
+	}
+	#$stealth = true;
+	
+	function imagestringcentered ($img,$font,$text,$color) {
+		while (strlen($text) * imagefontwidth($font) > imagesx($img)) {
+			if ($font > 1) { 
+				$font--; 
+			} else { 
+				break; 
+			}
+		}
+		$cy = (imagesy($img)/2) - (imagefontheight($font)/2);
+		imagestring($img,$font,imagesx($img) / 2 - strlen($text) * imagefontwidth($font) / 2,$cy,$text,$color);
+	}
+
+	$auth = 'true';
+	include '../../../db.php';
+	include '../../../functions.php';
+	
+	header("Content-type: image/jpeg");
+	$remoteaddr = $_SERVER['REMOTE_ADDR'];
+	$referrer = $_SERVER['HTTP_REFERER'];
+	$n = '|';
+	if(!$stealth){
+		$stringtodisplay = 'BNETDocs: Redux Server Status Scanner.'.$n;
+	} else {
+		$varnbr = rand(1, 10);
+		$strarray = array(1 => 'Coming soon.', 'Ignore this sig.', 'There\'s no surprise. :)', 'The next evolution is coming.', 'Knowledge is power.', 'You know me. You\'ll see me again.', 'The next generation.', 'Thanks Arta for starting it all!', 'Thanks Ersan for rescuing it!', 'Why are you reading this?');
+		$stringtodisplay = $strarray[$varnbr];
+	}
+	
+
+	$im     = imagecreatefromjpeg("matrix.jpg");
+	$orange = imagecolorallocate($im, 220, 210, 60);
+	$red =  imagecolorallocate($im, 255, 0, 0);
+	$limegreen = imagecolorallocate($im, 0, 255, 0);
+	$black = imagecolorallocate($im, 0, 0, 0);
+	
+	$y = 5;
+	$x = 5;
+	$firstoffset = 1;
+	$secondoffset = 1;
+	
+	if($stealth){
+		#imagestring($im, 3, $x+$firstoffset, $y+$firstoffset, $stringtodisplay, $black);
+		#imagestring($im, 3, $x-$secondoffset, $y-$secondoffset, $stringtodisplay, $black);
+		#imagestring($im, 3, $x, $y, $stringtodisplay, $limegreen);
+		
+		imagestringcentered($im,3,$stringtodisplay,$limegreen);
+	}
+	
+	$px     = (imagesx($im) - 7.5 * strlen($stringtodisplay)) / 2;
+	$txt = explode('|', $stringtodisplay);
+	if(!$stealth){
+		foreach ($txt as $text) {
+			imagestring($im, 3, $x+$firstoffset, $y+$firstoffset, $text, $black);
+			imagestring($im, 3, $x-$secondoffset, $y-$secondoffset, $text, $black);
+			imagestring($im, 3, $x, $y, $text, $limegreen);
+			$y += 15;
+		}
+		
+		$sqlquery = 'SELECT id,serveraddress FROM servers ORDER BY id ASC';
+		$serverarray = mysql_query($sqlquery);
+		
+		while($row = mysql_fetch_array($serverarray)){
+			$sid = $row['id'];
+			$saddress = $row['serveraddress'].': ';
+			if($sid != '7'){
+				imagestring($im, 3, $x+$firstoffset, $y+$firstoffset, $saddress, $black);
+				imagestring($im, 3, $x-$secondoffset, $y-$secondoffset, $saddress, $black);
+				imagestring($im, 3, $x, $y, $saddress, $limegreen);
+				if(checkserver($sid) == '1'){
+					$x = strlen($saddress) * 7;
+					imagestring($im, 3, $x+$firstoffset, $y+$firstoffset, 'Online', $black);
+					imagestring($im, 3, $x-$secondoffset, $y-$secondoffset, 'Online', $black);
+					imagestring($im, 3, $x, $y, 'Online', $limegreen);
+					$x = 5;
+					$y += 15;
+				} else {
+					$x = strlen($saddress) * 7;
+					imagestring($im, 3, $x+$firstoffset, $y+$firstoffset, 'Offline', $black);
+					imagestring($im, 3, $x-$secondoffset, $y-$secondoffset, 'Offline', $black);
+					imagestring($im, 3, $x, $y, 'Offline', $red);
+					$x = 5;
+					$y += 15;
+				}
+			}
+		} 
+	}
+	
+	imagejpeg($im);
+	imagedestroy($im);
+?>
