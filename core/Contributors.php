@@ -2,13 +2,15 @@
   
   final class Contributors {
     
+    const TOP_LIMIT = 5;
+    
     private function __construct() {}
     
     /**
      * Show the top 5 users with the most contributed documents.
      **/
     public static function fGetTopDocumentAuthors() {
-      $sQuery  = "SELECT COUNT(*) AS `document_count`, `author_uid` FROM `documents` GROUP BY `author_uid` ORDER BY `document_count` DESC LIMIT 5;";
+      $sQuery  = "SELECT COUNT(*) AS `document_count`, `author_uid` FROM `documents` GROUP BY `author_uid` ORDER BY `document_count` DESC, `author_uid` ASC LIMIT " . self::TOP_LIMIT . ";";
       $oResult = BNETDocs::$oDB->fQuery($sQuery);
       if (!$oResult || !($oResult instanceof SQLResult)) return false;
       $aUsers = array();
@@ -26,7 +28,7 @@
      * Show the top 5 users with the most contributed news.
      **/
     public static function fGetTopNewsAuthors() {
-      $sQuery  = "SELECT COUNT(*) AS `news_count`, `creator_uid` FROM `news_posts` GROUP BY `creator_uid` ORDER BY `news_count` DESC LIMIT 5;";
+      $sQuery  = "SELECT COUNT(*) AS `news_count`, `creator_uid` FROM `news_posts` GROUP BY `creator_uid` ORDER BY `news_count` DESC, `creator_uid` ASC LIMIT " . self::TOP_LIMIT . ";";
       $oResult = BNETDocs::$oDB->fQuery($sQuery);
       if (!$oResult || !($oResult instanceof SQLResult)) return false;
       $aUsers = array();
@@ -44,7 +46,7 @@
      * Show the top 5 users with the most contributed packets.
      **/
     public static function fGetTopPacketAuthors() {
-      $sQuery  = "SELECT COUNT(*) AS `packet_count`, `author_uid` FROM `packets` GROUP BY `author_uid` ORDER BY `packet_count` DESC LIMIT 5;";
+      $sQuery  = "SELECT COUNT(*) AS `packet_count`, `author_uid` FROM `packets` GROUP BY `author_uid` ORDER BY `packet_count` DESC, `author_uid` ASC LIMIT " . self::TOP_LIMIT . ";";
       $oResult = BNETDocs::$oDB->fQuery($sQuery);
       if (!$oResult || !($oResult instanceof SQLResult)) return false;
       $aUsers = array();
@@ -62,7 +64,7 @@
      * Show the top 5 users with the most contributed servers.
      **/
     public static function fGetTopServerOwners() {
-      $sQuery  = "SELECT COUNT(*) AS `server_count`, `owner_uid` FROM `servers` GROUP BY `owner_uid` ORDER BY `server_count` DESC LIMIT 5;";
+      $sQuery  = "SELECT COUNT(*) AS `server_count`, `owner_uid` FROM `servers` GROUP BY `owner_uid` ORDER BY `server_count` DESC, `owner_uid` ASC LIMIT " . self::TOP_LIMIT . ";";
       $oResult = BNETDocs::$oDB->fQuery($sQuery);
       if (!$oResult || !($oResult instanceof SQLResult)) return false;
       $aUsers = array();
