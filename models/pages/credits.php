@@ -3,6 +3,7 @@
   $aGetQuery = $oContext->fGetRequestQueryArray();
   
   $aTopDocumentContributors = Contributors::fGetTopDocumentAuthors();
+  $aTopNewsContributors     = Contributors::fGetTopNewsAuthors();
   $aTopPacketContributors   = Contributors::fGetTopPacketAuthors();
   $aTopServerContributors   = Contributors::fGetTopServerOwners();
   

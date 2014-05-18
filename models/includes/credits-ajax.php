@@ -57,6 +57,29 @@
   echo "          </section>\n";
   echo "        </article>\n";
   echo "        <article class=\"statistic\">\n";
+  echo "          <h1>Top News Contributors</h1>\n";
+  echo "          <section>\n";
+  echo "            <p>These users have added the most news to the website.</p>\n";
+  if (!$aTopNewsContributors) {
+    echo "            <p class=\"none\">There have been no contributors at this time.</p>\n";  
+  } else {
+    echo "            <ol>\n";
+    foreach ($aTopNewsContributors as $aContributor) {
+      $sUsername    = "";
+      $sDisplayName = "Anonymous";
+      if ($aContributor[1] instanceof User) {
+        $sUsername    = $aContributor[1]->fGetUsername();
+        $sDisplayName = $aContributor[1]->fGetDisplayName();
+      }
+      $sName      = ContentFilter::fFilterHTML((empty($sDisplayName) ? $sUsername : $sDisplayName));
+      $sNewsPosts = number_format($aContributor[0]) . " news post" . ($aContributor[0] != 1 ? "s" : "");
+      echo "              <li><strong>" . $sName . "</strong> with <strong>" . $sNewsPosts . "</strong>.</li>\n";
+    }
+    echo "            </ol>\n";
+  }
+  echo "          </section>\n";
+  echo "        </article>\n";
+  echo "        <article class=\"statistic\">\n";
   echo "          <h1>Top Server Contributors</h1>\n";
   echo "          <section>\n";
   echo "            <p>These users have added the most servers to the website.</p>\n";

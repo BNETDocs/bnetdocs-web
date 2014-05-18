@@ -23,6 +23,24 @@
     }
     
     /**
+     * Show the top 5 users with the most contributed news.
+     **/
+    public static function fGetTopNewsAuthors() {
+      $sQuery  = "SELECT COUNT(*) AS `news_count`, `creator_uid` FROM `news_posts` GROUP BY `creator_uid` ORDER BY `news_count` DESC LIMIT 5;";
+      $oResult = BNETDocs::$oDB->fQuery($sQuery);
+      if (!$oResult || !($oResult instanceof SQLResult)) return false;
+      $aUsers = array();
+      while ($oTopUser = $oResult->fFetchObject()) {
+        if (is_null($oTopUser->creator_uid)) {
+          $aUsers[] = array($oTopUser->news_count, $oTopUser->creator_uid);
+        } else {
+          $aUsers[] = array($oTopUser->news_count, new User($oTopUser->creator_uid));
+        }
+      }
+      return $aUsers;
+    }
+    
+    /**
      * Show the top 5 users with the most contributed packets.
      **/
     public static function fGetTopPacketAuthors() {
