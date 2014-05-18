@@ -1,0 +1,31 @@
+#
+# VirtualHost config for Apache
+# 
+# 1. Make sure "Include conf/extra/httpd-vhosts.conf" is not commented out in httpd.conf
+# 2. Make sure mod_rewrite is enabled
+# 3. Use localhost instead of bnetdocs "domain" or add the redirect to hosts file: 127.0.0.X bnetdocs (then access it in browser via http://bnetdocs)
+# 4. Change to root paths (3 places)
+#
+<VirtualHost *:80>
+	# Host that will serve this project.
+	ServerName bnetdocs
+	# The location of our projects public directory.
+	DocumentRoot C:/git/bnetdocs-phoenix
+	# Useful logs for debug.
+	CustomLog logs/bnetdocs/access.log common
+	ErrorLog logs/bnetdocs/error.log
+	
+	<Directory C:/git/bnetdocs-phoenix>
+		 <IfModule mod_rewrite.c>
+			Require all granted
+			Options -MultiViews
+			RewriteEngine On
+			RewriteCond %{REQUEST_FILENAME} !-f
+			RewriteRule ^ main.php [L]
+			
+		 </IfModule>
+	 </Directory>
+	 
+	 #static redirect css, exe, dll, gif, jpeg, jpg, json, js, png, so, ttf, txt, xml
+	 AliasMatch ^/?(.+)\.(css|exe|dll|gif|jpeg|jpg|json|js|png|so|ttf|txt|xml)$ C:/git/bnetdocs-phoenix/static/$1.$2
+</VirtualHost>
