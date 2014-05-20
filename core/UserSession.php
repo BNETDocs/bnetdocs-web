@@ -61,13 +61,11 @@
     public function fGetSessionId() {
       if (!isset($this->oUser))
         return '';
-      $iSalt = User::fGeneratePasswordSalt();
-      $sHash = User::fHashPassword($this->oUser->fGetPasswordHash(), $iSalt);
+      $sHash = User::fHashPassword($this->oUser->fGetPasswordHash());
       return implode(';',
         array(
           $this->oUser->fGetUId(),
-          $sHash,
-          $iSalt
+          $sHash
         )
       );
     }
