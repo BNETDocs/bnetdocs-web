@@ -11,8 +11,8 @@
   /**
    * this project uses code that is only available in PHP 5.4 (and possibly newer).
    */
-  if (PHP_VERSION < 5.4) {
-    trigger_error('PHP version installed on this server is older than 5.4.', E_USER_ERROR);
+  if (PHP_VERSION < 5.5) {
+    trigger_error('PHP version installed on this server is older than 5.5.', E_USER_ERROR);
   }
   
   /**
@@ -177,7 +177,6 @@
       || !array_key_exists('disable_comments', $_CONFIG['security'])
       || !array_key_exists('disable_user_login', $_CONFIG['security'])
       || !array_key_exists('disable_user_registration', $_CONFIG['security'])
-      || !array_key_exists('user_password_salt', $_CONFIG['security'])
       || !array_key_exists('session_encryption_key', $_CONFIG['security'])
       || !is_string($_CONFIG['security']['csrf_salt'])
       || !is_bool($_CONFIG['security']['disable_comments'])
