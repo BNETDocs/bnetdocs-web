@@ -262,13 +262,20 @@ function BNETDocs() {
   }
   
   window.onload = function() {
+    var title_element   = document.getElementsByTagName('title')[0];
+    var content_element = document.getElementById('content');
+    history.replaceState({
+      'title': title_element.innerHTML,
+      'extraStyle': self.fGetExtraStyle(),
+      'content': content_element.innerHTML
+    });
     self.fOverrideNavigationAnchors();
     self.fHookExternalAnchors();
   }
   
   window.onpopstate = function(event) {
-    var title_element       = document.getElementsByTagName('title')[0];
-    var content_element     = document.getElementById('content');
+    var title_element   = document.getElementsByTagName('title')[0];
+    var content_element = document.getElementById('content');
     
     if (!event.state) {
       history.replaceState({
