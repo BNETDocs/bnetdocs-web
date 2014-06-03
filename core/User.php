@@ -348,11 +348,11 @@
     public static function fHashPassword($sPassword) {
       if (!is_string($sPassword))
         throw new Exception('Password is not of type string');
-      $options = ['cost' => self::PASSWORD_HASH_COST ];
+      $aOptions = ['cost' => self::PASSWORD_HASH_COST ];
       return password_hash(
         $sPassword,
         self::PASSWORD_HASH_ALGORITHM,
-        $options
+        $aOptions
       );
     }
     
@@ -410,7 +410,6 @@
          return true;
       }
       else {
-        echo $sQuery;
         return false;
       }
     }        
