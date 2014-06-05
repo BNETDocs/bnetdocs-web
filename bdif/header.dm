@@ -1,6 +1,6 @@
 <? global $ip, $userid, $auth; $openedmenus = $_GET['ep'];
 
-  // Fight For The Future - Compaign Enables
+  // Fight For The Future - Campaign Enables
   $FFTF_DATE            = date('Y-m-d');
   $FFTF_STOPTHESLOWLANE = ($FFTF_DATE == '2014-05-15');
   $FFTF_RESETTHENET     = ($FFTF_DATE == '2014-06-05');
