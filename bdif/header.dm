@@ -1,4 +1,11 @@
-<? global $ip, $userid, $auth; $openedmenus = $_GET['ep'];?>
+<? global $ip, $userid, $auth; $openedmenus = $_GET['ep'];
+
+  // Fight For The Future - Compaign Enables
+  $FFTF_DATE            = date('Y-m-d');
+  $FFTF_STOPTHESLOWLANE = ($FFTF_DATE == '2014-05-15');
+  $FFTF_RESETTHENET     = ($FFTF_DATE == '2014-06-05');
+
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -62,7 +69,7 @@
 	<link rel="icon" type="image/png" href="/favicon.png" sizes="32x32">
   <?
   // FIGHT FOR THE FUTURE - STOP THE SLOW LANE (http://www.stoptheslowlane.com/)
-  if (date('Y-m-d') == '2014-05-15') {
+  if ($FFTF_STOPTHESLOWLANE) {
     ?>
 	<style id="_sl_hide" type="text/css">body { display: none; }</style>
     <?
@@ -82,6 +89,25 @@
 Computers Programming Binary Coding Hacking -->
 <!-- google_ad_section_end -->
 <body onload="doonload()">
+<?
+  // FIGHT FOR THE FUTURE - RESET THE NET (https://www.resetthenet.org/)
+  if ($FFTF_RESETTHENET) {
+    ?>
+  <script type="text/javascript">
+    window._idl = {};
+    _idl.variant = "modal";
+    _idl.campaign = "reset-the-net";
+    (function() {
+      var idl = document.createElement('script');
+      idl.type = 'text/javascript';
+      idl.async = true;
+      idl.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'members.internetdefenseleague.org/include/?url= <http://members.internetdefenseleague.org/include/?url=>' + (_idl.url || '') + '&campaign=' + (_idl.campaign || '') + '&variant=' + (_idl.variant || 'modal');
+      document.getElementsByTagName('body')[0].appendChild(idl);
+    })();
+  </script>
+  <?
+  } // END OF RESET THE NET
+?>
 <div id="content" align=center>
 <div align=left id="logo"><img src="/images/bnetdocslogo.png"><br>
 <br></div>
@@ -224,3 +250,11 @@ Computers Programming Binary Coding Hacking -->
 	</div></div></div></div></div>
 </td>
 <td width=60% valign=top>
+<?
+  // FIGHT FOR THE FUTURE - RESET THE NET (https://www.resetthenet.org/)
+  if ($FFTF_RESETTHENET) {
+?>
+<a href="https://www.resetthenet.org/" target="_blank" style="display:inline-block;width:100%;"><img src="https://bnetdocs.org/images/resetthenet.png" alt="Reset The Net" title="Reset The Net" style="border:0px;padding-top:10px;width:100%;" /></a>
+<?
+  }
+?>
