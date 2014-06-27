@@ -139,8 +139,6 @@
     }
     
     public static function fFindUserByVerifiedId($iVerifiedId) {
-      if (!is_numeric($iVerifiedId))
-        throw new Exception('Verified Id is not of type numeric');
       $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
           . '`password_hash` AS `password_hash` FROM `users` WHERE `verified_id` = \''
         . BNETDocs::$oDB->fEscapeValue($iVerifiedId)
@@ -195,7 +193,7 @@
         $this->iStatus         = (int)$aFuncArgs[4];
         $this->sRegisteredDate = (string)$aFuncArgs[5];
         $this->mVerifiedDate   = $aFuncArgs[6];
-        $this->iVerifiedId     = (int)$aFuncArgs[7];
+        $this->iVerifiedId     = (string)$aFuncArgs[7];
       } else if ($iFuncArgs == 9) {
         $this->oUserSession    = null;
         $this->iUId            = (int)$aFuncArgs[0];
@@ -206,7 +204,7 @@
         $this->iStatus         = (int)$aFuncArgs[5];
         $this->sRegisteredDate = (string)$aFuncArgs[6];
         $this->mVerifiedDate   = $aFuncArgs[7];
-        $this->iVerifiedId     = (int)$aFuncArgs[8];
+        $this->iVerifiedId     = (string)$aFuncArgs[8];
       } else {
         throw new Exception('Wrong number of arguments given to constructor');
       }
@@ -261,7 +259,7 @@
     
     public static function fGenerateVerifiedId() {
       mt_srand(microtime(true)*100000 + memory_get_usage(true));
-      return mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
+      return md5(mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF);
     }
     
     public function fGetDisplayName() {
@@ -545,8 +543,6 @@
     }
     
     public function fSetVerifiedId($iVerifiedId) {
-      if (!is_numeric($iVerifiedId))
-        throw new Exception('Verified Id is not of type numeric');
       if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
         . BNETDocs::$oDB->fEscapeValue($iVerifiedId)
         . '\' WHERE `uid` = \''
