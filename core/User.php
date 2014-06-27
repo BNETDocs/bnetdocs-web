@@ -457,7 +457,7 @@
       $sPasswordHash = self::fHashPassword($sPassword);
       if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `password_hash` = \''
         . BNETDocs::$oDB->fEscapeValue($sPasswordHash)
-        . '\', WHERE `uid` = \''
+        . '\' WHERE `uid` = \''
         . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
@@ -538,7 +538,7 @@
       )) {
         $this->mVerifiedDate = $mVerifiedDate;
         return true;
-      } else
+      } else 
         return false;
     }
     
