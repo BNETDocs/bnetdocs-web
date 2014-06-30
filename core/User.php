@@ -386,7 +386,7 @@
         . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
         . (is_null($this->sPasswordHash) ?
           'NULL,\'' :
-          ' UNHEX(\'' . bin2hex(BNETDocs::$oDB->fEscapeValue($this->sPasswordHash)) . '\'),\'')
+          ' UNHEX(\'' . BNETDocs::$oDB->fEscapeValue(bin2hex($this->sPasswordHash)) . '\'),\'')
         . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\',\''
         . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
         . (is_null($this->mVerifiedDate) ?
@@ -399,7 +399,7 @@
         . '`email`=\'' . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\','
         . '`username`=\'' . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\','
         . '`display_name`=\'' . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
-        . '`password_hash`=UNHEX(\'' . bin2hex(BNETDocs::$oDB->fEscapeValue($this->sPasswordHash)) . '\'),'
+        . '`password_hash`=UNHEX(\'' . BNETDocs::$oDB->fEscapeValue(bin2hex($this->sPasswordHash)) . '\'),'
         . '`status`=\'' . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\','
         . '`registered_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
         . '`verified_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\','
@@ -456,9 +456,9 @@
         throw new RecoverableException('Password is less than ' . self::PASSWORD_LENGTH_MINIMUM . ' characters');
       if ($iPasswordLength > self::PASSWORD_LENGTH_MAXIMUM && self::PASSWORD_LENGTH_MAXIMUM >= self::PASSWORD_LENGTH_MINIMUM)
         throw new RecoverableException('Password is more than ' . self::PASSWORD_LENGTH_MAXIMUM . ' characters');
-      $sPasswordHash = bin2hex(self::fHashPassword($sPassword)); //to hex for db insert or UNHEX() fails
+      $sPasswordHash = self::fHashPassword($sPassword);
       if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `password_hash` = UNHEX(\''
-        . bin2hex(BNETDocs::$oDB->fEscapeValue($sPasswordHash))
+        . BNETDocs::$oDB->fEscapeValue(bin2hex($sPasswordHash))
         . '\') WHERE `uid` = \''
         . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
