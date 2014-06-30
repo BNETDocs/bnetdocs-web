@@ -61,7 +61,7 @@
     public function fGetSessionId() {
       if (!isset($this->oUser))
         return '';
-      $sHash = User::fHashPassword($this->oUser->fGetPasswordHash());
+      $sHash = md5($this->oUser->fGetPasswordHash());
       return implode(';',
         array(
           $this->oUser->fGetUId(),
@@ -101,18 +101,17 @@
         return false;
       $sSessionValue = self::fDecryptCookieValue($oCookie->fGetValue());
       $aSession = explode(';', $sSessionValue);
-      if (count($aSession) != 3)
+      if (count($aSession) != 2)
         return false;
       $iUId          = (int)$aSession[0];
       $sPasswordHash = $aSession[1];
-      $sSessionSalt  = $aSession[2];
       try {
         $oUser = new User($iUId);
       } catch (Exception $oError) {
         return false;
       }
       if (!$oUser) return false;
-      $sHashOne = User::fHashPassword($oUser->fGetPasswordHash(), $sSessionSalt);
+      $sHashOne = md5($oUser->fGetPasswordHash());
       $sHashTwo = $sPasswordHash;
       if ($sHashOne == $sHashTwo) {
         $this->oUser = $oUser;
