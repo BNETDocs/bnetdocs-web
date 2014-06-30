@@ -185,7 +185,7 @@
         $this->sRegisteredDate = $oResult->registered_date;
         $this->mVerifiedDate   = $oResult->verified_date;
         $this->sVerifiedId     = $oResult->verified_id;
-      } else if ($iFuncArgs == 8) {
+      } else if ($iFuncArgs == 8) { //registration
         $this->oUserSession    = null;
         $this->iUId            = null;
         $this->sEmail          = (string)$aFuncArgs[0];
@@ -390,7 +390,7 @@
         . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\',\''
         . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
         . (is_null($this->mVerifiedDate) ?
-          'NULL,\'' :
+          'NULL, UNHEX(\'' :
           '\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\', UNHEX(\'')
         . BNETDocs::$oDB->fEscapeValue($this->sVerifiedId)
         . '\'));';
