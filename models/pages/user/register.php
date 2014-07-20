@@ -46,14 +46,12 @@
         if ($oUser) {
           $sUserRegisterFailed = "That username is already registered. Pick a unique name.";
         } else {
-          $iPasswordSalt = User::fGeneratePasswordSalt();
-          $sPasswordHash = User::fHashPassword($sPasswordOne, $iPasswordSalt);
+          $sPasswordHash = User::fHashPassword($sPasswordOne);
           $oUser = new User(
             $sEmailOne,
             $sUsername,
             $sDisplayName,
             $sPasswordHash,
-            $iPasswordSalt,
             User::fGetReadACLs(true),
             date('Y-m-d H:i:s.000000'),
             null,

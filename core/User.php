@@ -28,7 +28,12 @@
      * database allows for the exact length that the algorithm gives.
      * (ex.: sha256 yields 256 bits which means a binary(32) field.)
      **/
-    const PASSWORD_HASH_ALGORITHM = 'sha256';
+    const PASSWORD_HASH_ALGORITHM = PASSWORD_BCRYPT;
+
+    /**
+     * Cost of hashing, currently bcrypt
+     **/
+    const PASSWORD_HASH_COST = 10;
     
     /**
      * Password length requirements are irrespective of the database
@@ -81,11 +86,10 @@
       'username',
       'display_name',
       // password_hash is excluded because it's a little more complex.
-      'password_salt',
       'status',
       'registered_date',
       'verified_date',
-      'verified_id',
+      //'verified_id', excluded
     ];
     
     /**
@@ -97,17 +101,16 @@
     private $sUsername;
     private $sDisplayName;
     private $sPasswordHash;
-    private $iPasswordSalt;
     private $iStatus;
     private $sRegisteredDate;
     private $mVerifiedDate;
-    private $iVerifiedId;
+    private $sVerifiedId;
     
     public static function fFindUsersByEmail($sEmail) {
       if (!is_string($sEmail))
         throw new Exception('Email address is not of type string');
       $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
-          . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `email` = \''
+        . 'HEX(`password_hash`) AS `password_hash`, HEX(`verified_id`) AS `verified_id` FROM `users` WHERE `email` = \''
         . BNETDocs::$oDB->fEscapeValue($sEmail)
         . '\' ORDER BY `uid` ASC;';
       $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
@@ -124,7 +127,7 @@
       if (!is_string($sUsername))
         throw new Exception('Username is not of type string');
       $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
-          . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `username` = \''
+        . 'HEX(`password_hash`) AS `password_hash`, HEX(`verified_id`) AS `verified_id` FROM `users` WHERE `username` = \''
         . BNETDocs::$oDB->fEscapeValue($sUsername)
         . '\' LIMIT 1;';
       $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
@@ -135,13 +138,13 @@
       return new self($oSQLResult->fFetchObject());
     }
     
-    public static function fFindUserByVerifiedId($iVerifiedId) {
-      if (!is_numeric($iVerifiedId))
-        throw new Exception('Verified Id is not of type numeric');
+    public static function fFindUserByVerifiedId($sVerifiedId) {
+      if (!is_string($sVerifiedId))
+        throw new Exception('Verified Id is not of type string');
       $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
-          . 'HEX(`password_hash`) AS `password_hash` FROM `users` WHERE `verified_id` = \''
-        . BNETDocs::$oDB->fEscapeValue($iVerifiedId)
-        . '\' LIMIT 1;';
+        . 'HEX(`password_hash`) AS `password_hash`, HEX(`verified_id`) AS `verified_id` FROM `users` WHERE `verified_id` = UNHEX(\''
+        . BNETDocs::$oDB->fEscapeValue($sVerifiedId)
+        . '\') LIMIT 1;';
       $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
       if (!$oSQLResult || !($oSQLResult instanceof SQLResult))
         throw new Exception('An SQL query error occurred while finding user by verified id');
@@ -158,7 +161,7 @@
           // Create User object by result object. Need to get it by user id.
           $iUId = $aFuncArgs[0];
           $sQuery = 'SELECT `' . implode('`,`', self::$SQL_COLUMN_NAMES) . '`,'
-            . 'HEX(`password_hash`) AS `password_hash` FROM `users`'
+            . 'HEX(`password_hash`) AS `password_hash`, HEX(`verified_id`) AS `verified_id` FROM `users`'
             . ' WHERE `uid` = \'' . BNETDocs::$oDB->fEscapeValue($iUId)
             . '\' LIMIT 1;';
           $oSQLResult = BNETDocs::$oDB->fQuery($sQuery);
@@ -177,36 +180,33 @@
         $this->sEmail          = $oResult->email;
         $this->sUsername       = $oResult->username;
         $this->sDisplayName    = $oResult->display_name;
-        $this->sPasswordHash   = $oResult->password_hash;
-        $this->iPasswordSalt   = $oResult->password_salt;
+        $this->sPasswordHash   = hex2bin($oResult->password_hash); //back to native representation
         $this->iStatus         = $oResult->status;
         $this->sRegisteredDate = $oResult->registered_date;
         $this->mVerifiedDate   = $oResult->verified_date;
-        $this->iVerifiedId     = $oResult->verified_id;
-      } else if ($iFuncArgs == 9) {
+        $this->sVerifiedId     = $oResult->verified_id;
+      } else if ($iFuncArgs == 8) { //registration
         $this->oUserSession    = null;
         $this->iUId            = null;
         $this->sEmail          = (string)$aFuncArgs[0];
         $this->sUsername       = (string)$aFuncArgs[1];
         $this->sDisplayName    = (string)$aFuncArgs[2];
         $this->sPasswordHash   = (string)$aFuncArgs[3];
-        $this->iPasswordSalt   = (int)$aFuncArgs[4];
-        $this->iStatus         = (int)$aFuncArgs[5];
-        $this->sRegisteredDate = (string)$aFuncArgs[6];
-        $this->mVerifiedDate   = $aFuncArgs[7];
-        $this->iVerifiedId     = (int)$aFuncArgs[8];
-      } else if ($iFuncArgs == 10) {
+        $this->iStatus         = (int)$aFuncArgs[4];
+        $this->sRegisteredDate = (string)$aFuncArgs[5];
+        $this->mVerifiedDate   = $aFuncArgs[6];
+        $this->sVerifiedId     = (string)$aFuncArgs[7];
+      } else if ($iFuncArgs == 9) {
         $this->oUserSession    = null;
         $this->iUId            = (int)$aFuncArgs[0];
         $this->sEmail          = (string)$aFuncArgs[1];
         $this->sUsername       = (string)$aFuncArgs[2];
         $this->sDisplayName    = (string)$aFuncArgs[3];
         $this->sPasswordHash   = (string)$aFuncArgs[4];
-        $this->iPasswordSalt   = (int)$aFuncArgs[5];
-        $this->iStatus         = (int)$aFuncArgs[6];
-        $this->sRegisteredDate = (string)$aFuncArgs[7];
-        $this->mVerifiedDate   = $aFuncArgs[8];
-        $this->iVerifiedId     = (int)$aFuncArgs[9];
+        $this->iStatus         = (int)$aFuncArgs[5];
+        $this->sRegisteredDate = (string)$aFuncArgs[6];
+        $this->mVerifiedDate   = $aFuncArgs[7];
+        $this->sVerifiedId     = (string)$aFuncArgs[8];
       } else {
         throw new Exception('Wrong number of arguments given to constructor');
       }
@@ -256,19 +256,12 @@
     
     public function fCheckPassword($sTargetPassword) {
       $sCurrentPasswordHash = $this->fGetPasswordHash();
-      $iCurrentPasswordSalt = $this->fGetPasswordSalt();
-      $sTargetPasswordHash  = self::fHashPassword($sTargetPassword, $iCurrentPasswordSalt);
-      return (strtoupper($sCurrentPasswordHash) == strtoupper($sTargetPasswordHash));
-    }
-    
-    public static function fGeneratePasswordSalt() {
-      mt_srand(microtime(true)*100000 + memory_get_usage(true));
-      return mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
+      return password_verify($sTargetPassword, $sCurrentPasswordHash);
     }
     
     public static function fGenerateVerifiedId() {
       mt_srand(microtime(true)*100000 + memory_get_usage(true));
-      return mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF;
+      return md5(mt_rand(0, mt_getrandmax()) * 0xFFFFFFFF);
     }
     
     public function fGetDisplayName() {
@@ -281,10 +274,6 @@
     
     public function fGetPasswordHash() {
       return $this->sPasswordHash;
-    }
-    
-    public function fGetPasswordSalt() {
-      return $this->iPasswordSalt;
     }
     
     public static function fGetReadACLs($bLimited) {
@@ -333,7 +322,7 @@
     }
     
     public function fGetVerifiedId() {
-      return $this->iVerifiedId;
+      return $this->sVerifiedId;
     }
     
     public static function fGetWriteACLs($bLimited) {
@@ -356,20 +345,14 @@
       }
     }
     
-    public static function fHashPassword($sPassword, $iSalt) {
+    public static function fHashPassword($sPassword) {
       if (!is_string($sPassword))
         throw new Exception('Password is not of type string');
-      global $_CONFIG;
-      $sHardcodedSalt = ($_CONFIG['security']['user_password_salt']);
-      if (empty($sHardcodedSalt)) $sHardcodedSalt = "bnetdocs+db~$!";
-      return hash(
+      $aOptions = ['cost' => self::PASSWORD_HASH_COST ];
+      return password_hash(
+        $sPassword,
         self::PASSWORD_HASH_ALGORITHM,
-        hash(
-          self::PASSWORD_HASH_ALGORITHM,
-          $sPassword,
-          false
-        ) . (string)$iSalt . $sHardcodedSalt,
-        false
+        $aOptions
       );
     }
     
@@ -382,8 +365,8 @@
     }
     
     public function fResetVerifiedId() {
-      $iVerifiedId = self::fGenerateVerifiedId();
-      return $this->fSetVerifiedId($iVerifiedId);
+      $sVerifiedId = self::fGenerateVerifiedId();
+      return $this->fSetVerifiedId($sVerifiedId);
     }
     
     public function fSave() {
@@ -393,7 +376,6 @@
         . '`username`,'
         . '`display_name`,'
         . '`password_hash`,'
-        . '`password_salt`,'
         . '`status`,'
         . '`registered_date`,'
         . '`verified_date`,'
@@ -404,33 +386,33 @@
         . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
         . (is_null($this->sPasswordHash) ?
           'NULL,\'' :
-          'UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),\'')
-        . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\',\''
+          ' UNHEX(\'' . BNETDocs::$oDB->fEscapeValue(bin2hex($this->sPasswordHash)) . '\'),\'')
         . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\',\''
         . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
         . (is_null($this->mVerifiedDate) ?
-          'NULL,\'' :
-          '\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\',\'')
-        . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId)
-        . '\');';
+          'NULL, UNHEX(\'' :
+          '\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\', UNHEX(\'')
+        . BNETDocs::$oDB->fEscapeValue($this->sVerifiedId)
+        . '\'));';
       } else {
         $sQuery = 'UPDATE `users` SET '
         . '`email`=\'' . BNETDocs::$oDB->fEscapeValue($this->sEmail) . '\','
         . '`username`=\'' . BNETDocs::$oDB->fEscapeValue($this->sUsername) . '\','
         . '`display_name`=\'' . BNETDocs::$oDB->fEscapeValue($this->sDisplayName) . '\','
-        . '`password_hash`=UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sPasswordHash) . '\'),'
-        . '`password_salt`=\'' . BNETDocs::$oDB->fEscapeValue($this->iPasswordSalt) . '\','
+        . '`password_hash`=UNHEX(\'' . BNETDocs::$oDB->fEscapeValue(bin2hex($this->sPasswordHash)) . '\'),'
         . '`status`=\'' . BNETDocs::$oDB->fEscapeValue($this->iStatus) . '\','
         . '`registered_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->sRegisteredDate) . '\','
         . '`verified_date`=\'' . BNETDocs::$oDB->fEscapeValue($this->mVerifiedDate) . '\','
-        . '`verified_id`=\'' . BNETDocs::$oDB->fEscapeValue($this->iVerifiedId) . '\' '
+        . '`verified_id`=UNHEX(\'' . BNETDocs::$oDB->fEscapeValue($this->sVerifiedId) . '\') '
         . 'WHERE `uid`=\'' . BNETDocs::$oDB->fEscapeValue($this->iUId) . '\' LIMIT 1;';
       }
-      if (BNETDocs::$oDB->fQuery($sQuery))
-        return true;
-      else
+      if (BNETDocs::$oDB->fQuery($sQuery)) {
+         return true;
+      }
+      else {
         return false;
-    }
+      }
+    }        
     
     public function fSetDisplayName($sDisplayName) {
       if (!is_string($sDisplayName))
@@ -474,18 +456,14 @@
         throw new RecoverableException('Password is less than ' . self::PASSWORD_LENGTH_MINIMUM . ' characters');
       if ($iPasswordLength > self::PASSWORD_LENGTH_MAXIMUM && self::PASSWORD_LENGTH_MAXIMUM >= self::PASSWORD_LENGTH_MINIMUM)
         throw new RecoverableException('Password is more than ' . self::PASSWORD_LENGTH_MAXIMUM . ' characters');
-      $iPasswordSalt = self::fGeneratePasswordSalt();
-      $sPasswordHash = self::fHashPassword($sPassword, $iPasswordSalt);
+      $sPasswordHash = self::fHashPassword($sPassword);
       if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `password_hash` = UNHEX(\''
-        . BNETDocs::$oDB->fEscapeValue($sPasswordHash)
-        . '\'), `password_salt` = \''
-        . BNETDocs::$oDB->fEscapeValue($iPasswordSalt)
-        . '\' WHERE `uid` = \''
+        . BNETDocs::$oDB->fEscapeValue(bin2hex($sPasswordHash))
+        . '\') WHERE `uid` = \''
         . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
         $this->sPasswordHash = $sPasswordHash;
-        $this->iPasswordSalt = $iPasswordSalt;
         return true;
       } else
         return false;
@@ -562,20 +540,20 @@
       )) {
         $this->mVerifiedDate = $mVerifiedDate;
         return true;
-      } else
+      } else 
         return false;
     }
     
-    public function fSetVerifiedId($iVerifiedId) {
-      if (!is_numeric($iVerifiedId))
-        throw new Exception('Verified Id is not of type numeric');
-      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = \''
-        . BNETDocs::$oDB->fEscapeValue($iVerifiedId)
-        . '\' WHERE `uid` = \''
+    public function fSetVerifiedId($sVerifiedId) {
+      if (!is_string($sVerifiedId))
+        throw new Exception('Verified Id is not of type string');
+      if (BNETDocs::$oDB->fQuery('UPDATE `users` SET `verified_id` = UNHEX(\''
+        . BNETDocs::$oDB->fEscapeValue($sVerifiedId)
+        . '\') WHERE `uid` = \''
         . BNETDocs::$oDB->fEscapeValue($this->iUId)
         . '\' LIMIT 1;'
       )) {
-        $this->iVerifiedId = $iVerifiedId;
+        $this->sVerifiedId = $sVerifiedId;
         return true;
       } else
         return false;

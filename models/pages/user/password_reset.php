@@ -13,7 +13,7 @@
   $sCSRFToken   = ($bCSRFToken   ? $aQuery['csrf']       : '');
   $sUsername    = ($bUsername    ? $aQuery['username']   : '');
   $sId          = ($bId          ? $aQuery['id']         : '');
-  $iId          = ($bId          ? (int)$sId             : null);
+  $iId          = ($bId          ? $sId             : null);
   $sPasswordOne = ($bPasswordOne ? $aQuery['password_1'] : '');
   $sPasswordTwo = ($bPasswordTwo ? $aQuery['password_2'] : '');
   

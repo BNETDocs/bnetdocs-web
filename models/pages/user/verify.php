@@ -5,15 +5,14 @@
   $aQuery       = array_merge($aGetQuery, $aPostQuery);
   
   $bId          = (isset($aQuery['id']));
-  $sId          = ($bId ? $aQuery['id'] : '');
-  $iId          = ($bId ? (int)$sId     : null);
+  $sId          = ($bId ? (string)$aQuery['id'] : '');
   
   $mResult      = false;
   $sFocusField  = "";
   
   if ($bId) {
     // User is at the second step: email received, needs to be verified.
-    $oUser = User::fFindUserByVerifiedId($iId);
+    $oUser = User::fFindUserByVerifiedId($sId);
     if (!$oUser) {
       $mResult = "We could not find that identifier. It may be possible that the identifier was changed since you received your email. You should also ensure that the identifier has not been mistyped if you typed it in manually.";
     } else {
