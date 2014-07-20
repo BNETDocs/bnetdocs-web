@@ -4,6 +4,8 @@
  * The site should **ALWAYS** work if JavaScript is disabled.
  **/
 
+"use strict";
+
 function BNETDocs() {
   
   var self = this;
