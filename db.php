@@ -18,5 +18,5 @@
 
 	@$connection = mysql_connect("$dbhost","$dbusername","$dbpasswd") or die ("Couldn't connect to server because ".mysql_error());
 	@$db = mysql_select_db("$database_name", $connection) or die("Couldn't select database because ".mysql_error());
-	@mysql_query('SET NAMES utf8_general_ci;');
+	@mysql_query('SET NAMES utf8 COLLATE utf8_general_ci;');
 ?>
