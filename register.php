@@ -79,8 +79,8 @@
 		}
 		if($_POST['email'] && $_POST['username'] && $_POST['agree']){
                         if (extension_loaded('newrelic')) {
-                                newrelic_add_custom_parameter('username', $username);
-                                newrelic_add_custom_parameter('email', $email);
+                                newrelic_add_custom_parameter('username', $_POST['email']);
+                                newrelic_add_custom_parameter('email', $_POST['username']);
                         }
 			if(FieldVerify('username', 'users', $_POST['username'])){
 				?><div id="container">
