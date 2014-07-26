@@ -6,15 +6,15 @@
   $FFTF_RESETTHENET     = ($FFTF_DATE == '2014-06-05');
 
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-   "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 	<meta name="description" content="Battle.Net Logon Sequences, Packets, information and protocols reference site.">
 	<meta name="keywords" content="Battle.Net, Logon Sequences, Packets, information, protocols reference, programming, coding, Starcraft, Warcraft, Diablo">
 
-	<? 
+	<?
+        if( extension_loaded('newrelic') ) { echo newrelic_get_browser_timing_header(); }
 	if(preg_match('/(?i)msie [1-9]/',$_SERVER['HTTP_USER_AGENT'])) { 
 		$ie = true;
 	} else { 
@@ -84,10 +84,6 @@
   } // END OF STOP THE SLOW LANE
   ?>
 </head>
-<!-- google_ad_section_start -->
-<!-- Battle.net StarCraft WarCraft Diablo War Counterstrike FPS Army Navy Marines Game Games RPG Vikings Blizzard Gold Leveling Mining Free Tutorials Movies Matrix 
-Computers Programming Binary Coding Hacking -->
-<!-- google_ad_section_end -->
 <body onload="doonload()">
 <?
   // FIGHT FOR THE FUTURE - RESET THE NET (https://www.resetthenet.org/)
@@ -126,7 +122,8 @@ Computers Programming Binary Coding Hacking -->
 		<a href="/forums/">Forums</a><br>
 		<a href="/?op=credits">Credits</a><br>
 		<a href="/archives/" target="_blank">BNETDocs Archives</a><br><br>
-	</div></div>
+        </div></div>
+<?php if (!$loginDisabled) { ?>
 	<div id="divConsole"><div id="author">Console</div><div class="navmenu" id="bodyConsole">
 		<?
 			if($userid){
@@ -138,7 +135,8 @@ Computers Programming Binary Coding Hacking -->
 				include 'bdif/login.dm';
 			}
 		?>
-	</div></div>
+        </div></div>
+<?php } ?>
 	<div id="divDocuments"><div id="author">Documents</div><div class="navmenu" id="bodyDocuments">
 		<?
 		$sqlqueryz = 'SELECT * FROM documents ORDER BY title ASC';
@@ -186,7 +184,12 @@ Computers Programming Binary Coding Hacking -->
 		<input type="text" id="inputbox" name="quickjump"><input type="submit" id="abutton" value="go">
 		</form>
 		<br>
-		<?
+<?
+                $sqlquery_traffic = mysql_query('SELECT * FROM traffic ORDER BY id');
+                $traffic = array();
+                while($sqlresult_traffic = mysql_fetch_array($sqlquery_traffic)) {
+                        $traffic[$sqlresult_traffic["id"]] = $sqlresult_traffic;
+                }
 		$sqlquerya = 'SELECT * FROM groups ORDER BY displayorder';
 		$groupsarray = mysql_query($sqlquerya);
 		$zs1 = 1;
@@ -205,8 +208,9 @@ Computers Programming Binary Coding Hacking -->
 			$packetsarray = mysql_query($sqlquery);
 			while($row = mysql_fetch_array($packetsarray)){
 				$pid = $row['id'];
-				$direction = $row['direction'];
-				$direction = GetInfo('traffic', 'id', $direction, 'shortdescr') . ' ';
+                                //$direction = $row['direction'];
+                                $direction = $traffic[$row['direction']]['shortdescr'] . ' ';
+				//$direction = GetInfo('traffic', 'id', $direction, 'shortdescr') . ' ';
 				$messageid = '['.$row['messageid'].'] ';
 				$messagename = $row['messagename'];
 				$pclearance = $row['clearance'];

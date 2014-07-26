@@ -131,35 +131,6 @@
 		?>
 		<br>
 	</div></div></div>
-	
-	
-	<?
-	if(!$userid){
-	?>
-	<div id="container">
-	<div id="main2">
-	<div id="author">Advertisements</div>
-		<div align=center>
-		<a href="/">Sponsor Us; Advertise here!</a><br><br>
-		<script type="text/javascript"><!--
-		google_ad_client = "pub-5293484515355302";
-		google_ad_width = 160;
-		google_ad_height = 600;
-		google_ad_format = "160x600_as";
-		google_ad_type = "text_image";
-		//2007-06-19: BNETDocs
-		google_ad_channel = "2273844208";
-		//-->
-		</script>
-		<script type="text/javascript"
-		  src="//pagead2.googlesyndication.com/pagead/show_ads.js">
-		</script>
-	</div>
-	</div>
-	</div>
-	<?
-	}
-	?>
 	</td>
 </tr></table>
 <br><br>
@@ -172,18 +143,8 @@ Demented Minds copyrights reserved to <a href="http://www.doncullen.net">Don Cul
 Copyright infringements will be prosecuted to the fullest extent allowable by law.
 <br>
 <a href="/?op=legalism"><font size="1">Please view our legal disclaimer and terms of service.</font></a><br><br>
-<?
-if($userid == 1){
-	?><a href="https://www.google.com/analytics/reporting/dashboard?id=4966196&pdr=20070819-20070918&cmp=average">Site Stats</a><?
-}
-?>
 </div>
 </div>
-<script src="//www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-2637626-2";
-urchinTracker();
-</script>
+<? if( extension_loaded('newrelic') ) { echo newrelic_get_browser_timing_footer(); } ?>
 </body>
 </html>
