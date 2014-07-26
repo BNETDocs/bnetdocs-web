@@ -88,6 +88,12 @@
 		
 		if($allowfile=='false') exit();
 
+        # New Relic Transactions
+        #-------------
+
+                if (extension_loaded('newrelic')) {
+                        newrelic_name_transaction("/" . $op . ".php");
+                }
 
 	# Surpress code is in place to prevent a HEADER ALREADY SENT error.
 	#-------------
