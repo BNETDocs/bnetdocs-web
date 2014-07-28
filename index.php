@@ -97,6 +97,7 @@
                   } else {
                     newrelic_name_transaction("/" . $op . ".php");
                   }
+                  newrelic_add_custom_parameter("REMOTE_ADDR", $_SERVER["REMOTE_ADDR"]);
                 }
 
 	# Surpress code is in place to prevent a HEADER ALREADY SENT error.
