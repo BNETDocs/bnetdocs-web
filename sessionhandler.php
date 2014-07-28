@@ -5,8 +5,8 @@
 	
 	# Include needed files
 	
-	include 'db.php';
-	include 'functions.php';
+	require_once 'db.php';
+	require_once 'functions.php';
 	
 	# Security
 	

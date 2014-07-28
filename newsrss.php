@@ -38,8 +38,8 @@
 	} 
 
 	$auth = 'true';
-	include 'functions.php';
-	include 'db.php';
+	require_once 'functions.php';
+	require_once 'db.php';
 	header("Content-Type: application/xml; charset=utf-8");
 	echo '<?xml version="1.0" encoding="utf-8"?>';
 	echo '<rss version="2.0">';

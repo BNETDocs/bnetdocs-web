@@ -3,8 +3,8 @@
 	# -------------
 	
 	$auth = 'true';
-	include_once('functions.php');
-	include_once('db.php');
+	require_once('functions.php');
+	require_once('db.php');
 	
 	require_once('bdif/class.html2text.dm'); 
 	

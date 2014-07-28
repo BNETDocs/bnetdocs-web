@@ -48,8 +48,8 @@
 	# Include essential files
 	#-------------
 
-		require 'db.php';
-		require 'func.php';
+		require_once 'db.php';
+		require_once 'functions.php';
 		
 	# Block out unwelcome visitors
 	#-------------

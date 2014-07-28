@@ -48,8 +48,8 @@
 	}
 
 	$auth = 'true';
-	include 'func.php';
-	include 'db.php';
+	require_once 'functions.php';
+	require_once 'db.php';
 
 	###########################################################
 	# ADDED 2014-03-25 BY JAILOUT2000 FOR SECURITY HOLE PATCH #

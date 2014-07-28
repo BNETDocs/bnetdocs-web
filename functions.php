@@ -962,13 +962,13 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 	function isblizzard($ip){
 		$range = substr($ip, 0, stripos($ip, '.', (stripos($ip, '.') + 1)));
 		switch ($range) {
-			case '63.241':
-			case '63.240':
+			case '12.129':
 			case '211.233':
 			case '213.248':
 			case '216.148':
-			case '12.129':
 			case '216.148':
+			case '63.240':
+			case '63.241':
 			case '98.196':
 				$ret = true;
 				break;
