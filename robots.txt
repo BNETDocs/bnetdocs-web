@@ -1,6 +1,12 @@
 User-agent: *
+Disallow: /?op=doc&mode=delete
+Disallow: /?op=doc&mode=edit
+Disallow: /?op=packet&mode=delete
+Disallow: /?op=packet&mode=edit
+Disallow: /?op=viewlogs
 Disallow: /index.php?op=doc&mode=delete
 Disallow: /index.php?op=doc&mode=edit
 Disallow: /index.php?op=packet&mode=delete
 Disallow: /index.php?op=packet&mode=edit
+Disallow: /index.php?op=viewlogs
 Disallow: /logsrss.php
