@@ -4,6 +4,7 @@
   $FFTF_DATE            = date('Y-m-d');
   $FFTF_STOPTHESLOWLANE = ($FFTF_DATE == '2014-05-15');
   $FFTF_RESETTHENET     = ($FFTF_DATE == '2014-06-05');
+  $FFTF_BATTLEFORTHENET = ($FFTF_DATE == '2014-09-10');
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -82,6 +83,13 @@
 	<script src="https://fightforthefuture.github.io/stoptheslowlane/widget/slowlane.js"></script>
     <?
   } // END OF STOP THE SLOW LANE
+  // FIGHT FOR THE FUTURE - BATTLE FOR THE NET (https://www.battleforthenet.com/)
+  if ($FFTF_BATTLEFORTHENET) {
+    ?>
+        <script type="text/javascript">var _bftn_options = { animation: 'banner' }</script>
+        <script src="//fightforthefuture.github.io/battleforthenet-widget/widget.min.js" async></script>
+    <?
+  }
   ?>
 </head>
 <body onload="doonload()">
