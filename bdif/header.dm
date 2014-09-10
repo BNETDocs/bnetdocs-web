@@ -86,7 +86,6 @@
   // FIGHT FOR THE FUTURE - BATTLE FOR THE NET (https://www.battleforthenet.com/)
   if ($FFTF_BATTLEFORTHENET) {
     ?>
-        <script type="text/javascript">var _bftn_options = { animation: 'banner' }</script>
         <script src="//fightforthefuture.github.io/battleforthenet-widget/widget.min.js" async></script>
     <?
   }
