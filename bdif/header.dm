@@ -80,7 +80,7 @@
       <?
     }
     ?>
-	<script src="https://fightforthefuture.github.io/stoptheslowlane/widget/slowlane.js"></script>
+	<script src="//fightforthefuture.github.io/stoptheslowlane/widget/slowlane.js"></script>
     <?
   } // END OF STOP THE SLOW LANE
   // FIGHT FOR THE FUTURE - BATTLE FOR THE NET (https://www.battleforthenet.com/)
