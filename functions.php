@@ -923,7 +923,7 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 	#known types: session
         function logthis($userid, $event, $type){
                 if (extension_loaded("newrelic")) {
-                  newrelic_notice_error(json_encode("userid" => $userid, "event" => $event, "type" => $type, "datetime" => date("r"), "ip" => $_SERVER["REMOTE_ADDR"]));
+                  newrelic_notice_error(json_encode(array("userid" => $userid, "event" => $event, "type" => $type, "datetime" => date("r"), "ip" => $_SERVER["REMOTE_ADDR"])));
                 } else {
                   $event = sanitize($event);
                   $datetime = date("l, F d Y");
