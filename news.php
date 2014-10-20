@@ -36,6 +36,10 @@
 			}
 		} elseif($mode == 'edit'){
 			$nid = $_GET['nid'];
+                        if (!is_numeric($nid)) {
+                                logthis($userid, 'Illegally attempted to edit a news post with invalid NID. Attempt blocked.', 'hack');
+                                blockhack();
+                        }
 			$pid = GetInfo("news", "id", $nid, "poster");
 			if($userid != $pid && $userid != 1){
 				logthis($userid, 'Illegally attempted to edit a news post NID('.$nid.'). Attempt blocked.', 'hack');
