@@ -921,11 +921,15 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 	}
 	
 	#known types: session
-	function logthis($userid, $event, $type){
-		$event = sanitize($event);
-		$datetime = date("l, F d Y");
-		$ip = $_SERVER['REMOTE_ADDR'];
-		mysql_query("INSERT INTO logs (user,event,eventtype, datetime,ip) VALUES ('$userid','$event','$type','$datetime','$ip')") or die("Logthis Function Error: ".mysql_error());
+        function logthis($userid, $event, $type){
+                if (extension_loaded("newrelic")) {
+                  newrelic_notice_error(json_encode("userid" => $userid, "event" => $event, "type" => $type, "datetime" => date("r"), "ip" => $_SERVER["REMOTE_ADDR"]));
+                } else {
+                  $event = sanitize($event);
+                  $datetime = date("l, F d Y");
+                  $ip = $_SERVER['REMOTE_ADDR'];
+                  mysql_query("INSERT INTO logs (user,event,eventtype, datetime,ip) VALUES ('$userid','$event','$type','$datetime','$ip')") or die("Logthis Function Error: ".mysql_error());
+                }
 	}
 
 	function curPageURL() {
