@@ -52,9 +52,9 @@
 	
 	if($id && !$mode){
 		$limit = 1;
-		$orderby = 'WHERE id='.$id;
+		$orderby = 'WHERE id='.mysql_real_escape_string($id);
 		$specific = true;
-		$query  = "SELECT * FROM logs WHERE id=$id";
+		$query  = "SELECT * FROM logs WHERE id=".mysql_real_escape_string($id);
 	}
 
     if($page < 1){
