@@ -454,7 +454,7 @@ New Document Data:
 				<h2>User Comments</h2>
 				<center><br>For detailed questions and discussion, visit the <a href="http://forum.valhallalegends.com/index.php/board,17.0.html" target="_blank">Battle.net Research Forum</a><br><br></center>
 				<?
-				$sqlqueryz = 'SELECT id,posterid,UNIX_TIMESTAMP(dtstamp) as unixdtstamp,message FROM comments WHERE pdid='.$did.' ORDER BY id';
+				$sqlqueryz = 'SELECT id,posterid,UNIX_TIMESTAMP(dtstamp) as unixdtstamp,message FROM comments WHERE pdid='.mysql_real_escape_string($did).' ORDER BY id';
 				$docarray = mysql_query($sqlqueryz);
 				$commentcount = 0;
 				while($rowz = mysql_fetch_array($docarray)){
