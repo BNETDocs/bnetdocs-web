@@ -41,7 +41,7 @@
 				logthis($userid, 'Illegally attempted to edit a news post NID('.$nid.'). Attempt blocked.', 'hack');
 				blockhack();
 			}
-			$sqlquery = 'SELECT * FROM news WHERE id='.$nid.' ORDER BY id DESC LIMIT 1';
+			$sqlquery = 'SELECT * FROM news WHERE id='.mysql_real_escape_string($nid).' ORDER BY id DESC LIMIT 1';
 			$newsarray = mysql_query($sqlquery);
 			$row = mysql_fetch_array($newsarray);
 			$author = $row['poster'];
