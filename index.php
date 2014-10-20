@@ -58,8 +58,12 @@
 
 	# REQUEST: Get our requested page and set the variable
 	#-------------
-		
-		$op = $_REQUEST['op'];
+
+                if (isset($_REQUEST["op"]) && is_string($_REQUEST["op"])) {
+  		  $op = $_REQUEST['op'];
+                } else {
+                  $op = "";
+                }
 
 		# Prevent infinite loop bug, bug found by Jailout2000
 		if($op == 'index') $op = '';
