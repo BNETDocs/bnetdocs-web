@@ -351,12 +351,17 @@
 	# $data = The field where you want to obtain the data from.
 	# --------------------
 		function GetInfo($db, $index, $id, $data){
-			$sqlquery = mysql_query("SELECT * FROM `$db` WHERE `$index`=\"$id\" LIMIT 1") or die('Attempted Query: '."SELECT * FROM `$db` WHERE `$index`='$id' LIMIT 1"."<br>GetInfo Function Error: ".mysql_error());;
+	                static $cache = [];
+	                $str = $db.$index.$id.$data;
+	                if (isset($cache[$str])) return $cache[$str];
+	                $sqlquery = mysql_query("SELECT * FROM `$db` WHERE `$index`=\"$id\" LIMIT 1") or die('Attempted Query: '."SELECT * FROM `$db` WHERE `$index`='$id' LIMIT 1"."<br>GetInfo Function Error: ".mysql_error());;
 			if(mysql_num_rows($sqlquery) > 0) {
 				$ret = mysql_result($sqlquery,0,$data);
 			} else {
 				$ret = false;
-			}
+	                }
+
+	                $cache[$str] = $ret;
 			return $ret;
 		}
 	#-------------
