@@ -11,12 +11,12 @@
 	# Begin Code
 	# -------------
 
-	$dbhost = 'localhost';
-	$dbusername = 'bnetdocs';
-	$dbpasswd = 'redux123';
-	$database_name = 'bnetdocs_botdev';
+	$dbhost = $config->database->hostname;
+	$dbusername = $config->database->username;
+	$dbpasswd = $config->database->password;
+	$database_name = $config->database->name;
 
 	@$connection = mysql_connect("$dbhost","$dbusername","$dbpasswd") or die ("Couldn't connect to server because ".mysql_error());
 	@$db = mysql_select_db("$database_name", $connection) or die("Couldn't select database because ".mysql_error());
-	@mysql_query('SET NAMES utf8 COLLATE utf8_general_ci;');
+	@mysql_query('SET NAMES ' . $config->database->character_set . ' COLLATE ' . $config->database->collate . ';');
 ?>

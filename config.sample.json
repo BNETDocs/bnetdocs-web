@@ -1,0 +1,10 @@
+{
+  "database": {
+    "character_set": "utf8",
+    "collation": "utf8_general_ci",
+    "hostname": "localhost",
+    "name": "bnetdocs_botdev",
+    "password": "",
+    "username": "bnetdocs"
+  }
+}
