@@ -1,5 +1,6 @@
 {
   "bnetdocs": {
+    "maintenance": false,
     "user_login_disabled": false,
     "user_register_disabled": false,
     "user_register_requirements": {
