@@ -1,0 +1,7 @@
+*.bak
+*.log
+*.swp
+*.vim
+.DS_Store
+._*
+/config.json

@@ -1,0 +1,14 @@
+*.bak
+*.log
+*.swp
+*.vim
+.DS_Store
+._*
+.git/
+.gitignore
+.gitkeep
+/LICENSE
+/README.md
+/config.sample.json
+/rsync-deploy.sh
+/rsync-exclude.txt
