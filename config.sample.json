@@ -28,8 +28,5 @@
     "password": "",
     "port": 3306,
     "username": "bnetdocs"
-  },
-  "newrelic": {
-    "application_name": null
   }
 }
