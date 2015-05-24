@@ -1,0 +1,157 @@
+/**
+ * Carl Bennett (C) 2014 All Rights Reserved.
+ */
+
+@font-face {
+  font-family: source sans pro;
+  src: url('https://dev.bnetdocs.org/font-source-sans-pro.ttf');
+}
+body {
+  background: #272727 url('https://dev.bnetdocs.org/main_bg.png') repeat fixed center;
+  color: #ddd;
+  font: 11pt sans-serif;
+  margin: 48px 0px;
+  padding: 0px;
+}
+a,
+a:link {
+  color: #00c0ff;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:visited {
+  color: #00a0cf;
+}
+body > header {
+  background-color: rgba(64,64,64,0.8);
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  cursor: default;
+  color: rgba(0,222,180,0.9);
+  font: 20pt source sans pro;
+  left: 0px;
+  line-height: 32px;
+  padding: 8px 12px;
+  position: fixed;
+  right: 0px;
+  top: 0px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+body > main {
+  margin: auto;
+  width: 1000px;
+}
+body > main > nav {
+  background-color: rgba(64,64,64,0.6);
+  border-radius: 0px 0px 8px 8px;
+  cursor: default;
+  float: left;
+  font: 12pt arial, verdana, sans-serif;
+  line-height: 20px;
+  margin: 0px 8px;
+  padding: 10px;
+  position: fixed;
+  width: 200px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+body > main > nav > a {
+  color: inherit;
+  cursor: default;
+  display: block;
+  font-size: 11pt;
+  font-weight: bold;
+  padding-top: 10px;
+}
+body > main > nav > a:first-child {
+  padding-top: 0px;
+}
+body > main > nav > a:hover {
+  text-decoration: none;
+}
+body > main > nav > a[href] {
+  cursor: pointer;
+  font-family: source sans pro, arial, verdana, sans-serif;
+  font-size: 12pt;
+  font-weight: inherit;
+  padding-top: 0px;
+  padding-left: 10px;
+}
+body > main > nav > a[href]:hover {
+  background-color: rgba(128,128,128,0.15);
+  text-decoration: none;
+}
+body > main > nav > a#nav-current {
+  background-image: url('/style_nav_arrow.png');
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+body > main > article {
+  margin: 0px 0px 0px 224px;
+  padding: 10px 8px 0px 16px;
+}
+body > main > article > header {
+  background-color: rgba(64,64,64,0.6);
+  display: block;
+  font: 14pt source sans pro;
+  padding: 10px;
+  text-transform: uppercase;
+}
+body > main > article > header.error {
+  background-color: rgba(128,64,64,0.6);
+}
+body > main > article > header:first-child {
+  border-radius: 8px 8px 0px 0px;
+}
+body > main > article > section {
+  background-color: rgba(64,64,64,0.4);
+  padding: 10px;
+}
+body > main > article > section.error {
+  background-color: rgba(128,64,64,0.4);
+}
+body > main > article > section:last-child {
+  border-radius: 0px 0px 8px 8px;
+}
+body > main > article > section > p:first-child {
+  margin-top: 0px;
+}
+body > main > article > section > p:last-child {
+  margin-bottom: 0px;
+}
+body > main > article > footer {
+  background-color: rgba(64, 64, 64, 0.6);
+  border-radius: 0px 0px 8px 8px;
+  display: block;
+  font: 12pt source sans pro;
+  margin: 0px;
+  min-height: 20px;
+  padding: 10px;
+  text-transform: uppercase;
+}
+body > footer {
+  box-sizing: border-box;
+  color: rgba(224,224,224,0.3);
+  font: 9pt monospace;
+  margin: 32px auto 10px auto;
+  padding: 0px 0px 0px 224px;
+  text-align: center;
+  width: 1000px;
+}
+span.left {
+  float: left;
+}
+span.right {
+  float: right;
+}

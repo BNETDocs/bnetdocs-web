@@ -1,6 +1,10 @@
 <?php $title = "News"; require("./header.inc.phtml"); ?>
-    <h1>News</h1>
-    <p>This is a template for the news, which isn't available yet.</p>
-    <hr/>
-    <address><?php echo $this->context->timestamp->format($this->context->timestamp_format); ?></address>
+      <article>
+        <header>News</header>
+        <section>This is a template for the news, which isn't available yet.</section>
+        <footer>
+          <span class="left">Carl Bennett</span>
+          <span class="right">Sunday, May 24, 2015</span>
+        </footer>
+      </article>
 <?php require("./footer.inc.phtml"); ?>
