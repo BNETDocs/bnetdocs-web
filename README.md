@@ -31,7 +31,9 @@ Installation
    `location / { try_files /static$document_uri /main.php?$args; }`
 3. Start nginx and php-fpm on your server and ensure they begin running.
 4. Import and setup sample database (TODO: create sample database).
-5. Try accessing this endpoint:
+5. Copy `/config.sample.json` to `/config.json` and modify it to your
+   environment.
+6. Try accessing this endpoint:
    [local.bnetdocs.org](https://local.bnetdocs.org)
  - You may need to modify your `/etc/hosts` file if your development
    environment is not your localhost.
