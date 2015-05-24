@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
+use BNETDocs\Controllers\News as NewsController;
 use BNETDocs\Controllers\Status as StatusController;
 use BNETDocs\Libraries\Common;
 use BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
@@ -146,6 +147,12 @@ class Router {
     }
     ob_start();
     switch ($path) {
+      case "":
+      case "news":
+      case "news.htm":
+      case "news.html":
+        $controller = new NewsController();
+      break;
       case "status":
       case "status.json":
       case "status.txt":
