@@ -12,7 +12,7 @@ class Cache {
 
   public function __construct() {
     $this->memcache = new \Memcached();
-    foreach (Common::$config->Memcache->servers as $server) {
+    foreach (Common::$config->memcache as $server) {
       $this->memcache->addServer($server->hostname, $server->port);
     }
   }
