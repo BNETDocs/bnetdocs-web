@@ -34,7 +34,7 @@ final class Template {
   }
 
   public function setTemplate($template) {
-    $this->template = getcwd() . "/templates/" . $template . ".phtml";
+    $this->template = "./templates/" . $template . ".phtml";
     if (extension_loaded("newrelic")) {
       newrelic_add_custom_parameter("template", $template);
     }
