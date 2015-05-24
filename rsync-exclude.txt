@@ -10,5 +10,7 @@
 /LICENSE
 /README.md
 /config.sample.json
+/database.backup.*
+/database.sample.sql
 /rsync-deploy.sh
 /rsync-exclude.txt
