@@ -23,10 +23,13 @@ final class Template {
   }
 
   public function render() {
+    chdir("./templates/");
     if (!file_exists($this->template)) {
+      chdir("../");
       throw new TemplateNotFoundException($this);
     }
     require($this->template);
+    chdir("../");
   }
 
   public function setContext(&$context) {
@@ -34,7 +37,7 @@ final class Template {
   }
 
   public function setTemplate($template) {
-    $this->template = "./templates/" . $template . ".phtml";
+    $this->template = "./" . $template . ".phtml";
     if (extension_loaded("newrelic")) {
       newrelic_add_custom_parameter("template", $template);
     }
