@@ -22,6 +22,7 @@ final class Common {
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($curl, CURLOPT_MAXREDIRS, $max_redirects);
     curl_setopt($curl, CURLOPT_POSTREDIR, 7);
+    curl_setopt($curl, CURLOPT_AUTOREFERER, true);
 
     curl_setopt($curl, CURLOPT_URL, $url);
 
