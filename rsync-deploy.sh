@@ -12,17 +12,20 @@ function deploy_project () {
   cd "$(git rev-parse --show-toplevel)"
   rsync -avzc --delete --delete-excluded --delete-after \
     --progress --exclude-from="./rsync-exclude.txt" \
-    "./" web1.localdomain:"/home/nginx/bnetdocs-dev"
+    "./" web1.localdomain:"/home/nginx/bnetdocs-dev" ||
+    return $?
   rsync -avzc --delete --delete-excluded --delete-after \
     --progress --exclude-from="./rsync-exclude.txt" \
-    "./" web2.localdomain:"/home/nginx/bnetdocs-dev"
+    "./" web2.localdomain:"/home/nginx/bnetdocs-dev" ||
+    return $?
 }
 
 function main () {
   printf "[%s] initializing...\n" "$(date)"
   check_bash_version
-  deploy_project
-  printf "[%s] success\n" "$(date)"
+  deploy_project &&
+    printf "[%s] success\n" "$(date)" ||
+    printf "[%s] failed to deploy project\n" "$(date)"
 }
 
 main
