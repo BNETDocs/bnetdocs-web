@@ -25,10 +25,8 @@ final class Template {
   public function render() {
     if (!file_exists($this->template)) {
       throw new TemplateNotFoundException($this);
-      return false;
     }
     require($this->template);
-    return true;
   }
 
   public function setContext(&$context) {
@@ -37,6 +35,9 @@ final class Template {
 
   public function setTemplate($template) {
     $this->template = getcwd() . "/templates/" . $template . ".phtml";
+    if (extension_loaded("newrelic")) {
+      newrelic_add_custom_parameter("template", $template);
+    }
   }
 
 }
