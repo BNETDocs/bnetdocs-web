@@ -6,6 +6,7 @@ final class Common {
 
   public static $cache;
   public static $config;
+  public static $database;
 
   /**
    * Block instantiation of this object.

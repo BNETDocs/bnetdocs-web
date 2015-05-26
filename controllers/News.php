@@ -2,7 +2,9 @@
 
 namespace BNETDocs\Controllers;
 
+use BNETDocs\Libraries\Common;
 use BNETDocs\Libraries\Controller;
+use BNETDocs\Libraries\Database;
 use BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use BNETDocs\Libraries\Router;
 
@@ -20,6 +22,9 @@ class News extends Controller {
       break;
       default:
         throw new UnspecifiedViewException();
+    }
+    if (!Common::$database->is_connected()) {
+      Common::$database->connect();
     }
     $model = new NewsModel();
     if (extension_loaded("newrelic")) {

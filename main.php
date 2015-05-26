@@ -4,6 +4,7 @@ use BNETDocs\Libraries\Exceptions\BNETDocsException;
 use BNETDocs\Libraries\Exceptions\ClassNotFoundException;
 use BNETDocs\Libraries\Cache;
 use BNETDocs\Libraries\Common;
+use BNETDocs\Libraries\Database;
 use BNETDocs\Libraries\Router;
 
 function main() {
@@ -93,8 +94,9 @@ function main() {
     newrelic_add_custom_parameter("REMOTE_ADDR", getenv("REMOTE_ADDR"));
   }
 
-  Common::$config = json_decode(file_get_contents("./config.phoenix.json"));
-  Common::$cache  = new Cache();
+  Common::$config   = json_decode(file_get_contents("./config.phoenix.json"));
+  Common::$cache    = new Cache();
+  Common::$database = new Database();
 
   $router = new Router();
   $router->route();
