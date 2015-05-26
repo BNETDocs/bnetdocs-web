@@ -48,7 +48,7 @@
 	# Include essential files
 	#-------------
 
-		$config = json_decode(file_get_contents("./config.json"));
+		$config = json_decode(file_get_contents("./config.redux.json"));
 		require_once 'db.php';
 		require_once 'functions.php';
 		
