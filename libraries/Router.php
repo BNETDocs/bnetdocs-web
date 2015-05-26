@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
+use BNETDocs\Controllers\Credits as CreditsController;
 use BNETDocs\Controllers\News as NewsController;
 use BNETDocs\Controllers\Status as StatusController;
 use BNETDocs\Libraries\Common;
@@ -147,6 +148,11 @@ class Router {
     }
     ob_start();
     switch ($path) {
+      case "credits":
+      case "credits.htm":
+      case "credits.html":
+        $controller = new CreditsController();
+      break;
       case "":
       case "news":
       case "news.htm":
