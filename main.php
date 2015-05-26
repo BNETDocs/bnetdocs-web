@@ -93,7 +93,7 @@ function main() {
     newrelic_add_custom_parameter("REMOTE_ADDR", getenv("REMOTE_ADDR"));
   }
 
-  Common::$config = json_decode(file_get_contents("./config.json"));
+  Common::$config = json_decode(file_get_contents("./config.phoenix.json"));
   Common::$cache  = new Cache();
 
   $router = new Router();

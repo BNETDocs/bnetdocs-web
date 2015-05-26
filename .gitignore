@@ -4,4 +4,5 @@
 *.vim
 .DS_Store
 ._*
-/config.json
+/config.phoenix.json
+/config.redux.json
