@@ -1,10 +1,12 @@
-<?php $title = "News"; require("./header.inc.phtml"); ?>
+<?php $title = "News"; require("./header.inc.phtml");
+foreach ($this->context->news_posts as $news_post) { ?>
       <article>
-        <header>Work in progress</header>
-        <section>I've been giving life back into BNETDocs: Phoenix recently. There's been lots of changes to the code repository and restructuring it. There's been lots of new designs and paradigms put in place that are better than the previous Phoenix from last year. More news coming soon.</section>
+        <header><?php echo $news_post["title"]; ?></header>
+        <section><?php echo $news_post["content"]; ?></section>
         <footer>
-          <span class="left">Carl Bennett</span>
-          <span class="right">Monday, May 25, 2015</span>
+          <span class="left"><?php echo $news_post["author"]; ?></span>
+          <span class="right"><?php echo $news_post["timestamp_published"]->format("l, F j, Y"); ?></span>
         </footer>
       </article>
-<?php require("./footer.inc.phtml"); ?>
+<?php }
+require("./footer.inc.phtml"); ?>
