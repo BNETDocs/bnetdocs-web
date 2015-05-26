@@ -4,6 +4,7 @@ namespace BNETDocs\Libraries;
 
 use BNETDocs\Controllers\Credits as CreditsController;
 use BNETDocs\Controllers\News as NewsController;
+use BNETDocs\Controllers\Redirect as RedirectController;
 use BNETDocs\Controllers\Status as StatusController;
 use BNETDocs\Libraries\Common;
 use BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
@@ -148,12 +149,14 @@ class Router {
     }
     ob_start();
     switch ($path) {
+      case "":
+        $controller = new RedirectController("https://dev.bnetdocs.org/news", 302);
+      break;
       case "credits":
       case "credits.htm":
       case "credits.html":
         $controller = new CreditsController();
       break;
-      case "":
       case "news":
       case "news.htm":
       case "news.html":
