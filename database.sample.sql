@@ -5,8 +5,8 @@
 
 -- Begin sample.
 
-DROP DATABASE IF EXISTS `bnetdocs-phoenix`;
+DROP DATABASE IF EXISTS `bnetdocs_phoenix`;
 
-CREATE DATABASE `bnetdocs-phoenix` CHARSET `utf8` COLLATE `utf8_unicode_ci`;
+CREATE DATABASE `bnetdocs_phoenix` CHARSET `utf8` COLLATE `utf8_unicode_ci`;
 
 -- End of sample.
