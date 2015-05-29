@@ -1,0 +1,26 @@
+<!ENTITY % HTML.Version "BNETDocs Packet Format v1.0">
+<!ELEMENT packet (client*, related*, format, remarks, response*)>
+<!ATTLIST packet type CDATA #REQUIRED>
+<!ATTLIST packet id CDATA #REQUIRED>
+<!ATTLIST packet decid CDATA #REQUIRED>
+<!ATTLIST packet name CDATA #REQUIRED>
+<!ATTLIST packet direction CDATA #REQUIRED>
+<!ELEMENT client (#PCDATA)>
+<!ELEMENT related (#PCDATA)>
+<!ATTLIST related type CDATA #REQUIRED>
+<!ATTLIST related id CDATA #REQUIRED>
+<!ATTLIST related direction CDATA #REQUIRED>
+<!ELEMENT format (field*, repeat*)>
+<!ELEMENT field EMPTY>
+<!ATTLIST field type CDATA #REQUIRED>
+<!ATTLIST field descr CDATA #REQUIRED>
+<!ATTLIST field name CDATA #IMPLIED>
+<!ATTLIST field case CDATA #IMPLIED>
+<!ATTLIST field default CDATA #IMPLIED>
+<!ELEMENT repeat (field*)>
+<!ATTLIST repeat case CDATA #REQUIRED>
+<!ELEMENT remarks (#PCDATA)>
+<!ELEMENT response (#PCDATA)>
+<!ATTLIST response type CDATA #REQUIRED>
+<!ATTLIST response id CDATA #REQUIRED>
+<!ATTLIST response direction CDATA #REQUIRED>

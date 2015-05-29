@@ -1,0 +1,76 @@
+		ul.domtabs{
+			float:left;
+			width:100%;
+			padding:0;
+			list-style:none;
+			border:none;
+			background: url(../images/menubkg.png) repeat-x; 
+		}
+		ul.domtabs li{
+			float:left;
+			margin:0;
+			list-style:none;
+			border:none;
+		}
+		ul.domtabs a:link,
+		ul.domtabs a:visited,
+		ul.domtabs a:active,
+		ul.domtabs a:hover{
+			width:8em;
+			padding:.2em 1em;
+			display:block;
+			color:#fff;
+			font-weight:bold;
+			text-decoration:none;
+		}
+		
+		ul.domtabs {
+			margin-bottom: 1px;
+		}
+		
+		ul.domtabs a:hover{
+			background:#696;
+			background: url(../images/white50percent.png); 
+		}
+		div.domtab div{
+			clear:both;
+			width:auto;
+			color:#fff;
+		}
+		
+		div.domtab {
+			text-align: left;
+		}
+		
+		.tabbox {
+			text-align: left;
+		}
+		
+		.tabboxtable {
+			text-align: left;
+			border-color: #444 #888 #888 #444;
+			border-style: solid;
+			border-width: 1px;
+			background: url(../images/white15percent.png); 
+			clear:both;
+			width: 100%;
+		}
+		
+		p.shovethisright {
+			text-align: right;
+			padding-right: 20px;
+		}
+		
+		div.domtabcontainer {
+			text-align: right;
+			padding: 20px;
+			padding-right: 40px;
+		}
+
+		ul.domtabs li.active a:link,
+		ul.domtabs li.active a:visited,
+		ul.domtabs li.active a:active,
+		ul.domtabs li.active a:hover{
+			background: url(../images/menubkghover.png) repeat-x;
+			color:#fff;
+		}

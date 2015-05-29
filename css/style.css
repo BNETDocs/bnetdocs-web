@@ -1,0 +1,894 @@
+	body {
+		color: white;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.pacman_table {
+		border-collapse: collapse;
+		text-align: left;
+	}
+	
+	.errortext {
+		color: red;
+		font-weight: bold;
+	}
+	
+	.sysmsg {
+		color: lime;
+		font-weight: bold;
+	}
+	
+	ul.cssbutton {
+		margin: 0px;
+		padding-left: 2px;
+		padding-right: 2px;
+		font-family: Verdana, Arial, Helvetica, sans-serif;
+		font-size: 10px;
+		line-height: 20px;
+		height: 20px;
+		margin: 0px;
+		text-align:center;
+		border-width: 2px;
+		color: #000000;
+		font-weight: bold;
+		background-color: #CCCCCC;
+		border-style: outset;
+	}
+
+	.nodeco {
+		text-decoration: none;
+	}
+
+	ul.cssbutton:hover {
+		font-weight: bold;
+		color: #FFFFFF;
+		background-color: #999999;
+		border-style: outset;
+	}
+	
+	img {
+		border: none;
+	}
+	
+	.Container {
+		position: relative;
+		border: none;
+	}
+	.Container2 {
+		position: relative;
+		border: none;
+	}
+	
+	.dialogboxbg{
+		
+	}
+	
+	h2 {
+		min-width: 500px;
+	}
+	
+	.dialogboxbg2{
+		/* background: url(../images/mlk.png) no-repeat center; */
+	}
+	
+	.cornerImg {
+		width: 32px;
+		height: 32px;
+	}
+	.TLCorner {
+		height: 32px;
+		width: 32px;
+		background-image: url(../images/tlcorner.png);
+	}
+	.TBar {
+		height: 32px;
+		background-image: url(../images/top.png);
+		margin-top: -32px;
+		margin-right: 32px;
+		margin-left: 32px;
+	}
+	.TRCorner {
+		height: 32px;
+		widtH: 32px;
+		float: right;
+		margin-top: -32px;
+		background-image: url(../images/trcorner.png);
+	}
+	.LSide {
+		width: 25px;
+		background-image: url(../images/left.png);
+	}
+	.RSide {
+		width: 25px;
+		background-image: url(../images/right.png);
+	}
+	.BLCorner {
+		height: 32px;
+		width: 32px;
+		background-image: url(../images/blcorner.png);
+	}
+	.BBar {
+		height: 32px;
+		background-image: url(../images/bottom.png);
+		margin-top: -32px;
+		margin-right: 32px;
+		margin-left: 32px;
+	}
+	
+	.nTBar {
+		height: 32px;
+		background-image: url(../images/top.png);
+		margin-top: -12px;
+	}
+	
+	.nBBar {
+		height: 32px;
+		background-image: url(../images/bottom.png);
+	}
+	
+	.BRCorner {
+		height: 32px;
+		widtH: 32px;
+		float: right;
+		margin-top: -32px;
+		background-image: url(../images/brcorner.png);
+	}
+	.content {
+		background-image: url(../images/background.png);
+		width: 100%;
+	}
+	
+	.thebody {
+		padding: 10px;
+	}
+	
+	.barTImg {
+		height: 32px;
+		width: 136px;
+		padding: 0px 0px 0px 0px;
+	}
+	.barLR {
+		width: 32px;
+	}
+	.barImgTB {
+		width: 136px;
+		height: 32px;
+	}
+	
+	.barImgL {
+		width: 36px;
+		width: 32px;
+		height: 100%;
+	}
+	.barImgR {
+		margin-right: 0px;
+		width: 36px;
+		width: 32px;
+		height: 100%;
+	}
+	.Content {
+		background-image: url(../images/background.png);
+		height: auto;
+		width: auto;
+	}
+	
+	.clear {
+		width: 25px;
+		height: 1px;
+	}
+	
+	.logo{
+	}
+
+	.rightheader {
+		font-size: 10px;
+		text-align: right;
+		padding-right: 30px;
+		padding-top: 4px;
+	}
+
+	div#headcontainer {
+		background-image: url(../images/background.png);
+		clear: both;
+		border-bottom: 1px solid #000;
+	}
+
+	.qkjump {
+		background-color: black;
+		background: url(../images/quickjump.png);
+		border-bottom: 1px solid #333333;
+		border-left: 1px solid #666666;
+		border-right: 1px solid #333333;
+		border-top: 1px solid #666666;
+		color: white;
+		font-family: "Courier New";
+		text-align: left;
+		font-size: 12px;
+		width: 192px;
+		height: 16px;
+		padding-left: 4px;
+		padding-right: 4px;
+	}
+	
+	.commentbox {
+		color: white;
+		font-family: "Courier New";
+		text-align: left;
+		font-size: 12px;
+		padding-left: 4px;
+		padding-right: 4px;
+		width: 95%
+	}
+	
+	.commentboxtextarea {
+		background-color: black;
+		border-bottom: 1px solid #333333;
+		border-left: 1px solid #666666;
+		border-right: 1px solid #333333;
+		border-top: 1px solid #666666;
+		color: white;
+		font-family: "Courier New";
+		text-align: left;
+		padding-left: 4px;
+		padding-right: 4px;
+		width: 95%
+	}
+
+	a {
+		color: #00FFFF;
+		text-decoration: none;
+	}
+
+	a:hover	{
+		color: lime;
+	}
+
+	h1.nobr,h2.nobr,h3.nobr,h4.nobr,h5.nobr,h6.nobr{
+		margin: 0px 0px 0px 0px;
+		padding: 0px 0px 0px 10px;
+	}
+
+	h2 {
+		background-image: url(../images/hbg.png);
+		height: 29px;
+		vertical-align: middle;
+		padding-left: 10px;
+		padding-top: 3px;
+		margin-top: 35px;
+	}
+
+	.bottombar {
+		background-image: url(../images/hbg2.png);
+		height: 20px;
+		text-align: right;
+		padding-right: 15px;
+		padding-top: 2px;
+		font-size: 12px;
+		background-repeat: repeat-x;
+	}
+	
+	font.tiny {
+		font-size: 8px;
+	}
+
+	.subheader {
+		margin: 0px 0px 0px 0px;
+		padding: 2px 0px 0px 10px;
+		height: 18px;
+		background-image: url(../images/hbg2.png);
+	}
+
+	div.punch {
+		position: relative;
+		float: right;
+		height: 105px;
+		text-align: center; 
+		background-image: url(../images/imgborder.png);
+		margin: 0px 0px -50px 25px;
+		right: 7px;
+		width: 130px;
+		top: -85px;
+	}
+
+	img.punch {
+		position: relative;
+		top: 12px;
+		right: -2px;
+	}
+
+	#sidebar {
+		width: 100px;
+	}
+
+	#maincontent {
+		width: 100%;
+	}
+
+	div#copyrightsx {
+		font-size: 10px;
+		text-align: center;
+		margin: 0;
+		border-top: 1px solid #000;
+	}
+
+	#copyrights {
+		text-align: center;
+		border-top: 1px solid #000;
+		color: white;
+	}
+
+	.buttons a, .buttons input {
+	    background-color: #333;
+	    border: 1px solid #555;
+	    font-family: Tahoma, Arial, Verdana, sans-serif;
+	    text-decoration: none;
+	    font-weight: bold;
+	}
+
+	.buttons input {
+	    overflow: visible;
+		padding: 2px 0px 2px 0px;
+		color: white;
+		font-size: 10px;
+	}
+	
+	.hlbutton {
+	    background-color: #333;
+	    border: 1px solid #555;
+	    text-decoration: none;
+	    font-weight: bold;	
+	}
+	
+	.hlbutton:hover {
+	    background-color: #dff4ff;
+	    border:1px solid #c2e1ef;
+	    color: #336699;
+	}
+	
+	input {
+	    background-color: #333;
+	    border: 1px solid #555;
+	    font-family: Tahoma, Arial, Verdana, sans-serif;
+	    text-decoration: none;
+	    font-weight: bold;
+	    overflow: visible;
+		padding: 2px 0px 2px 0px;
+		color: white;
+		font-size: 10px;
+	}
+	
+	.optionbutton {
+		width: 90px;
+	}
+	
+	fieldset {
+		position: relative;
+		margin: 1em 0px 20px 20px;
+		padding: 2em 10px 10px 10px;
+		border-width: 2px 2px 2px 10px;
+		border-style: solid;
+		border-color: #222;
+		overflow: auto;
+		font-family: Arial, Helvetica, sans-serif ;
+		font-size: small;
+		background-image: url(../images/background.png);
+	}
+
+	legend {
+		line-height: 100%;
+		padding: 3px 5px;
+		top:  -10px;	
+		background-color: #111;
+		border-width: 1px 1px 1px 10px;
+		border-color: #333;
+		border-style: solid;	
+		color: #FFF;
+		font-weight: bold;
+		text-transform: uppercase;
+		font-size: 90%;
+		text-align: center;
+	}
+	
+	.small {
+		font-size: 70%;
+	}
+	
+	.infobox {
+		border: 1px inset orange;
+		background-color: #FF6600;
+		padding: 1px;
+		font-size: 70%;
+		padding-left: 3px;
+		color: #FFF;
+	}
+
+	.goodstatus {
+		display: inline;
+		background-color: #006600;
+		border: 1px inset #00CC00;
+		margin-left: 3px;
+		padding-left: 4px;
+		padding-right: 4px;
+	}
+	
+	.badstatus {
+		display: inline;
+		background-color: #CC0000;
+		border: 1px inset #FF3300;
+		margin-left: 3px;
+		padding-left: 4px;
+		padding-right: 4px;
+	}
+
+	fieldset.smallpanel {
+		width: 200px;
+		display: inline;
+	}
+
+	fieldset.thinpanel {
+		width: 100px;
+		display: inline;
+	}
+	
+	fieldset.medpanel {
+		width: 300px;
+		display: inline;
+	}
+	
+	fieldset.normalpanel {
+		overflow: hidden;
+	}
+	
+	.inline {
+		display: inline;
+	}
+	
+	font.urgent {
+		color: red;
+		font-weight: bold;
+		font-size: 15px;
+	}
+
+	font.required {
+		color: red;
+		font-size: 10px;
+	}
+	
+	font.notice {
+		color: lime;
+		font-size: 10px;
+	}
+	
+	input.text {
+		width: 50px;
+	}
+	
+	.buttons {
+		padding-top: 4px;
+		display: inline;
+	}
+	
+	.options {
+		position: relative;
+		float: right;
+		height: 0px;
+		text-align: right; 
+		margin: -95px -3px 0px 0px;
+		right: 0px;
+		top: 0px;
+	}
+
+	input:hover, .buttons a:hover {
+	    background-color: #dff4ff;
+	    border:1px solid #c2e1ef;
+	    color: #336699;
+	}
+	
+	.expand {
+		padding: 7px;
+	}
+	
+	.linebr {
+		height: 10px;
+	}
+	
+	.box {
+		border:1px solid #000; 
+	}
+	
+	#loginform {
+		line-height: 150%;
+	}
+	
+	.bold {
+        font-weight: bold;
+	}
+
+	.italics {
+	    font-style: italic;
+	}
+
+	.underline {
+		text-decoration: underline;
+	}
+
+	.strikethrough {
+		text-decoration: line-through;
+	}
+
+	.overline {
+		text-decoration: overline;
+	}
+
+	.sized {
+		/* text-size: 12px; */
+	}
+
+	.quotecodeheader {
+		font-family: Verdana, arial, helvetica, sans-serif;
+		font-size: 12px;
+		font-weight: bold;
+	}
+
+	.codebody {
+	    background-color: #000000;
+	    font-family: Courier new, courier, mono;
+	    font-size: 12px;
+	    color: #00FF00;
+	    border: 1px solid #BFBFBF;
+	}
+	
+	.quotebody {
+		background-color: #000000;
+	    font-family: Courier new, courier, mono;
+	    font-size: 12px;
+	    color: #FFFFFF;
+		border: 1px solid #BFBFBF;
+	}
+
+	.listbullet {
+		list-style-type: disc;
+		list-style-position: inside;
+	}
+
+	.listdecimal {
+		list-style-type: decimal;
+		list-style-position: inside;
+	}
+
+	.listlowerroman {
+		list-style-type: lower-roman;
+		list-style-position: inside;
+	}
+
+	.listupperroman {
+		list-style-type: upper-roman;
+		list-style-position: inside;
+	}
+
+	.listloweralpha {
+		list-style-type: lower-alpha;
+		list-style-position: inside;
+	}
+
+	.listupperalpha {
+		list-style-type: upper-alpha;
+		list-style-position: inside;
+	}
+	
+	.commenttable {
+		border-color: #999999;
+		border-top-style: dotted;
+		border-width: 1px;
+		margin-top: -8px;
+		margin-bottom: -6px;
+	}
+
+	.commentauthora, .commentauthorb {
+		width: 15%;
+		border-bottom-color: #00FF00;
+		padding: 5px;
+	}
+
+	.thecommenta, thecommentb {
+		width: 85%;
+		padding: 10px;
+		padding-left: 0px;
+	}
+
+	.thecommenta, .commentauthorb, .tria {
+		background-color: #444;
+
+	}
+
+	.thecommentb, .commentauthora, .trib { 
+		background-color: #222;
+	}
+
+	.tria, .trib {
+		background-image: url(../images/triangle.png);
+		background-repeat: no-repeat;
+		background-position: center left;
+	}
+
+	.authorcommentdivider {
+		width: 5px;
+		height: 100%;
+		background-color: #00FAFF;
+	}
+
+	.spacer {
+		width: 15px;
+		height: 100%;
+	}
+	
+	.pix {
+		width: 1px;
+		height: 1px;
+	}
+	
+	ul.cssbutton {
+	    padding-left: 2px;
+		padding-right: 2px;
+		padding-bottom: 1px;
+	    font-family: Verdana, Arial, Helvetica, sans-serif;
+	    font-size: 10px;
+	    margin: 0px;
+		margin-right: 3px;
+		margin-left: 3px;
+	    text-align: center;
+	    border-width: 2px;
+	    color: #000000;
+	    font-weight: bold;
+	    background-color: #CCCCCC;
+	    border-style: outset;
+		display: inline;
+	}
+	
+	.cssbutton li {
+		display: inline;
+	}
+
+	.nodeco {
+		text-decoration: none;
+	}
+
+	ul.cssbutton:hover {
+	    font-weight: bold;
+	    color: #FFFFFF;
+	    background-color: #999999;
+	    border-style: outset;
+		display: inline;
+	}
+
+	.cssbutton li > div {
+		display: none;
+	}
+
+	.cssbutton li:hover > div.menu {
+		margin-left: -2px;
+		display: inline;
+		position: absolute;
+		z-index: 100;
+		border-style: solid;
+	    border-width: 0px;
+		background-color: #222;
+		border-color: black;
+	}
+
+	div.menu > table {
+		border-collapse: collapse;
+	}
+
+	td.option {
+		padding: 4px;
+		color: white;
+		border-width: .5px;
+		border-color: black;
+		border-style: solid;
+		font-size:10px; 
+	}
+
+
+	td.option:hover {
+		background-color: #7484ad;
+		color: white;
+	}
+
+	.CellLink {
+	  width: 100%;
+	  height: 100%;
+	  display: block;
+	  text-decoration: none;
+	  color: white !important;
+	}
+	
+	a.info:hover{
+		position: relative; /*this is the key*/
+		cursor: help;
+	}
+
+	a.info span{
+		display: none;
+	}
+
+	a.info:hover span{ /*the span will display just on :hover state*/
+	    display: block;
+	    position: absolute;
+	    top: 10px; 
+		left: 0px; 
+	   	padding: 7px; 
+		margin: 10px; 
+		z-index: 100;
+		width: 300px; 
+	    border: 1px solid #0cf;
+	    background-color: #cff; 
+		color: #000;
+	    text-align: left;
+		font-size: 12px; 
+	}
+
+	/* ================================================================ 
+	The original version of the menu css and the associated (x)html
+	is available at http://www.cssplay.co.uk/menus/skeleton.html
+	Menu Copyright (c) 2005-2007 Stu Nicholls. All rights reserved.
+	
+	CSS has been heavily modified to more appropriately fit BNETDocs. Feel free to copy, 
+	modify, distribute, and so on. Copyright remains the same as set by Stu Nicholls.
+	Copyrighted under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License
+	which can be seen at:
+	
+	http://creativecommons.org/licenses/by-nc-sa/3.0/
+	
+	=================================================================== */
+
+	#menu_container {
+		position: relative; 
+		z-index: 25;
+	}
+
+	.packetlist {
+		overflow: auto; 
+		max-height:500px;
+		width: 250px;
+	}
+	
+	.standardmenu:hover {
+		background: #7484ad;
+	}
+
+	.submenu {
+		background:#222 url(../images/fly.png) no-repeat right center;
+	}
+
+	.submenu:hover {
+		background: #7484ad;
+	}
+
+	.rootmenu {
+		background: url(../images/menubkg.png); 
+		border-right: 1px solid #000; 
+		font-weight: bold;
+	}
+
+	.rootmenu:hover {
+		background: #7484ad url(../images/menubkghover.png);
+	}
+	
+	#login li:hover {
+		background: #7484ad;
+	}
+
+	#nav, #nav ul {	
+		padding: 0 0 5px 0; 
+		margin: 0; 
+		list-style: none; 
+		font: 10px verdana, sans-serif; 
+		border: 1px solid #000; 
+		background: #222; 
+		position: relative; z-index:200;
+	}
+
+	#nav {
+		height: 25px; 
+		padding: 0;
+		background: url(../images/menubkg.png); 
+	}
+
+	#nav table {
+		border-collapse: collapse;
+	}
+
+	#nav li {
+		float: left; 
+		padding:0 20px 0 10px;
+	}
+
+	#nav li li { 
+		float: none;
+	}
+
+	/* a hack for IE5.x and IE6 */
+	#nav li a li {
+		float: left;
+	}
+
+	#nav li a {
+		display: block; 
+		float: left; 
+		color: #FFF; 
+		height: 25px; 
+		padding-right: 5px; 
+		line-height: 25px; 
+		text-decoration: none; 
+		white-space: nowrap;
+	}
+	
+	#nav li li a {
+		height: 20px; 
+		line-height: 20px; 
+		float: none;
+	}
+
+	#nav li:hover {
+		position: relative; 
+		z-index: 300;
+	}
+	
+	#nav a:hover {
+		position: relative; 
+		z-index: 300;
+	}
+
+	#nav :hover ul {
+		left: 0; 
+		top: 22px;
+	}
+	
+	/* another hack for IE5.5 and IE6 */
+	#nav a:hover ul {
+		left: -10px;
+	}
+
+	#nav ul {
+		position: absolute; 
+		left: -9999px; 
+		top: -9999px;
+	}
+
+	/* it could have been this simple if all browsers understood */
+	/* show next level */
+	#nav li:hover li:hover > ul {
+		left: -15px; 
+		margin-left: 100%; 
+		top: -1px;
+	}
+	
+	/* keep further levels hidden */
+	#nav li:hover > ul ul {
+		position: absolute; 
+		left: -9999px; 
+		top: -9999px; 
+		width: auto;
+	}
+	
+	/* but IE5.x and IE6 need this lot to style the flyouts*/
+	/* show next level */
+	#nav a:hover a:hover ul,
+	#nav a:hover a:hover a:hover ul,
+	#nav a:hover a:hover a:hover a:hover ul,
+	#nav a:hover a:hover a:hover a:hover a:hover ul {
+		left: 100%; 
+		top: -1px;
+	}
+
+	/* keep further levels hidden */
+	#nav a:hover ul ul,
+	#nav a:hover a:hover ul ul,
+	#nav a:hover a:hover a:hover ul ul,
+	#nav a:hover a:hover a:hover a:hover ul ul {
+		position: absolute; 
+		left: -9999px; 
+		top: -9999px;
+	}

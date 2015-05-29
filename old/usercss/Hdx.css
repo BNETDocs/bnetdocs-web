@@ -1,0 +1,221 @@
+body 
+{
+	color: black;
+	background: white;
+	margin: 0px;
+	font-size: 14px;
+	font-family: arial;
+}
+
+select
+{ 
+	background-color: white;
+	background: url('/images/barbgwhitecyan.jpg');
+	border-bottom: 1px solid #333333;
+	border-left: 1px solid #666666;
+	border-right: 1px solid #333333;
+	border-top: 1px solid #666666;
+	font-family: arial;
+	font-size: 14px;
+}
+
+#bodyPackets {
+	font-family: Courier New;
+	width: 275px;
+	height: 515px;
+	overflow: auto;
+}
+
+.commentsidebar{
+	background: #999; 
+	color: black; 
+	padding: 2px; 
+	border: 1px #555 solid; 
+}
+
+.research, .defunct, .raw {
+	font-style: italic;
+	margin-left: 5px;
+}
+
+.keyword {
+	color: orange;
+}
+
+.raw {color: red}
+
+.defunct {color: gray;}
+
+.research {color: orange;}
+
+div.navmenu {margin: 5px;}
+
+#textonlylogo	{	display: none;	}
+
+#bg
+{
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+#viewcode
+{
+	font-size: 10px;
+}
+
+#content
+{
+	position: relative; 
+	z-index: 1;
+}
+
+img	{	border: none;	}
+
+#container
+{
+	padding: 1px;
+	margin: 10px 0px 0px 0px;	
+	font-size: 12px;
+	border: 2px solid blue;
+	border-spacing: 2px;
+	border-collapse: collapse;
+	background-color: #EEEEEE;
+}
+
+#newscontainer
+{
+	min-height: 150px;
+	border: 1px solid black;
+	font-size: 14px;
+	padding: 1px;
+	margin: 10px 0px 0px 0px;	
+	text-align: left;
+	background-color: #EEEEEE;
+	clear: both;
+}
+
+#newsicon img{
+	height: 75px; 
+	width: 100px;
+	padding: 0 0 0 0; 
+	margin: 10px 10px 0px 1px;
+}
+
+div#main2 {
+	padding: 2px; 
+	margin: 0;
+}
+
+div#main2 h2
+{
+	margin: 0; 
+	padding: 0.25em 1em 0.125em 0; 
+	background: blue; 
+	text-transform: uppercase; 
+	font-size: 120%;
+	border-bottom: 1px solid #000;
+	text-align: center; 
+	color: white;
+}
+
+div#author
+{
+	margin: 0; 
+	text-transform: uppercase; 
+	font-size: 10px;
+	text-align: right; 
+	padding: 0.25em 1em 0.125em 0; 
+	border-bottom: 1px solid black;
+	font-weight: bold;
+	background-color: blue;
+	color: white;
+	clear: both;
+}
+
+div#main2 p
+{
+	padding: 0.5em 1em; 
+	margin: 0;
+}
+
+div#copyrights
+{
+	font-size: 10px;
+	text-align: center;
+	margin: 0;
+	border-top: 1px solid #000;
+	background-color: #EEEEEE;
+}
+
+#inputbox
+{
+	background-color: white;
+	background: url('/images/barbgwhitecyan.jpg');
+	border-bottom: 1px solid #333333;
+	border-left: 1px solid #666666;
+	border-right: 1px solid #333333;
+	border-top: 1px solid #666666;
+	color: black;
+	font-family: arial;
+	font-size: 14px;
+	text-align: left
+}
+
+#abutton
+{
+	font-family: arial;
+	font-size: 14px;
+	text-align: center
+}
+
+/* Hyperlinks */
+a
+{
+    font-size: 14px;
+}
+
+a	{	color: blue;	}
+a:hover	{	color: #00CCCC;	}
+
+#code{
+	color: black;
+	background: white;
+	overflow: auto;
+	font: normal 12px "bitstream vera sans mono", monaco. "lucida console", "courier new", courier, serif;
+	background-image: url('../images/barbgwhitecyan.jpg'); /* removed because its bugging me */
+	margin: 0.9em 0; padding: 8px;
+	border-width: thin;
+	border-style: dotted;
+	border-color: #333;
+	max-width: 90%;
+	text-align: left;
+}
+
+#important
+{
+	background: red;
+	font-weight: bold;
+	color: white;
+}
+
+div.menu a
+{
+	font: bold 14pt Arial;
+	margin: 0;
+	padding: 0;
+	background: #EEEEEE;
+	border: #333 1px solid;
+	color: #000000;
+	text-decoration:none;
+}
+
+div.menu span
+{
+	padding: 3px;
+}
+
+div.menu a:hover
+{
+	background: #ffcc33;
+}

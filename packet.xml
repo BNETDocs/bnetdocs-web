@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE packet SYSTEM "http://labs.bnetdocs.org/dtd/packet.dtd">
+
+<packet ordinal="0x09" name="SID_GETADVLISTEX" direction="1" clients="star,sexp" relatedurls="type=bncs&amp;id=0x19&amp;direction=2">
+   <!-- relatedurls would be delimited by commas -->
+   <format>
+      <field type="DWORD" descr="Number of Games" />
+      <field type="DWORD" case="if DWORD1 == 0" descr="Status" />
+      <repeat case="DWORD1 > 0" amtdefined="true" amt="1">
+         <!-- If amtdefined is set to true, tell it which field contains amount (Ex: amt="1" means first field) -->
+         <field type="WORD" descr="Game Type" />
+         <field type="WORD" descr="Parameter" />
+         <field type="DWORD" descr="Language ID" />
+         <field type="WORD" descr="Address Family" default="AF_INET" />
+         <field type="WORD" descr="Port" />
+         <field type="DWORD" descr="Host's IP Address" />
+         <field type="DWORD" amt="2" descr="Sin Zero (0)" />
+         <field type="DWORD" descr="Game Status" />
+         <field type="DWORD" descr="Elapsed time (in seconds)" />
+         <field type="STRING" descr="Game Name" />
+         <field type="STRING" descr="Game Password" />
+         <field type="STRING" descr="Game Statstring" />
+      </repeat>
+   </format>
+   <remarks>
+      <!-- if any, can include html for formatting, but use [] instead of <> -->
+      [p]Returns a list of available games and their information. Varies depending on product.[/p]
+      [p]Note that fields from Address Family to sin_zero form a sockaddr_in structure.[/p]
+      [u]Valid status codes:[/u]
+         [dl][dd]0x00: OK
+         0x01: Game doesn't exist
+         0x02: Incorrect password
+         0x03: Game full
+         0x04: Game already started
+         0x06: Too many server requests[/dd][/dl]
+   </remarks>
+</packet>
