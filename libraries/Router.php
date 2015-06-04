@@ -3,6 +3,7 @@
 namespace BNETDocs\Libraries;
 
 use BNETDocs\Controllers\Credits as CreditsController;
+use BNETDocs\Controllers\Legal as LegalController;
 use BNETDocs\Controllers\News as NewsController;
 use BNETDocs\Controllers\Redirect as RedirectController;
 use BNETDocs\Controllers\Status as StatusController;
@@ -150,12 +151,20 @@ class Router {
     ob_start();
     switch ($path) {
       case "":
-        $controller = new RedirectController("https://dev.bnetdocs.org/news", 302);
+        $controller = new RedirectController(
+          "https://dev.bnetdocs.org/news", 302
+        );
       break;
       case "credits":
       case "credits.htm":
       case "credits.html":
         $controller = new CreditsController();
+      break;
+      case "legal":
+      case "legal.htm":
+      case "legal.html":
+      case "legal.txt":
+        $controller = new LegalController();
       break;
       case "news":
       case "news.htm":
@@ -171,7 +180,9 @@ class Router {
         throw new ControllerNotFoundException($path);
     }
     if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter("controller", (new \ReflectionClass($controller))->getShortName());
+      newrelic_add_custom_parameter(
+        "controller", (new \ReflectionClass($controller))->getShortName()
+      );
     }
     $controller->run($this);
     $this->addResponseContent(ob_get_contents());

@@ -7,7 +7,6 @@
 .git/
 .gitignore
 .gitkeep
-/LICENSE
 /README.md
 /config.sample.json
 /database.backup.*
