@@ -10,6 +10,7 @@
 	
 	# Begin Code
 	# -------------
+	$config = json_decode(file_get_contents("./config.redux.json"));
 	
 	# DisplayDialogBox Function
 	# --------------------
