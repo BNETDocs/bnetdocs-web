@@ -23,13 +23,16 @@ final class Template {
   }
 
   public function render() {
-    chdir("./templates/");
-    if (!file_exists($this->template)) {
-      chdir("../");
-      throw new TemplateNotFoundException($this);
+    $cwd = getcwd();
+    try {
+      chdir($cwd . "/templates");
+      if (!file_exists($this->template)) {
+        throw new TemplateNotFoundException($this);
+      }
+      require($this->template);
+    } finally {
+      chdir($cwd);
     }
-    require($this->template);
-    chdir("../");
   }
 
   public function setContext(&$context) {
