@@ -1,11 +1,14 @@
 <?php
 
-use BNETDocs\Libraries\Exceptions\BNETDocsException;
-use BNETDocs\Libraries\Exceptions\ClassNotFoundException;
-use BNETDocs\Libraries\Cache;
-use BNETDocs\Libraries\Common;
-use BNETDocs\Libraries\Database;
-use BNETDocs\Libraries\Router;
+namespace BNETDocs;
+
+use \BNETDocs\Libraries\Exceptions\BNETDocsException;
+use \BNETDocs\Libraries\Exceptions\ClassNotFoundException;
+use \BNETDocs\Libraries\Cache;
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\Router;
+use \ReflectionClass;
 
 function main() {
 
@@ -88,11 +91,7 @@ function main() {
     die(json_encode($json, $flags));
   });
 
-  if (extension_loaded("newrelic")) {
-    newrelic_disable_autorum();
-    newrelic_name_transaction("null");
-    newrelic_add_custom_parameter("REMOTE_ADDR", getenv("REMOTE_ADDR"));
-  }
+  Logger::initialize();
 
   Common::$config   = json_decode(file_get_contents("./config.phoenix.json"));
   Common::$cache    = new Cache();

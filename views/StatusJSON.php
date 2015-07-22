@@ -21,10 +21,10 @@ class StatusJSON extends View {
     }
     $flags = (Common::isBrowser(getenv("HTTP_USER_AGENT")) ? JSON_PRETTY_PRINT : 0);
     echo json_encode([
-      "newrelic_version" => (extension_loaded("newrelic") ? (new ReflectionExtension("newrelic"))->getVersion() : null),
       "remote_address" => $model->remote_address,
       "remote_geoinfo" => $model->remote_geoinfo,
-      "timestamp" => $model->timestamp->format($model->timestamp_format),
+      "timestamp"      => $model->timestamp->format($model->timestamp_format),
+      "version_info"   => $model->version_info,
     ], $flags);
   }
 

@@ -128,4 +128,12 @@ final class Common {
     }
   }
 
+  public static function versionProperties() {
+    $versions           = new StdClass();
+    $versions->ltk      = self::$config->bnetdocs->version;
+    $versions->newrelic = phpversion("newrelic");
+    $versions->php      = phpversion();
+    return $versions;
+  }
+
 }

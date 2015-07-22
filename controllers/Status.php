@@ -8,7 +8,6 @@ use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Status as StatusModel;
 use \BNETDocs\Views\StatusJSON as StatusJSONView;
 use \BNETDocs\Views\StatusPlain as StatusPlainView;
-use \ReflectionClass;
 
 class Status extends Controller {
 
@@ -26,10 +25,6 @@ class Status extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new StatusModel();
-    if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter("model", (new ReflectionClass($model))->getShortName());
-      newrelic_add_custom_parameter("view", (new ReflectionClass($view))->getShortName());
-    }
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);

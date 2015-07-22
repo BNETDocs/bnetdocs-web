@@ -9,7 +9,6 @@ use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Legal as LegalModel;
 use \BNETDocs\Views\LegalHtml as LegalHtmlView;
 use \BNETDocs\Views\LegalPlain as LegalPlainView;
-use \ReflectionClass;
 
 class Legal extends Controller {
 
@@ -27,10 +26,6 @@ class Legal extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new LegalModel();
-    if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter("model", (new ReflectionClass($model))->getShortName());
-      newrelic_add_custom_parameter("view", (new ReflectionClass($view))->getShortName());
-    }
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);

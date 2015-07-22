@@ -10,7 +10,6 @@ use \BNETDocs\Controllers\Status as StatusController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
 use \BNETDocs\Libraries\Exceptions\ServiceUnavailableException;
-use \ReflectionClass;
 use \SplObjectStorage;
 use \UnexpectedValueException;
 
@@ -144,10 +143,7 @@ class Router {
 
   public function route() {
     $path = $this->getRequestPathArray()[1];
-    if (extension_loaded("newrelic")) {
-      $newrelic_name_transaction = "/" . $this->getRequestPathString(false);
-      newrelic_name_transaction($newrelic_name_transaction);
-    }
+    Logger::setTransactionName($this->getRequestPathString(false));
     if (Common::$config->bnetdocs->maintenance) {
       throw new ServiceUnavailableException();
     }
@@ -181,11 +177,6 @@ class Router {
       break;
       default:
         throw new ControllerNotFoundException($path);
-    }
-    if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter(
-        "controller", (new ReflectionClass($controller))->getShortName()
-      );
     }
     $controller->run($this);
     $this->addResponseContent(ob_get_contents());

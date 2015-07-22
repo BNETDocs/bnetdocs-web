@@ -9,7 +9,6 @@ use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\News as NewsModel;
 use \BNETDocs\Views\NewsHtml as NewsHtmlView;
-use \ReflectionClass;
 
 class News extends Controller {
 
@@ -27,10 +26,6 @@ class News extends Controller {
       Common::$database = new Database();
     }
     $model = new NewsModel();
-    if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter("model", (new ReflectionClass($model))->getShortName());
-      newrelic_add_custom_parameter("view", (new ReflectionClass($view))->getShortName());
-    }
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);

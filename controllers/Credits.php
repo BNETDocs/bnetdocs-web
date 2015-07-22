@@ -9,7 +9,6 @@ use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Credits as CreditsModel;
 use \BNETDocs\Views\CreditsHtml as CreditsHtmlView;
-use \ReflectionClass;
 
 class Credits extends Controller {
 
@@ -27,10 +26,6 @@ class Credits extends Controller {
       Common::$database = new Database();
     }
     $model = new CreditsModel();
-    if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter("model", (new ReflectionClass($model))->getShortName());
-      newrelic_add_custom_parameter("view", (new ReflectionClass($view))->getShortName());
-    }
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);

@@ -19,7 +19,6 @@ class StatusPlain extends View {
     if (!$model instanceof StatusModel) {
       throw new IncorrectModelException();
     }
-    echo "newrelic_version " . (extension_loaded("newrelic") ? (new ReflectionExtension("newrelic"))->getVersion() : "null") . "\n";
     echo "remote_address " . $model->remote_address . "\n";
     if ($model->remote_geoinfo) {
       foreach ($model->remote_geoinfo as $key => $val) {
@@ -34,6 +33,9 @@ class StatusPlain extends View {
       echo "remote_geoinfo " . gettype($model->remote_geoinfo) . "\n";
     }
     echo "timestamp " . $model->timestamp->format($model->timestamp_format) . "\n";
+    foreach ($model->version_info as $key => $val) {
+      echo "version_info_" . $key . " " . $val . "\n";
+    }
   }
 
 }

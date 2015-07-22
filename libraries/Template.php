@@ -3,6 +3,7 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Exceptions\TemplateNotFoundException;
+use \BNETDocs\Libraries\Logger;
 
 final class Template {
 
@@ -41,9 +42,7 @@ final class Template {
 
   public function setTemplate($template) {
     $this->template = "./" . $template . ".phtml";
-    if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter("template", $template);
-    }
+    Logger::logMetric("template", $template);
   }
 
 }
