@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
-use BNETDocs\Libraries\Pair;
+use \BNETDocs\Libraries\Pair;
 
 class HTTPHeader extends Pair {
 

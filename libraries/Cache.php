@@ -2,7 +2,8 @@
 
 namespace BNETDocs\Libraries;
 
-use BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Common;
+use \Memcached;
 
 class Cache {
 
@@ -11,7 +12,7 @@ class Cache {
   protected $memcache;
 
   public function __construct() {
-    $this->memcache = new \Memcached();
+    $this->memcache = new Memcached();
     foreach (Common::$config->memcache as $server) {
       $this->memcache->addServer($server->hostname, $server->port);
     }

@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Models;
 
-use BNETDocs\Libraries\Model;
+use \BNETDocs\Libraries\Model;
 
 class Redirect extends Model {
 

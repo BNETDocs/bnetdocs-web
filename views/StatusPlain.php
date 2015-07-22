@@ -2,11 +2,12 @@
 
 namespace BNETDocs\Views;
 
-use BNETDocs\Libraries\Common;
-use BNETDocs\Libraries\Exceptions\IncorrectModelException;
-use BNETDocs\Libraries\Model;
-use BNETDocs\Libraries\View;
-use BNETDocs\Models\Status as StatusModel;
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
+use \BNETDocs\Libraries\Model;
+use \BNETDocs\Libraries\View;
+use \BNETDocs\Models\Status as StatusModel;
+use \ReflectionExtension;
 
 class StatusPlain extends View {
 
@@ -18,7 +19,7 @@ class StatusPlain extends View {
     if (!$model instanceof StatusModel) {
       throw new IncorrectModelException();
     }
-    echo "newrelic_version " . (extension_loaded("newrelic") ? (new \ReflectionExtension("newrelic"))->getVersion() : "null") . "\n";
+    echo "newrelic_version " . (extension_loaded("newrelic") ? (new ReflectionExtension("newrelic"))->getVersion() : "null") . "\n";
     echo "remote_address " . $model->remote_address . "\n";
     if ($model->remote_geoinfo) {
       foreach ($model->remote_geoinfo as $key => $val) {

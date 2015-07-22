@@ -2,6 +2,9 @@
 
 namespace BNETDocs\Libraries;
 
+use \DateInterval;
+use \StdClass;
+
 final class Common {
 
   public static $cache;
@@ -43,7 +46,7 @@ final class Common {
 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-    $response = new \StdClass();
+    $response = new StdClass();
     $response->data = curl_exec($curl);
     $response->code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     $response->type = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
@@ -54,7 +57,7 @@ final class Common {
   }
 
   public static function intervalToString($di, $zero_interval = "") {
-    if (!$di instanceof \DateInterval) return null;
+    if (!$di instanceof DateInterval) return null;
     $buf = "";
     if ($di->y) { if ($buf) $buf .= ", "; $buf .= $di->y . " year";   if ($di->y != 1) $buf .= "s"; }
     if ($di->m) { if ($buf) $buf .= ", "; $buf .= $di->m . " month";  if ($di->m != 1) $buf .= "s"; }

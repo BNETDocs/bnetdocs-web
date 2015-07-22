@@ -2,13 +2,13 @@
 
 namespace BNETDocs\Controllers;
 
-use BNETDocs\Libraries\Controller;
-use BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use BNETDocs\Libraries\Router;
-
-use BNETDocs\Models\Status as StatusModel;
-use BNETDocs\Views\StatusJSON as StatusJSONView;
-use BNETDocs\Views\StatusPlain as StatusPlainView;
+use \BNETDocs\Libraries\Controller;
+use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
+use \BNETDocs\Libraries\Router;
+use \BNETDocs\Models\Status as StatusModel;
+use \BNETDocs\Views\StatusJSON as StatusJSONView;
+use \BNETDocs\Views\StatusPlain as StatusPlainView;
+use \ReflectionClass;
 
 class Status extends Controller {
 
@@ -27,8 +27,8 @@ class Status extends Controller {
     }
     $model = new StatusModel();
     if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter("model", (new \ReflectionClass($model))->getShortName());
-      newrelic_add_custom_parameter("view", (new \ReflectionClass($view))->getShortName());
+      newrelic_add_custom_parameter("model", (new ReflectionClass($model))->getShortName());
+      newrelic_add_custom_parameter("view", (new ReflectionClass($view))->getShortName());
     }
     ob_start();
     $view->render($model);

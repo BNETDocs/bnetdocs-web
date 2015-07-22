@@ -2,12 +2,12 @@
 
 namespace BNETDocs\Views;
 
-use BNETDocs\Libraries\Common;
-use BNETDocs\Libraries\Exceptions\IncorrectModelException;
-use BNETDocs\Libraries\Model;
-use BNETDocs\Libraries\Template;
-use BNETDocs\Libraries\View;
-use BNETDocs\Models\Credits as CreditsModel;
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
+use \BNETDocs\Libraries\Model;
+use \BNETDocs\Libraries\Template;
+use \BNETDocs\Libraries\View;
+use \BNETDocs\Models\Credits as CreditsModel;
 
 class CreditsHtml extends View {
 

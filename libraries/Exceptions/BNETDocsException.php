@@ -2,7 +2,9 @@
 
 namespace BNETDocs\Libraries\Exceptions;
 
-abstract class BNETDocsException extends \Exception {
+use \Exception;
+
+abstract class BNETDocsException extends Exception {
 
   protected $httpResponseCode  = 500;
   private $httpResponseHeaders = [];

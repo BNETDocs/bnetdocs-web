@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
-use BNETDocs\Libraries\Exceptions\TemplateNotFoundException;
+use \BNETDocs\Libraries\Exceptions\TemplateNotFoundException;
 
 final class Template {
 

@@ -2,11 +2,11 @@
 
 namespace BNETDocs\Views;
 
-use BNETDocs\Libraries\Common;
-use BNETDocs\Libraries\Exceptions\IncorrectModelException;
-use BNETDocs\Libraries\Model;
-use BNETDocs\Libraries\View;
-use BNETDocs\Models\Legal as LegalModel;
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
+use \BNETDocs\Libraries\Model;
+use \BNETDocs\Libraries\View;
+use \BNETDocs\Models\Legal as LegalModel;
 
 class LegalPlain extends View {
 

@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
-use BNETDocs\Libraries\Model;
+use \BNETDocs\Libraries\Model;
 
 abstract class View {
 

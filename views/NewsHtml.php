@@ -2,12 +2,12 @@
 
 namespace BNETDocs\Views;
 
-use BNETDocs\Libraries\Common;
-use BNETDocs\Libraries\Exceptions\IncorrectModelException;
-use BNETDocs\Libraries\Model;
-use BNETDocs\Libraries\Template;
-use BNETDocs\Libraries\View;
-use BNETDocs\Models\News as NewsModel;
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
+use \BNETDocs\Libraries\Model;
+use \BNETDocs\Libraries\Template;
+use \BNETDocs\Libraries\View;
+use \BNETDocs\Models\News as NewsModel;
 
 class NewsHtml extends View {
 

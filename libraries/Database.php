@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
-use BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Common;
 
 class Database {
 

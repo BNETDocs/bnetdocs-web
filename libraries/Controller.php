@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
-use BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\Router;
 
 abstract class Controller {
 

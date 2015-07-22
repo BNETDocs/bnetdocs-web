@@ -2,14 +2,14 @@
 
 namespace BNETDocs\Controllers;
 
-use BNETDocs\Libraries\Common;
-use BNETDocs\Libraries\Controller;
-use BNETDocs\Libraries\Database;
-use BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use BNETDocs\Libraries\Router;
-
-use BNETDocs\Models\News as NewsModel;
-use BNETDocs\Views\NewsHtml as NewsHtmlView;
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Controller;
+use \BNETDocs\Libraries\Database;
+use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
+use \BNETDocs\Libraries\Router;
+use \BNETDocs\Models\News as NewsModel;
+use \BNETDocs\Views\NewsHtml as NewsHtmlView;
+use \ReflectionClass;
 
 class News extends Controller {
 
@@ -28,8 +28,8 @@ class News extends Controller {
     }
     $model = new NewsModel();
     if (extension_loaded("newrelic")) {
-      newrelic_add_custom_parameter("model", (new \ReflectionClass($model))->getShortName());
-      newrelic_add_custom_parameter("view", (new \ReflectionClass($view))->getShortName());
+      newrelic_add_custom_parameter("model", (new ReflectionClass($model))->getShortName());
+      newrelic_add_custom_parameter("view", (new ReflectionClass($view))->getShortName());
     }
     ob_start();
     $view->render($model);

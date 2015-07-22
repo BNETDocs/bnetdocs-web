@@ -2,14 +2,17 @@
 
 namespace BNETDocs\Libraries;
 
-use BNETDocs\Controllers\Credits as CreditsController;
-use BNETDocs\Controllers\Legal as LegalController;
-use BNETDocs\Controllers\News as NewsController;
-use BNETDocs\Controllers\Redirect as RedirectController;
-use BNETDocs\Controllers\Status as StatusController;
-use BNETDocs\Libraries\Common;
-use BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
-use BNETDocs\Libraries\Exceptions\ServiceUnavailableException;
+use \BNETDocs\Controllers\Credits as CreditsController;
+use \BNETDocs\Controllers\Legal as LegalController;
+use \BNETDocs\Controllers\News as NewsController;
+use \BNETDocs\Controllers\Redirect as RedirectController;
+use \BNETDocs\Controllers\Status as StatusController;
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
+use \BNETDocs\Libraries\Exceptions\ServiceUnavailableException;
+use \ReflectionClass;
+use \SplObjectStorage;
+use \UnexpectedValueException;
 
 class Router {
 
@@ -48,7 +51,7 @@ class Router {
     $this->requestBodyString = $this->_getRequestBodyString();
     $this->requestBodyArray = $this->_getRequestBodyArray();
     $this->responseCode = 500;
-    $this->responseHeaders = new \SplObjectStorage();
+    $this->responseHeaders = new SplObjectStorage();
     $this->responseContent = "";
   }
 
@@ -181,7 +184,7 @@ class Router {
     }
     if (extension_loaded("newrelic")) {
       newrelic_add_custom_parameter(
-        "controller", (new \ReflectionClass($controller))->getShortName()
+        "controller", (new ReflectionClass($controller))->getShortName()
       );
     }
     $controller->run($this);
@@ -211,7 +214,7 @@ class Router {
     } else if (is_string($arg1) && is_string($arg2)) {
       $this->responseHeaders->attach(new HTTPHeader($arg1, $arg2));
     } else {
-      throw new \UnexpectedValueException("Arguments given must be two strings or an HTTPHeader object", -1);
+      throw new UnexpectedValueException("Arguments given must be two strings or an HTTPHeader object", -1);
     }
   }
 
