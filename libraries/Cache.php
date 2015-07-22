@@ -13,7 +13,14 @@ class Cache {
 
   public function __construct() {
     $this->memcache = new Memcached();
-    foreach (Common::$config->memcache as $server) {
+    $this->memcache->setOption(Memcached::OPT_BINARY_PROTOCOL, true);
+    $this->memcache->setOption(Memcached::OPT_TCP_NODELAY,
+      Common::$config->memcache->tcp_nodelay
+    );
+    $this->memcache->setOption(Memcached::OPT_CONNECT_TIMEOUT,
+      Common::$config->memcache->connect_timeout * 1000
+    );
+    foreach (Common::$config->memcache->servers as $server) {
       $this->memcache->addServer($server->hostname, $server->port);
     }
   }

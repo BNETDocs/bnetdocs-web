@@ -14,12 +14,16 @@
       "username_length_min": 3
     }
   },
-  "memcache": [
-    {
-      "hostname": "localhost",
-      "port": 11211
-    }
-  ],
+  "memcache": {
+    "connect_timeout": 1.0,
+    "tcp_nodelay": true,
+    "servers": [
+      {
+        "hostname": "localhost",
+        "port": 11211
+      }
+    ]
+  },
   "mysql": {
     "character_set": "utf8",
     "connect_timeout": 3,
