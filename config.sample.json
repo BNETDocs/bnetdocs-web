@@ -26,11 +26,11 @@
   },
   "mysql": {
     "character_set": "utf8",
-    "connect_timeout": 3,
+    "database": "bnetdocs_phoenix",
     "hostname": "localhost",
-    "name": "bnetdocs_phoenix",
     "password": "",
     "port": 3306,
+    "timeout": 3,
     "username": "bnetdocs"
   }
 }

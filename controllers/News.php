@@ -23,8 +23,8 @@ class News extends Controller {
       default:
         throw new UnspecifiedViewException();
     }
-    if (!Common::$database->is_connected()) {
-      Common::$database->connect();
+    if (!isset(Common::$database)) {
+      Common::$database = new Database();
     }
     $model = new NewsModel();
     if (extension_loaded("newrelic")) {

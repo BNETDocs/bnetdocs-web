@@ -23,8 +23,8 @@ class Credits extends Controller {
       default:
         throw new UnspecifiedViewException();
     }
-    if (!Common::$database->is_connected()) {
-      Common::$database->connect();
+    if (!isset(Common::$database)) {
+      Common::$database = new Database();
     }
     $model = new CreditsModel();
     if (extension_loaded("newrelic")) {
