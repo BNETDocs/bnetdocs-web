@@ -3,8 +3,6 @@
 namespace BNETDocs\Models;
 
 use \BNETDocs\Libraries\Model;
-use \DateTime;
-use \DateTimeZone;
 
 class Status extends Model {
 
@@ -16,11 +14,11 @@ class Status extends Model {
 
   public function __construct() {
     parent::__construct();
-    $this->remote_address   = getenv("REMOTE_ADDR");
-    $this->remote_geoinfo   = geoip_record_by_name($this->remote_address);
-    $this->timestamp        = new DateTime("now", new DateTimeZone("UTC"));
-    $this->timestamp_format = "Y-m-d H:i:s T";
-    $this->version_info     = Common::versionProperties();
+    $this->remote_address   = null;
+    $this->remote_geoinfo   = null;
+    $this->timestamp        = null;
+    $this->timestamp_format = null;
+    $this->version_info     = null;
   }
 
 }
