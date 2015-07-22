@@ -28,9 +28,13 @@
   "mysql": {
     "character_set": "utf8",
     "database": "bnetdocs_phoenix",
-    "hostname": "localhost",
     "password": "",
-    "port": 3306,
+    "servers": [
+      {
+        "hostname": "localhost",
+        "port": 3306
+      }
+    ],
     "timeout": 3,
     "username": "bnetdocs"
   }

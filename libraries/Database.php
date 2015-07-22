@@ -10,9 +10,9 @@ class Database extends PDO {
   protected $hostname;
   protected $port;
 
-  public function __construct() {
-    $this->hostname = Common::$config->mysql->hostname;
-    $this->port     = Common::$config->mysql->port;
+  public function __construct($hostname, $port) {
+    $this->hostname = $hostname;
+    $this->port     = $port;
     $dsn = "mysql:"
       . "host=" . $this->hostname . ";"
       . "port=" . $this->port . ";"
@@ -33,5 +33,4 @@ class Database extends PDO {
   public function getPort() {
     return $this->port;
   }
-
 }

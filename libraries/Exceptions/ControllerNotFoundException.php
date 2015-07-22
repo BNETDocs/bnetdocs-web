@@ -2,11 +2,12 @@
 
 namespace BNETDocs\Libraries\Exceptions;
 
-use BNETDocs\Libraries\Exceptions\BNETDocsException;
+use \BNETDocs\Libraries\Exceptions\BNETDocsException;
+use \Exception;
 
 class ControllerNotFoundException extends BNETDocsException {
 
-  public function __construct($controllerName, \Exception &$prev_ex = null) {
+  public function __construct($controllerName, Exception &$prev_ex = null) {
     parent::__construct("Unable to find a suitable controller given the path", 3, $prev_ex);
     $this->httpResponseCode = 404;
   }

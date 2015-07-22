@@ -4,7 +4,7 @@ namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Database;
+use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\News as NewsModel;
@@ -23,7 +23,7 @@ class News extends Controller {
         throw new UnspecifiedViewException();
     }
     if (!isset(Common::$database)) {
-      Common::$database = new Database();
+      Common::$database = DatabaseDriver::getDatabaseObject();
     }
     $model = new NewsModel();
     ob_start();

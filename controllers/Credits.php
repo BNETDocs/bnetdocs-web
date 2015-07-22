@@ -4,7 +4,7 @@ namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Database;
+use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Credits as CreditsModel;
@@ -23,7 +23,7 @@ class Credits extends Controller {
         throw new UnspecifiedViewException();
     }
     if (!isset(Common::$database)) {
-      Common::$database = new Database();
+      Common::$database = DatabaseDriver::getDatabaseObject();
     }
     $model = new CreditsModel();
     ob_start();

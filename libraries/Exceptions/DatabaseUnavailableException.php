@@ -5,11 +5,10 @@ namespace BNETDocs\Libraries\Exceptions;
 use \BNETDocs\Libraries\Exceptions\BNETDocsException;
 use \Exception;
 
-class ServiceUnavailableException extends BNETDocsException {
+class DatabaseUnavailableException extends BNETDocsException {
 
   public function __construct(Exception &$prev_ex = null) {
-    parent::__construct("BNETDocs service is currently offline", 1, $prev_ex);
-    $this->httpResponseCode = 503;
+    parent::__construct("All configured databases are unavailable", 5, $prev_ex);
   }
 
 }
