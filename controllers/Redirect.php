@@ -7,6 +7,8 @@ use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Redirect as RedirectModel;
 use \BNETDocs\Views\RedirectHtml as RedirectHtmlView;
+use \DateTime;
+use \DateTimeZone;
 
 class Redirect extends Controller {
 
@@ -36,7 +38,7 @@ class Redirect extends Controller {
     $router->setResponseCode($this->redirect_code);
     $router->setResponseHeader("Cache-Control", "max-age=300");
     $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseHeader("Expires", (new \DateTime("+300 second"))->setTimezone(new \DateTimeZone("GMT"))->format("D, d M Y H:i:s e"));
+    $router->setResponseHeader("Expires", (new DateTime("+300 second"))->setTimezone(new DateTimeZone("GMT"))->format("D, d M Y H:i:s e"));
     $router->setResponseHeader("Location", $this->redirect_to);
     $router->setResponseHeader("Pragma", "max-age=300");
     $router->setResponseContent(ob_get_contents());
