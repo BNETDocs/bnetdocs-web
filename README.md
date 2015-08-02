@@ -1,6 +1,8 @@
 BNETDocs: Phoenix
 =================
 
+[![Build Status](https://magnum.travis-ci.com/carlbennett/bnetdocs-web.svg?token=NuYSBEpgMBcECX299Qpz&branch=phoenix-0.2)](https://magnum.travis-ci.com/carlbennett/bnetdocs-web)
+
 Preface
 -------
 BNETDocs is a web content management system (CMS) for the Battle.net&trade;

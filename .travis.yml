@@ -1,0 +1,29 @@
+language: php
+os:
+  - linux
+sudo: false
+php:
+# - 5.3 (doesn't recognize $var=[], only recognizes $var=array())
+# - 5.4 (doesn't have finally{} in try blocks)
+  - 5.5
+  - 5.6
+  - 7.0
+  - nightly
+matrix:
+  allow_failures:
+    - php: 7.0
+    - php: nightly
+services:
+  - memcached
+  - mysql
+addons:
+  apt:
+    packages:
+      - libgeoip-dev
+install:
+  - pecl install geoip
+  - pear install http2
+before_script:
+  - cp config.sample.json config.phoenix.json
+script:
+  - bash -c 'set -e;for file in $(find . -type f -regex .*\.php -print); do php -e -l -f "$file"; done'

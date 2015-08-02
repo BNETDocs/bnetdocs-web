@@ -7,6 +7,7 @@
 .git/
 .gitignore
 .gitkeep
+/.travis.yml
 /README.md
 /config.sample.json
 /database.backup.*
