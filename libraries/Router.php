@@ -10,6 +10,8 @@ use \BNETDocs\Controllers\Status as StatusController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
 use \BNETDocs\Libraries\Exceptions\ServiceUnavailableException;
+use \DateTime;
+use \DateTimeZone;
 use \SplObjectStorage;
 use \UnexpectedValueException;
 
@@ -207,6 +209,25 @@ class Router {
     } else {
       throw new UnexpectedValueException("Arguments given must be two strings or an HTTPHeader object", -1);
     }
+  }
+
+  public function setResponseTTL($ttl) {
+    $ttl = (int)$ttl;
+    if ($ttl < 0) {
+      throw new UnexpectedValueException(
+        "Argument must be equal to or greater than zero", -1
+      );
+    }
+    $dtz = new DateTimeZone("GMT");
+    if ($ttl > 0) {
+      $expires = new DateTime("+" . $ttl . " second");
+    } else {
+      $expires = new DateTime("@0");
+    }
+    $expires->setTimezone($dtz);
+    $this->setResponseHeader("Cache-Control", "max-age=" . $ttl);
+    $this->setResponseHeader("Expires", $expires->format("D, d M Y H:i:s e"));
+    $this->setResponseHeader("Pragma", "max-age=" . $ttl);
   }
 
 }
