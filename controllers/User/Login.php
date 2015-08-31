@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Login as UserLoginModel;
 use \BNETDocs\Views\User\LoginHtml as UserLoginHtmlView;
 
@@ -47,8 +48,14 @@ class Login extends Controller {
     if (empty($model->email)) {
       $model->bad_email = "Email address was left blank.";
     } else {
-      $model->bad_email = "Incorrect username or password.";
-      $model->bad_password = true;
+      $user_id = User::findIdByEmail($model->email);
+      if ($user_id === null) {
+        $model->bad_email = "Incorrect username or password.";
+        $model->bad_password = true;
+      } else {
+        $model->bad_email = "Found user, but login NYI.";
+        $model->bad_password = true;
+      }
     }
   }
 

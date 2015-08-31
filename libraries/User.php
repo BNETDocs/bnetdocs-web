@@ -26,6 +26,7 @@ class User {
       $stmt->bindParam(":email", $email, PDO::PARAM_STR);
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $user_id = (int)$row->id;
+      // What if the email simply doesn't exist? throw QueryException?
     } catch (PDOException $e) {
       throw new QueryException("Cannot query user id by email", $e);
     } finally {
@@ -48,6 +49,7 @@ class User {
       $stmt->bindParam(":username", $username, PDO::PARAM_STR);
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $user_id = (int)$row->id;
+      // What if the username simply doesn't exist? throw QueryException?
     } catch (PDOException $e) {
       throw new QueryException("Cannot query user id by username", $e);
     } finally {
