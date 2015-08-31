@@ -23,6 +23,9 @@ class Login extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new UserLoginModel();
+    if ($router->getRequestMethod() == "POST") {
+      $this->tryLogin($router, $model);
+    }
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);
@@ -40,9 +43,10 @@ class Login extends Controller {
     $model->email    = (isset($data["email"   ]) ? $data["email"   ] : null);
     $model->password = (isset($data["password"]) ? $data["password"] : null);
     if (empty($model->email)) {
-      $model->login_result = "Email address was left blank.";
+      $model->bad_email = "Email address was left blank.";
     } else {
-      $model->login_result = "Incorrect username or password.";
+      $model->bad_email = "Incorrect username or password.";
+      $model->bad_password = true;
     }
   }
 

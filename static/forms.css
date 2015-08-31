@@ -8,8 +8,12 @@ form {
 }
 form label {
   cursor: pointer;
-  display: block;
+  font-weight: bold;
   width: 100%;
+}
+form input {
+  font-family: source sans pro, verdana, arial, sans-serif;
+  font-size: 11pt;
 }
 form input[type="text"],
 form input[type="email"],

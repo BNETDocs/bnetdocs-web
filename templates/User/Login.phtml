@@ -1,30 +1,43 @@
 <?php $title = "Login"; $this->additional_css[] = "/forms.css"; require("./header.inc.phtml"); ?>
       <article>
         <header>Log In</header>
-        <section>
-          <?php require("./NYI.inc.phtml"); ?>
-          <form method="POST" action="?">
+        <form method="POST" action="?">
+          <section>
+            <?php require("./NYI.inc.phtml"); ?>
+          </section>
+          <section<?php if ($this->getContext()->bad_email) { ?> class="red"<?php } ?>>
+<?php if (is_string($this->getContext()->bad_email)) { ?>
+            <p class="center"><?php echo $this->getContext()->bad_email; ?></p>
+<?php } ?>
+            <label for="email">Email address:</label><br/>
             <input
               type="email"
               name="email"
               id="email"
-              value=""
-              placeholder="email address"
-              /><br />
-            <br />
+              value="<?php echo htmlspecialchars($this->getContext()->email, ENT_HTML5, "UTF-8"); ?>"
+              tabindex="1"
+            />
+          </section>
+          <section<?php if ($this->getContext()->bad_password) { ?> class="red"<?php } ?>>
+<?php if (is_string($this->getContext()->bad_password)) { ?>
+            <p class="center"><?php echo $this->getContext()->bad_password; ?></p>
+<?php } ?>
+            <label for="password">Password:</label><br/>
             <input
               type="password"
               name="password"
               id="password"
               value=""
-              placeholder="password"
-              /><br />
-            <br />
-            <input type="submit" value="Log In" />
-          </form>
-<?php if (!empty($this->getContext()->login_result)) { ?>
-          <p class="red"><?php echo $this->getContext()->login_result; ?></p>
-<?php } ?>
-        </section>
+              tabindex="2"
+            />
+          </section>
+          <section>
+            <input
+              type="submit"
+              value="Log In"
+              tabindex="3"
+            />
+          </section>
+        </form>
       </article>
 <?php require("./footer.inc.phtml"); ?>

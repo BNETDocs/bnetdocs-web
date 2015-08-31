@@ -10,12 +10,15 @@ body {
   padding: 0px;
 }
 a,
-a:link {
-  color: #00c0ff;
-  text-decoration: none;
+a:focus {
+  outline: none;
 }
 a:hover {
   text-decoration: underline;
+}
+a:link {
+  color: #00c0ff;
+  text-decoration: none;
 }
 a:visited {
   color: #00a0cf;
@@ -45,9 +48,8 @@ body > nav {
   border-radius: 0px 0px 8px 8px;
   cursor: default;
   font: 12pt source sans pro, verdana, arial, sans-serif;
-  left: 50%;
   line-height: 20px;
-  margin: 0px -490px;
+  margin: 0px 270px;
   padding: 10px;
   position: fixed;
   right: 50%;
@@ -114,20 +116,23 @@ body > main > article > header.error {
 body > main > article > header:first-child {
   border-radius: 8px 8px 0px 0px;
 }
-body > main > article > section {
+body > main > article section {
   background-color: rgba(64,64,64,0.4);
   padding: 10px;
 }
-body > main > article > section.error {
+body > main > article section.green {
+  background-color: rgba(64,128,64,0.4);
+}
+body > main > article section.red {
   background-color: rgba(128,64,64,0.4);
 }
-body > main > article > section:last-child {
+body > main > article section:last-child {
   border-radius: 0px 0px 8px 8px;
 }
-body > main > article > section > p:first-child {
+body > main > article section > p:first-child {
   margin-top: 0px;
 }
-body > main > article > section > p:last-child {
+body > main > article section > p:last-child {
   margin-bottom: 0px;
 }
 body > main > article > footer {

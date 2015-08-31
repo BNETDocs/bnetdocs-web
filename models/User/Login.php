@@ -7,14 +7,16 @@ use \BNETDocs\Libraries\Model;
 
 class Login extends Model {
 
+  public $bad_email;
+  public $bad_password;
   public $email;
-  public $login_result;
   public $password;
 
   public function __construct() {
     parent::__construct();
+    $this->bad_email    = null;
+    $this->bad_password = null;
     $this->email        = null;
-    $this->login_result = null;
     $this->password     = null;
   }
 
