@@ -1,0 +1,30 @@
+<?php $title = "Login"; $this->additional_css[] = "/forms.css"; require("./header.inc.phtml"); ?>
+      <article>
+        <header>Log In</header>
+        <section>
+          <?php require("./NYI.inc.phtml"); ?>
+          <form method="POST" action="?">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              value=""
+              placeholder="email address"
+              /><br />
+            <br />
+            <input
+              type="password"
+              name="password"
+              id="password"
+              value=""
+              placeholder="password"
+              /><br />
+            <br />
+            <input type="submit" value="Log In" />
+          </form>
+<?php if (!empty($this->getContext()->login_result)) { ?>
+          <p class="red"><?php echo $this->getContext()->login_result; ?></p>
+<?php } ?>
+        </section>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

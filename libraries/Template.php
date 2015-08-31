@@ -7,10 +7,12 @@ use \BNETDocs\Libraries\Logger;
 
 final class Template {
 
+  protected $additional_css;
   protected $context;
   protected $template;
 
   public function __construct(&$context, $template) {
+    $this->additional_css = [];
     $this->setContext($context);
     $this->setTemplate($template);
   }

@@ -8,6 +8,7 @@ use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Controllers\Status as StatusController;
+use \BNETDocs\Controllers\User\Login as UserLoginController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
 use \BNETDocs\Libraries\Exceptions\ServiceUnavailableException;
@@ -174,6 +175,15 @@ class Router {
         break;
         case "status": case "status.json": case "status.txt":
           $controller = new StatusController();
+        break;
+        case "user":
+          switch ($subpath) {
+            case "login": case "login.htm": case "login.html":
+              $controller = new UserLoginController();
+            break;
+            default:
+              throw new ControllerNotFoundException($path . "/" . $subpath);
+          }
         break;
         default:
           throw new ControllerNotFoundException($path);

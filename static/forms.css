@@ -1,0 +1,62 @@
+/**
+ * BNETDocs (C) 2015 Creative Commons CC-BY-NC-SA 4.0 License
+ */
+
+form {
+  margin: 0px;
+  padding: 0px;
+}
+form label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="number"] {
+  background-color: rgba(64,64,64,0.6);
+  border: 0px;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  color: inherit;
+  display: block;
+  margin-bottom: 10px;
+  outline: none;
+  padding: 4px;
+  width: 100%;
+}
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus,
+form input[type="number"]:focus {
+  background-color: rgba(128,128,128,0.4);
+}
+form input[disabled] {
+  background-image: url("https://static.carlbennett/img/unable-20px.png");
+  background-position: left top;
+  background-repeat: repeat;
+}
+form input[type="reset"],
+button {
+  float: right;
+}
+form input[type="submit"],
+form input[type="reset"],
+button {
+  background-color: rgba(128,128,128,0.4);
+  border: 0px;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  min-height: 24px;
+  min-width: 80px;
+  outline: none;
+  padding: 4px 8px;
+}
+form input[type="submit"]:active,
+form input[type="reset"]:active,
+button:active {
+  background-color: rgba(128,128,128,0.6);
+}
