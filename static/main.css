@@ -146,9 +146,29 @@ body > footer {
   text-align: center;
   width: 1000px;
 }
-span.left {
+span.float-left {
   float: left;
 }
-span.right {
+span.float-right {
   float: right;
+}
+p.left,
+span.left {
+  text-align: left;
+}
+p.center,
+span.center {
+  text-align: center;
+}
+p.justify,
+span.justify {
+  text-align: justify;
+}
+p.right,
+span.right {
+  text-align: right;
+}
+p.red,
+span.red {
+  color: #d74747;
 }
