@@ -37,7 +37,7 @@ form input[type="number"]:focus {
   background-color: rgba(128,128,128,0.4);
 }
 form input[disabled] {
-  background-image: url("https://static.carlbennett/img/unable-20px.png");
+  background-image: url("https://static.carlbennett.me/img/unable-20px.png");
   background-position: left top;
   background-repeat: repeat;
 }
