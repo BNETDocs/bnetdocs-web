@@ -23,13 +23,15 @@ class Login extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new UserLoginModel();
+    $ttl   = 300;
     if ($router->getRequestMethod() == "POST") {
+      $ttl = 0;
       $this->tryLogin($router, $model);
     }
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);
-    $router->setResponseTTL(300);
+    $router->setResponseTTL($ttl);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
     ob_end_clean();

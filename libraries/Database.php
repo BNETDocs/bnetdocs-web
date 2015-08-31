@@ -33,4 +33,5 @@ class Database extends PDO {
   public function getPort() {
     return $this->port;
   }
+
 }
