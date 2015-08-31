@@ -4,8 +4,8 @@ foreach ($this->context->news_posts as $news_post) { ?>
         <header><?php echo $news_post["title"]; ?></header>
         <section><?php echo $news_post["content"]; ?></section>
         <footer>
-          <span class="left"><?php echo $news_post["author"]; ?></span>
-          <span class="right"><?php echo $news_post["timestamp_published"]->format("l, F j, Y"); ?></span>
+          <span class="float-left"><?php echo $news_post["author"]; ?></span>
+          <span class="float-right"><?php echo $news_post["timestamp_published"]->format("l, F j, Y"); ?></span>
         </footer>
       </article>
 <?php }

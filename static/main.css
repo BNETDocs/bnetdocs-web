@@ -98,6 +98,9 @@ body > main > article {
   margin: 0px 0px 0px 224px;
   padding: 10px 8px 0px 16px;
 }
+body > main.slim > article {
+  margin: 0px;
+}
 body > main > article > header {
   background-color: rgba(64,64,64,0.6);
   display: block;
@@ -145,6 +148,9 @@ body > footer {
   padding: 0px 0px 0px 224px;
   text-align: center;
   width: 1000px;
+}
+body > footer.slim {
+  padding: 0px;
 }
 span.float-left {
   float: left;

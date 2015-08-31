@@ -4,6 +4,7 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Controllers\Credits as CreditsController;
 use \BNETDocs\Controllers\Legal as LegalController;
+use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Controllers\Status as StatusController;
@@ -143,42 +144,40 @@ class Router {
     return $this->requestURI;
   }
 
-  public function route() {
-    $path = $this->getRequestPathArray()[1];
+  public function route(Pair &$redirect = null) {
+    $pathArray = $this->getRequestPathArray();
+    $path      = (isset($pathArray[1]) ? $pathArray[1] : null);
+    $subpath   = (isset($pathArray[2]) ? $pathArray[2] : null);
     Logger::setTransactionName($this->getRequestPathString(false));
-    if (Common::$config->bnetdocs->maintenance) {
-      throw new ServiceUnavailableException();
-    }
     ob_start();
-    switch ($path) {
-      case "":
-        $controller = new RedirectController(
-          "https://dev.bnetdocs.org/news", 302
-        );
-      break;
-      case "credits":
-      case "credits.htm":
-      case "credits.html":
-        $controller = new CreditsController();
-      break;
-      case "legal":
-      case "legal.htm":
-      case "legal.html":
-      case "legal.txt":
-        $controller = new LegalController();
-      break;
-      case "news":
-      case "news.htm":
-      case "news.html":
-        $controller = new NewsController();
-      break;
-      case "status":
-      case "status.json":
-      case "status.txt":
-        $controller = new StatusController();
-      break;
-      default:
-        throw new ControllerNotFoundException($path);
+    if (Common::$config->bnetdocs->maintenance) {
+      $controller = new MaintenanceController();
+    } else if (isset($redirect)) {
+      $controller = new RedirectController(
+        $redirect->getKey(), $redirect->getValue()
+      );
+    } else {
+      switch ($path) {
+        case "":
+          $controller = new RedirectController(
+            "https://dev.bnetdocs.org/news", 302
+          );
+        break;
+        case "credits": case "credits.htm": case "credits.html":
+          $controller = new CreditsController();
+        break;
+        case "legal": case "legal.htm": case "legal.html": case "legal.txt":
+          $controller = new LegalController();
+        break;
+        case "news": case "news.htm": case "news.html":
+          $controller = new NewsController();
+        break;
+        case "status": case "status.json": case "status.txt":
+          $controller = new StatusController();
+        break;
+        default:
+          throw new ControllerNotFoundException($path);
+      }
     }
     $controller->run($this);
     $this->addResponseContent(ob_get_contents());

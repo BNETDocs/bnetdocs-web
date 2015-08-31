@@ -9,6 +9,7 @@
   </head>
   <body>
     <header>BNETDocs: Phoenix</header>
+<?php if (!(isset($slim_ui) && $slim_ui)) { ?>
     <nav>
       <a>Portal</a>
       <a href="https://dev.bnetdocs.org/news">News</a>
@@ -24,3 +25,6 @@
       <a href="https://dev.bnetdocs.org/packet/popular">Popular Packets</a>
     </nav>
     <main>
+<?php } else { ?>
+    <main class="slim">
+<?php } ?>
