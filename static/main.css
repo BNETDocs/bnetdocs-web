@@ -135,6 +135,10 @@ body > main > article section.green {
 body > main > article section.red {
   background-color: rgba(128,64,64,0.4);
 }
+body > main > article section.fixed-width-text {
+  font-family: source code pro, courier new, monospace;
+  white-space: pre-wrap;
+}
 body > main > article section:last-child {
   border-radius: 0px 0px 8px 8px;
 }

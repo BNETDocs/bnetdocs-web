@@ -1,8 +1,8 @@
 <?php $title = "Terms of Service"; require("./header.inc.phtml"); ?>
       <article>
         <header>Terms of Service</header>
-        <section><pre><?php
+        <section class="fixed-width-text"><?php
           echo htmlspecialchars(file_get_contents("../LICENSE"));
-        ?></pre></section>
+        ?></section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
