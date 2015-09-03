@@ -3,12 +3,17 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Controllers\Credits as CreditsController;
+use \BNETDocs\Controllers\Document\Popular as DocumentPopularController;
+use \BNETDocs\Controllers\Document\Search as DocumentSearchController;
 use \BNETDocs\Controllers\Legal as LegalController;
 use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
+use \BNETDocs\Controllers\Packet\Popular as PacketPopularController;
+use \BNETDocs\Controllers\Packet\Search as PacketSearchController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Controllers\Status as StatusController;
 use \BNETDocs\Controllers\User\Login as UserLoginController;
+use \BNETDocs\Controllers\User\Register as UserRegisterController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
 use \BNETDocs\Libraries\Exceptions\ServiceUnavailableException;
@@ -169,11 +174,35 @@ class Router {
         case "credits": case "credits.htm": case "credits.html":
           $controller = new CreditsController();
         break;
+        case "document":
+          switch ($subpath) {
+            case "search": case "search.htm": case "search.html":
+              $controller = new DocumentSearchController();
+            break;
+            case "popular": case "popular.htm": case "popular.html":
+              $controller = new DocumentPopularController();
+            break;
+            default:
+              throw new ControllerNotFoundException($path . "/" . $subpath);
+          }
+        break;
         case "legal": case "legal.htm": case "legal.html": case "legal.txt":
           $controller = new LegalController();
         break;
         case "news": case "news.htm": case "news.html":
           $controller = new NewsController();
+        break;
+        case "packet":
+          switch ($subpath) {
+            case "search": case "search.htm": case "search.html":
+              $controller = new PacketSearchController();
+            break;
+            case "popular": case "popular.htm": case "popular.html":
+              $controller = new PacketPopularController();
+            break;
+            default:
+              throw new ControllerNotFoundException($path . "/" . $subpath);
+          }
         break;
         case "status": case "status.json": case "status.txt":
           $controller = new StatusController();
@@ -182,6 +211,9 @@ class Router {
           switch ($subpath) {
             case "login": case "login.htm": case "login.html":
               $controller = new UserLoginController();
+            break;
+            case "register": case "register.htm": case "register.html":
+              $controller = new UserRegisterController();
             break;
             default:
               throw new ControllerNotFoundException($path . "/" . $subpath);
