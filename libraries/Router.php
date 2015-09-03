@@ -150,7 +150,9 @@ class Router {
     $path      = (isset($pathArray[1]) ? $pathArray[1] : null);
     $subpath   = (isset($pathArray[2]) ? $pathArray[2] : null);
     Logger::setTransactionName($this->getRequestPathString(false));
+
     ob_start();
+
     if (Common::$config->bnetdocs->maintenance) {
       $controller = new MaintenanceController();
     } else if (isset($redirect)) {
@@ -189,8 +191,13 @@ class Router {
           throw new ControllerNotFoundException($path);
       }
     }
+
+    // Prevent clickjacking globally:
+    $this->setResponseHeader("X-Frame-Options", "DENY");
+
     $controller->run($this);
     $this->addResponseContent(ob_get_contents());
+
     ob_end_clean();
   }
 
