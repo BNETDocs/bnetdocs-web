@@ -22,9 +22,6 @@ class Popular extends Controller {
       default:
         throw new UnspecifiedViewException();
     }
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
     $model = new DocumentPopularModel();
     ob_start();
     $view->render($model);
