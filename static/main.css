@@ -196,3 +196,9 @@ p.red,
 span.red {
   color: #d74747;
 }
+code {
+  background-color: rgba(128,128,128,0.2);
+  font-family: source code pro, courier new, monospace;
+  font-size: 10pt;
+  padding: 0px 3px;
+}
