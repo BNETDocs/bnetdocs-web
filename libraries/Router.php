@@ -14,6 +14,7 @@ use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Controllers\Status as StatusController;
 use \BNETDocs\Controllers\User\Login as UserLoginController;
 use \BNETDocs\Controllers\User\Register as UserRegisterController;
+use \BNETDocs\Controllers\User\View as UserViewController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
 use \BNETDocs\Libraries\Exceptions\ServiceUnavailableException;
@@ -216,7 +217,11 @@ class Router {
               $controller = new UserRegisterController();
             break;
             default:
-              throw new ControllerNotFoundException($path . "/" . $subpath);
+              if (is_numeric($subpath)) {
+                $controller = new UserViewController();
+              } else {
+                throw new ControllerNotFoundException($path . "/" . $subpath);
+              }
           }
         break;
         default:

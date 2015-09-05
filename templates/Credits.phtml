@@ -7,32 +7,60 @@
         <header>Documents</header>
         <section>
           <ol type="1">
-<?php foreach ($this->context->top_contributors_by_documents as $item) { ?>
-            <li><?php echo $item->name; ?> with <?php echo number_format($item->documents_authored); ?> document(s)</li>
+<?php foreach ($this->context->top_contributors_by_documents as $item) {
+        if (is_null($item->user_id)) {
+          $pfx = ""; $sfx = "";
+        } else {
+          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "\">";
+          $sfx = "</a>";
+        }
+?>
+            <li><?php echo $pfx.$item->name.$sfx; ?> with <?php echo number_format($item->documents_authored); ?> document(s)</li>
 <?php } ?>
           </ol>
         </section>
         <header>News Posts</header>
         <section>
           <ol type="1">
-<?php foreach ($this->context->top_contributors_by_news_posts as $item) { ?>
-            <li><?php echo $item->name; ?> with <?php echo number_format($item->news_posts_created); ?> news post(s)</li>
+<?php foreach ($this->context->top_contributors_by_news_posts as $item) {
+        if (is_null($item->user_id)) {
+          $pfx = ""; $sfx = "";
+        } else {
+          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "\">";
+          $sfx = "</a>";
+        }
+?>
+            <li><?php echo $pfx.$item->name.$sfx; ?> with <?php echo number_format($item->news_posts_created); ?> news post(s)</li>
 <?php } ?>
           </ol>
         </section>
         <header>Packets</header>
         <section>
           <ol type="1">
-<?php foreach ($this->context->top_contributors_by_packets as $item) { ?>
-            <li><?php echo $item->name; ?> with <?php echo number_format($item->packets_authored); ?> packet(s)</li>
+<?php foreach ($this->context->top_contributors_by_packets as $item) {
+        if (is_null($item->user_id)) {
+          $pfx = ""; $sfx = "";
+        } else {
+          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "\">";
+          $sfx = "</a>";
+        }
+?>
+            <li><?php echo $pfx.$item->name.$sfx; ?> with <?php echo number_format($item->packets_authored); ?> packet(s)</li>
 <?php } ?>
           </ol>
         </section>
         <header>Servers</header>
         <section>
           <ol type="1">
-<?php foreach ($this->context->top_contributors_by_servers as $item) { ?>
-            <li><?php echo $item->name; ?> with <?php echo number_format($item->servers_owned); ?> server(s)</li>
+<?php foreach ($this->context->top_contributors_by_servers as $item) {
+        if (is_null($item->user_id)) {
+          $pfx = ""; $sfx = "";
+        } else {
+          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "\">";
+          $sfx = "</a>";
+        }
+?>
+            <li><?php echo $pfx.$item->name.$sfx; ?> with <?php echo number_format($item->servers_owned); ?> server(s)</li>
 <?php } ?>
           </ol>
         </section>
