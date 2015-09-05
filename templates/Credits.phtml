@@ -2,8 +2,39 @@
       <article>
         <header>Contributors</header>
         <section>
-          <?php require("./NYI.inc.phtml"); ?>
-          <p>No data available.</p>
+          <p>We have a total of <?php echo number_format($this->context->total_users); ?> users, of which the following are our top contributors grouped by content.</p>
+        </section>
+        <header>Documents</header>
+        <section>
+          <ol type="1">
+<?php foreach ($this->context->top_contributors_by_documents as $item) { ?>
+            <li><?php echo $item->name; ?> with <?php echo $item->documents_authored; ?> document(s)</li>
+<?php } ?>
+          </ol>
+        </section>
+        <header>News Posts</header>
+        <section>
+          <ol type="1">
+<?php foreach ($this->context->top_contributors_by_news_posts as $item) { ?>
+            <li><?php echo $item->name; ?> with <?php echo $item->news_posts_created; ?> news post(s)</li>
+<?php } ?>
+          </ol>
+        </section>
+        <header>Packets</header>
+        <section>
+          <ol type="1">
+<?php foreach ($this->context->top_contributors_by_packets as $item) { ?>
+            <li><?php echo $item->name; ?> with <?php echo $item->packets_authored; ?> packet(s)</li>
+<?php } ?>
+          </ol>
+        </section>
+        <header>Servers</header>
+        <section>
+          <ol type="1">
+<?php foreach ($this->context->top_contributors_by_servers as $item) { ?>
+            <li><?php echo $item->name; ?> with <?php echo $item->servers_owned; ?> server(s)</li>
+<?php } ?>
+          </ol>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
