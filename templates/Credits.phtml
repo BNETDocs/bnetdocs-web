@@ -8,7 +8,7 @@
         <section>
           <ol type="1">
 <?php foreach ($this->context->top_contributors_by_documents as $item) { ?>
-            <li><?php echo $item->name; ?> with <?php echo $item->documents_authored; ?> document(s)</li>
+            <li><?php echo $item->name; ?> with <?php echo number_format($item->documents_authored); ?> document(s)</li>
 <?php } ?>
           </ol>
         </section>
@@ -16,7 +16,7 @@
         <section>
           <ol type="1">
 <?php foreach ($this->context->top_contributors_by_news_posts as $item) { ?>
-            <li><?php echo $item->name; ?> with <?php echo $item->news_posts_created; ?> news post(s)</li>
+            <li><?php echo $item->name; ?> with <?php echo number_format($item->news_posts_created); ?> news post(s)</li>
 <?php } ?>
           </ol>
         </section>
@@ -24,7 +24,7 @@
         <section>
           <ol type="1">
 <?php foreach ($this->context->top_contributors_by_packets as $item) { ?>
-            <li><?php echo $item->name; ?> with <?php echo $item->packets_authored; ?> packet(s)</li>
+            <li><?php echo $item->name; ?> with <?php echo number_format($item->packets_authored); ?> packet(s)</li>
 <?php } ?>
           </ol>
         </section>
@@ -32,7 +32,7 @@
         <section>
           <ol type="1">
 <?php foreach ($this->context->top_contributors_by_servers as $item) { ?>
-            <li><?php echo $item->name; ?> with <?php echo $item->servers_owned; ?> server(s)</li>
+            <li><?php echo $item->name; ?> with <?php echo number_format($item->servers_owned); ?> server(s)</li>
 <?php } ?>
           </ol>
         </section>
