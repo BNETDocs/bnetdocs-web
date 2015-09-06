@@ -218,7 +218,7 @@ class Router {
             break;
             default:
               if (is_numeric($subpath)) {
-                $controller = new UserViewController();
+                $controller = new UserViewController($subpath);
               } else {
                 throw new ControllerNotFoundException($path . "/" . $subpath);
               }

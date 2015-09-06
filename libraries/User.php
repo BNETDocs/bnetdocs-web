@@ -6,10 +6,36 @@ use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \PDO;
 use \PDOException;
 
 class User {
+
+  private $id;
+  private $email;
+  private $username;
+  private $display_name;
+  private $password_hash;
+  private $password_salt;
+  private $status_bitmask;
+  private $registered_date;
+  private $verified_date;
+  private $verified_id;
+
+  public function __construct($user_id) {
+    $this->id              = (int)$user_id;
+    $this->email           = null;
+    $this->username        = null;
+    $this->display_name    = null;
+    $this->password_hash   = null;
+    $this->password_salt   = null;
+    $this->status_bitmask  = null;
+    $this->registered_date = null;
+    $this->verified_date   = null;
+    $this->verified_id     = null;
+    $this->refresh();
+  }
 
   public static function create(
     $email, $username, $display_name, $password_hash, $password_salt,
@@ -18,6 +44,7 @@ class User {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+    $verified_id = mt_rand();
     $successful = false;
     try {
       $stmt = Common::$database->prepare("
@@ -27,7 +54,7 @@ class User {
           `verified_date`, `verified_id`
         ) VALUES (
           NULL, :email, :username, :display_name, :password_hash,
-          :password_salt, :status_bitmask, NOW(), NULL, NULL
+          :password_salt, :status_bitmask, NOW(), NULL, :verified_id
         );
       ");
       $stmt->bindParam(":email", $email);
@@ -36,6 +63,7 @@ class User {
       $stmt->bindParam(":password_hash", $password_hash);
       $stmt->bindParam(":password_salt", $password_salt);
       $stmt->bindParam(":status_bitmask", $status_bitmask);
+      $stmt->bindParam(":verified_id", $verified_id);
       $successful = $stmt->execute();
       $stmt->closeCursor();
     } catch (PDOException $e) {
@@ -49,7 +77,6 @@ class User {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $user_id = null;
     try {
       $stmt = Common::$database->prepare("
         SELECT `id`
@@ -58,23 +85,24 @@ class User {
         LIMIT 1;
       ");
       $stmt->bindParam(":email", $email, PDO::PARAM_STR);
-      $stmt->execute();
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot query user id by email");
+      } else if ($stmt->rowCount() == 0) {
+        throw new UserNotFoundException($email);
+      }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
-      $user_id = (int)$row->id;
-      // What if the email simply doesn't exist? throw QueryException?
+      return (int)$row->id;
     } catch (PDOException $e) {
       throw new QueryException("Cannot query user id by email", $e);
-    } finally {
-      return $user_id;
     }
+    return null;
   }
 
   public static function findIdByUsername($username) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $user_id = null;
     try {
       $stmt = Common::$database->prepare("
         SELECT `id`
@@ -83,23 +111,29 @@ class User {
         LIMIT 1;
       ");
       $stmt->bindParam(":username", $username, PDO::PARAM_STR);
-      $stmt->execute();
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot query user id by username");
+      } else if ($stmt->rowCount() == 0) {
+        throw new UserNotFoundException($username);
+      }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
-      $user_id = (int)$row->id;
-      // What if the username simply doesn't exist? throw QueryException?
+      return (int)$row->id;
     } catch (PDOException $e) {
       throw new QueryException("Cannot query user id by username", $e);
-    } finally {
-      return $user_id;
     }
+    return null;
   }
 
-  public static function getName($user_id) {
+  public function getName() {
+    return (is_null($this->display_name) ?
+      $this->username : $this->display_name);
+  }
+
+  public static function getNameFromId($user_id) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $name = null;
     try {
       $stmt = Common::$database->prepare("
         SELECT IFNULL(`display_name`, `username`) AS `name`
@@ -108,15 +142,62 @@ class User {
         LIMIT 1;
       ");
       $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
-      $stmt->execute();
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot query name by user id");
+      } else if ($stmt->rowCount() == 0) {
+        throw new UserNotFoundException($user_id);
+      }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
-      $name = $row->name;
+      return $row->name;
     } catch (PDOException $e) {
       throw new QueryException("Cannot query name by user id", $e);
-    } finally {
-      return $user_id;
     }
+    return null;
+  }
+
+  public function refresh() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        SELECT
+          `email`,
+          `username`,
+          `display_name`,
+          `password_hash`,
+          `password_salt`,
+          `status_bitmask`,
+          `registered_date`,
+          `verified_date`,
+          `verified_id`
+        FROM `users`
+        WHERE `id` = :id
+        LIMIT 1;
+      ");
+      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot refresh user");
+      } else if ($stmt->rowCount() == 0) {
+        throw new UserNotFoundException($this->id);
+      }
+      $row = $stmt->fetch(PDO::FETCH_OBJ);
+      $stmt->closeCursor();
+      $this->email           = $row->email;
+      $this->username        = $row->username;
+      $this->display_name    = $row->display_name;
+      $this->password_hash   = $row->password_hash;
+      $this->password_salt   = $row->password_salt;
+      $this->status_bitmask  = $row->status_bitmask;
+      $this->registered_date = $row->registered_date;
+      $this->verified_date   = $row->verified_date;
+      $this->verified_id     = $row->verified_id;
+      return true;
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot refresh user", $e);
+    }
+    return false;
   }
 
 }
