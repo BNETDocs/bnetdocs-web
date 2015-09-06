@@ -27,6 +27,7 @@
 /config.sample.json
 /database.backup.*
 /database.sample.sql
+/libraries/Exceptions/Reference.md
 /rsync-deploy.sh
 /rsync-exclude.txt
 Thumbs.db
