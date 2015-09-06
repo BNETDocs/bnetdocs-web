@@ -4,7 +4,6 @@ namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Packet\Popular as PacketPopularModel;

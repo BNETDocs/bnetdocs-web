@@ -4,7 +4,6 @@ namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Markdown;
 use \BNETDocs\Libraries\Router;
