@@ -37,13 +37,24 @@ class User {
     $this->refresh();
   }
 
+  public function checkPassword($password) {
+    if (is_null($this->password_hash)
+      || is_null($this->password_salt))
+      return false;
+    $pepper = Common::$config->bnetdocs->user_password_pepper;
+    $salt   = $this->password_salt;
+    $hash   = strtoupper(hash("sha256", $password.$salt.$pepper));
+    return ($hash === strtoupper($this->password_hash));
+  }
+
   public static function create(
-    $email, $username, $display_name, $password_hash, $password_salt,
-    $status_bitmask
+    $email, $username, $display_name, $password, $status_bitmask
   ) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+    $password_hash = null; $password_salt = null;
+    $this->createPassword($password, $password_hash, $password_salt);
     $verified_id = mt_rand();
     $successful = false;
     try {
@@ -71,6 +82,17 @@ class User {
     } finally {
       return $successful;
     }
+  }
+
+  public function createPassword($password, &$hash, &$salt) {
+    $pepper = Common::$config->bnetdocs->user_password_pepper;
+
+    $gmp  = gmp_init(time());
+    $gmp  = gmp_mul($gmp, mt_rand());
+    $gmp  = gmp_mul($gmp, gmp_random_bits(64));
+    $salt = strtoupper(gmp_strval($gmp, 36));
+
+    $hash = strtoupper(hash("sha256", $password.$salt.$pepper));
   }
 
   public static function findIdByEmail($email) {

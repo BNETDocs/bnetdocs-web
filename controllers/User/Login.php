@@ -6,6 +6,7 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
+use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Login as UserLoginModel;
@@ -48,12 +49,17 @@ class Login extends Controller {
     if (empty($model->email)) {
       $model->bad_email = "Email address was left blank.";
     } else {
-      $user_id = User::findIdByEmail($model->email);
-      if ($user_id === null) {
-        $model->bad_email = "Incorrect username or password.";
+      $user = null;
+      try {
+        $user = new User(User::findIdByEmail($model->email));
+      } catch (UserNotFoundException $e) {
+        $user = null;
+      }
+      if (!($user && $user->checkPassword($model->password))) {
+        $model->bad_email = "Incorrect email address or password.";
         $model->bad_password = true;
       } else {
-        $model->bad_email = "Found user, but login NYI.";
+        $model->bad_email = "Log in has not yet been implemented.";
         $model->bad_password = true;
       }
     }
