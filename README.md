@@ -32,11 +32,22 @@ Installation
    `include conf.d/php.conf;`
  - Add the following to the `local.bnetdocs.org` server config file:<br/>
    `location / { try_files /static$document_uri /main.php?$args; }`
-3. Start nginx and php-fpm on your server and ensure they begin running.
-4. Import and setup sample database (TODO: create sample database).
-5. Copy `/config.sample.json` to `/config.json` and modify it to your
+3. Install additional php modules:
+ - php-gmp
+ - php-mbstring
+ - php-mcrypt
+ - php-memcache
+ - php-memcached
+ - php-mysqlnd
+ - php-pdo
+ - php-pecl-geoip
+ - php-pecl-http
+ - php-pecl-jsonc
+4. Start nginx and php-fpm on your server and ensure they begin running.
+5. Import and setup the sample database.
+6. Copy `/config.sample.json` to `/config.phoenix.json` and modify it to your
    environment.
-6. Try accessing this endpoint:
+7. Try accessing this endpoint:
    [local.bnetdocs.org](https://local.bnetdocs.org)
  - You may need to modify your `/etc/hosts` file if your development
    environment is not your localhost.
