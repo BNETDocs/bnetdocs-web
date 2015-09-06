@@ -54,7 +54,7 @@ class User {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
     $password_hash = null; $password_salt = null;
-    $this->createPassword($password, $password_hash, $password_salt);
+    self::createPassword($password, $password_hash, $password_salt);
     $verified_id = mt_rand();
     $successful = false;
     try {
@@ -84,7 +84,7 @@ class User {
     }
   }
 
-  public function createPassword($password, &$hash, &$salt) {
+  public static function createPassword($password, &$hash, &$salt) {
     $pepper = Common::$config->bnetdocs->user_password_pepper;
 
     $gmp  = gmp_init(time());
