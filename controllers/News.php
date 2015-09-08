@@ -42,12 +42,14 @@ class News extends Controller {
   protected function getNews(NewsModel &$model) {
     $md = new Markdown();
     $user = new User(63);
-    $news_posts = Common::$cache->get("bnetdocs-newsposts");
-    $model->cache_date = new DateTime();
-    $model->cache_date->setTimezone(new DateTimeZone("GMT"));
-    if ($news_posts !== false) {
-      $model->news_posts = unserialize($news_posts);
+    $news = Common::$cache->get("bnetdocs-newsposts");
+    if ($news !== false) {
+      $news = unserialize($news);
+      $model->cache_date = $news[0];
+      $model->news_posts = $news[1];
     } else {
+      $model->cache_date = new DateTime();
+      $model->cache_date->setTimezone(new DateTimeZone("GMT"));
       $model->news_posts = [
         1 => [
           "id" => 1,
@@ -64,7 +66,11 @@ class News extends Controller {
           "content" => $md->text("I've been giving life back into BNETDocs: Phoenix recently. There's been lots of changes to the code repository and restructuring it. There's been lots of new designs and paradigms put in place that are better than the previous Phoenix from last year. More news coming soon.")
         ]
       ];
-      Common::$cache->set("bnetdocs-newsposts", serialize($model->news_posts), 300);
+      Common::$cache->set(
+        "bnetdocs-newsposts",
+        serialize([$model->cache_date, $model->news_posts]),
+        300
+      );
     }
   }
 
