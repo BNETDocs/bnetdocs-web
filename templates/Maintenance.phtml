@@ -2,7 +2,7 @@
       <article>
         <header>Maintenance</header>
         <section>
-          <p><?php echo htmlspecialchars($this->context->message, ENT_HTML5, "UTF-8"); ?></p>
+          <p><?php echo nl2br(htmlspecialchars($this->context->message, ENT_HTML5, "UTF-8")); ?></p>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
