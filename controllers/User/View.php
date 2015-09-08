@@ -21,9 +21,7 @@ class View extends Controller {
 
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
-      case "":
-      case "htm":
-      case "html":
+      case "htm": case "html": case "":
         $view = new UserViewHtmlView();
       break;
       default:
