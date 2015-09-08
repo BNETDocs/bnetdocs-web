@@ -31,7 +31,7 @@ class Maintenance extends Controller {
         $view = new MaintenancePlainView();
       break;
       default:
-        throw new UnspecifiedViewException();
+        $view = new MaintenanceHtmlView();
     }
     $model = new MaintenanceModel();
     $model->message = $this->message;
