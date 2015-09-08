@@ -191,7 +191,7 @@ class Router {
         case "legal": case "legal.htm": case "legal.html": case "legal.txt":
           $controller = new LegalController();
         break;
-        case "news": case "news.htm": case "news.html":
+        case "news": case "news.htm": case "news.html": case "news.rss":
           $controller = new NewsController();
         break;
         case "packet":

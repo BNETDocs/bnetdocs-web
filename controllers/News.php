@@ -11,7 +11,9 @@ use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\News as NewsModel;
 use \BNETDocs\Views\NewsHtml as NewsHtmlView;
+use \BNETDocs\Views\NewsRSS as NewsRSSView;
 use \DateTime;
+use \DateTimeZone;
 
 class News extends Controller {
 
@@ -19,6 +21,9 @@ class News extends Controller {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
         $view = new NewsHtmlView();
+      break;
+      case "rss":
+        $view = new NewsRSSView();
       break;
       default:
         throw new UnspecifiedViewException();
@@ -38,6 +43,8 @@ class News extends Controller {
     $md = new Markdown();
     $user = new User(63);
     $news_posts = Common::$cache->get("bnetdocs-newsposts");
+    $model->cache_date = new DateTime();
+    $model->cache_date->setTimezone(new DateTimeZone("GMT"));
     if ($news_posts !== false) {
       $model->news_posts = unserialize($news_posts);
     } else {

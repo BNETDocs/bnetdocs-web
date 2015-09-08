@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <atom:link href="https://dev.bnetdocs.org/news.rss" rel="self" type="application/rss+xml" />
+    <title>BNETDocs News</title>
+    <link>https://dev.bnetdocs.org/news</link>
+    <description>The community that maintains Battle.net&#8482; protocol documentation for the purpose of educating the public of how enterprise protocols work.</description>
+    <language>en-us</language>
+    <lastBuildDate><?php echo htmlspecialchars($this->context->cache_date->format("D, d M Y H:i:s e"), ENT_XML1, "UTF-8"); ?></lastBuildDate>
+    <docs>http://www.tutorialspoint.com/rss</docs>
+<?php foreach ($this->context->news_posts as $news_post) { ?>
+    <item>
+      <title><?php echo htmlspecialchars($news_post["title"], ENT_XML1, "UTF-8"); ?></title>
+      <link><?php echo htmlspecialchars("https://dev.bnetdocs.org/news/" . $news_post["id"], ENT_XML1, "UTF-8"); ?></link>
+      <description><?php echo htmlspecialchars($news_post["content"], ENT_XML1, "UTF-8"); ?></description>
+      <pubDate><?php echo htmlspecialchars($news_post["timestamp_published"]->format("D, d M Y H:i:s e"), ENT_XML1, "UTF-8"); ?></pubDate>
+      <guid><?php echo htmlspecialchars("https://dev.bnetdocs.org/news/" . $news_post["id"], ENT_XML1, "UTF-8"); ?></guid>
+    </item>
+<?php } ?>
+  </channel>
+</rss>
