@@ -5,9 +5,9 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 
 | Error Code | Error Name                     | Error Message                                        |
 | ---------- | ------------------------------ | ---------------------------------------------------- |
-| 1          | `ServiceUnavailableException`  | BNETDocs is currently offline                        |
-| 2          | `ClassNotFoundException`       | Required class `$className` not found                |
-| 3          | `ControllerNotFoundException`  | Unable to find a suitable controller given the path  |
+| 1          | `ClassNotFoundException`       | Required class `$className` not found                |
+| 2          | `ControllerNotFoundException`  | Unable to find a suitable controller given the path  |
+| 3          | `IncorrectModelException`      | Incorrect model provided to view                     |
 | 4          | `TemplateNotFoundException`    | Unable to locate template required to load this view |
 | 5          | `DatabaseUnavailableException` | All configured databases are unavailable             |
 | 6          | `QueryException`               | `$message`                                           |

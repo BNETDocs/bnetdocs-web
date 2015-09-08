@@ -8,7 +8,7 @@ use \Exception;
 class ClassNotFoundException extends BNETDocsException {
 
   public function __construct($className, Exception &$prev_ex = null) {
-    parent::__construct("Required class '$className' not found", 2, $prev_ex);
+    parent::__construct("Required class '$className' not found", 1, $prev_ex);
   }
 
 }

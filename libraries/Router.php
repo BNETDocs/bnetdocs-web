@@ -17,7 +17,6 @@ use \BNETDocs\Controllers\User\Register as UserRegisterController;
 use \BNETDocs\Controllers\User\View as UserViewController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
-use \BNETDocs\Libraries\Exceptions\ServiceUnavailableException;
 use \DateTime;
 use \DateTimeZone;
 use \SplObjectStorage;
