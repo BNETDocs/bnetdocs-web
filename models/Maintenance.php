@@ -6,4 +6,6 @@ use \BNETDocs\Libraries\Model;
 
 class Maintenance extends Model {
 
+  public $message;
+
 }

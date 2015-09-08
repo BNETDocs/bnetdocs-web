@@ -2,7 +2,7 @@
       <article>
         <header>Maintenance</header>
         <section>
-          <p>BNETDocs has to take a brief moment to do some system maintenance. We'll be back shortly.</p>
+          <p><?php echo htmlspecialchars($this->context->message, ENT_HTML5, "UTF-8"); ?></p>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>

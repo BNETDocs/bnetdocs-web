@@ -1,6 +1,9 @@
 {
   "bnetdocs": {
-    "maintenance": false,
+    "maintenance": [
+      false,
+      "BNETDocs has to take a brief moment to do some system maintenance. We'll be back shortly."
+    ],
     "user_login_disabled": false,
     "user_register_disabled": false,
     "user_register_requirements": {

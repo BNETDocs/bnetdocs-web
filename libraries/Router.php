@@ -159,8 +159,10 @@ class Router {
 
     ob_start();
 
-    if (Common::$config->bnetdocs->maintenance) {
-      $controller = new MaintenanceController();
+    if (Common::$config->bnetdocs->maintenance[0]) {
+      $controller = new MaintenanceController(
+        Common::$config->bnetdocs->maintenance[1]
+      );
     } else if (isset($redirect)) {
       $controller = new RedirectController(
         $redirect->getKey(), $redirect->getValue()
