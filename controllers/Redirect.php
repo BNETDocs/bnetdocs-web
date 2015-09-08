@@ -21,11 +21,8 @@ class Redirect extends Controller {
 
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
-      case "":
-      case "htm":
-      case "html":
+      case "htm": case "html": case "":
         $view = new RedirectHtmlView();
-        break;
       break;
       default:
         throw new UnspecifiedViewException();
