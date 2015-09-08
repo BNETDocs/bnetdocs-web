@@ -46,7 +46,7 @@ final class Common {
 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-    $response = new StdClass();
+    $response       = new StdClass();
     $response->data = curl_exec($curl);
     $response->code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     $response->type = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);

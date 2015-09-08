@@ -3,7 +3,6 @@
 namespace BNETDocs\Libraries;
 
 use \Exception;
-use \ReflectionExtension;
 
 class Logger {
 

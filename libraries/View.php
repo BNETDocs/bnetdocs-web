@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Model;
 
 abstract class View {
