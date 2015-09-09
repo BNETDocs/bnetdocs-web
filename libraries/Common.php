@@ -20,7 +20,9 @@ final class Common {
   public static function checkIfBlizzard() {
     $IP    = getenv("REMOTE_ADDR");
     $CIDRs = file_get_contents(getcwd() . "/static/a/Blizzard-CIDRs.txt");
-    $CIDRs = explode("\n", self::stripLinesWith($CIDRs, "\n"));
+    $CIDRs = preg_replace("/^#.*?\n/sm", "", $CIDRs);
+    $CIDRs = self::stripLinesWith($CIDRs, "\n");
+    $CIDRs = explode("\n", $CIDRs);
     return IP::checkCIDRArray($IP, $CIDRs);
   }
 

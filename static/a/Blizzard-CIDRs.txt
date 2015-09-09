@@ -1,3 +1,19 @@
+# These are IPs collected from services such as ARIN and RIPE, or otherwise
+# from Autonomous System Numbers (ASNs) given to Blizzard Entertainment, Inc.
+#
+# A good resource for finding more of these ASNs can be found at:
+# <http://www.tcpiputils.com/search?q="Blizzard+Entertainment">
+#
+# Of course, we can also do a reverse lookup of .blizzard.com and .battle.net,
+# but these yield limited results, whereas ASNs provide much more detail.
+# Nevertheless, those reverse lookups are also included below.
+#
+# This is meant to be a very comprehensive list of IPs assigned to Blizzard,
+# regardless of their purpose (e.g. external/internal servers, offices).
+#
+# Please help out by extending this list when you find more, as well as by
+# condensing the CIDRs where possible.
+#
 12.129.196.224/29
 12.129.200.192/27
 12.129.201.0/24
