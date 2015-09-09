@@ -169,9 +169,35 @@ class Router {
     } else {
       switch ($path) {
         case "":
-          $controller = new RedirectController(
-            "https://dev.bnetdocs.org/news", 302
-          );
+          // Try to route legacy BNETDocs Redux paths to Phoenix paths with a
+          // 301 Permanent redirect, otherwise go to the news with 302 Found.
+          $query = $this->getRequestQueryArray();
+          $op  = (isset($query["op"])  ? $query["op"]  : null);
+          $did = (isset($query["did"]) ? $query["did"] : null);
+          $pid = (isset($query["pid"]) ? $query["pid"] : null);
+          $url = null; $code = 301;
+          if ($op == "doc" && !is_null($did)) {
+            $url = "https://dev.bnetdocs.org/document/" . rawurlencode($did);
+          } else if ($op == "packet" && !is_null($pid)) {
+            $url = "https://dev.bnetdocs.org/packet/" . rawurlencode($pid);
+          } else if ($op == "credits") {
+            $url = "https://dev.bnetdocs.org/credits";
+          } else if ($op == "legalism") {
+            $url = "https://dev.bnetdocs.org/legal";
+          } else if ($op == "login") {
+            $url = "https://dev.bnetdocs.org/user/login";
+          } else if ($op == "news") {
+            $url = "https://dev.bnetdocs.org/news";
+          } else if ($op == "register") {
+            $url = "https://dev.bnetdocs.org/user/register";
+          /*} else if ($op == "resetpw") {
+            $url = "https://dev.bnetdocs.org/user/resetpassword";*/
+          }
+          if (is_null($url)) {
+            $url = "https://dev.bnetdocs.org/news";
+            $code = 302;
+          }
+          $controller = new RedirectController($url, $code);
         break;
         case "credits": case "credits.htm": case "credits.html":
           $controller = new CreditsController();
@@ -193,6 +219,12 @@ class Router {
         break;
         case "news": case "news.htm": case "news.html": case "news.rss":
           $controller = new NewsController();
+        break;
+        case "newsrss.php":
+          // Legacy BNETDocs Redux to BNETDocs Phoenix redirect.
+          $controller = new RedirectController(
+            "https://dev.bnetdocs.org/news.rss", 301
+          );
         break;
         case "packet":
           switch ($subpath) {
