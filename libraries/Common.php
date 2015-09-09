@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\IP;
 use \DateInterval;
 use \StdClass;
 
@@ -15,6 +16,13 @@ final class Common {
    * Block instantiation of this object.
    */
   private function __contruct() {}
+
+  public static function checkIfBlizzard() {
+    $IP    = getenv("REMOTE_ADDR");
+    $CIDRs = file_get_contents(getcwd() . "/static/a/Blizzard-CIDRs.txt");
+    $CIDRs = explode("\n", self::stripLinesWith($CIDRs, "\n"));
+    return IP::checkCIDRArray($IP, $CIDRs);
+  }
 
   public static function curlRequest($url, $post_content = null,
       $content_type = "", $connect_timeout = 5, $max_redirects = 10) {
@@ -119,6 +127,10 @@ final class Common {
     }
   }
 
+  public static function stripExcessLines($buffer) {
+    return preg_replace("/\n\n+/", "\n\n", $buffer);
+  }
+
   public static function stripLeftPattern($haystack, $needle) {
     $needle_l = strlen($needle);
     if (substr($haystack, 0, $needle_l) == $needle) {
@@ -126,6 +138,10 @@ final class Common {
     } else {
       return $haystack;
     }
+  }
+
+  public static function stripLinesWith($buffer, $pattern) {
+    return preg_replace("/\s+/", $pattern, $buffer);
   }
 
   public static function versionProperties() {
