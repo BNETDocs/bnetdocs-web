@@ -116,10 +116,10 @@ class Router {
   }
 
   public function getRequestPathString($with_extension = true) {
-    if ($with_extension) {
+    if ($with_extension || strpos($this->pathString, ".") === false) {
       return $this->pathString;
     } else {
-      return pathinfo($this->pathString, PATHINFO_FILENAME);
+      return substr($this->pathString, 0, strrpos($this->pathString, "."));
     }
   }
 
