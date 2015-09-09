@@ -88,7 +88,7 @@ body > nav > a[href]:hover {
   text-decoration: none;
 }
 body > nav > a#nav-current {
-/*  background-image: url('/style_nav_arrow.png');*/
+  background-image: url("https://dev.bnetdocs.org/a/nav_arrow.png");
   background-position: left center;
   background-repeat: no-repeat;
 }
