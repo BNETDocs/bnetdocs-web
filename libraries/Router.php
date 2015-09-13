@@ -238,6 +238,18 @@ class Router {
               throw new ControllerNotFoundException($path . "/" . $subpath);
           }
         break;
+        case "rss":
+          // Old-style Phoenix to new-style Phoenix redirect.
+          switch ($subpath) {
+            case "news":
+              $controller = new RedirectController(
+                "https://dev.bnetdocs.org/news.rss", 301
+              );
+            break;
+            default:
+              throw new ControllerNotFoundException($path . "/" . $subpath);
+          }
+        break;
         case "status": case "status.json": case "status.txt":
           $controller = new StatusController();
         break;
