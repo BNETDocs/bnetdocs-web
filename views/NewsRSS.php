@@ -19,7 +19,7 @@ class NewsRSS extends View {
     if (!$model instanceof NewsModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "News.RSS", "/templates"))->render();
+    (new Template($model, "News.rss"))->render();
   }
 
 }

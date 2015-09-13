@@ -19,7 +19,7 @@ class SearchHtml extends View {
     if (!$model instanceof PacketSearchModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Packet/Search", "/templates"))->render();
+    (new Template($model, "Packet/Search"))->render();
   }
 
 }

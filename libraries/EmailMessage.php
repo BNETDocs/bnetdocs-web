@@ -3,6 +3,7 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\HTTPHeader;
+use \BNETDocs\Libraries\Pair;
 use \SplObjectStorage;
 
 class EmailMessage {
@@ -17,6 +18,12 @@ class EmailMessage {
 
   public function addHeader($name, $value) {
     $this->headers->attach(new HTTPHeader($name, $value));
+  }
+
+  public function build() {
+    // This should be overridden by subclasses. It is only present here
+    // because it is called upon elsewhere in the code.
+    return false;
   }
 
   public function getBody() {
@@ -39,6 +46,22 @@ class EmailMessage {
       $buffer .= (string)$obj;
     }
     return $buffer;
+  }
+
+  protected function setMultiPartBody(array &$bodies) {
+    $boundary = "bnetdocs" . (mt_rand() * mt_rand());
+    $this->setHeader(
+      "Content-Type",
+      "multipart/alternative;boundary=" . $boundary
+    );
+    $body = "\n";
+    foreach ($bodies as $part) {
+      // $part should be a Pair class.
+      $body .= "--" . $boundary . "\n";
+      $body .= "Content-Type: " . $part->getKey() . "\n\n";
+      $body .= $part->getValue() . "\n";
+    }
+    return $this->setBody($body);
   }
 
   public function setBody($body) {

@@ -19,7 +19,7 @@ class LegalHtml extends View {
     if (!$model instanceof LegalModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Legal", "/templates"))->render();
+    (new Template($model, "Legal"))->render();
   }
 
 }

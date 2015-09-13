@@ -19,7 +19,7 @@ class PopularHtml extends View {
     if (!$model instanceof PacketPopularModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Packet/Popular", "/templates"))->render();
+    (new Template($model, "Packet/Popular"))->render();
   }
 
 }

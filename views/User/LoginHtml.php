@@ -19,7 +19,7 @@ class LoginHtml extends View {
     if (!$model instanceof UserLoginModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "User/Login", "/templates"))->render();
+    (new Template($model, "User/Login"))->render();
   }
 
 }

@@ -19,7 +19,7 @@ class ViewHtml extends View {
     if (!$model instanceof UserViewModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "User/View", "/templates"))->render();
+    (new Template($model, "User/View"))->render();
   }
 
 }

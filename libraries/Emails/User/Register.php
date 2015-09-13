@@ -3,6 +3,7 @@
 namespace BNETDocs\Libraries\Emails\User;
 
 use \BNETDocs\Libraries\EmailMessage;
+use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\User;
 use \StdClass;
@@ -18,17 +19,22 @@ class Register extends EmailMessage {
     $this->user  = $user;
   }
 
-  public function build($plaintext) {
+  public function build() {
     $context = new StdClass();
     $context->user  = $user;
     $context->token = $token;
-    $this->setBody(
-      (new Template(
-        $context,
-        "User/Register." . ($plaintext ? "plain" : "rich"),
-        "/email_templates"
-      ))->render()
-    );
+    ob_start(); (new Template(
+      $context, "email/User/Register.rich"
+    ))->render(); $rich = ob_get_clean();
+    ob_start(); (new Template(
+      $context, "email/User/Register.plain"
+    ))->render(); $plain = ob_get_clean();
+    $parts = [
+      new Pair("text/html;charset=utf-8", $rich),
+      new Pair("text/plain;charset=utf-8", $plain)
+    ];
+    $this->setMultiPartBody($parts);
+    return true;
   }
 
 }
