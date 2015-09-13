@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Login as UserLoginModel;
@@ -54,9 +55,21 @@ class Login extends Controller {
         $user = null;
       }
       if (!($user && $user->checkPassword($model->password))) {
+        Logger::logEvent(
+          "user_login",
+          ($user ? $user->getId() : null),
+          getenv("REMOTE_ADDR"),
+          json_encode(["success" => false, "email" => $model->email])
+        );
         $model->bad_email = "Incorrect email address or password.";
         $model->bad_password = true;
       } else {
+        Logger::logEvent(
+          "user_login",
+          ($user ? $user->getId() : null),
+          getenv("REMOTE_ADDR"),
+          json_encode(["success" => true, "email" => $model->email])
+        );
         $model->bad_email = "Log in has not yet been implemented.";
         $model->bad_password = true;
       }

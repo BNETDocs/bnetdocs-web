@@ -148,6 +148,10 @@ class User {
     return null;
   }
 
+  public function getId() {
+    return $this->id;
+  }
+
   public function getName() {
     return (is_null($this->display_name) ?
       $this->username : $this->display_name);
