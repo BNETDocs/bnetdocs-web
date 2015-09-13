@@ -11,7 +11,7 @@ use \PDOException;
 
 class Credits {
 
-  public function getTotalUsers() {
+  public function &getTotalUsers() {
     $cache_key = "bnetdocs-credits-totalusers";
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) return (int)$cache_val;
@@ -29,7 +29,7 @@ class Credits {
     return $sum;
   }
 
-  public function getTopContributorsByDocuments() {
+  public function &getTopContributorsByDocuments() {
     $cache_key = "bnetdocs-credits-documents";
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) return unserialize($cache_val);
@@ -65,7 +65,7 @@ class Credits {
     return $result;
   }
 
-  public function getTopContributorsByNewsPosts() {
+  public function &getTopContributorsByNewsPosts() {
     $cache_key = "bnetdocs-credits-newsposts";
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) return unserialize($cache_val);
@@ -83,7 +83,7 @@ class Credits {
       FROM
         `users` AS `u`
       RIGHT JOIN
-        `news_posts` AS `n` ON `n`.`creator_uid` = `u`.`id`
+        `news_posts` AS `n` ON `n`.`user_id` = `u`.`id`
       GROUP BY
         `u`.`id`
       ORDER BY
@@ -101,7 +101,7 @@ class Credits {
     return $result;
   }
 
-  public function getTopContributorsByPackets() {
+  public function &getTopContributorsByPackets() {
     $cache_key = "bnetdocs-credits-packets";
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) return unserialize($cache_val);
@@ -119,7 +119,7 @@ class Credits {
       FROM
         `users` AS `u`
       RIGHT JOIN
-        `packets` AS `p` ON `p`.`author_user_id` = `u`.`id`
+        `packets` AS `p` ON `p`.`user_id` = `u`.`id`
       GROUP BY
         `u`.`id`
       ORDER BY
@@ -137,7 +137,7 @@ class Credits {
     return $result;
   }
 
-  public function getTopContributorsByServers() {
+  public function &getTopContributorsByServers() {
     $cache_key = "bnetdocs-credits-servers";
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) return unserialize($cache_val);
@@ -155,12 +155,12 @@ class Credits {
       FROM
         `users` AS `u`
       RIGHT JOIN
-        `servers` AS `s` ON `s`.`owner_user_id` = `u`.`id`
+        `servers` AS `s` ON `s`.`user_id` = `u`.`id`
       GROUP BY
         `u`.`id`
       ORDER BY
         `servers_owned` DESC,
-        `s`.`date_added` ASC
+        `s`.`added_date` ASC
       LIMIT 5;
     ");
     $stmt->execute();

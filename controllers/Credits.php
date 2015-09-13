@@ -35,13 +35,13 @@ class Credits extends Controller {
     $credits = new CreditsLib();
     $model->total_users = $credits->getTotalUsers();
     $model->top_contributors_by_documents
-      = $credits->getTopContributorsByDocuments();
+      = &$credits->getTopContributorsByDocuments();
     $model->top_contributors_by_news_posts
-      = $credits->getTopContributorsByNewsPosts();
+      = &$credits->getTopContributorsByNewsPosts();
     $model->top_contributors_by_packets
-      = $credits->getTopContributorsByPackets();
+      = &$credits->getTopContributorsByPackets();
     $model->top_contributors_by_servers
-      = $credits->getTopContributorsByServers();
+      = &$credits->getTopContributorsByServers();
   }
 
 }
