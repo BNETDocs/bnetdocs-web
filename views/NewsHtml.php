@@ -19,7 +19,7 @@ class NewsHtml extends View {
     if (!$model instanceof NewsModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "News"))->render();
+    (new Template($model, "News", "/templates"))->render();
   }
 
 }

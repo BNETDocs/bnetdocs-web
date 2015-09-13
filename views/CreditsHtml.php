@@ -19,7 +19,7 @@ class CreditsHtml extends View {
     if (!$model instanceof CreditsModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Credits"))->render();
+    (new Template($model, "Credits", "/templates"))->render();
   }
 
 }

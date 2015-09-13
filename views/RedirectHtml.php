@@ -19,7 +19,7 @@ class RedirectHtml extends View {
     if (!$model instanceof RedirectModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Redirect"))->render();
+    (new Template($model, "Redirect", "/templates"))->render();
   }
 
 }

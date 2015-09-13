@@ -10,11 +10,13 @@ final class Template {
   protected $additional_css;
   protected $context;
   protected $template;
+  private $template_path;
 
-  public function __construct(&$context, $template) {
+  public function __construct(&$context, $template, $template_path) {
     $this->additional_css = [];
     $this->setContext($context);
     $this->setTemplate($template);
+    $this->template_path = $template_path;
   }
 
   public function getContext() {
@@ -28,7 +30,7 @@ final class Template {
   public function render() {
     $cwd = getcwd();
     try {
-      chdir($cwd . "/templates");
+      chdir($cwd . $this->template_path);
       if (!file_exists($this->template)) {
         throw new TemplateNotFoundException($this);
       }

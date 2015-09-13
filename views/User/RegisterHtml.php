@@ -19,7 +19,7 @@ class RegisterHtml extends View {
     if (!$model instanceof UserRegisterModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "User/Register"))->render();
+    (new Template($model, "User/Register", "/templates"))->render();
   }
 
 }

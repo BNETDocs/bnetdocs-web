@@ -19,7 +19,7 @@ class SearchHtml extends View {
     if (!$model instanceof DocumentSearchModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Document/Search"))->render();
+    (new Template($model, "Document/Search", "/templates"))->render();
   }
 
 }

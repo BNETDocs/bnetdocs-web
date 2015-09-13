@@ -19,7 +19,7 @@ class PopularHtml extends View {
     if (!$model instanceof DocumentPopularModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Document/Popular"))->render();
+    (new Template($model, "Document/Popular", "/templates"))->render();
   }
 
 }

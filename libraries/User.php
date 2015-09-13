@@ -22,7 +22,6 @@ class User {
   private $status_bitmask;
   private $registered_date;
   private $verified_date;
-  private $verified_id;
 
   public function __construct($user_id) {
     $this->id              = (int)$user_id;
@@ -34,7 +33,6 @@ class User {
     $this->status_bitmask  = null;
     $this->registered_date = null;
     $this->verified_date   = null;
-    $this->verified_id     = null;
     $this->refresh();
   }
 
@@ -56,17 +54,16 @@ class User {
     }
     $password_hash = null; $password_salt = null;
     self::createPassword($password, $password_hash, $password_salt);
-    $verified_id = mt_rand();
     $successful = false;
     try {
       $stmt = Common::$database->prepare("
         INSERT INTO `users` (
           `id`, `email`, `username`, `display_name`, `password_hash`,
           `password_salt`, `status_bitmask`, `registered_date`,
-          `verified_date`, `verified_id`
+          `verified_date`
         ) VALUES (
           NULL, :email, :username, :display_name, :password_hash,
-          :password_salt, :status_bitmask, NOW(), NULL, :verified_id
+          :password_salt, :status_bitmask, NOW(), NULL
         );
       ");
       $stmt->bindParam(":email", $email);
@@ -75,7 +72,6 @@ class User {
       $stmt->bindParam(":password_hash", $password_hash);
       $stmt->bindParam(":password_salt", $password_salt);
       $stmt->bindParam(":status_bitmask", $status_bitmask);
-      $stmt->bindParam(":verified_id", $verified_id);
       $successful = $stmt->execute();
       $stmt->closeCursor();
     } catch (PDOException $e) {
@@ -148,6 +144,10 @@ class User {
     return null;
   }
 
+  public function getEmail() {
+    return $this->email;
+  }
+
   public function getId() {
     return $this->id;
   }
@@ -197,8 +197,7 @@ class User {
           `password_salt`,
           `status_bitmask`,
           `registered_date`,
-          `verified_date`,
-          `verified_id`
+          `verified_date`
         FROM `users`
         WHERE `id` = :id
         LIMIT 1;
@@ -219,7 +218,6 @@ class User {
       $this->status_bitmask  = $row->status_bitmask;
       $this->registered_date = $row->registered_date;
       $this->verified_date   = $row->verified_date;
-      $this->verified_id     = $row->verified_id;
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh user", $e);

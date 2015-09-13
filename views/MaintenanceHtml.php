@@ -19,7 +19,7 @@ class MaintenanceHtml extends View {
     if (!$model instanceof MaintenanceModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Maintenance"))->render();
+    (new Template($model, "Maintenance", "/templates"))->render();
   }
 
 }
