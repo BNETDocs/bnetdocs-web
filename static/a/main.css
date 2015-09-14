@@ -122,7 +122,7 @@ body > main > article > header.no-select {
 body > main > article > header.error {
   background-color: rgba(128,64,64,0.6);
 }
-body > main > article > header:first-child {
+body > main > article > header:first-of-type {
   border-radius: 8px 8px 0px 0px;
 }
 body > main > article .social-btn {
