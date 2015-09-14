@@ -8,7 +8,6 @@ use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
-use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\News as NewsModel;
 use \BNETDocs\Views\NewsHtml as NewsHtmlView;
 use \BNETDocs\Views\NewsRSS as NewsRSSView;
