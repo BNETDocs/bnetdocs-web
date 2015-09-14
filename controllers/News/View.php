@@ -1,35 +1,34 @@
 <?php
 
-namespace BNETDocs\Controllers;
+namespace BNETDocs\Controllers\News;
 
-use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\News as NewsModel;
-use \BNETDocs\Views\NewsHtml as NewsHtmlView;
-use \BNETDocs\Views\NewsRSS as NewsRSSView;
-use \DateTime;
-use \DateTimeZone;
+use \BNETDocs\Models\News\View as NewsViewModel;
+use \BNETDocs\Views\News\ViewHtml as NewsViewHtmlView;
 
-class News extends Controller {
+class View extends Controller {
+
+  protected $news_post_id;
+
+  public function __construct($news_post_id) {
+    parent::__construct();
+    $this->news_post_id = $news_post_id;
+  }
 
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
-        $view = new NewsHtmlView();
-      break;
-      case "rss":
-        $view = new NewsRSSView();
+        $view = new NewsViewHtmlView();
       break;
       default:
         throw new UnspecifiedViewException();
     }
-    $model = new NewsModel();
-    $this->getNews($model);
+    $model = new NewsViewModel();
+    $this->getNewsPost($model);
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);
@@ -39,8 +38,9 @@ class News extends Controller {
     ob_end_clean();
   }
 
-  protected function getNews(NewsModel &$model) {
-    $model->news_posts = NewsPost::getAllNews(true);
+  protected function getNewsPost(NewsViewModel &$model) {
+    $model->news_post_id = $this->news_post_id;
+    $model->news_post    = new NewsPost($this->news_post_id);
   }
 
 }

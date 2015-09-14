@@ -21,7 +21,7 @@ function main() {
     }
     $path = str_replace("\\", "/", $path);
     $classShortName = $path;
-    $path = "./" . $path . ".php";
+    $path = getenv("DOCUMENT_ROOT") . "/" . $path . ".php";
     if (!file_exists($path)) {
       throw new ClassNotFoundException($classShortName);
     }

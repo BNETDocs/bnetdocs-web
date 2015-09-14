@@ -8,6 +8,7 @@ use \BNETDocs\Controllers\Document\Search as DocumentSearchController;
 use \BNETDocs\Controllers\Legal as LegalController;
 use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
+use \BNETDocs\Controllers\News\View as NewsViewController;
 use \BNETDocs\Controllers\Packet\Popular as PacketPopularController;
 use \BNETDocs\Controllers\Packet\Search as PacketSearchController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
@@ -217,8 +218,15 @@ class Router {
         case "legal": case "legal.htm": case "legal.html": case "legal.txt":
           $controller = new LegalController();
         break;
-        case "news": case "news.htm": case "news.html": case "news.rss":
+        case "news.htm": case "news.html": case "news.rss":
           $controller = new NewsController();
+        break;
+        case "news":
+          if (is_numeric($subpath)) {
+            $controller = new NewsViewController($subpath);
+          } else {
+            $controller = new NewsController();
+          }
         break;
         case "newsrss.php":
           // Legacy BNETDocs Redux to BNETDocs Phoenix redirect.

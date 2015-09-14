@@ -12,3 +12,4 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | 5          | `DatabaseUnavailableException` | All configured databases are unavailable             |
 | 6          | `QueryException`               | `$message`                                           |
 | 7          | `UserNotFoundException`        | User not found                                       |
+| 8          | `NewsPostNotFoundException`    | News post not found                                  |

@@ -1,20 +1,23 @@
 <?php
 namespace BNETDocs\Templates;
+
 use \BNETDocs\Libraries\Pair;
+
 $title = "News";
 $this->opengraph->attach(new Pair("description", "BNETDocs News"));
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news"));
+
 require("./header.inc.phtml");
 foreach ($this->context->news_posts as $news_post) { ?>
       <article>
-        <a href="https://plus.google.com/share?url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post["id"]); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($news_post["title"]); ?>&amp;url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post["id"]); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post["id"]); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
-        <header><a href="https://dev.bnetdocs.org/news/<?php echo rawurlencode($news_post["id"]); ?>"><?php echo $news_post["title"]; ?></a></header>
-        <section><?php echo $news_post["content"]; ?></section>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post->getId()); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($news_post->getTitle()); ?>&amp;url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post->getId()); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post->getId()); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
+        <header><a href="https://dev.bnetdocs.org/news/<?php echo rawurlencode($news_post->getId()); ?>"><?php echo $news_post->getTitle(); ?></a></header>
+        <section><?php echo $news_post->getContent(true); ?></section>
         <footer>
-          <span class="float-left"><?php echo $news_post["author"]; ?></span>
-          <span class="float-right"><?php echo $news_post["timestamp_published"]->format("l, F j, Y"); ?></span>
+          <span class="float-left"><?php echo $news_post->getUser()->getName(); ?></span>
+          <span class="float-right"><?php echo $news_post->getPublishDate()->format("l, F j, Y"); ?></span>
         </footer>
       </article>
 <?php }
