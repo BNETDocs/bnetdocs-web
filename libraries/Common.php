@@ -146,6 +146,27 @@ final class Common {
     return preg_replace("/\s+/", $pattern, $buffer);
   }
 
+  public static function stripToSnippet($buffer, $length) {
+    $buflen = strlen($buffer);
+    if ($buflen <= $length) return $buffer;
+    return preg_replace(
+      "/\s+?(\S+)?$/",
+      "",
+      substr($buffer, 0, $length - 2)
+    ) . "...";
+  }
+
+  public static function stripUpTo($buffer, $chr, $len = 0) {
+    $i = strpos($buffer, $chr);
+    if ($i === false && $len <= 0) {
+      return $buffer;
+    } else if ($i === false && $len > 0) {
+      return self::stripToSnippet($buffer, $len);
+    } else {
+      return substr($buffer, 0, $i);
+    }
+  }
+
   public static function versionProperties() {
     $versions           = new StdClass();
     $versions->bnetdocs = self::$config->bnetdocs->version;

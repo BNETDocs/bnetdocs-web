@@ -12,8 +12,11 @@
     <script type="text/javascript" src="https://dev.bnetdocs.org/a/BNETDocs.js"><![CDATA[]]></script>
     <link rel="alternate" href="https://dev.bnetdocs.org/news.rss" type="application/rss+xml" title="BNETDocs News"/>
     <link rel="license" href="https://dev.bnetdocs.org/legal"/>
-    <meta name="description" content="Battle.net logon sequences, packets, information, and protocols reference site."/>
     <meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding"/>
+<?php if (!empty($description)) { ?>
+    <meta name="description" content="<?php echo $description; ?>"/>
+    <meta property="og:description" content="<?php echo $description; ?>"/>
+<?php } ?>
     <meta property="og:site_name" content="BNETDocs"/>
     <meta property="og:locale" content="en_US"/>
     <meta property="og:title" content="<?php echo $title; ?> - BNETDocs"/>

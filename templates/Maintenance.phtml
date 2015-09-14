@@ -3,10 +3,10 @@ namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Pair;
 
-$title = "Maintenance";
-$this->opengraph->attach(new Pair("description", $this->context->message));
+$title       = "Maintenance";
+$description = $this->context->message;
+$slim_ui     = true;
 
-$slim_ui = true;
 require("./header.inc.phtml");
 ?>
       <article>
