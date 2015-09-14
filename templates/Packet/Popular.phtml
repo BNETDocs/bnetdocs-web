@@ -1,4 +1,14 @@
-<?php $title = "Popular Packets"; require("./header.inc.phtml"); ?>
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Pair;
+
+$title = "Popular Packets";
+$this->opengraph->attach(new Pair("description", "The popular packets on BNETDocs"));
+$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/packet/popular"));
+
+require("./header.inc.phtml");
+?>
       <article>
         <header>Popular Packets</header>
         <section>

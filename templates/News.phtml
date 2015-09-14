@@ -1,4 +1,10 @@
-<?php $title = "News"; require("./header.inc.phtml");
+<?php
+namespace BNETDocs\Templates;
+use \BNETDocs\Libraries\Pair;
+$title = "News";
+$this->opengraph->attach(new Pair("description", "BNETDocs News"));
+$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news"));
+require("./header.inc.phtml");
 foreach ($this->context->news_posts as $news_post) { ?>
       <article>
         <a href="https://twitter.com/share?text=<?php echo urlencode($news_post["title"]); ?>&amp;url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post["id"]); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>

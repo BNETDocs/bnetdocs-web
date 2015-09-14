@@ -4,15 +4,18 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Exceptions\TemplateNotFoundException;
 use \BNETDocs\Libraries\Logger;
+use \SplObjectStorage;
 
 final class Template {
 
   protected $additional_css;
   protected $context;
+  protected $opengraph;
   protected $template;
 
   public function __construct(&$context, $template) {
     $this->additional_css = [];
+    $this->opengraph      = new SplObjectStorage();
     $this->setContext($context);
     $this->setTemplate($template);
   }

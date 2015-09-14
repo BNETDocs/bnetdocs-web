@@ -1,4 +1,13 @@
-<?php $title = "Terms of Service"; require("./header.inc.phtml"); ?>
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Pair;
+
+$title = "Terms of Service";
+$this->opengraph->attach(new Pair("description", "BNETDocs Terms of Service & Privacy Policy"));
+
+require("./header.inc.phtml");
+?>
       <article>
         <header>Terms of Service</header>
         <section class="fixed-width-text"><?php

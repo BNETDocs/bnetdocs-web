@@ -1,4 +1,14 @@
-<?php $title = "View Account"; require("./header.inc.phtml"); ?>
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Pair;
+
+$title = "View Account";
+$this->opengraph->attach(new Pair("description", $this->context->user->getName() . " on BNETDocs website"));
+$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/" . $this->context->user_id));
+
+require("./header.inc.phtml");
+?>
       <article>
         <header>View Account</header>
         <section>
