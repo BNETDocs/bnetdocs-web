@@ -86,6 +86,9 @@ class NewsPost {
       $news_posts = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
         $news_posts[] = new self($row);
+        Common::$cache->set(
+          "bnetdocs-newspost-" . $row->id, serialize($row), 300
+        );
       }
       $stmt->closeCursor();
       return $news_posts;
