@@ -206,7 +206,11 @@ span.red {
 }
 code {
   background-color: rgba(128,128,128,0.2);
+  box-sizing: border-box;
+  display: inline-block;
   font-family: source code pro, courier new, monospace;
   font-size: 10pt;
+  max-width: 100%;
+  overflow: auto;
   padding: 0px 3px;
 }
