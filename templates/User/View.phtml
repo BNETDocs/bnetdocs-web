@@ -6,6 +6,8 @@ use \BNETDocs\Libraries\Pair;
 $title = "View Account";
 $this->opengraph->attach(new Pair("description", $this->context->user->getName() . " on BNETDocs website"));
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/" . $this->context->user_id));
+$this->opengraph->attach(new Pair("type", "profile"));
+$this->opengraph->attach(new Pair("profile:username", $this->context->user->getName()));
 
 require("./header.inc.phtml");
 ?>
