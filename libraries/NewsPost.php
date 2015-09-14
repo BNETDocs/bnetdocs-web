@@ -116,10 +116,14 @@ class NewsPost {
   }
 
   public function getEditDate() {
-    $tz = new DateTimeZone("UTC");
-    $dt = new DateTime($this->edit_date);
-    $dt->setTimezone($tz);
-    return $dt;
+    if (is_null($this->edit_date)) {
+      return $this->edit_date;
+    } else {
+      $tz = new DateTimeZone("UTC");
+      $dt = new DateTime($this->edit_date);
+      $dt->setTimezone($tz);
+      return $dt;
+    }
   }
 
   public function getId() {
@@ -131,17 +135,21 @@ class NewsPost {
   }
 
   public function getPostDate() {
-    $tz = new DateTimeZone("UTC");
-    $dt = new DateTime($this->post_date);
-    $dt->setTimezone($tz);
-    return $dt;
+    if (is_null($this->post_date)) {
+      return $this->post_date;
+    } else {
+      $tz = new DateTimeZone("UTC");
+      $dt = new DateTime($this->post_date);
+      $dt->setTimezone($tz);
+      return $dt;
+    }
   }
 
   public function getPublishDate() {
-    if (is_null($this->edit_date)) {
-      return $this->getPostDate();
-    } else {
+    if (!is_null($this->edit_date)) {
       return $this->getEditDate();
+    } else {
+      return $this->getPostDate();
     }
   }
 
@@ -158,6 +166,20 @@ class NewsPost {
   }
 
   public function refresh() {
+    $cache_key = "bnetdocs-newspost-" . $this->id;
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false) {
+      $cache_val = unserialize($cache_val);
+      $this->category_id     = $cache_val->category_id;
+      $this->content         = $cache_val->content;
+      $this->edit_count      = $cache_val->edit_count;
+      $this->edit_date       = $cache_val->edit_date;
+      $this->options_bitmask = $cache_val->options_bitmask;
+      $this->post_date       = $cache_val->post_date;
+      $this->title           = $cache_val->title;
+      $this->user_id         = $cache_val->user_id;
+      return true;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -192,6 +214,7 @@ class NewsPost {
       $this->post_date       = $row->post_date;
       $this->title           = $row->title;
       $this->user_id         = $row->user_id;
+      Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh news post", $e);

@@ -184,6 +184,20 @@ class User {
   }
 
   public function refresh() {
+    $cache_key = "bnetdocs-user-" . $this->id;
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false) {
+      $cache_val = unserialize($cache_val);
+      $this->email           = $cache_val->email;
+      $this->username        = $cache_val->username;
+      $this->display_name    = $cache_val->display_name;
+      $this->password_hash   = $cache_val->password_hash;
+      $this->password_salt   = $cache_val->password_salt;
+      $this->status_bitmask  = $cache_val->status_bitmask;
+      $this->registered_date = $cache_val->registered_date;
+      $this->verified_date   = $cache_val->verified_date;
+      return true;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -218,6 +232,7 @@ class User {
       $this->status_bitmask  = $row->status_bitmask;
       $this->registered_date = $row->registered_date;
       $this->verified_date   = $row->verified_date;
+      Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh user", $e);
