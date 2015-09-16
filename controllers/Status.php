@@ -40,7 +40,7 @@ class Status extends Controller {
     $model->remote_address   = getenv("REMOTE_ADDR");
     $model->remote_geoinfo   = geoip_record_by_name($model->remote_address);
     $model->timestamp        = new DateTime("now", new DateTimeZone("UTC"));
-    $model->timestamp_format = "Y-m-d H:i:s T";
+    $model->timestamp_format = "r";
     $model->version_info     = Common::versionProperties();
     return true;
   }
