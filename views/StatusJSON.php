@@ -23,7 +23,7 @@ class StatusJSON extends View {
     echo json_encode([
       "remote_address" => $model->remote_address,
       "remote_geoinfo" => $model->remote_geoinfo,
-      "timestamp"      => $model->timestamp->format($model->timestamp_format),
+      "timestamp"      => $model->timestamp->format("r"),
       "version_info"   => $model->version_info,
     ], $flags);
   }
