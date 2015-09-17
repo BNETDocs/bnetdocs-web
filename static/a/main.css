@@ -147,7 +147,7 @@ body > main > article section.fixed-width-text {
   font-family: source code pro, courier new, monospace;
   white-space: pre-wrap;
 }
-body > main > article section:last-child {
+body > main > article section:last-of-type {
   border-radius: 0px 0px 8px 8px;
 }
 body > main > article section > p:first-child {
@@ -155,6 +155,9 @@ body > main > article section > p:first-child {
 }
 body > main > article section > p:last-child {
   margin-bottom: 0px;
+}
+body > main > article section img {
+  max-width: 100%;
 }
 body > main > article > footer {
   background-color: rgba(64, 64, 64, 0.6);
