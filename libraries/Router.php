@@ -175,10 +175,13 @@ class Router {
           $query = $this->getRequestQueryArray();
           $op  = (isset($query["op"])  ? $query["op"]  : null);
           $did = (isset($query["did"]) ? $query["did"] : null);
+          $nid = (isset($query["nid"]) ? $query["nid"] : null);
           $pid = (isset($query["pid"]) ? $query["pid"] : null);
           $url = null; $code = 301;
           if ($op == "doc" && !is_null($did)) {
             $url = "https://dev.bnetdocs.org/document/" . rawurlencode($did);
+          } else if ($op == "news" && !is_null($nid)) {
+            $url = "https://dev.bnetdocs.org/news/" . rawurlencode($nid);
           } else if ($op == "packet" && !is_null($pid)) {
             $url = "https://dev.bnetdocs.org/packet/" . rawurlencode($pid);
           } else if ($op == "credits") {
