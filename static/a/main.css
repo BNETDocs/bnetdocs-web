@@ -188,24 +188,42 @@ body > footer.slim {
   float: right;
 }
 p.left,
-span.left {
+span.left,
+td.left {
   text-align: left;
 }
 p.center,
-span.center {
+span.center,
+td.center {
   text-align: center;
 }
 p.justify,
-span.justify {
+span.justify,
+td.justify {
   text-align: justify;
 }
 p.right,
-span.right {
+span.right,
+td.right {
   text-align: right;
 }
 p.red,
-span.red {
+span.red,
+td.red {
   color: #d74747;
+}
+p.green,
+span.green,
+td.green {
+  color: #47d747;
+}
+p.blue,
+span.blue
+td.blue {
+  color: #4747d7;
+}
+.monospace {
+  font-family: source code pro, courier new, monospace;
 }
 code {
   background-color: rgba(128,128,128,0.2);

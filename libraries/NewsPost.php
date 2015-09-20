@@ -193,6 +193,7 @@ class NewsPost {
           `content`,
           `edit_count`,
           `edit_date`,
+          `id`,
           `options_bitmask`,
           `post_date`,
           `title`,

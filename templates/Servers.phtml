@@ -1,0 +1,54 @@
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Server;
+use \BNETDocs\Libraries\ServerType;
+use \BNETDocs\Libraries\Pair;
+
+$title       = "Servers";
+$description = "BNETDocs Server List";
+$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/servers"));
+
+$servers_by_type = [];
+foreach ($this->context->servers as $server) {
+  $servers_by_type[$server->getTypeId()][] = $server;
+}
+ksort($servers_by_type);
+
+require("./header.inc.phtml");
+?>
+      <article>
+        <header>Servers</header>
+        <section>
+          <p>We have a total of <?php echo number_format(count($this->context->servers)); ?> servers. Their statuses can be found below.</p>
+        </section>
+<?php foreach ($servers_by_type as $type_id => $servers) {
+        $server_type = new ServerType($type_id);
+?>
+        <header><?php echo $server_type->getLabel(); ?></header>
+        <section>
+          <table style="width:100%;"><tbody>
+<?php   foreach ($servers as $server) {
+          $status_bitmask = $server->getStatusBitmask();
+          if ($status_bitmask & Server::STATUS_ONLINE) {
+            $status_color = "green"; $status = "Online";
+          } else {
+            $status_color = "red"; $status = "Offline";
+          }
+          if ($status_bitmask & Server::STATUS_DISABLED) {
+            $status = "Disabled";
+          }
+?>
+            <tr>
+              <td class="left <?php echo $status_color; ?>"><?php echo $status; ?></td>
+              <td class="left"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
+              <td class="left monospace" style="font-size: 10pt;"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
+              <td class="left">last updated <time datetime="<?php echo $server->getUpdatedDateTime()->format("Y-m-d\TH:i:sP"); ?>"><?php echo Common::relativeDateTimeString($server->getUpdatedDateTime()); ?></time></td>
+            </tr>
+<?php   } ?>
+          </tbody></table>
+        </section>
+<?php } ?>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

@@ -12,6 +12,7 @@ use \BNETDocs\Controllers\News\View as NewsViewController;
 use \BNETDocs\Controllers\Packet\Popular as PacketPopularController;
 use \BNETDocs\Controllers\Packet\Search as PacketSearchController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
+use \BNETDocs\Controllers\Servers as ServersController;
 use \BNETDocs\Controllers\Status as StatusController;
 use \BNETDocs\Controllers\User\Login as UserLoginController;
 use \BNETDocs\Controllers\User\Register as UserRegisterController;
@@ -260,6 +261,10 @@ class Router {
             default:
               throw new ControllerNotFoundException($path . "/" . $subpath);
           }
+        break;
+        case "servers": "servers.htm": case "servers.html":
+        case "servers.json":
+          $controller = new ServersController();
         break;
         case "status": case "status.json": case "status.txt":
           $controller = new StatusController();

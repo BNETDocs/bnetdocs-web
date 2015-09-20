@@ -4,6 +4,8 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\IP;
 use \DateInterval;
+use \DateTime;
+use \DateTimeZone;
 use \StdClass;
 
 final class Common {
@@ -127,6 +129,13 @@ final class Common {
       case E_ALL:               return "E_ALL";               /* 32767 */
       default:                  return "E_UNKNOWN";           /* ????? */
     }
+  }
+
+  public static function relativeDateTimeString(DateTime $compare) {
+    $diff = (new DateTime("now", new DateTimeZone("UTC")))->diff($compare);
+    $string = self::intervalToString($diff);
+    $string = ($string == "" ? "just now" : $string . " ago");
+    return $string;
   }
 
   public static function sanitizeForUrl($haystack, $lowercase = true) {

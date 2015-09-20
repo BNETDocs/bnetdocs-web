@@ -13,3 +13,5 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | 6          | `QueryException`               | `$message`                                           |
 | 7          | `UserNotFoundException`        | User not found                                       |
 | 8          | `NewsPostNotFoundException`    | News post not found                                  |
+| 9          | `ServerNotFoundException`      | Server not found                                     |
+| 10         | `ServerTypeNotFoundException`  | Server type not found                                |
