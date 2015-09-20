@@ -15,13 +15,16 @@ if (!is_null($this->context->news_post->getEditDate())) {
 }
 $this->opengraph->attach(new Pair("article:author:username", $this->context->news_post->getUser()->getName()));
 
+$url = "https://dev.bnetdocs.org/news/" . urlencode($this->context->news_post->getId());
+$url .= "/" . strtolower(trim(preg_replace("/[^\da-z]+/im", "-", $this->context->news_post->getTitle()), "-"));
+
 require("./header.inc.phtml");
 ?>
       <article>
-        <a href="https://plus.google.com/share?url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $this->context->news_post_id); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($this->context->news_post->getTitle()); ?>&amp;url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $this->context->news_post_id); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $this->context->news_post_id); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
-        <header><a href="https://dev.bnetdocs.org/news/<?php echo rawurlencode($this->context->news_post_id); ?>"><?php echo $this->context->news_post->getTitle(); ?></a></header>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($this->context->news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
+        <header><a href="<?php echo $url; ?>"><?php echo $this->context->news_post->getTitle(); ?></a></header>
         <section><?php echo $this->context->news_post->getContent(true); ?></section>
         <footer>
           <span class="float-left"><?php echo $this->context->news_post->getUser()->getName(); ?></span>

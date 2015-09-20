@@ -8,12 +8,15 @@ $description = "BNETDocs News";
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news"));
 
 require("./header.inc.phtml");
-foreach ($this->context->news_posts as $news_post) { ?>
+foreach ($this->context->news_posts as $news_post) {
+  $url = "https://dev.bnetdocs.org/news/" . urlencode($news_post->getId());
+  $url .= "/" . strtolower(trim(preg_replace("/[^\da-z]+/im", "-", $news_post->getTitle()), "-"));
+?>
       <article>
-        <a href="https://plus.google.com/share?url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post->getId()); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($news_post->getTitle()); ?>&amp;url=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post->getId()); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode("https://dev.bnetdocs.org/news/" . $news_post->getId()); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
-        <header><a href="https://dev.bnetdocs.org/news/<?php echo rawurlencode($news_post->getId()); ?>"><?php echo $news_post->getTitle(); ?></a></header>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
+        <header><a href="<?php echo $url; ?>"><?php echo $news_post->getTitle(); ?></a></header>
         <section><?php echo $news_post->getContent(true); ?></section>
         <footer>
           <span class="float-left"><?php echo $news_post->getUser()->getName(); ?></span>
