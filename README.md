@@ -1,7 +1,7 @@
 BNETDocs: Phoenix
 =================
 
-[![Build Status](https://magnum.travis-ci.com/carlbennett/bnetdocs-web.svg?token=NuYSBEpgMBcECX299Qpz&branch=phoenix-0.2)](https://magnum.travis-ci.com/carlbennett/bnetdocs-web)
+[![Build Status](https://travis-ci.org/BNETDocs/bnetdocs-web.svg?branch=phoenix-0.2)](https://travis-ci.org/BNETDocs/bnetdocs-web)
 
 Preface
 -------
@@ -18,7 +18,7 @@ trademarks are the property of their respectful owners. See the LICENSE file at
 the root of this repository for more info.
 
 **BNETDocs: Phoenix** is the successor to
-[BNETDocs: Redux](https://github.com/carlbennett/bnetdocs-web/tree/redux).
+[BNETDocs: Redux](https://github.com/BNETDocs/bnetdocs-web/tree/redux).
 
 Installation
 ------------
