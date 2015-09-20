@@ -16,7 +16,7 @@ if (!is_null($this->context->news_post->getEditDate())) {
 $this->opengraph->attach(new Pair("article:author:username", $this->context->news_post->getUser()->getName()));
 
 $url = "https://dev.bnetdocs.org/news/" . urlencode($this->context->news_post->getId());
-$url .= "/" . strtolower(trim(preg_replace("/[^\da-z]+/im", "-", $this->context->news_post->getTitle()), "-"));
+$url .= "/" . Common::stripToAlphanumeric($this->context->news_post->getTitle(), true);
 
 require("./header.inc.phtml");
 ?>

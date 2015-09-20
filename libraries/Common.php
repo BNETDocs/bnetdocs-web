@@ -146,6 +146,12 @@ final class Common {
     return preg_replace("/\s+/", $pattern, $buffer);
   }
 
+  public static function stripToAlphanumeric($haystack, $lowercase = true) {
+    $result = trim(preg_replace("/[^\da-z]+/im", "-", $haystack), "-");
+    if ($lowercase) $result = strtolower($result);
+    return $result;
+  }
+
   public static function stripToSnippet($buffer, $length) {
     $buflen = strlen($buffer);
     if ($buflen <= $length) return $buffer;
