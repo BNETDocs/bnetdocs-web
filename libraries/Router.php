@@ -262,7 +262,7 @@ class Router {
               throw new ControllerNotFoundException($path . "/" . $subpath);
           }
         break;
-        case "servers": "servers.htm": case "servers.html":
+        case "servers": case "servers.htm": case "servers.html":
         case "servers.json":
           $controller = new ServersController();
         break;

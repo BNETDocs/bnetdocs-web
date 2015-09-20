@@ -37,8 +37,20 @@ class Servers extends Controller {
   }
 
   protected function getServers(ServersModel &$model) {
-    $model->servers      = ServerLib::getAllServers();
-    $model->server_types = ServerTypeLib::getAllServerTypes();
+    $model->server_types    = ServerTypeLib::getAllServerTypes();
+    $model->servers         = ServerLib::getAllServers();
+    $model->status_bitmasks = [
+      [
+        "bit"         => ServerLib::STATUS_ONLINE,
+        "description" => "Server is online if set, offline if not set",
+        "label"       => "Online"
+      ],
+      [
+        "bit"         => ServerLib::STATUS_DISABLED,
+        "description" => "Server is not automatically checked if set",
+        "label"       => "Disabled"
+      ]
+    ];
   }
 
 }

@@ -50,18 +50,7 @@ class ServersJSON extends View {
       ];
     }
 
-    $content["status_bitmasks"] = [
-      [
-        "bit"         => Server::STATUS_ONLINE,
-        "description" => "Server is online if set, offline if not set",
-        "label"       => "Online"
-      ],
-      [
-        "bit"         => Server::STATUS_DISABLED,
-        "description" => "Server is not automatically checked if set",
-        "label"       => "Disabled"
-      ]
-    ];
+    $content["status_bitmasks"] = $model->status_bitmasks;
 
     echo json_encode($content, $flags);
   }
