@@ -129,6 +129,12 @@ final class Common {
     }
   }
 
+  public static function sanitizeForUrl($haystack, $lowercase = true) {
+    $result = trim(preg_replace("/[^\da-z]+/im", "-", $haystack), "-");
+    if ($lowercase) $result = strtolower($result);
+    return $result;
+  }
+
   public static function stripExcessLines($buffer) {
     return preg_replace("/\n\n+/", "\n\n", $buffer);
   }
@@ -144,12 +150,6 @@ final class Common {
 
   public static function stripLinesWith($buffer, $pattern) {
     return preg_replace("/\s+/", $pattern, $buffer);
-  }
-
-  public static function stripToAlphanumeric($haystack, $lowercase = true) {
-    $result = trim(preg_replace("/[^\da-z]+/im", "-", $haystack), "-");
-    if ($lowercase) $result = strtolower($result);
-    return $result;
   }
 
   public static function stripToSnippet($buffer, $length) {

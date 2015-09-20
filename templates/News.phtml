@@ -11,7 +11,7 @@ $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news"));
 require("./header.inc.phtml");
 foreach ($this->context->news_posts as $news_post) {
   $url = "https://dev.bnetdocs.org/news/" . urlencode($news_post->getId());
-  $url .= "/" . Common::stripToAlphanumeric($news_post->getTitle(), true);
+  $url .= "/" . Common::sanitizeForUrl($news_post->getTitle(), true);
 ?>
       <article>
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
