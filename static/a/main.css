@@ -147,7 +147,7 @@ body > main > article section.fixed-width-text {
   font-family: source code pro, courier new, monospace;
   white-space: pre-wrap;
 }
-body > main > article section:last-of-type {
+body > main > article section:last-child {
   border-radius: 0px 0px 8px 8px;
 }
 body > main > article section > p:first-child {
