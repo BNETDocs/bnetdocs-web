@@ -143,6 +143,10 @@ class Server {
     }
   }
 
+  public function getUser() {
+    return new User($this->user_id);
+  }
+
   public function getUserId() {
     return $this->user_id;
   }

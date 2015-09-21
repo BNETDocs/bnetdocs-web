@@ -46,7 +46,7 @@ class NewsPost {
       $this->refresh();
     } else if ($data instanceof StdClass) {
       self::normalize($data);
-      $this->category_id      = $data->category-id;
+      $this->category_id      = $data->category_id;
       $this->content          = $data->content;
       $this->created_datetime = $data->created_datetime;
       $this->edited_count     = $data->edited_count;

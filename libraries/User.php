@@ -8,33 +8,70 @@ use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
 use \StdClass;
 
 class User {
 
-  private $created_datetime;
-  private $display_name;
-  private $email;
-  private $id;
-  private $options_bitmask;
-  private $password_hash;
-  private $password_salt;
-  private $username;
-  private $verified_datetime;
+  const OPTION_ACL_DOCUMENT_CREATE  = 1;
+  const OPTION_ACL_DOCUMENT_MODIFY  = 2;
+  const OPTION_ACL_DOCUMENT_DELETE  = 4;
+  const OPTION_ACL_EVENT_LOG_VIEW   = 8;
+  const OPTION_ACL_EVENT_LOG_MODIFY = 16;
+  const OPTION_ACL_EVENT_LOG_DELETE = 32;
+  const OPTION_ACL_NEWS_CREATE      = 64;
+  const OPTION_ACL_NEWS_MODIFY      = 128;
+  const OPTION_ACL_NEWS_DELETE      = 256;
+  const OPTION_ACL_PACKET_CREATE    = 512;
+  const OPTION_ACL_PACKET_MODIFY    = 1024;
+  const OPTION_ACL_PACKET_DELETE    = 2048;
+  const OPTION_ACL_SERVER_CREATE    = 4096;
+  const OPTION_ACL_SERVER_MODIFY    = 8192;
+  const OPTION_ACL_SERVER_DELETE    = 16384;
+  const OPTION_ACL_USER_CREATE      = 32768;
+  const OPTION_ACL_USER_MODIFY      = 65536;
+  const OPTION_ACL_USER_DELETE      = 131072;
+  const OPTION_DISABLED             = 262144;
+  const OPTION_VERIFIED             = 524288;
 
-  public function __construct($user_id) {
-    $this->created_datetime  = null;
-    $this->display_name      = null;
-    $this->email             = null;
-    $this->id                = (int) $user_id;
-    $this->options_bitmask   = null;
-    $this->password_hash     = null;
-    $this->password_salt     = null;
-    $this->username          = null;
-    $this->verified_datetime = null;
-    $this->refresh();
+  protected $created_datetime;
+  protected $display_name;
+  protected $email;
+  protected $id;
+  protected $options_bitmask;
+  protected $password_hash;
+  protected $password_salt;
+  protected $username;
+  protected $verified_datetime;
+
+  public function __construct($data) {
+    if (is_numeric($data)) {
+      $this->created_datetime  = null;
+      $this->display_name      = null;
+      $this->email             = null;
+      $this->id                = (int) $data;
+      $this->options_bitmask   = null;
+      $this->password_hash     = null;
+      $this->password_salt     = null;
+      $this->username          = null;
+      $this->verified_datetime = null;
+      $this->refresh();
+    } else if ($data instanceof StdClass) {
+      self::normalize($data);
+      $this->created_datetime  = $data->created_datetime;
+      $this->display_name      = $data->display_name;
+      $this->email             = $data->email;
+      $this->id                = $data->id;
+      $this->options_bitmask   = $data->options_bitmask;
+      $this->password_hash     = $data->password_hash;
+      $this->password_salt     = $data->password_salt;
+      $this->username          = $data->username;
+      $this->verified_datetime = $data->verified_datetime;
+    } else {
+      throw new InvalidArgumentException("Cannot use data argument");
+    }
   }
 
   public function checkPassword($password) {
@@ -146,6 +183,21 @@ class User {
     return null;
   }
 
+  public function getCreatedDateTime() {
+    if (is_null($this->created_datetime)) {
+      return $this->created_datetime;
+    } else {
+      $tz = new DateTimeZone("UTC");
+      $dt = new DateTime($this->created_datetime);
+      $dt->setTimezone($tz);
+      return $dt;
+    }
+  }
+
+  public function getDisplayName() {
+    return $this->display_name;
+  }
+
   public function getEmail() {
     return $this->email;
   }
@@ -159,30 +211,31 @@ class User {
       $this->username : $this->display_name);
   }
 
-  public static function getNameFromId($user_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+  public function getOptionsBitmask() {
+    return $this->options_bitmask;
+  }
+
+  public function getPasswordHash() {
+    return $this->password_hash;
+  }
+
+  public function getPasswordSalt() {
+    return $this->password_salt;
+  }
+
+  public function getUsername() {
+    return $this->username;
+  }
+
+  public function getVerifiedDateTime() {
+    if (is_null($this->verified_datetime)) {
+      return $this->verified_datetime;
+    } else {
+      $tz = new DateTimeZone("UTC");
+      $dt = new DateTime($this->verified_datetime);
+      $dt->setTimezone($tz);
+      return $dt;
     }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT IFNULL(`display_name`, `username`) AS `name`
-        FROM `users`
-        WHERE `id` = :user_id
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot query name by user id");
-      } else if ($stmt->rowCount() == 0) {
-        throw new UserNotFoundException($user_id);
-      }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      return $row->name;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot query name by user id", $e);
-    }
-    return null;
   }
 
   protected static function normalize(StdClass &$data) {
@@ -191,14 +244,14 @@ class User {
     $data->options_bitmask  = (int)    $data->options_bitmask;
     $data->username         = (string) $data->username;
 
+    if (!is_null($data->display_name))
+      $data->display_name = (string) $data->display_name;
+
     if (!is_null($data->password_hash))
       $data->password_hash = (string) $data->password_hash;
 
     if (!is_null($data->password_salt))
       $data->password_salt = (string) $data->password_salt;
-
-    if (!is_null($data->display_name))
-      $data->display_name = (string) $data->display_name;
 
     if (!is_null($data->verified_datetime))
       $data->verified_datetime = (string) $data->verified_datetime;
@@ -230,6 +283,7 @@ class User {
           `created_datetime`,
           `display_name`,
           `email`,
+          `id`,
           `options_bitmask`,
           `password_hash`,
           `password_salt`,
