@@ -54,26 +54,66 @@ class Login extends Controller {
       } catch (UserNotFoundException $e) {
         $user = null;
       }
-      if (!($user && $user->checkPassword($model->password))) {
-        Logger::logEvent(
-          "user_login",
-          ($user ? $user->getId() : null),
-          getenv("REMOTE_ADDR"),
-          json_encode(["success" => false, "email" => $model->email])
-        );
-        $model->bad_email = "Incorrect email address or password.";
-        $model->bad_password = true;
+      if (!$user) {
+        $success = $this->loginErrorNotFound($model);
+      } else if ($user->getOptionsBitmask() & User::OPTION_DISABLED) {
+        $success = $this->loginErrorDisabled($model);
+      } else if (!$user->getOptionsBitmask() & User::OPTION_VERIFIED) {
+        $success = $this->loginErrorNotVerified($model);
+      } else if (!$user->checkPassword($model->password)) {
+        $success = $this->loginErrorWrongPassword($model);
+      } else if (Common::$config->bnetdocs->user_login_disabled) {
+        $success = $this->loginErrorSiteDisabled($model);
       } else {
-        Logger::logEvent(
-          "user_login",
-          ($user ? $user->getId() : null),
-          getenv("REMOTE_ADDR"),
-          json_encode(["success" => true, "email" => $model->email])
-        );
-        $model->bad_email = "Log in has not yet been implemented.";
-        $model->bad_password = true;
+        $success = $this->loginErrorNYI($model);
       }
+      Logger::logEvent(
+        "user_login",
+        ($user ? $user->getId() : null),
+        getenv("REMOTE_ADDR"),
+        json_encode([
+          "success"      => $success,
+          "email"        => $model->email,
+          "bad_email"    => $model->bad_email,
+          "bad_password" => $model->bad_password
+        ])
+      );
     }
+  }
+
+  private function loginErrorNotFound(UserLoginModel &$model) {
+    $model->bad_email = "There is no account by that email address.";
+    return false;
+  }
+
+  private function loginErrorDisabled(UserLoginModel &$model) {
+    $model->bad_email = "Your account has been disabled administratively.";
+    $model->bad_password = true;
+    return false;
+  }
+
+  private function loginErrorNotVerified(UserLoginModel &$model) {
+    $model->bad_email = "Your account has not been verified yet.";
+    $model->bad_password = true;
+    return false;
+  }
+
+  private function loginErrorWrongPassword(UserLoginModel &$model) {
+    $model->bad_email = "Incorrect email address or password.";
+    $model->bad_password = true;
+    return false;
+  }
+
+  private function loginErrorSiteDisabled(UserLoginModel &$model) {
+    $model->bad_email = "Log in has been disabled administratively for everyone.";
+    $model->bad_password = true;
+    return false;
+  }
+
+  private function loginErrorNYI(UserLoginModel &$model) {
+    $model->bad_email = "Log in has not yet been implemented.";
+    $model->bad_password = true;
+    return false;
   }
 
 }
