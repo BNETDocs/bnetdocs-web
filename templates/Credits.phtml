@@ -1,11 +1,15 @@
 <?php
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Pair;
+use \BNETDocs\Libraries\User;
 
 $title       = "Contributors";
 $description = "Contributors to the BNETDocs documentation";
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/credits"));
+
+$users = [];
 
 require("./header.inc.phtml");
 ?>
@@ -21,7 +25,9 @@ require("./header.inc.phtml");
         if (is_null($item->user_id)) {
           $pfx = ""; $sfx = "";
         } else {
-          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "\">";
+          if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
+          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">";
           $sfx = "</a>";
         }
 ?>
@@ -36,7 +42,9 @@ require("./header.inc.phtml");
         if (is_null($item->user_id)) {
           $pfx = ""; $sfx = "";
         } else {
-          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "\">";
+          if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
+          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">";
           $sfx = "</a>";
         }
 ?>
@@ -51,7 +59,9 @@ require("./header.inc.phtml");
         if (is_null($item->user_id)) {
           $pfx = ""; $sfx = "";
         } else {
-          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "\">";
+          if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
+          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">";
           $sfx = "</a>";
         }
 ?>
@@ -66,7 +76,9 @@ require("./header.inc.phtml");
         if (is_null($item->user_id)) {
           $pfx = ""; $sfx = "";
         } else {
-          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "\">";
+          if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
+          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">";
           $sfx = "</a>";
         }
 ?>
