@@ -18,6 +18,10 @@ $this->opengraph->attach(new Pair("article:author:username", $this->context->new
 $url = "https://dev.bnetdocs.org/news/" . urlencode($this->context->news_post->getId());
 $url .= "/" . Common::sanitizeForUrl($this->context->news_post->getTitle(), true);
 
+$user_name = $this->context->news_post->getUser()->getName();
+$user_id   = $this->context->news_post->getUserId();
+$user_url  = "https://dev.bnetdocs.org/user/" . $user_id . "/" . Common::sanitizeForUrl($user_name, true);
+
 require("./header.inc.phtml");
 ?>
       <article>
@@ -27,7 +31,7 @@ require("./header.inc.phtml");
         <header><a href="<?php echo $url; ?>"><?php echo $this->context->news_post->getTitle(); ?></a></header>
         <section><?php echo $this->context->news_post->getContent(true); ?></section>
         <footer>
-          <span class="float-left"><?php echo $this->context->news_post->getUser()->getName(); ?></span>
+          <span class="float-left"><a href="<?php echo $user_url; ?>"><?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
           <span class="float-right"><?php echo $this->context->news_post->getPublishedDateTime()->format("l, F j, Y"); ?></span>
         </footer>
       </article>

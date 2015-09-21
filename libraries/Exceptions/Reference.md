@@ -15,3 +15,4 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | 8          | `NewsPostNotFoundException`    | News post not found                                  |
 | 9          | `ServerNotFoundException`      | Server not found                                     |
 | 10         | `ServerTypeNotFoundException`  | Server type not found                                |
+| 11         | `UserProfileNotFoundException` | User profile not found                               |

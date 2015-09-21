@@ -3,15 +3,20 @@ namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Pair;
+use \BNETDocs\Libraries\User;
 
 $title       = "News";
 $description = "BNETDocs News";
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news"));
 
 require("./header.inc.phtml");
+
+$users = [];
 foreach ($this->context->news_posts as $news_post) {
   $url = "https://dev.bnetdocs.org/news/" . urlencode($news_post->getId());
   $url .= "/" . Common::sanitizeForUrl($news_post->getTitle(), true);
+  $user_id = $news_post->getUserId();
+  if (!isset($users[$user_id])) $users[$user_id] = new User($user_id);
 ?>
       <article>
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
@@ -20,7 +25,7 @@ foreach ($this->context->news_posts as $news_post) {
         <header><a href="<?php echo $url; ?>"><?php echo $news_post->getTitle(); ?></a></header>
         <section><?php echo $news_post->getContent(true); ?></section>
         <footer>
-          <span class="float-left"><?php echo $news_post->getUser()->getName(); ?></span>
+          <span class="float-left"><a href="https://dev.bnetdocs.org/user/<?php echo urlencode($user_id); ?>/<?php echo Common::sanitizeForUrl($users[$user_id]->getName(), true); ?>"><?php echo htmlspecialchars($users[$user_id]->getName(), ENT_HTML5, "UTF-8"); ?></a></span>
           <span class="float-right"><?php echo $news_post->getPublishedDateTime()->format("l, F j, Y"); ?></span>
         </footer>
       </article>

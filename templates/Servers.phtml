@@ -44,7 +44,7 @@ require("./header.inc.phtml");
               <td class="left <?php echo $status_color; ?>"><?php echo $status; ?></td>
               <td class="left"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
               <td class="left monospace" style="font-size: 10pt;"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
-              <td class="left">last updated <time datetime="<?php echo $server->getUpdatedDateTime()->format("Y-m-d\TH:i:sP"); ?>"><?php echo Common::relativeDateTimeString($server->getUpdatedDateTime()); ?></time></td>
+              <td class="left">last updated <time datetime="<?php echo $server->getUpdatedDateTime()->format("c"); ?>"><?php echo Common::relativeDateTimeString($server->getUpdatedDateTime()); ?></time></td>
             </tr>
 <?php   } ?>
           </tbody></table>

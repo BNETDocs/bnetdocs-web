@@ -173,4 +173,60 @@ class Credits {
     return $result;
   }
 
+  public static function getTotalDocumentsByUserId($user_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $stmt = Common::$database->prepare("
+      SELECT COUNT(*) AS `sum` FROM `documents` WHERE `user_id` = :id;
+    ");
+    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $obj = $stmt->fetch(PDO::FETCH_OBJ);
+    $stmt->closeCursor();
+    return (int) $obj->sum;
+  }
+
+  public static function getTotalNewsPostsByUserId($user_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $stmt = Common::$database->prepare("
+      SELECT COUNT(*) AS `sum` FROM `news_posts` WHERE `user_id` = :id;
+    ");
+    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $obj = $stmt->fetch(PDO::FETCH_OBJ);
+    $stmt->closeCursor();
+    return (int) $obj->sum;
+  }
+
+  public static function getTotalPacketsByUserId($user_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $stmt = Common::$database->prepare("
+      SELECT COUNT(*) AS `sum` FROM `packets` WHERE `user_id` = :id;
+    ");
+    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $obj = $stmt->fetch(PDO::FETCH_OBJ);
+    $stmt->closeCursor();
+    return (int) $obj->sum;
+  }
+
+  public static function getTotalServersByUserId($user_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $stmt = Common::$database->prepare("
+      SELECT COUNT(*) AS `sum` FROM `servers` WHERE `user_id` = :id;
+    ");
+    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $obj = $stmt->fetch(PDO::FETCH_OBJ);
+    $stmt->closeCursor();
+    return (int) $obj->sum;
+  }
+
 }

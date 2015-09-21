@@ -189,36 +189,43 @@ body > footer.slim {
 }
 p.left,
 span.left,
+th.left,
 td.left {
   text-align: left;
 }
 p.center,
 span.center,
+th.center,
 td.center {
   text-align: center;
 }
 p.justify,
 span.justify,
+th.justify,
 td.justify {
   text-align: justify;
 }
 p.right,
 span.right,
+th.right,
 td.right {
   text-align: right;
 }
 p.red,
 span.red,
+th.red,
 td.red {
   color: #d74747;
 }
 p.green,
 span.green,
+th.green,
 td.green {
   color: #47d747;
 }
 p.blue,
 span.blue
+th.blue,
 td.blue {
   color: #4747d7;
 }

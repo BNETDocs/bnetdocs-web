@@ -4,11 +4,16 @@ namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
+use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
+use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User as UserLib;
+use \BNETDocs\Libraries\UserProfile;
 use \BNETDocs\Models\User\View as UserViewModel;
 use \BNETDocs\Views\User\ViewHtml as UserViewHtmlView;
+use \DateTime;
+use \DateTimeZone;
 
 class View extends Controller {
 
@@ -40,7 +45,36 @@ class View extends Controller {
 
   protected function getUserInfo(UserViewModel &$model) {
     $model->user_id = $this->user_id;
-    $model->user    = new UserLib($this->user_id);
+
+    $model->sum_documents = Credits::getTotalDocumentsByUserId(
+      $this->user_id
+    );
+    $model->sum_news_posts = Credits::getTotalNewsPostsByUserId(
+      $this->user_id
+    );
+    $model->sum_packets = Credits::getTotalPacketsByUserId(
+      $this->user_id
+    );
+    $model->sum_servers = Credits::getTotalServersByUserId(
+      $this->user_id
+    );
+
+    $model->user = new UserLib($this->user_id);
+
+    $model->user_est = Common::intervalToString(
+      $model->user->getCreatedDateTime()->diff(
+        new DateTime("now", new DateTimeZone("UTC"))
+      )
+    );
+    $user_est_comma = strpos($model->user_est, ",");
+    if ($user_est_comma !== false)
+      $model->user_est = substr($model->user_est, 0, $user_est_comma);
+
+    try {
+      $model->user_profile = new UserProfile($this->user_id);
+    } catch (UserProfileNotFoundException $e) {
+      $model->user_profile = null;
+    }
   }
 
 }

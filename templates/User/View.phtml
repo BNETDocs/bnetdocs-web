@@ -9,13 +9,42 @@ $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/" . $thi
 $this->opengraph->attach(new Pair("type", "profile"));
 $this->opengraph->attach(new Pair("profile:username", $this->context->user->getName()));
 
+$safe_name = htmlspecialchars($this->context->user->getName(), ENT_HTML5, "UTF-8");
+
 require("./header.inc.phtml");
 ?>
       <article>
         <header>View Account</header>
         <section>
           <?php require("./NYI.inc.phtml"); ?>
-          You are viewing <?php echo $this->context->user->getName(); ?>.
+        </section>
+        <header>User Profile</header>
+        <section>
+<?php if (!$this->context->user_profile) { ?>
+          <p class="center">Unfortunately, <strong><?php echo $safe_name; ?></strong> does not have a user profile.</p>
+<?php } else { ?>
+          <table style="width:100%;"><tbody>
+<?php // TODO: Check for NULL profile fields and handle them appropriately. ?>
+            <tr><th class="right" style="width:128px;">Biography:</th><td class="left"><?php echo $this->context->user_profile->getBiography(); ?></td></tr>
+            <tr><th class="right">GitHub:</th><td class="left"><a href="https://github.com/<?php echo $this->context->user_profile->getGitHubUsername(); ?>"><?php echo $this->context->user_profile->getGitHubUsername(); ?></a></td></tr>
+            <tr><th class="right">Facebook:</th><td class="left"><a href="https://www.facebook.com/<?php echo $this->context->user_profile->getFacebookUsername(); ?>"><?php echo $this->context->user_profile->getFacebookUsername(); ?></a></td></tr>
+            <tr><th class="right">Twitter:</th><td class="left"><a href="https://twitter.com/<?php echo $this->context->user_profile->getTwitterUsername(); ?>"><?php echo $this->context->user_profile->getTwitterUsername(); ?></a></td></tr>
+            <tr><th class="right">Instagram:</th><td class="left"><a href="https://instagram.com/<?php echo $this->context->user_profile->getInstagramUsername(); ?>"><?php echo $this->context->user_profile->getInstagramUsername(); ?></a></td></tr>
+            <tr><th class="right">Skype:</th><td class="left"><?php echo $this->context->user_profile->getSkypeUsername(); ?></td></tr>
+            <tr><th class="right">Website:</th><td class="left"><a href="<?php echo $this->context->user_profile->getWebsite(); ?>"><?php echo $this->context->user_profile->getWebsite(); ?></a></td></tr>
+          </tbody></table>
+<?php } ?>
+        </section>
+        <header>User Statistics</header>
+        <section>
+          <p><strong><?php echo $safe_name; ?></strong> has been a member for <?php echo $this->context->user_est; ?> (since <time datetime="<?php echo $this->context->user->getCreatedDateTime()->format("c"); ?>"><?php echo $this->context->user->getCreatedDateTime()->format("l, F j, Y"); ?></time>).</p>
+          <p><strong><?php echo $safe_name; ?></strong> is the author or owner of:</p>
+          <ul>
+            <li><?php echo number_format($this->context->sum_documents);  ?> document<?php  echo ($this->context->sum_documents  != 1 ? "s" : ""); ?></li>
+            <li><?php echo number_format($this->context->sum_news_posts); ?> news post<?php echo ($this->context->sum_news_posts != 1 ? "s" : ""); ?></li>
+            <li><?php echo number_format($this->context->sum_packets);    ?> packet<?php    echo ($this->context->sum_packets    != 1 ? "s" : ""); ?></li>
+            <li><?php echo number_format($this->context->sum_servers);    ?> server<?php    echo ($this->context->sum_servers    != 1 ? "s" : ""); ?></li>
+          </ul>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>

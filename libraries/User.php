@@ -8,6 +8,8 @@ use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \DateTime;
+use \DateTimeZone;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
@@ -105,12 +107,12 @@ class User {
           :options_bitmask
         );
       ");
-      $stmt->bindParam(":email", $email);
-      $stmt->bindParam(":username", $username);
-      $stmt->bindParam(":display_name", $display_name);
-      $stmt->bindParam(":password_hash", $password_hash);
-      $stmt->bindParam(":password_salt", $password_salt);
-      $stmt->bindParam(":options_bitmask", $options_bitmask);
+      $stmt->bindParam(":email", $email, PDO::PARAM_STR);
+      $stmt->bindParam(":username", $username, PDO::PARAM_STR);
+      $stmt->bindParam(":display_name", $display_name, PDO::PARAM_STR);
+      $stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);
+      $stmt->bindParam(":password_salt", $password_salt, PDO::PARAM_STR);
+      $stmt->bindParam(":options_bitmask", $options_bitmask, PDO::PARAM_INT);
       $successful = $stmt->execute();
       $stmt->closeCursor();
     } catch (PDOException $e) {
