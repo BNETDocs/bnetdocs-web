@@ -1,7 +1,7 @@
 BNETDocs: Phoenix
 =================
 
-[![Build Status](https://travis-ci.org/BNETDocs/bnetdocs-web.svg?branch=phoenix-0.2)](https://travis-ci.org/BNETDocs/bnetdocs-web)
+[![Build Status](https://travis-ci.org/BNETDocs/bnetdocs-web.svg?branch=phoenix)](https://travis-ci.org/BNETDocs/bnetdocs-web)
 
 Preface
 -------
