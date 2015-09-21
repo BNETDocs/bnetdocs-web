@@ -158,6 +158,20 @@ class Router {
     $subpath   = (isset($pathArray[2]) ? $pathArray[2] : null);
     Logger::setTransactionName($this->getRequestPathString(false));
 
+    if (Common::checkIfBlizzard()) {
+      Logger::logMetric("is_blizzard_visit", true);
+      Logger::logEvent(
+        "blizzard_visit",
+        null, // TODO: Log their user_id here if applicable
+        getenv("REMOTE_ADDR"),
+        json_encode([
+          "path" => $this->getRequestPathString(true)
+        ])
+      );
+    } else {
+      Logger::logMetric("is_blizzard_visit", false);
+    }
+
     ob_start();
 
     if (Common::$config->bnetdocs->maintenance[0]) {
