@@ -31,7 +31,7 @@ Installation
  - Add the following to the `local.bnetdocs.org` server config file:<br/>
    `include conf.d/php.conf;`
  - Add the following to the `local.bnetdocs.org` server config file:<br/>
-   `location / { try_files /static$document_uri /main.php?$args; }`
+   `location / { try_files /static$uri /main.php$is_args$args; }`
 3. Install additional php modules:
  - php-gmp
  - php-mbstring
