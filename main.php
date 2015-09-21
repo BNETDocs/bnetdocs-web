@@ -63,8 +63,8 @@ function main() {
   });
 
   set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext){
-    while (ob_get_level()) ob_end_clean();
     if (!(error_reporting() & $errno)) return false;
+    while (ob_get_level()) ob_end_clean();
     http_response_code(500);
     header("Cache-Control: max-age=0,must-revalidate,no-cache,no-store");
     header("Content-Type: application/json;charset=utf-8");
