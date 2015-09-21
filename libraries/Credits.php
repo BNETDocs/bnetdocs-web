@@ -14,7 +14,7 @@ class Credits {
   public function &getTotalUsers() {
     $cache_key = "bnetdocs-credits-totalusers";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return (int)$cache_val;
+    if ($cache_val !== false) return (int) $cache_val;
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -24,7 +24,7 @@ class Credits {
     $stmt->execute();
     $obj = $stmt->fetch(PDO::FETCH_OBJ);
     $stmt->closeCursor();
-    $sum = (int)$obj->sum;
+    $sum = (int) $obj->sum;
     Common::$cache->set($cache_key, $sum, 300);
     return $sum;
   }

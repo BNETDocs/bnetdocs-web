@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \PDO;
 use \PDOException;
+use \StdClass;
 
 class User {
 
@@ -27,7 +28,7 @@ class User {
     $this->created_datetime  = null;
     $this->display_name      = null;
     $this->email             = null;
-    $this->id                = (int)$user_id;
+    $this->id                = (int) $user_id;
     $this->options_bitmask   = null;
     $this->password_hash     = null;
     $this->password_salt     = null;
@@ -112,7 +113,7 @@ class User {
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
-      return (int)$row->id;
+      return (int) $row->id;
     } catch (PDOException $e) {
       throw new QueryException("Cannot query user id by email", $e);
     }
@@ -138,7 +139,7 @@ class User {
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
-      return (int)$row->id;
+      return (int) $row->id;
     } catch (PDOException $e) {
       throw new QueryException("Cannot query user id by username", $e);
     }
@@ -184,6 +185,27 @@ class User {
     return null;
   }
 
+  protected static function normalize(StdClass &$data) {
+    $data->created_datetime = (string) $data->created_datetime;
+    $data->email            = (string) $data->email;
+    $data->options_bitmask  = (int)    $data->options_bitmask;
+    $data->username         = (string) $data->username;
+
+    if (!is_null($data->password_hash))
+      $data->password_hash = (string) $data->password_hash;
+
+    if (!is_null($data->password_salt))
+      $data->password_salt = (string) $data->password_salt;
+
+    if (!is_null($data->display_name))
+      $data->display_name = (string) $data->display_name;
+
+    if (!is_null($data->verified_datetime))
+      $data->verified_datetime = (string) $data->verified_datetime;
+
+    return true;
+  }
+
   public function refresh() {
     $cache_key = "bnetdocs-user-" . $this->id;
     $cache_val = Common::$cache->get($cache_key);
@@ -225,6 +247,7 @@ class User {
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
+      self::normalize($row);
       $this->created_datetime  = $row->created_datetime;
       $this->display_name      = $row->display_name;
       $this->email             = $row->email;

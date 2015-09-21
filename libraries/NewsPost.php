@@ -39,12 +39,13 @@ class NewsPost {
       $this->created_datetime = null;
       $this->edited_count     = null;
       $this->edited_datetime  = null;
-      $this->id               = (int)$data;
+      $this->id               = (int) $data;
       $this->options_bitmask  = null;
       $this->title            = null;
       $this->user_id          = null;
       $this->refresh();
     } else if ($data instanceof StdClass) {
+      self::normalize($data);
       $this->category_id      = $data->category-id;
       $this->content          = $data->content;
       $this->created_datetime = $data->created_datetime;
@@ -167,6 +168,23 @@ class NewsPost {
   public function getUserId() {
     return $this->user_id;
   }
+  
+  protected static function normalize(StdClass &$data) {
+    $data->category_id      = (int)    $data->category_id;
+    $data->content          = (string) $data->content;
+    $data->created_datetime = (string) $data->created_datetime;
+    $data->edited_count     = (int)    $data->edited_count;
+    $data->options_bitmask  = (int)    $data->options_bitmask;
+    $data->title            = (string) $data->title;
+
+    if (!is_null($data->edited_datetime))
+      $data->edited_datetime = (string) $data->edited_datetime;
+
+    if (!is_null($data->user_id))
+      $data->user_id = (int) $data->user_id;
+
+    return true;
+  }
 
   public function refresh() {
     $cache_key = "bnetdocs-newspost-" . $this->id;
@@ -210,6 +228,7 @@ class NewsPost {
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
+      self::normalize($row);
       $this->category_id      = $row->category_id;
       $this->content          = $row->content;
       $this->created_datetime = $row->created_datetime;

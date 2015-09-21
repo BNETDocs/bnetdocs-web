@@ -34,7 +34,7 @@ class Server {
     if (is_numeric($data)) {
       $this->address          = null;
       $this->created_datetime = null;
-      $this->id               = (int)$data;
+      $this->id               = (int) $data;
       $this->label            = null;
       $this->port             = null;
       $this->status_bitmask   = null;
@@ -43,6 +43,7 @@ class Server {
       $this->user_id          = null;
       $this->refresh();
     } else if ($data instanceof StdClass) {
+      self::normalize($data);
       $this->address          = $data->address;
       $this->created_datetime = $data->created_datetime;
       $this->id               = $data->id;
@@ -145,6 +146,23 @@ class Server {
   public function getUserId() {
     return $this->user_id;
   }
+
+  protected static function normalize(StdClass &$data) {
+    $data->address          = (string) $data->address;
+    $data->created_datetime = (string) $data->created_datetime;
+    $data->label            = (string) $data->label;
+    $data->port             = (int)    $data->port;
+    $data->status_bitmask   = (int)    $data->status_bitmask;
+    $data->type_id          = (int)    $data->type_id;
+
+    if (!is_null($data->updated_datetime))
+      $data->updated_datetime = (string) $data->updated_datetime;
+
+    if (!is_null($data->user_id))
+      $data->user_id = (int) $data->user_id;
+
+    return true;
+  }
   
   public function refresh() {
     $cache_key = "bnetdocs-server-" . $this->id;
@@ -188,6 +206,7 @@ class Server {
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
+      self::normalize($row);
       $this->address          = $row->address;
       $this->created_datetime = $row->created_datetime;
       $this->label            = $row->label;

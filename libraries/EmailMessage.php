@@ -43,7 +43,7 @@ class EmailMessage {
   public function getHeaders() {
     $buffer = "";
     foreach ($this->headers as $obj) {
-      $buffer .= (string)$obj;
+      $buffer .= (string) $obj;
     }
     return $buffer;
   }

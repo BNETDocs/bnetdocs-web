@@ -20,10 +20,11 @@ class ServerType {
 
   public function __construct($data) {
     if (is_numeric($data)) {
-      $this->id    = (int)$data;
+      $this->id    = (int) $data;
       $this->label = null;
       $this->refresh();
     } else if ($data instanceof StdClass) {
+      self::normalize($data);
       $this->id    = $data->id;
       $this->label = $data->label;
     } else {
@@ -70,6 +71,13 @@ class ServerType {
   public function getLabel() {
     return $this->label;
   }
+
+  protected static function normalize(StdClass &$data) {
+    $data->id    = (int)    $data->id;
+    $data->label = (string) $data->label;
+
+    return true;
+  }
   
   public function refresh() {
     $cache_key = "bnetdocs-servertype-" . $this->id;
@@ -99,6 +107,7 @@ class ServerType {
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
+      self::normalize($row);
       $this->label = $row->label;
       Common::$cache->set($cache_key, serialize($row), 300);
       return true;

@@ -73,7 +73,7 @@ class Router {
       $buffer = stream_get_contents($stdin);
       fclose($stdin);
     } else {
-      $len = (int)$len;
+      $len = (int) $len;
       $i = 0;
       $chunk_size = 8192; // default is 8192 according to PHP documentation
       $stdin = fopen("php://input", "r");
@@ -326,7 +326,7 @@ class Router {
   }
 
   public function setResponseTTL($ttl) {
-    $ttl = (int)$ttl;
+    $ttl = (int) $ttl;
     if ($ttl < 0) {
       throw new UnexpectedValueException(
         "Argument must be equal to or greater than zero", -1
