@@ -47,12 +47,12 @@ class Credits {
       FROM
         `users` AS `u`
       RIGHT JOIN
-        `documents` AS `d` ON `d`.`author_user_id` = `u`.`id`
+        `documents` AS `d` ON `d`.`user_id` = `u`.`id`
       GROUP BY
         `u`.`id`
       ORDER BY
         `documents_authored` DESC,
-        `d`.`added_date` ASC
+        `d`.`created_datetime` ASC
       LIMIT 5;
     ");
     $stmt->execute();
@@ -88,7 +88,7 @@ class Credits {
         `u`.`id`
       ORDER BY
         `news_posts_created` DESC,
-        `n`.`post_date` ASC
+        `n`.`created_datetime` ASC
       LIMIT 5;
     ");
     $stmt->execute();
@@ -124,7 +124,7 @@ class Credits {
         `u`.`id`
       ORDER BY
         `packets_authored` DESC,
-        `p`.`added_date` ASC
+        `p`.`created_datetime` ASC
       LIMIT 5;
     ");
     $stmt->execute();
@@ -160,7 +160,7 @@ class Credits {
         `u`.`id`
       ORDER BY
         `servers_owned` DESC,
-        `s`.`added_date` ASC
+        `s`.`created_datetime` ASC
       LIMIT 5;
     ");
     $stmt->execute();

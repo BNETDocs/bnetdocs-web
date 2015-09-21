@@ -101,7 +101,8 @@ class Logger {
     try {
       $stmt = Common::$database->prepare("
         INSERT INTO `event_log` (
-          `event_type_id`, `event_date`, `user_id`, `ip_address`, `meta_data`
+          `event_type_id`, `event_datetime`, `user_id`, `ip_address`,
+          `meta_data`
         ) VALUES (
           :event_type_id, NOW(), :user_id, :ip_address, :meta_data
         );

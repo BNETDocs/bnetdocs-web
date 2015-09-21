@@ -21,7 +21,7 @@ foreach ($this->context->news_posts as $news_post) {
         <section><?php echo $news_post->getContent(true); ?></section>
         <footer>
           <span class="float-left"><?php echo $news_post->getUser()->getName(); ?></span>
-          <span class="float-right"><?php echo $news_post->getPublishDate()->format("l, F j, Y"); ?></span>
+          <span class="float-right"><?php echo $news_post->getPublishedDateTime()->format("l, F j, Y"); ?></span>
         </footer>
       </article>
 <?php }

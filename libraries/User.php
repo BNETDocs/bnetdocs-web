@@ -13,26 +13,26 @@ use \PDOException;
 
 class User {
 
-  private $id;
-  private $email;
-  private $username;
+  private $created_datetime;
   private $display_name;
+  private $email;
+  private $id;
+  private $options_bitmask;
   private $password_hash;
   private $password_salt;
-  private $status_bitmask;
-  private $registered_date;
-  private $verified_date;
+  private $username;
+  private $verified_datetime;
 
   public function __construct($user_id) {
-    $this->id              = (int)$user_id;
-    $this->email           = null;
-    $this->username        = null;
-    $this->display_name    = null;
-    $this->password_hash   = null;
-    $this->password_salt   = null;
-    $this->status_bitmask  = null;
-    $this->registered_date = null;
-    $this->verified_date   = null;
+    $this->created_datetime  = null;
+    $this->display_name      = null;
+    $this->email             = null;
+    $this->id                = (int)$user_id;
+    $this->options_bitmask   = null;
+    $this->password_hash     = null;
+    $this->password_salt     = null;
+    $this->username          = null;
+    $this->verified_datetime = null;
     $this->refresh();
   }
 
@@ -47,7 +47,7 @@ class User {
   }
 
   public static function create(
-    $email, $username, $display_name, $password, $status_bitmask
+    $email, $username, $display_name, $password, $options_bitmask
   ) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
@@ -58,12 +58,13 @@ class User {
     try {
       $stmt = Common::$database->prepare("
         INSERT INTO `users` (
-          `id`, `email`, `username`, `display_name`, `password_hash`,
-          `password_salt`, `status_bitmask`, `registered_date`,
-          `verified_date`
+          `id`, `email`, `username`, `display_name`, `created_datetime`,
+          `verified_datetime`, `password_hash`, `password_salt`,
+          `options_bitmask`
         ) VALUES (
-          NULL, :email, :username, :display_name, :password_hash,
-          :password_salt, :status_bitmask, NOW(), NULL
+          NULL, :email, :username, :display_name, NOW(),
+          NULL, :password_hash, :password_salt,
+          :options_bitmask
         );
       ");
       $stmt->bindParam(":email", $email);
@@ -71,7 +72,7 @@ class User {
       $stmt->bindParam(":display_name", $display_name);
       $stmt->bindParam(":password_hash", $password_hash);
       $stmt->bindParam(":password_salt", $password_salt);
-      $stmt->bindParam(":status_bitmask", $status_bitmask);
+      $stmt->bindParam(":options_bitmask", $options_bitmask);
       $successful = $stmt->execute();
       $stmt->closeCursor();
     } catch (PDOException $e) {
@@ -188,14 +189,14 @@ class User {
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) {
       $cache_val = unserialize($cache_val);
-      $this->email           = $cache_val->email;
-      $this->username        = $cache_val->username;
-      $this->display_name    = $cache_val->display_name;
-      $this->password_hash   = $cache_val->password_hash;
-      $this->password_salt   = $cache_val->password_salt;
-      $this->status_bitmask  = $cache_val->status_bitmask;
-      $this->registered_date = $cache_val->registered_date;
-      $this->verified_date   = $cache_val->verified_date;
+      $this->created_datetime  = $cache_val->created_datetime;
+      $this->display_name      = $cache_val->display_name;
+      $this->email             = $cache_val->email;
+      $this->options_bitmask   = $cache_val->options_bitmask;
+      $this->password_hash     = $cache_val->password_hash;
+      $this->password_salt     = $cache_val->password_salt;
+      $this->username          = $cache_val->username;
+      $this->verified_datetime = $cache_val->verified_datetime;
       return true;
     }
     if (!isset(Common::$database)) {
@@ -204,14 +205,14 @@ class User {
     try {
       $stmt = Common::$database->prepare("
         SELECT
-          `email`,
-          `username`,
+          `created_datetime`,
           `display_name`,
+          `email`,
+          `options_bitmask`,
           `password_hash`,
           `password_salt`,
-          `status_bitmask`,
-          `registered_date`,
-          `verified_date`
+          `username`,
+          `verified_datetime`
         FROM `users`
         WHERE `id` = :id
         LIMIT 1;
@@ -224,14 +225,14 @@ class User {
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
-      $this->email           = $row->email;
-      $this->username        = $row->username;
-      $this->display_name    = $row->display_name;
-      $this->password_hash   = $row->password_hash;
-      $this->password_salt   = $row->password_salt;
-      $this->status_bitmask  = $row->status_bitmask;
-      $this->registered_date = $row->registered_date;
-      $this->verified_date   = $row->verified_date;
+      $this->created_datetime  = $row->created_datetime;
+      $this->display_name      = $row->display_name;
+      $this->email             = $row->email;
+      $this->options_bitmask   = $row->options_bitmask;
+      $this->password_hash     = $row->password_hash;
+      $this->password_salt     = $row->password_salt;
+      $this->username          = $row->username;
+      $this->verified_datetime = $row->verified_datetime;
       Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {

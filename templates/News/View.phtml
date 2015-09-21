@@ -9,9 +9,9 @@ $description = Common::stripUpTo(filter_var($this->context->news_post->getConten
 
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news/" . $this->context->news_post_id));
 $this->opengraph->attach(new Pair("type", "article"));
-$this->opengraph->attach(new Pair("article:published_time", $this->context->news_post->getPostDate()->format("c")));
-if (!is_null($this->context->news_post->getEditDate())) {
-  $this->opengraph->attach(new Pair("article:modified_time", $this->context->news_post->getEditDate()->format("c")));
+$this->opengraph->attach(new Pair("article:published_time", $this->context->news_post->getCreatedDateTime()->format("c")));
+if (!is_null($this->context->news_post->getEditedDateTime())) {
+  $this->opengraph->attach(new Pair("article:modified_time", $this->context->news_post->getEditedDateTime()->format("c")));
 }
 $this->opengraph->attach(new Pair("article:author:username", $this->context->news_post->getUser()->getName()));
 
@@ -28,7 +28,7 @@ require("./header.inc.phtml");
         <section><?php echo $this->context->news_post->getContent(true); ?></section>
         <footer>
           <span class="float-left"><?php echo $this->context->news_post->getUser()->getName(); ?></span>
-          <span class="float-right"><?php echo $this->context->news_post->getPublishDate()->format("l, F j, Y"); ?></span>
+          <span class="float-right"><?php echo $this->context->news_post->getPublishedDateTime()->format("l, F j, Y"); ?></span>
         </footer>
       </article>
 <?php require("./footer.inc.phtml"); ?>

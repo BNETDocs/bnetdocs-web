@@ -13,7 +13,7 @@
       <title><?php echo htmlspecialchars($news_post->getTitle(), ENT_XML1, "UTF-8"); ?></title>
       <link><?php echo htmlspecialchars("https://dev.bnetdocs.org/news/" . $news_post->getId(), ENT_XML1, "UTF-8"); ?></link>
       <description><?php echo htmlspecialchars($news_post->getContent(true), ENT_XML1, "UTF-8"); ?></description>
-      <pubDate><?php echo htmlspecialchars($news_post->getPublishDate()->format("r"), ENT_XML1, "UTF-8"); ?></pubDate>
+      <pubDate><?php echo htmlspecialchars($news_post->getPublishedDateTime()->format("r"), ENT_XML1, "UTF-8"); ?></pubDate>
       <guid><?php echo htmlspecialchars("https://dev.bnetdocs.org/news/" . $news_post->getId(), ENT_XML1, "UTF-8"); ?></guid>
     </item>
 <?php } ?>

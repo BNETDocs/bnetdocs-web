@@ -31,22 +31,22 @@ class ServersJSON extends View {
     }
 
     foreach ($model->servers as $server) {
-      $added_date   = $server->getAddedDateTime();
-      $updated_date = $server->getUpdatedDateTime();
-      $user_id      = $server->getUserId();
-      if (!is_null($added_date))   $added_date   = $added_date->format("r");
-      if (!is_null($updated_date)) $updated_date = $updated_date->format("r");
-      if (!is_null($user_id))      $user_id      = (int)$user_id;
+      $created_datetime = $server->getCreatedDateTime();
+      $updated_datetime = $server->getUpdatedDateTime();
+      $user_id          = $server->getUserId();
+      if (!is_null($created_datetime)) $created_datetime = $created_datetime->format("r");
+      if (!is_null($updated_datetime)) $updated_datetime = $updated_datetime->format("r");
+      if (!is_null($user_id))          $user_id          = (int)$user_id;
       $content["servers"][] = [
-        "added_date"     =>      $added_date,
-        "address"        =>      $server->getAddress(),
-        "id"             => (int)$server->getId(),
-        "label"          =>      $server->getLabel(),
-        "port"           => (int)$server->getPort(),
-        "status_bitmask" => (int)$server->getStatusBitmask(),
-        "type_id"        => (int)$server->getTypeId(),
-        "updated_date"   =>      $updated_date,
-        "user_id"        =>      $user_id
+        "address"          =>      $server->getAddress(),
+        "created_datetime" =>      $created_datetime,
+        "id"               => (int)$server->getId(),
+        "label"            =>      $server->getLabel(),
+        "port"             => (int)$server->getPort(),
+        "status_bitmask"   => (int)$server->getStatusBitmask(),
+        "type_id"          => (int)$server->getTypeId(),
+        "updated_datetime" =>      $updated_datetime,
+        "user_id"          =>      $user_id
       ];
     }
 

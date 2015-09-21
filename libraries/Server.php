@@ -20,51 +20,40 @@ class Server {
   const STATUS_ONLINE   = 1;
   const STATUS_DISABLED = 2;
 
-  protected $added_date;
   protected $address;
+  protected $created_datetime;
   protected $id;
   protected $label;
   protected $port;
   protected $status_bitmask;
   protected $type_id;
-  protected $updated_date;
+  protected $updated_datetime;
   protected $user_id;
   
   public function __construct($data) {
     if (is_numeric($data)) {
-      $this->added_date     = null;
-      $this->address        = null;
-      $this->id             = (int)$data;
-      $this->label          = null;
-      $this->port           = null;
-      $this->status_bitmask = null;
-      $this->type_id        = null;
-      $this->updated_date   = null;
-      $this->user_id        = null;
+      $this->address          = null;
+      $this->created_datetime = null;
+      $this->id               = (int)$data;
+      $this->label            = null;
+      $this->port             = null;
+      $this->status_bitmask   = null;
+      $this->type_id          = null;
+      $this->updated_datetime = null;
+      $this->user_id          = null;
       $this->refresh();
     } else if ($data instanceof StdClass) {
-      $this->added_date     = $data->added_date;
-      $this->address        = $data->address;
-      $this->id             = $data->id;
-      $this->label          = $data->label;
-      $this->port           = $data->port;
-      $this->status_bitmask = $data->status_bitmask;
-      $this->type_id        = $data->type_id;
-      $this->updated_date   = $data->updated_date;
-      $this->user_id        = $data->user_id;
+      $this->address          = $data->address;
+      $this->created_datetime = $data->created_datetime;
+      $this->id               = $data->id;
+      $this->label            = $data->label;
+      $this->port             = $data->port;
+      $this->status_bitmask   = $data->status_bitmask;
+      $this->type_id          = $data->type_id;
+      $this->updated_datetime = $data->updated_datetime;
+      $this->user_id          = $data->user_id;
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
-    }
-  }
-
-  public function getAddedDateTime() {
-    if (is_null($this->added_date)) {
-      return $this->added_date;
-    } else {
-      $tz = new DateTimeZone("UTC");
-      $dt = new DateTime($this->added_date);
-      $dt->setTimezone($tz);
-      return $dt;
     }
   }
 
@@ -79,14 +68,14 @@ class Server {
     try {
       $stmt = Common::$database->prepare("
         SELECT
-          `added_date`,
           `address`,
+          `created_datetime`,
           `id`,
           `label`,
           `port`,
           `status_bitmask`,
           `type_id`,
-          `updated_date`,
+          `updated_datetime`,
           `user_id`
         FROM `servers`
         ORDER BY `type_id` ASC, `label` ASC, `address` ASC, `id` ASC;
@@ -111,6 +100,17 @@ class Server {
     return null;
   }
 
+  public function getCreatedDateTime() {
+    if (is_null($this->created_datetime)) {
+      return $this->created_datetime;
+    } else {
+      $tz = new DateTimeZone("UTC");
+      $dt = new DateTime($this->created_datetime);
+      $dt->setTimezone($tz);
+      return $dt;
+    }
+  }
+
   public function getId() {
     return $this->id;
   }
@@ -132,11 +132,11 @@ class Server {
   }
 
   public function getUpdatedDateTime() {
-    if (is_null($this->updated_date)) {
-      return $this->updated_date;
+    if (is_null($this->updated_datetime)) {
+      return $this->updated_datetime;
     } else {
       $tz = new DateTimeZone("UTC");
-      $dt = new DateTime($this->updated_date);
+      $dt = new DateTime($this->updated_datetime);
       $dt->setTimezone($tz);
       return $dt;
     }
@@ -151,14 +151,14 @@ class Server {
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) {
       $cache_val = unserialize($cache_val);
-      $this->added_date     = $cache_val->added_date;
-      $this->address        = $cache_val->address;
-      $this->label          = $cache_val->label;
-      $this->port           = $cache_val->port;
-      $this->status_bitmask = $cache_val->status_bitmask;
-      $this->type_id        = $cache_val->type_id;
-      $this->updated_date   = $cache_val->updated_date;
-      $this->user_id        = $cache_val->user_id;
+      $this->address          = $cache_val->address;
+      $this->created_datetime = $cache_val->created_datetime;
+      $this->label            = $cache_val->label;
+      $this->port             = $cache_val->port;
+      $this->status_bitmask   = $cache_val->status_bitmask;
+      $this->type_id          = $cache_val->type_id;
+      $this->updated_datetime = $cache_val->updated_datetime;
+      $this->user_id          = $cache_val->user_id;
       return true;
     }
     if (!isset(Common::$database)) {
@@ -167,14 +167,14 @@ class Server {
     try {
       $stmt = Common::$database->prepare("
         SELECT
-          `added_date`,
           `address`,
+          `created_datetime`,
           `id`,
           `label`,
           `port`,
           `status_bitmask`,
           `type_id`,
-          `updated_date`,
+          `updated_datetime`,
           `user_id`
         FROM `servers`
         WHERE `id` = :id
@@ -188,14 +188,14 @@ class Server {
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
-      $this->added_date     = $row->added_date;
-      $this->address        = $row->address;
-      $this->label          = $row->label;
-      $this->port           = $row->port;
-      $this->status_bitmask = $row->status_bitmask;
-      $this->type_id        = $row->type_id;
-      $this->updated_date   = $row->updated_date;
-      $this->user_id        = $row->user_id;
+      $this->address          = $row->address;
+      $this->created_datetime = $row->created_datetime;
+      $this->label            = $row->label;
+      $this->port             = $row->port;
+      $this->status_bitmask   = $row->status_bitmask;
+      $this->type_id          = $row->type_id;
+      $this->updated_datetime = $row->updated_datetime;
+      $this->user_id          = $row->user_id;
       Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
