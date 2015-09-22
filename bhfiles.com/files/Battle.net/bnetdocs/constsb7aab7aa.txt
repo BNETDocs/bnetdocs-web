@@ -1,0 +1,126 @@
+﻿
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+    <html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+    <style type="text/css">    
+      .header,th {
+        font-family: Verdana, Arial, Sans-serif;
+        font-size: 8pt;
+        font-weight: bold;
+        text-align: left;
+        color: #000000;
+      }
+      
+      .boxheader {
+        font-family: Verdana, Arial, Sans-serif;
+        font-size: 8pt;
+        font-weight: bold;
+        color: #FFFFFF;
+        padding-left: 10px;
+        padding-bottom: 5px;
+      }
+      
+      .title {
+        font-family: Verdana, Arial, Sans-serif;
+        font-size: 12pt;
+        font-weight: bolder;
+        color: #000000;
+      }
+      
+      .glossary {
+      	color: #2424FF;
+      }
+      
+      td,body,pre,.content {
+        font-family: Verdana, Arial, Sans-serif;
+        font-size: 8pt;
+        color: #000000;
+      }
+      
+      pre {
+        font-family: courier new, courier, monospaced;      
+      }
+            
+      h1,h2,h3,h4,h5,h6{
+      	font-family: Verdana, Arial, Sans-serif;
+      	color: #000000;
+      }
+      
+      .big {
+        font-size: 10pt;
+        color: #000000;
+      }
+      
+      .headbig {
+        font-size: 10pt;
+        color: #FFFFFF;
+      }
+      
+      .addedpadding {
+        padding-left: 5px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        padding-right: 3px;
+        color: #000000;
+      }
+      
+      .packetid {
+        padding-left: 20px;
+        color: #000000;
+      }
+            
+      a:link { color: #2424FF }
+      a:hover { color: #7777FF   }
+      a:active { color: deepskyblue }
+    </style>
+    
+    <title>Quota exceeded</title>
+	<script type="text/javascript" language="javascript">
+	<!-- 
+	var sc_project=759873; 
+	var sc_partition=6; 
+	var sc_security="091246af"; 
+	var sc_invisible=1; 
+	//-->
+	</script>
+	
+	<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script>
+	<noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c7.statcounter.com/counter.php?sc_project=759873&amp;java=0&amp;security=091246af&amp;invisible=1" alt="frontpage hit counter" border="0"></a> </noscript>
+    </head>
+    <body>
+  
+    <table cellspacing="0" cellpadding="0" border="0" width="250" align="Center" >
+    <tr>
+      <td height="34">
+        <table cellspacing="0" cellpadding="0" border="0" width="100%" >
+        <tr>
+          <td height="29" width="100%" valign="bottom" class="boxheader" style="background-image:url(assets/topleft.gif)">Quota exceeded</td><td width="33"><img src="assets/topright.gif" width="33" height="34" alt=""></td>
+        </tr>
+        </table> 
+      </td>
+    </tr>
+    <tr>
+      <td  valign="top"> 
+        <table cellspacing="0" cellpadding="0" border="0" width="100%" > 
+        <tr> 
+          <td width="10"  style="background-image:url(assets/leftline.gif)"</td>
+          <td bgcolor="#EEEEEE" valign="top">
+          <img src="assets/clear.gif" height="5" alt=""><br>You have exceeded your access quota. Please wait before continuing.</td>
+          <td width="10" style="background-image:url(assets/rightline.gif)"></td>
+       </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tr>
+          <td width="33" height="34"><img src="assets/bottomleft.gif" alt=""></td>
+          <td width="184" style="background-image:url(assets/bottomline.gif)"></td>
+          <td width="33"><img src="assets/bottomright.gif" width="33" height="34" alt=""></td>
+        </tr>
+        </table> 
+      </td>
+    </tr>
+    </table>
