@@ -2,7 +2,9 @@
 
 namespace BNETDocs\Libraries;
 
-class Pair implements \Serializable {
+use \Serializable;
+
+class Pair implements Serializable {
 
   public function __construct($key, $value) {
     $this->key   = $key;
