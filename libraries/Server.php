@@ -79,7 +79,12 @@ class Server {
           `updated_datetime`,
           `user_id`
         FROM `servers`
-        ORDER BY `type_id` ASC, `label` ASC, `address` ASC, `id` ASC;
+        ORDER BY
+          `type_id` ASC,
+          ISNULL(`label`) ASC,
+          `label` ASC,
+          `address` ASC,
+          `id` ASC;
       ");
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh servers");
