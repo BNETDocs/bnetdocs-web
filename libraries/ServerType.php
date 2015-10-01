@@ -46,8 +46,6 @@ class ServerType {
       ");
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh server types");
-      } else if ($stmt->rowCount() == 0) {
-        throw new ServerTypeNotFoundException(null);
       }
       $servers = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {

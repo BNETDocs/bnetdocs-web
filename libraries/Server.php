@@ -88,8 +88,6 @@ class Server {
       ");
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh servers");
-      } else if ($stmt->rowCount() == 0) {
-        throw new ServerNotFoundException(null);
       }
       $servers = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {

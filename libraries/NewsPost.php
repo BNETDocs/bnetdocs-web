@@ -81,8 +81,6 @@ class NewsPost {
       ");
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh news post");
-      } else if ($stmt->rowCount() == 0) {
-        throw new NewsPostNotFoundException(null);
       }
       $news_posts = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
