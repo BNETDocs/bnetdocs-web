@@ -20,10 +20,13 @@ $this->additional_css[] = "/a/servers.css";
 require("./header.inc.phtml");
 ?>
       <article>
-        <header>Servers</header>
+        <header>Server List</header>
         <section>
-          <p>We have a total of <?php echo number_format(count($this->context->servers)); ?> servers. Their statuses can be found below.</p>
+          <p>Below is a list of servers that our automated system checks the status of. The status represents if the port is opened or closed, not if the service is functioning correctly.</p>
+          <p>We have a total of <strong><?php echo number_format(count($this->context->servers)); ?> servers</strong> that we monitor. <a href="https://dev.bnetdocs.org/servers.json">Click here</a> to see this list in JSON format.</p>
         </section>
+      </article>
+      <article>
 <?php foreach ($servers_by_type as $type_id => $servers) {
         $server_type = new ServerType($type_id);
 ?>
