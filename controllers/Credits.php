@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Credits as CreditsLib;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Credits as CreditsModel;
 use \BNETDocs\Views\CreditsHtml as CreditsHtmlView;
 
@@ -21,6 +22,7 @@ class Credits extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new CreditsModel();
+    $model->user_session = UserSession::load($router);
     $this->getCredits($model);
     ob_start();
     $view->render($model);

@@ -11,11 +11,9 @@ $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
       <article>
+<?php if (!isset($this->getContext()->user_session)) { ?>
         <header>Log In</header>
         <form method="POST" action="?">
-          <section>
-            <?php require("./NYI.inc.phtml"); ?>
-          </section>
           <section<?php if ($this->getContext()->bad_email) { ?> class="red"<?php } ?>>
 <?php if (is_string($this->getContext()->bad_email)) { ?>
             <p class="center"><?php echo $this->getContext()->bad_email; ?></p>
@@ -38,7 +36,7 @@ require("./header.inc.phtml");
               type="password"
               name="password"
               id="password"
-              value=""
+              value="<?php echo htmlspecialchars($this->getContext()->password, ENT_HTML5, "UTF-8"); ?>"
               tabindex="2"
             />
           </section>
@@ -50,5 +48,12 @@ require("./header.inc.phtml");
             />
           </section>
         </form>
+<?php } else { ?>
+        <header>Logged In</header>
+          <section class="green">
+            <p>You have successfully logged in to the account!</p>
+            <p>If you'd like to logout, click the link on the left.</p>
+          </section>
+<?php } ?>
       </article>
 <?php require("./footer.inc.phtml"); ?>

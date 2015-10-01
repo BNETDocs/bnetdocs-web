@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+<?php
+
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\User;
+
+?><!DOCTYPE html>
 <html lang="en-US">
   <head>
     <title><?php echo $title; ?> - BNETDocs</title>
@@ -38,8 +44,14 @@
       <a href="https://dev.bnetdocs.org/servers">Server List</a>
       <a href="https://dev.bnetdocs.org/legal">Terms of Service</a>
       <a>Account Management</a>
+<?php if (isset($this->getContext()->user_session)) { ?>
+      <a href="https://dev.bnetdocs.org/user/logout">Logout</a>
+      <a href="https://dev.bnetdocs.org/user/edit?id=<?php echo rawurlencode($this->getContext()->user_session->user_id); ?>">Update Profile</a>
+      <a href="https://dev.bnetdocs.org/user/changepw?id=<?php echo rawurlencode($this->getContext()->user_session->user_id); ?>">Change Password</a>
+<?php } else { ?>
       <a href="https://dev.bnetdocs.org/user/login">Account Login</a>
       <a href="https://dev.bnetdocs.org/user/register">Create Account</a>
+<?php } ?>
       <a>Documentation</a>
       <a href="https://dev.bnetdocs.org/document/search">Search Documents</a>
       <a href="https://dev.bnetdocs.org/packet/search">Search Packets</a>

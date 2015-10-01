@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User as UserLib;
 use \BNETDocs\Libraries\UserProfile;
+use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\View as UserViewModel;
 use \BNETDocs\Views\User\ViewHtml as UserViewHtmlView;
 use \DateTime;
@@ -33,6 +34,7 @@ class View extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new UserViewModel();
+    $model->user_session = UserSession::load($router);
     $this->getUserInfo($model);
     ob_start();
     $view->render($model);

@@ -11,6 +11,7 @@ class Credits extends Model {
   public $top_contributors_by_news_posts;
   public $top_contributors_by_packets;
   public $top_contributors_by_servers;
+  public $user_session;
 
   public function __construct() {
     parent::__construct();
@@ -19,6 +20,7 @@ class Credits extends Model {
     $this->top_contributors_by_news_posts = null;
     $this->top_contributors_by_packets    = null;
     $this->top_contributors_by_servers    = null;
+    $this->user_session                   = null;
   }
 
 }

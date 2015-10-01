@@ -11,6 +11,7 @@ class Login extends Model {
   public $bad_password;
   public $email;
   public $password;
+  public $user_session;
 
   public function __construct() {
     parent::__construct();
@@ -18,6 +19,7 @@ class Login extends Model {
     $this->bad_password = null;
     $this->email        = null;
     $this->password     = null;
+    $this->user_session = null;
   }
 
 }

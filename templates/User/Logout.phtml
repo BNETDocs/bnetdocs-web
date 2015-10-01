@@ -1,0 +1,19 @@
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Pair;
+
+$title       = "Logout";
+$description = "Log out of the BNETDocs website";
+$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/logout"));
+
+require("./header.inc.phtml");
+?>
+      <article>
+        <header>Logged Out</header>
+        <section class="green">
+          <p>You have been successfully logged out.</p>
+          <p>If you'd like to log back in, click the link on the left.</p>
+        </section>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

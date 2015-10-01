@@ -1,10 +1,10 @@
 <?php
 
-namespace BNETDocs\Models\Packet;
+namespace BNETDocs\Models\User;
 
 use \BNETDocs\Libraries\Model;
 
-class Search extends Model {
+class Logout extends Model {
 
   public $user_session;
 

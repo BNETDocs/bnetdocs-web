@@ -8,6 +8,7 @@ use \BNETDocs\Libraries\Server as ServerLib;
 use \BNETDocs\Libraries\ServerType as ServerTypeLib;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Servers as ServersModel;
 use \BNETDocs\Views\ServersHtml as ServersHtmlView;
 use \BNETDocs\Views\ServersJSON as ServersJSONView;
@@ -26,6 +27,7 @@ class Servers extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new ServersModel();
+    $model->user_session = UserSession::load($router);
     $this->getServers($model);
     ob_start();
     $view->render($model);

@@ -15,6 +15,7 @@ use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Controllers\Servers as ServersController;
 use \BNETDocs\Controllers\Status as StatusController;
 use \BNETDocs\Controllers\User\Login as UserLoginController;
+use \BNETDocs\Controllers\User\Logout as UserLogoutController;
 use \BNETDocs\Controllers\User\Register as UserRegisterController;
 use \BNETDocs\Controllers\User\View as UserViewController;
 use \BNETDocs\Libraries\Common;
@@ -23,6 +24,7 @@ use \DateTime;
 use \DateTimeZone;
 use \SplObjectStorage;
 use \UnexpectedValueException;
+use \http\Cookie;
 
 class Router {
 
@@ -33,13 +35,14 @@ class Router {
   protected $pathString;
   protected $queryArray;
   protected $queryString;
-  protected $requestHeaders;
+  protected $requestCookies;
   protected $requestBodyArray;
   protected $requestBodyString;
   protected $requestBodyMimeType;
 
   protected $responseCode;
   protected $responseHeaders;
+  protected $responseCookies;
   protected $responseContent;
 
   public function __construct() {
@@ -57,11 +60,13 @@ class Router {
     }
     $this->pathArray = explode("/", $this->pathString);
     parse_str($this->queryString, $this->queryArray);
+    $this->requestCookies = new Cookie(getenv("HTTP_COOKIE"));
     $this->requestBodyMimeType = getenv("CONTENT_TYPE");
     $this->requestBodyString = $this->_getRequestBodyString();
     $this->requestBodyArray = $this->_getRequestBodyArray();
     $this->responseCode = 500;
     $this->responseHeaders = new SplObjectStorage();
+    $this->responseCookies = new SplObjectStorage();
     $this->responseContent = "";
   }
 
@@ -105,6 +110,18 @@ class Router {
     return $this->hostname;
   }
 
+  public function getRequestCookie($name) {
+    return $this->requestCookies->getCookie($name);
+  }
+
+  public function getRequestCookies() {
+    return $this->requestCookies;
+  }
+
+  public function getRequestHeader($name) {
+    return getenv("HTTP_" . str_replace("-", "_", strtoupper($name)));
+  }
+
   public function getRequestMethod() {
     return $this->requestMethod;
   }
@@ -139,13 +156,6 @@ class Router {
 
   public function getRequestQueryString() {
     return $this->queryString;
-  }
-
-  public function getRequestHeader($name) {
-    foreach ($this->requestHeaders as $header) {
-      if (strtolower($header->getName()) == strtolower($name)) return $header;
-    }
-    return false;
   }
 
   public function getRequestURI() {
@@ -288,6 +298,9 @@ class Router {
             case "login": case "login.htm": case "login.html":
               $controller = new UserLoginController();
             break;
+            case "logout": case "logout.htm": case "logout.html":
+              $controller = new UserLogoutController();
+            break;
             case "register": case "register.htm": case "register.html":
               $controller = new UserRegisterController();
             break;
@@ -318,6 +331,9 @@ class Router {
     foreach ($this->responseHeaders as $header) {
       header($header->getName() . ": " . $header->getValue());
     }
+    foreach ($this->responseCookies as $cookie) {
+      header("Set-Cookie: " . $cookie->__toString());
+    }
     echo $this->responseContent;
   }
 
@@ -327,6 +343,21 @@ class Router {
 
   public function setResponseContent($buffer) {
     $this->responseContent = $buffer;
+  }
+
+  public function setResponseCookie($name, $value, $ttl, $httpOnly, $secure) {
+    $flags = 0;
+    if ($httpOnly) $flags |= Cookie::HTTPONLY;
+    if ($secure)   $flags |= Cookie::SECURE;
+
+    $cookie = new Cookie();
+    $cookie->setCookie($name, $value);
+    $cookie->setDomain(".bnetdocs.org");
+    $cookie->setFlags($flags);
+    $cookie->setMaxAge($ttl);
+    $cookie->setPath("/");
+
+    $this->responseCookies->attach($cookie);
   }
 
   public function setResponseHeader($arg1, $arg2 = null) {

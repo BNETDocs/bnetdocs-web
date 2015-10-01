@@ -6,6 +6,7 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\Popular as PacketPopularModel;
 use \BNETDocs\Views\Packet\PopularHtml as PacketPopularHtmlView;
 
@@ -20,6 +21,7 @@ class Popular extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new PacketPopularModel();
+    $model->user_session = UserSession::load($router);
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);

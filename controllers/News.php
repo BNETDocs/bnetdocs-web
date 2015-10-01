@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News as NewsModel;
 use \BNETDocs\Views\NewsHtml as NewsHtmlView;
 use \BNETDocs\Views\NewsRSS as NewsRSSView;
@@ -27,6 +28,7 @@ class News extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new NewsModel();
+    $model->user_session = UserSession::load($router);
     $this->getNews($model);
     ob_start();
     $view->render($model);

@@ -14,6 +14,7 @@ class View extends Model {
   public $user_est;
   public $user_id;
   public $user_profile;
+  public $user_session;
 
   public function __construct() {
     parent::__construct();
@@ -25,6 +26,7 @@ class View extends Model {
     $this->user_est       = null;
     $this->user_id        = null;
     $this->user_profile   = null;
+    $this->user_session   = null;
   }
 
 }

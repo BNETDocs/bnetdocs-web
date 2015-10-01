@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
+use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\Login as UserLoginModel;
 use \BNETDocs\Views\User\LoginHtml as UserLoginHtmlView;
 
@@ -24,10 +25,15 @@ class Login extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new UserLoginModel();
-    $ttl   = 300;
+    $model->user_session = UserSession::load($router);
+    $ttl = 300;
     if ($router->getRequestMethod() == "POST") {
       $ttl = 0;
       $this->tryLogin($router, $model);
+    } else if ($model->user_session) {
+      $user            = new User($model->user_session->user_id);
+      $model->email    = $user->getEmail();
+      $model->password = "";
     }
     ob_start();
     $view->render($model);
@@ -65,8 +71,9 @@ class Login extends Controller {
       } else if (Common::$config->bnetdocs->user_login_disabled) {
         $success = $this->loginErrorSiteDisabled($model);
       } else {
-        $success = $this->loginErrorNYI($model);
+        $success = $this->loginSuccess($model, $router, $user);
       }
+      $model->password = "";
       Logger::logEvent(
         "user_login",
         ($user ? $user->getId() : null),
@@ -87,33 +94,38 @@ class Login extends Controller {
   }
 
   private function loginErrorDisabled(UserLoginModel &$model) {
-    $model->bad_email = "Your account has been disabled administratively.";
+    $model->bad_email    = "Your account has been disabled administratively.";
     $model->bad_password = true;
     return false;
   }
 
   private function loginErrorNotVerified(UserLoginModel &$model) {
-    $model->bad_email = "Your account has not been verified yet.";
+    $model->bad_email    = "Your account has not been verified yet.";
     $model->bad_password = true;
     return false;
   }
 
   private function loginErrorWrongPassword(UserLoginModel &$model) {
-    $model->bad_email = "Incorrect email address or password.";
+    $model->bad_email    = "Incorrect email address or password.";
     $model->bad_password = true;
     return false;
   }
 
   private function loginErrorSiteDisabled(UserLoginModel &$model) {
-    $model->bad_email = "Log in has been disabled administratively for everyone.";
+    $model->bad_email =
+      "Login has been disabled administratively for everyone.";
     $model->bad_password = true;
     return false;
   }
 
-  private function loginErrorNYI(UserLoginModel &$model) {
-    $model->bad_email = "Log in has not yet been implemented.";
-    $model->bad_password = true;
-    return false;
+  private function loginSuccess(
+    UserLoginModel &$model, Router &$router, User &$user
+  ) {
+    $model->bad_email    = false;
+    $model->bad_password = false;
+    $model->user_session = new UserSession($user->getId());
+    $model->user_session->save($router);
+    return true;
   }
 
 }
