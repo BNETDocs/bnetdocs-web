@@ -16,6 +16,7 @@ foreach ($this->context->servers as $server) {
 }
 ksort($servers_by_type);
 
+$this->additional_css[] = "/a/servers.css";
 require("./header.inc.phtml");
 ?>
       <article>
@@ -28,23 +29,22 @@ require("./header.inc.phtml");
 ?>
         <header><?php echo $server_type->getLabel(); ?></header>
         <section>
-          <table style="width:100%;"><tbody>
+          <table class="servers"><tbody>
 <?php   foreach ($servers as $server) {
           $status_bitmask = $server->getStatusBitmask();
           if ($status_bitmask & Server::STATUS_ONLINE) {
-            $status_color = "green"; $status = "Online";
+            $status_subclass = "online"; $status = "Online";
+          } else if ($status_bitmask & Server::STATUS_DISABLED) {
+            $status_subclass = "disabled"; $status = "Disabled";
           } else {
-            $status_color = "red"; $status = "Offline";
-          }
-          if ($status_bitmask & Server::STATUS_DISABLED) {
-            $status = "Disabled";
+            $status_subclass = "offline"; $status = "Offline";
           }
 ?>
             <tr>
-              <td class="left <?php echo $status_color; ?>"><?php echo $status; ?></td>
-              <td class="left"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
-              <td class="left monospace" style="font-size: 10pt;"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
-              <td class="left">last updated <time datetime="<?php echo $server->getUpdatedDateTime()->format("c"); ?>"><?php echo Common::relativeDateTimeString($server->getUpdatedDateTime()); ?></time></td>
+              <td class="left status <?php echo $status_subclass; ?>"><?php echo $status; ?></td>
+              <td class="left label"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
+              <td class="left address"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
+              <td class="left updated">last updated <time datetime="<?php echo $server->getUpdatedDateTime()->format("c"); ?>"><?php echo Common::relativeDateTimeString($server->getUpdatedDateTime()); ?></time></td>
             </tr>
 <?php   } ?>
           </tbody></table>

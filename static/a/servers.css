@@ -1,0 +1,30 @@
+/**
+ * BNETDocs (C) 2015 Creative Commons CC-BY-NC-SA 4.0 License
+ */
+
+table.servers {
+  font-size: 10pt;
+  line-height: 17px;
+  width: 100%;
+}
+table.servers td.status {
+  width: 50px;
+}
+table.servers td.label {
+  width: 140px;
+}
+table.servers td.address {
+  font-family: source code pro, courier new, monospace;
+  width: 280px;
+}
+table.servers td.updated {
+}
+table.servers td.offline {
+  color: #d74747;
+}
+table.servers td.online {
+  color: #47d747;
+}
+table.servers td.disabled {
+  color: #d74747;
+}
