@@ -159,6 +159,7 @@ class Server {
   protected static function normalize(StdClass &$data) {
     $data->address          = (string) $data->address;
     $data->created_datetime = (string) $data->created_datetime;
+    $data->id               = (int)    $data->id;
     $data->label            = (string) $data->label;
     $data->port             = (int)    $data->port;
     $data->status_bitmask   = (int)    $data->status_bitmask;

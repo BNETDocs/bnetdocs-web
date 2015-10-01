@@ -174,6 +174,7 @@ class NewsPost {
     $data->content          = (string) $data->content;
     $data->created_datetime = (string) $data->created_datetime;
     $data->edited_count     = (int)    $data->edited_count;
+    $data->id               = (int)    $data->id;
     $data->options_bitmask  = (int)    $data->options_bitmask;
     $data->title            = (string) $data->title;
 

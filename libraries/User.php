@@ -243,6 +243,7 @@ class User {
   protected static function normalize(StdClass &$data) {
     $data->created_datetime = (string) $data->created_datetime;
     $data->email            = (string) $data->email;
+    $data->id               = (int)    $data->id;
     $data->options_bitmask  = (int)    $data->options_bitmask;
     $data->username         = (string) $data->username;
 
