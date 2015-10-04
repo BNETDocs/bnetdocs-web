@@ -39,7 +39,7 @@ class View extends Controller {
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);
-    $router->setResponseTTL(300);
+    $router->setResponseTTL(0);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
     ob_end_clean();
@@ -60,6 +60,11 @@ class View extends Controller {
     $model->sum_servers = Credits::getTotalServersByUserId(
       $this->user_id
     );
+
+    $model->documents  = ($model->sum_documents  ? true : null);
+    $model->news_posts = ($model->sum_news_posts ? true : null);
+    $model->packets    = ($model->sum_packets    ? true : null);
+    $model->servers    = ($model->sum_servers    ? true : null);
 
     $model->user = new UserLib($this->user_id);
 

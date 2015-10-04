@@ -6,6 +6,10 @@ use \BNETDocs\Libraries\Model;
 
 class View extends Model {
 
+  public $documents;
+  public $news_posts;
+  public $packets;
+  public $servers;
   public $sum_documents;
   public $sum_news_posts;
   public $sum_packets;
@@ -18,6 +22,10 @@ class View extends Model {
 
   public function __construct() {
     parent::__construct();
+    $this->documents      = null;
+    $this->news_posts     = null;
+    $this->packets        = null;
+    $this->servers        = null;
     $this->sum_documents  = null;
     $this->sum_news_posts = null;
     $this->sum_packets    = null;

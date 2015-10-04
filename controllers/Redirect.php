@@ -31,7 +31,7 @@ class Redirect extends Controller {
     ob_start();
     $view->render($model);
     $router->setResponseCode($this->redirect_code);
-    $router->setResponseTTL(300);
+    $router->setResponseTTL(0);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseHeader("Location", $this->redirect_to);
     $router->setResponseContent(ob_get_contents());

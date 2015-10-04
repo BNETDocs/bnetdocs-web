@@ -33,7 +33,7 @@ class News extends Controller {
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);
-    $router->setResponseTTL(300);
+    $router->setResponseTTL(0);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
     ob_end_clean();

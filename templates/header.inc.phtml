@@ -46,8 +46,6 @@ use \BNETDocs\Libraries\User;
       <a>Account Management</a>
 <?php if (isset($this->getContext()->user_session)) { ?>
       <a href="https://dev.bnetdocs.org/user/logout">Logout</a>
-      <a href="https://dev.bnetdocs.org/user/edit?id=<?php echo rawurlencode($this->getContext()->user_session->user_id); ?>">Update Profile</a>
-      <a href="https://dev.bnetdocs.org/user/changepw?id=<?php echo rawurlencode($this->getContext()->user_session->user_id); ?>">Change Password</a>
 <?php } else { ?>
       <a href="https://dev.bnetdocs.org/user/login">Account Login</a>
       <a href="https://dev.bnetdocs.org/user/register">Create Account</a>
