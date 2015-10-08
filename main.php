@@ -2,10 +2,10 @@
 
 namespace BNETDocs;
 
-use \BNETDocs\Libraries\Exceptions\BNETDocsException;
-use \BNETDocs\Libraries\Exceptions\ClassNotFoundException;
 use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Exceptions\BNETDocsException;
+use \BNETDocs\Libraries\Exceptions\ClassNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
 use \ReflectionClass;
@@ -54,7 +54,7 @@ function main() {
       ],
     ];
     if (ini_get("display_errors")) {
-      $json["error"]["file"] = Common::stripLeftPattern($e->getFile(), "/home/nginx/carlbennett-api");
+      $json["error"]["file"] = Common::stripLeftPattern($e->getFile(), "/home/nginx/bnetdocs-dev");
       $json["error"]["line"] = $e->getLine();
     }
     Logger::logMetric("error_data", json_encode($json, JSON_PRETTY_PRINT));
@@ -79,7 +79,7 @@ function main() {
     ];
     if (ini_get("display_errors")) {
       $json["error"]["message"] = $errstr;
-      $json["error"]["file"] = Common::stripLeftPattern($errfile, "/home/nginx/carlbennett-api");
+      $json["error"]["file"] = Common::stripLeftPattern($errfile, "/home/nginx/bnetdocs-dev");
       $json["error"]["line"] = $errline;
     }
     Logger::logMetric("error_data", json_encode($json, JSON_PRETTY_PRINT));
