@@ -11,6 +11,7 @@ use \BNETDocs\Controllers\News as NewsController;
 use \BNETDocs\Controllers\News\View as NewsViewController;
 use \BNETDocs\Controllers\Packet\Popular as PacketPopularController;
 use \BNETDocs\Controllers\Packet\Search as PacketSearchController;
+use \BNETDocs\Controllers\PageNotFound as PageNotFoundController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Controllers\Servers as ServersController;
 use \BNETDocs\Controllers\Status as StatusController;
@@ -195,127 +196,131 @@ class Router {
         $redirect->getKey(), $redirect->getValue()
       );
     } else {
-      switch ($path) {
-        case "":
-          // Try to route legacy BNETDocs Redux paths to Phoenix paths with a
-          // 301 Permanent redirect, otherwise go to the news with 302 Found.
-          $query = $this->getRequestQueryArray();
-          $op  = (isset($query["op"])  ? $query["op"]  : null);
-          $did = (isset($query["did"]) ? $query["did"] : null);
-          $nid = (isset($query["nid"]) ? $query["nid"] : null);
-          $pid = (isset($query["pid"]) ? $query["pid"] : null);
-          $url = null; $code = 301;
-          if ($op == "doc" && !is_null($did)) {
-            $url = "https://dev.bnetdocs.org/document/" . rawurlencode($did);
-          } else if ($op == "news" && !is_null($nid)) {
-            $url = "https://dev.bnetdocs.org/news/" . rawurlencode($nid);
-          } else if ($op == "packet" && !is_null($pid)) {
-            $url = "https://dev.bnetdocs.org/packet/" . rawurlencode($pid);
-          } else if ($op == "credits") {
-            $url = "https://dev.bnetdocs.org/credits";
-          } else if ($op == "legalism") {
-            $url = "https://dev.bnetdocs.org/legal";
-          } else if ($op == "login") {
-            $url = "https://dev.bnetdocs.org/user/login";
-          } else if ($op == "news") {
-            $url = "https://dev.bnetdocs.org/news";
-          } else if ($op == "register") {
-            $url = "https://dev.bnetdocs.org/user/register";
-          /*} else if ($op == "resetpw") {
-            $url = "https://dev.bnetdocs.org/user/resetpassword";*/
-          }
-          if (is_null($url)) {
-            $url = "https://dev.bnetdocs.org/news";
-            $code = 302;
-          }
-          $controller = new RedirectController($url, $code);
-        break;
-        case "credits": case "credits.htm": case "credits.html":
-          $controller = new CreditsController();
-        break;
-        case "document":
-          switch ($subpath) {
-            case "search": case "search.htm": case "search.html":
-              $controller = new DocumentSearchController();
-            break;
-            case "popular": case "popular.htm": case "popular.html":
-              $controller = new DocumentPopularController();
-            break;
-            default:
-              throw new ControllerNotFoundException($path . "/" . $subpath);
-          }
-        break;
-        case "legal": case "legal.htm": case "legal.html": case "legal.txt":
-          $controller = new LegalController();
-        break;
-        case "news.htm": case "news.html": case "news.rss":
-          $controller = new NewsController();
-        break;
-        case "news":
-          if (is_numeric($subpath)) {
-            $controller = new NewsViewController($subpath);
-          } else {
-            $controller = new NewsController();
-          }
-        break;
-        case "newsrss.php":
-          // Legacy BNETDocs Redux to BNETDocs Phoenix redirect.
-          $controller = new RedirectController(
-            "https://dev.bnetdocs.org/news.rss", 301
-          );
-        break;
-        case "packet":
-          switch ($subpath) {
-            case "search": case "search.htm": case "search.html":
-              $controller = new PacketSearchController();
-            break;
-            case "popular": case "popular.htm": case "popular.html":
-              $controller = new PacketPopularController();
-            break;
-            default:
-              throw new ControllerNotFoundException($path . "/" . $subpath);
-          }
-        break;
-        case "rss":
-          // Old-style Phoenix to new-style Phoenix redirect.
-          switch ($subpath) {
-            case "news":
-              $controller = new RedirectController(
-                "https://dev.bnetdocs.org/news.rss", 301
-              );
-            break;
-            default:
-              throw new ControllerNotFoundException($path . "/" . $subpath);
-          }
-        break;
-        case "servers": case "servers.htm": case "servers.html":
-        case "servers.json":
-          $controller = new ServersController();
-        break;
-        case "status": case "status.json": case "status.txt":
-          $controller = new StatusController();
-        break;
-        case "user":
-          switch ($subpath) {
-            case "login": case "login.htm": case "login.html":
-              $controller = new UserLoginController();
-            break;
-            case "logout": case "logout.htm": case "logout.html":
-              $controller = new UserLogoutController();
-            break;
-            case "register": case "register.htm": case "register.html":
-              $controller = new UserRegisterController();
-            break;
-            default:
-              if (is_numeric($subpath)) {
-                $controller = new UserViewController($subpath);
-              } else {
+      try {
+        switch ($path) {
+          case "":
+            // Try to route legacy BNETDocs Redux paths to Phoenix paths with a
+            // 301 Permanent redirect, otherwise go to the news with 302 Found.
+            $query = $this->getRequestQueryArray();
+            $op  = (isset($query["op"])  ? $query["op"]  : null);
+            $did = (isset($query["did"]) ? $query["did"] : null);
+            $nid = (isset($query["nid"]) ? $query["nid"] : null);
+            $pid = (isset($query["pid"]) ? $query["pid"] : null);
+            $url = null; $code = 301;
+            if ($op == "doc" && !is_null($did)) {
+              $url = "https://dev.bnetdocs.org/document/" . rawurlencode($did);
+            } else if ($op == "news" && !is_null($nid)) {
+              $url = "https://dev.bnetdocs.org/news/" . rawurlencode($nid);
+            } else if ($op == "packet" && !is_null($pid)) {
+              $url = "https://dev.bnetdocs.org/packet/" . rawurlencode($pid);
+            } else if ($op == "credits") {
+              $url = "https://dev.bnetdocs.org/credits";
+            } else if ($op == "legalism") {
+              $url = "https://dev.bnetdocs.org/legal";
+            } else if ($op == "login") {
+              $url = "https://dev.bnetdocs.org/user/login";
+            } else if ($op == "news") {
+              $url = "https://dev.bnetdocs.org/news";
+            } else if ($op == "register") {
+              $url = "https://dev.bnetdocs.org/user/register";
+            /*} else if ($op == "resetpw") {
+              $url = "https://dev.bnetdocs.org/user/resetpassword";*/
+            }
+            if (is_null($url)) {
+              $url = "https://dev.bnetdocs.org/news";
+              $code = 302;
+            }
+            $controller = new RedirectController($url, $code);
+          break;
+          case "credits": case "credits.htm": case "credits.html":
+            $controller = new CreditsController();
+          break;
+          case "document":
+            switch ($subpath) {
+              case "search": case "search.htm": case "search.html":
+                $controller = new DocumentSearchController();
+              break;
+              case "popular": case "popular.htm": case "popular.html":
+                $controller = new DocumentPopularController();
+              break;
+              default:
                 throw new ControllerNotFoundException($path . "/" . $subpath);
-              }
-          }
-        break;
-        default:
-          throw new ControllerNotFoundException($path);
+            }
+          break;
+          case "legal": case "legal.htm": case "legal.html": case "legal.txt":
+            $controller = new LegalController();
+          break;
+          case "news.htm": case "news.html": case "news.rss":
+            $controller = new NewsController();
+          break;
+          case "news":
+            if (is_numeric($subpath)) {
+              $controller = new NewsViewController($subpath);
+            } else {
+              $controller = new NewsController();
+            }
+          break;
+          case "newsrss.php":
+            // Legacy BNETDocs Redux to BNETDocs Phoenix redirect.
+            $controller = new RedirectController(
+              "https://dev.bnetdocs.org/news.rss", 301
+            );
+          break;
+          case "packet":
+            switch ($subpath) {
+              case "search": case "search.htm": case "search.html":
+                $controller = new PacketSearchController();
+              break;
+              case "popular": case "popular.htm": case "popular.html":
+                $controller = new PacketPopularController();
+              break;
+              default:
+                throw new ControllerNotFoundException($path . "/" . $subpath);
+            }
+          break;
+          case "rss":
+            // Old-style Phoenix to new-style Phoenix redirect.
+            switch ($subpath) {
+              case "news":
+                $controller = new RedirectController(
+                  "https://dev.bnetdocs.org/news.rss", 301
+                );
+              break;
+              default:
+                throw new ControllerNotFoundException($path . "/" . $subpath);
+            }
+          break;
+          case "servers": case "servers.htm": case "servers.html":
+          case "servers.json":
+            $controller = new ServersController();
+          break;
+          case "status": case "status.json": case "status.txt":
+            $controller = new StatusController();
+          break;
+          case "user":
+            switch ($subpath) {
+              case "login": case "login.htm": case "login.html":
+                $controller = new UserLoginController();
+              break;
+              case "logout": case "logout.htm": case "logout.html":
+                $controller = new UserLogoutController();
+              break;
+              case "register": case "register.htm": case "register.html":
+                $controller = new UserRegisterController();
+              break;
+              default:
+                if (is_numeric($subpath)) {
+                  $controller = new UserViewController($subpath);
+                } else {
+                  throw new ControllerNotFoundException($path . "/" . $subpath);
+                }
+            }
+          break;
+          default:
+            throw new ControllerNotFoundException($path);
+        }
+      } catch (ControllerNotFoundException $e) {
+        $controller = new PageNotFoundController();
       }
     }
 

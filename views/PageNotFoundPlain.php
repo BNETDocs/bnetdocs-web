@@ -7,19 +7,20 @@ use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
 use \BNETDocs\Libraries\Model;
 use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\View;
-use \BNETDocs\Models\Maintenance as MaintenanceModel;
+use \BNETDocs\Models\PageNotFound as PageNotFoundModel;
 
-class MaintenancePlain extends View {
+class PageNotFoundPlain extends View {
 
   public function getMimeType() {
     return "text/plain;charset=utf-8";
   }
 
   public function render(Model &$model) {
-    if (!$model instanceof MaintenanceModel) {
+    if (!$model instanceof PageNotFoundModel) {
       throw new IncorrectModelException();
     }
-    echo "Maintenance - BNETDocs\n" . $model->message . "\n";
+    echo "Document Not Found\n"
+      . "The requested resource does not exist or could not be found.\n";
   }
 
 }
