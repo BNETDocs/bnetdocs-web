@@ -166,7 +166,9 @@ class Router {
     $pathArray = $this->getRequestPathArray();
     $path      = (isset($pathArray[1]) ? $pathArray[1] : null);
     $subpath   = (isset($pathArray[2]) ? $pathArray[2] : null);
-    Logger::setTransactionName($this->getRequestPathString(false));
+    Logger::setTransactionName(
+      $path . (isset($subpath) ? "/" . $subpath : "")
+    );
 
     if (Common::checkIfBlizzard()) {
       Logger::logMetric("is_blizzard_visit", true);
