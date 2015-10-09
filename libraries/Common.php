@@ -131,6 +131,12 @@ final class Common {
     }
   }
 
+  public static function prettyJSONIfBrowser($flags = 0) {
+    if (self::isBrowser(getenv("HTTP_USER_AGENT")))
+      $flags |= JSON_PRETTY_PRINT;
+    return $flags;
+  }
+
   public static function relativeDateTimeString(DateTime $compare) {
     $diff = (new DateTime("now", new DateTimeZone("UTC")))->diff($compare);
     $string = self::intervalToString($diff);

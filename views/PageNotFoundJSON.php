@@ -19,10 +19,9 @@ class PageNotFoundJSON extends View {
     if (!$model instanceof PageNotFoundModel) {
       throw new IncorrectModelException();
     }
-    $flags = (Common::isBrowser(getenv("HTTP_USER_AGENT")) ? JSON_PRETTY_PRINT : 0);
     echo json_encode("Object Not Found\n"
       . "The requested resource does not exist or could not be found.\n"
-    , $flags);
+    , Common::prettyJSONIfBrowser());
   }
 
 }

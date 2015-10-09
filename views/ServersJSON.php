@@ -20,7 +20,6 @@ class ServersJSON extends View {
     if (!$model instanceof ServersModel) {
       throw new IncorrectModelException();
     }
-    $flags   = (Common::isBrowser(getenv("HTTP_USER_AGENT")) ? JSON_PRETTY_PRINT : 0);
     $content = [];
 
     foreach ($model->server_types as $server_type) {
@@ -50,7 +49,7 @@ class ServersJSON extends View {
 
     $content["status_bitmasks"] = $model->status_bitmasks;
 
-    echo json_encode($content, $flags);
+    echo json_encode($content, Common::prettyJSONIfBrowser());
   }
 
 }

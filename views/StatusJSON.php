@@ -19,13 +19,12 @@ class StatusJSON extends View {
     if (!$model instanceof StatusModel) {
       throw new IncorrectModelException();
     }
-    $flags = (Common::isBrowser(getenv("HTTP_USER_AGENT")) ? JSON_PRETTY_PRINT : 0);
     echo json_encode([
       "remote_address" => $model->remote_address,
       "remote_geoinfo" => $model->remote_geoinfo,
       "timestamp"      => $model->timestamp->format("r"),
       "version_info"   => $model->version_info,
-    ], $flags);
+    ], Common::prettyJSONIfBrowser());
   }
 
 }
