@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Maintenance as MaintenanceModel;
 use \BNETDocs\Views\MaintenanceHtml as MaintenanceHtmlView;
