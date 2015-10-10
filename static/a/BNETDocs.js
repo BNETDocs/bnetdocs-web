@@ -20,7 +20,15 @@ function BNETDocs() {
         link.onclick = function(e) {
           /*e.preventDefault();
           e.stopPropagation();*/
-          window.open(this.href, '', 'width=600,height=300,left=100,top=100');
+          if (this.dataset.popup !== undefined && this.dataset.popup == 1) {
+            window.open(
+              this.href, '', 'width=600,height=300,left=100,top=100'
+            );
+          } else {
+            window.open(
+              this.href, '_blank'
+            );
+          }
           return false;
         }
       }
@@ -29,8 +37,8 @@ function BNETDocs() {
 
   window.onload = function() {
     self.fHookExternalAnchors();
-  }
+  };
 
-}
+};
 
 var bnetdocs = new BNETDocs();

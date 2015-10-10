@@ -25,9 +25,9 @@ $user_url  = "https://dev.bnetdocs.org/user/" . $user_id . "/" . Common::sanitiz
 require("./header.inc.phtml");
 ?>
       <article>
-        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($this->context->news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($this->context->news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
         <header><a href="<?php echo $url; ?>"><?php echo $this->context->news_post->getTitle(); ?></a></header>
         <section><?php echo $this->context->news_post->getContent(true); ?></section>
         <footer>
