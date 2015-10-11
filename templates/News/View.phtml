@@ -5,7 +5,7 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Pair;
 
 $title       = $this->context->news_post->getTitle();
-$description = Common::stripUpTo(filter_var($this->context->news_post->getContent(true), FILTER_SANITIZE_STRING), "\n", 300);
+$description = Common::stripUpTo(trim(filter_var($this->context->news_post->getContent(true), FILTER_SANITIZE_STRING)), "\n", 300);
 
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news/" . $this->context->news_post_id));
 $this->opengraph->attach(new Pair("type", "article"));
