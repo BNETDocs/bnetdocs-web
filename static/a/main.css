@@ -285,3 +285,10 @@ ol.lower-alpha {
 ol.lower-latin {
   list-style-type: lower-latin;
 }
+blockquote {
+  background-image: url("https://dev.bnetdocs.org/a/quote-symbol.png");
+  background-position: 0px -12px;
+  background-repeat: no-repeat;
+  margin: 0px;
+  padding: 0px 0px 0px 48px;
+}
