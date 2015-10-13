@@ -9,6 +9,7 @@ use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Markdown;
+use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\User;
 use \DateTime;
 use \DateTimeZone;
@@ -95,6 +96,10 @@ class NewsPost {
       throw new QueryException("Cannot refresh news post", $e);
     }
     return null;
+  }
+
+  public function getCategory() {
+    return new NewsCategory($this->category_id);
   }
 
   public function getCategoryId() {

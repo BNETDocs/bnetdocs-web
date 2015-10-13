@@ -154,15 +154,16 @@ body > main > article section.red {
 }
 body > main > article section.fixed-width-text {
   font-family: source code pro, courier new, monospace;
+  font-size: 85%;
   white-space: pre-wrap;
 }
 body > main > article section:last-child {
   border-radius: 0px 0px 8px 8px;
 }
-body > main > article section > p:first-child {
+body > main > article section > p:first-of-type {
   margin-top: 0px;
 }
-body > main > article section > p:last-child {
+body > main > article section > p:last-of-type {
   margin-bottom: 0px;
 }
 body > main > article section img {
@@ -244,12 +245,43 @@ td.blue {
   font-family: source code pro, courier new, monospace;
 }
 code {
-  background-color: rgba(128,128,128,0.2);
-  box-sizing: border-box;
-  display: inline-block;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 3px;
   font-family: source code pro, courier new, monospace;
-  font-size: 10pt;
-  max-width: 100%;
+  font-size: 85%;
+  margin: 0;
+  padding: 0.2em 0px 0.2em 0px;
+}
+code:before,
+code:after {
+  content: "\00a0";
+  letter-spacing: -0.2em;
+}
+pre > code {
+  background-color: rgba(255,255,255,0.05);
+  border-radius: 5px;
+  box-sizing: border-box;
+  clear: both;
+  display: block;
+  line-height: 11pt;
+  margin: 0px;
   overflow: auto;
-  padding: 0px 3px;
+  padding: 16px;
+  white-space: pre;
+  word-break: normal;
+  word-wrap: normal;
+}
+pre > code:before,
+pre > code:after {
+  content: initial;
+  letter-spacing: initial;
+}
+ol.decimal {
+  list-style-type: decimal;
+}
+ol.lower-alpha {
+  list-style-type: lower-alpha;
+}
+ol.lower-latin {
+  list-style-type: lower-latin;
 }
