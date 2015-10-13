@@ -9,11 +9,13 @@ $description = Common::stripUpTo(trim(filter_var($this->context->news_post->getC
 
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news/" . $this->context->news_post_id));
 $this->opengraph->attach(new Pair("type", "article"));
+$this->opengraph->attach(new Pair("image", "https://dev.bnetdocs.org/a/news_categories/" . $this->context->news_post->getCategory()->getFilename()));
 $this->opengraph->attach(new Pair("article:published_time", $this->context->news_post->getCreatedDateTime()->format("c")));
 if (!is_null($this->context->news_post->getEditedDateTime())) {
   $this->opengraph->attach(new Pair("article:modified_time", $this->context->news_post->getEditedDateTime()->format("c")));
 }
 $this->opengraph->attach(new Pair("article:author:username", $this->context->news_post->getUser()->getName()));
+$this->opengraph->attach(new Pair("article:section", $this->context->news_post->getCategory()->getLabel()));
 
 $url = "https://dev.bnetdocs.org/news/" . urlencode($this->context->news_post->getId());
 $url .= "/" . Common::sanitizeForUrl($this->context->news_post->getTitle(), true);

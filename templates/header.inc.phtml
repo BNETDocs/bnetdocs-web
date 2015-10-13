@@ -24,15 +24,20 @@ use \BNETDocs\Libraries\User;
     <meta property="og:description" content="<?php echo $description; ?>"/>
     <meta property="twitter:description" content="<?php echo $description; ?>"/>
 <?php } ?>
-    <meta property="og:image" content="https://dev.bnetdocs.org/a/news_categories/bnetdocs.png"/>
     <meta property="og:site_name" content="BNETDocs"/>
     <meta property="og:locale" content="en_US"/>
     <meta property="twitter:card" content="summary"/>
     <meta property="twitter:site" content="@BNETDocs"/>
-    <meta property="og:title" content="<?php echo $title; ?> - BNETDocs"/>
-    <meta property="twitter:title" content="<?php echo $title; ?> - BNETDocs"/>
-<?php foreach ($this->opengraph as $og) { ?>
+    <meta property="og:title" content="<?php echo $title; ?>"/>
+    <meta property="twitter:title" content="<?php echo $title; ?>"/>
+<?php
+    $ogimage = false;
+    foreach ($this->opengraph as $og) {
+    if ($og->getKey() == "image") $ogimage = true;
+?>
     <meta property="og:<?php echo $og->getKey(); ?>" content="<?php echo $og->getValue(); ?>"/>
+<?php } if (!$ogimage) { ?>
+    <meta property="og:image" content="https://dev.bnetdocs.org/a/news_categories/bnetdocs.png"/>
 <?php } ?>
   </head>
   <body>
