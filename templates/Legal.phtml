@@ -57,7 +57,7 @@ require("./header.inc.phtml");
       <article>
         <header>License Agreement</header>
         <section class="fixed-width-text"><?php
-          echo htmlspecialchars(file_get_contents("../LICENSE"));
+          echo htmlspecialchars(file_get_contents("../LICENSE"), ENT_HTML5, "UTF-8");
         ?></section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
