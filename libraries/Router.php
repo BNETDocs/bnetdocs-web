@@ -92,9 +92,11 @@ class Router {
   }
 
   private function _getRequestBodyArray() {
-    if (stripos($this->requestBodyMimeType, "application/json") !== false || stripos($this->requestBodyMimeType, "text/json") !== false) {
+    if (stripos($this->requestBodyMimeType, "application/json") !== false
+        || stripos($this->requestBodyMimeType, "text/json") !== false) {
       return json_decode($this->requestBodyString);
-    } else if (stripos($this->requestBodyMimeType, "application/x-www-form-urlencoded") !== false) {
+    } else if (stripos($this->requestBodyMimeType,
+        "application/x-www-form-urlencoded") !== false) {
       $buffer;
       parse_str($this->requestBodyString, $buffer);
       return $buffer;
@@ -312,7 +314,9 @@ class Router {
                 if (is_numeric($subpath)) {
                   $controller = new UserViewController($subpath);
                 } else {
-                  throw new ControllerNotFoundException($path . "/" . $subpath);
+                  throw new ControllerNotFoundException(
+                    $path . "/" . $subpath
+                  );
                 }
             }
           break;
@@ -373,7 +377,9 @@ class Router {
     } else if (is_string($arg1) && is_string($arg2)) {
       $this->responseHeaders->attach(new HTTPHeader($arg1, $arg2));
     } else {
-      throw new UnexpectedValueException("Arguments given must be two strings or an HTTPHeader object", -1);
+      throw new UnexpectedValueException(
+        "Arguments given must be two strings or an HTTPHeader object", -1
+      );
     }
   }
 
