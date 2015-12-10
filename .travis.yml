@@ -11,7 +11,6 @@ php:
   - nightly
 matrix:
   allow_failures:
-    - php: 7.0
     - php: nightly
 services:
   - memcached
@@ -21,6 +20,7 @@ addons:
     packages:
       - libgeoip-dev
 install:
+  - pear channel-update pear.php.net
   - pecl install geoip
   - pear install http2
 before_script:
