@@ -126,7 +126,6 @@
 		<a href="/?mode=all">View News History</a><br>
 		<a href="generatedocs.php">Download BNETDocs as Text</a><br>
 		<a href="/?op=search">Search BNETDocs</a> &nbsp; <font color=red size=1>Incomplete</font><br>
-		<a href="/forums/">Forums</a><br>
 		<a href="/?op=credits">Credits</a><br>
 		<a href="/archives/" target="_blank">BNETDocs Archives</a><br><br>
         </div></div>
