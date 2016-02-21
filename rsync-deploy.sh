@@ -9,15 +9,11 @@ function check_bash_version () {
 
 function deploy_project () {
   cd "$(git rev-parse --show-toplevel)"
-  printf "[%s] deploying to web1.localdomain...\n" "$(date)"
+  printf "[%s] deploying to lstn.carlbennett.me...\n" "$(date)"
   rsync -avzc --delete --delete-excluded --delete-after \
     --progress --exclude-from="./rsync-exclude.txt" \
-    "./" web1.localdomain:"/home/nginx/bnetdocs-dev" ||
-    return $?
-  printf "[%s] deploying to web2.localdomain...\n" "$(date)"
-  rsync -avzc --delete --delete-excluded --delete-after \
-    --progress --exclude-from="./rsync-exclude.txt" \
-    "./" web2.localdomain:"/home/nginx/bnetdocs-dev" ||
+    --chown=nginx:www-data --rsync-path="sudo rsync" \
+    "./" lstn.carlbennett.me:"/home/nginx/bnetdocs-dev" ||
     return $?
 }
 
