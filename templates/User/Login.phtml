@@ -25,6 +25,9 @@ require("./header.inc.phtml");
               id="email"
               value="<?php echo htmlspecialchars($this->getContext()->email, ENT_HTML5, "UTF-8"); ?>"
               tabindex="1"
+              required
+              autocomplete="email"
+              autofocus="autofocus"
             />
           </section>
           <section<?php if ($this->getContext()->bad_password) { ?> class="red"<?php } ?>>
