@@ -11,6 +11,12 @@ $this->opengraph->attach(new Pair("profile:username", $this->getContext()->user-
 
 $safe_name = htmlspecialchars($this->getContext()->user->getName(), ENT_HTML5, "UTF-8");
 
+$contributions = 0;
+$contributions += $this->getContext()->sum_documents;
+$contributions += $this->getContext()->sum_news_posts;
+$contributions += $this->getContext()->sum_packets;
+$contributions += $this->getContext()->sum_servers;
+
 require("./header.inc.phtml");
 ?>
       <article>
@@ -37,14 +43,21 @@ require("./header.inc.phtml");
         </section>
         <header>User Statistics</header>
         <section>
-          <p><strong><?php echo $safe_name; ?></strong> has been a member for <?php echo $this->getContext()->user_est; ?> (since <time datetime="<?php echo $this->getContext()->user->getCreatedDateTime()->format("c"); ?>"><?php echo $this->getContext()->user->getCreatedDateTime()->format("l, F j, Y"); ?></time>).</p>
-          <p><strong><?php echo $safe_name; ?></strong> is the author or owner of:</p>
           <ul>
-            <li><?php echo number_format($this->getContext()->sum_documents);  ?> document<?php  echo ($this->getContext()->sum_documents  != 1 ? "s" : ""); ?></li>
-            <li><?php echo number_format($this->getContext()->sum_news_posts); ?> news post<?php echo ($this->getContext()->sum_news_posts != 1 ? "s" : ""); ?></li>
-            <li><?php echo number_format($this->getContext()->sum_packets);    ?> packet<?php    echo ($this->getContext()->sum_packets    != 1 ? "s" : ""); ?></li>
-            <li><?php echo number_format($this->getContext()->sum_servers);    ?> server<?php    echo ($this->getContext()->sum_servers    != 1 ? "s" : ""); ?></li>
+            <li><strong><?php echo $safe_name; ?></strong> has been a member for <?php echo $this->getContext()->user_est; ?> (since <time datetime="<?php echo $this->getContext()->user->getCreatedDateTime()->format("c"); ?>"><?php echo $this->getContext()->user->getCreatedDateTime()->format("l, F j, Y"); ?></time>).</li>
+<?php if ($contributions == 0) { ?>
+            <li><strong><?php echo $safe_name; ?></strong> has not made any contributions to BNETDocs.</li>
+<?php } else { ?>
+            <li><strong><?php echo $safe_name; ?></strong> is the owner or author of:
+              <ul>
+                <li><?php echo number_format($this->getContext()->sum_documents);  ?> document<?php  echo ($this->getContext()->sum_documents  != 1 ? "s" : ""); ?></li>
+                <li><?php echo number_format($this->getContext()->sum_news_posts); ?> news post<?php echo ($this->getContext()->sum_news_posts != 1 ? "s" : ""); ?></li>
+                <li><?php echo number_format($this->getContext()->sum_packets);    ?> packet<?php    echo ($this->getContext()->sum_packets    != 1 ? "s" : ""); ?></li>
+                <li><?php echo number_format($this->getContext()->sum_servers);    ?> server<?php    echo ($this->getContext()->sum_servers    != 1 ? "s" : ""); ?></li>
+              </ul>
+            </li>
           </ul>
+<?php } ?>
         </section>
       </article>
 <?php if (isset($this->getContext()->documents)) { ?>
