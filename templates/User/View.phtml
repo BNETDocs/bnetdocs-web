@@ -50,10 +50,18 @@ require("./header.inc.phtml");
 <?php } else { ?>
             <li><strong><?php echo $safe_name; ?></strong> is the owner or author of:
               <ul>
+<?php if ($this->getContext()->sum_documents) { ?>
                 <li><?php echo number_format($this->getContext()->sum_documents);  ?> document<?php  echo ($this->getContext()->sum_documents  != 1 ? "s" : ""); ?></li>
+<?php } ?>
+<?php if ($this->getContext()->sum_news_posts) { ?>
                 <li><?php echo number_format($this->getContext()->sum_news_posts); ?> news post<?php echo ($this->getContext()->sum_news_posts != 1 ? "s" : ""); ?></li>
+<?php } ?>
+<?php if ($this->getContext()->sum_packets) { ?>
                 <li><?php echo number_format($this->getContext()->sum_packets);    ?> packet<?php    echo ($this->getContext()->sum_packets    != 1 ? "s" : ""); ?></li>
+<?php } ?>
+<?php if ($this->getContext()->sum_servers) { ?>
                 <li><?php echo number_format($this->getContext()->sum_servers);    ?> server<?php    echo ($this->getContext()->sum_servers    != 1 ? "s" : ""); ?></li>
+<?php } ?>
               </ul>
             </li>
           </ul>
