@@ -15,21 +15,24 @@ $this->opengraph->attach(new Pair("image", "https:" . $gravatar->getUrl(null, "i
 
 $safe_name = htmlspecialchars($this->getContext()->user->getName(), ENT_HTML5, "UTF-8");
 
-$biography      = ($this->getContext()->user_profile && $this->getContext()->user_profile->getBiography() ?
-                   $this->getContext()->user_profile->getBiography() : null);
+if (!$this->getContext()->user_profile) {
+  $biography = null;
+  $github    = null;
+  $facebook  = null;
+  $twitter   = null;
+  $instagram = null;
+  $skype     = null;
+  $website   = null;
+} else {
+  $biography = $this->getContext()->user_profile->getBiography();
+  $github    = $this->getContext()->user_profile->getGitHubUsername();
+  $facebook  = $this->getContext()->user_profile->getFacebookUsername();
+  $twitter   = $this->getContext()->user_profile->getTwitterUsername();
+  $instagram = $this->getContext()->user_profile->getInstagramUsername();
+  $skype     = $this->getContext()->user_profile->getSkypeUsername();
+  $website   = $this->getContext()->user_profile->getWebsite();
+}
 $safe_biography = htmlspecialchars($biography, ENT_HTML5, "UTF-8");
-$github         = ($this->getContext()->user_profile && $this->getContext()->user_profile->getGitHubUsername() ?
-                   $this->getContext()->user_profile->getGitHubUsername() : null);
-$facebook       = ($this->getContext()->user_profile && $this->getContext()->user_profile->getFacebookUsername() ?
-                   $this->getContext()->user_profile->getFacebookUsername() : null);
-$twitter        = ($this->getContext()->user_profile && $this->getContext()->user_profile->getTwitterUsername() ?
-                   $this->getContext()->user_profile->getTwitterUsername() : null);
-$instagram      = ($this->getContext()->user_profile && $this->getContext()->user_profile->getInstagramUsername() ?
-                   $this->getContext()->user_profile->getInstagramUsername() : null);
-$skype          = ($this->getContext()->user_profile && $this->getContext()->user_profile->getSkypeUsername() ?
-                   $this->getContext()->user_profile->getSkypeUsername() : null);
-$website        = ($this->getContext()->user_profile && $this->getContext()->user_profile->getWebsite() ?
-                   $this->getContext()->user_profile->getWebsite() : null);
 
 $profiledata = (
   $github || $facebook || $twitter || $instagram || $skype || $website
