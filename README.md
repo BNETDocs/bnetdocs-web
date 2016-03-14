@@ -14,7 +14,7 @@ Entertainment&trade; or its brands, and is not intended to compete with
 or undermine Blizzard Entertainment&trade; or Battle.net&trade;. Persons using
 this software understand that the information provided within is collected
 knowledge from years of observations and may be inaccurate. All aforementioned
-trademarks are the property of their respectful owners. See the LICENSE file at
+trademarks are the property of their respective owners. See the LICENSE file at
 the root of this repository for more info.
 
 **BNETDocs: Phoenix** is the successor to
