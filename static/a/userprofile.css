@@ -1,0 +1,19 @@
+/**
+ * BNETDocs (C) 2015 Creative Commons CC-BY-NC-SA 4.0 License
+ */
+
+article > section.accountinfo {
+  min-height: 75px;
+}
+article > section > img.avatar {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 0px;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+  float: left;
+  margin: 0px 8px 8px 0px;
+  max-height: 75px;
+  max-width: 100px;
+  padding: 0px;
+  vertical-align: top;
+}

@@ -1,6 +1,7 @@
 <?php
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
 $title       = "View Account";
@@ -9,7 +10,14 @@ $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/" . $thi
 $this->opengraph->attach(new Pair("type", "profile"));
 $this->opengraph->attach(new Pair("profile:username", $this->getContext()->user->getName()));
 
+$gravatar = new Gravatar($this->getContext()->user->getEmail());
+$this->opengraph->attach(new Pair("image", "https:" . $gravatar->getUrl(null, "identicon")));
+
 $safe_name = htmlspecialchars($this->getContext()->user->getName(), ENT_HTML5, "UTF-8");
+
+$biography = ($this->getContext()->user_profile && $this->getContext()->user_profile->getBiography() ?
+              $this->getContext()->user_profile->getBiography() : null);
+$safe_biography = htmlspecialchars($biography, ENT_HTML5, "UTF-8");
 
 $contributions = 0;
 $contributions += $this->getContext()->sum_documents;
@@ -17,21 +25,22 @@ $contributions += $this->getContext()->sum_news_posts;
 $contributions += $this->getContext()->sum_packets;
 $contributions += $this->getContext()->sum_servers;
 
+$this->additional_css[] = "/a/userprofile.css";
 require("./header.inc.phtml");
 ?>
       <article>
-        <header>View Account</header>
-        <section>
-          <?php require("./NYI.inc.phtml"); ?>
-        </section>
         <header>User Profile</header>
-        <section>
-<?php if (!$this->getContext()->user_profile) { ?>
-          <p class="center">Unfortunately, <strong><?php echo $safe_name; ?></strong> does not have a user profile.</p>
+        <section class="accountinfo">
+          <img class="avatar" src="https:<?php echo $gravatar->getUrl(75, "identicon"); ?>" />
+          <strong><?php echo $safe_name; ?></strong><br />
+<?php if (!$biography) { ?>
+          <p><em style="font-size:smaller;">(no biography information.)</em></p>
 <?php } else { ?>
-          <table style="width:100%;"><tbody>
+          <p><?php echo $safe_biography; ?></p>
+<?php } ?>
+<?php if ($this->getContext()->user_profile) { ?>
+          <table style="clear:left;"><tbody>
 <?php // TODO: Check for NULL profile fields and handle them appropriately. ?>
-            <tr><th class="right" style="width:128px;">Biography:</th><td class="left"><?php echo $this->getContext()->user_profile->getBiography(); ?></td></tr>
             <tr><th class="right">GitHub:</th><td class="left"><a href="https://github.com/<?php echo $this->getContext()->user_profile->getGitHubUsername(); ?>"><?php echo $this->getContext()->user_profile->getGitHubUsername(); ?></a></td></tr>
             <tr><th class="right">Facebook:</th><td class="left"><a href="https://www.facebook.com/<?php echo $this->getContext()->user_profile->getFacebookUsername(); ?>"><?php echo $this->getContext()->user_profile->getFacebookUsername(); ?></a></td></tr>
             <tr><th class="right">Twitter:</th><td class="left"><a href="https://twitter.com/<?php echo $this->getContext()->user_profile->getTwitterUsername(); ?>"><?php echo $this->getContext()->user_profile->getTwitterUsername(); ?></a></td></tr>
