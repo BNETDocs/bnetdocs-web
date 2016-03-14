@@ -15,9 +15,25 @@ $this->opengraph->attach(new Pair("image", "https:" . $gravatar->getUrl(null, "i
 
 $safe_name = htmlspecialchars($this->getContext()->user->getName(), ENT_HTML5, "UTF-8");
 
-$biography = ($this->getContext()->user_profile && $this->getContext()->user_profile->getBiography() ?
-              $this->getContext()->user_profile->getBiography() : null);
+$biography      = ($this->getContext()->user_profile && $this->getContext()->user_profile->getBiography() ?
+                   $this->getContext()->user_profile->getBiography() : null);
 $safe_biography = htmlspecialchars($biography, ENT_HTML5, "UTF-8");
+$github         = ($this->getContext()->user_profile && $this->getContext()->user_profile->getGitHubUsername() ?
+                   $this->getContext()->user_profile->getGitHubUsername() : null);
+$facebook       = ($this->getContext()->user_profile && $this->getContext()->user_profile->getFacebookUsername() ?
+                   $this->getContext()->user_profile->getFacebookUsername() : null);
+$twitter        = ($this->getContext()->user_profile && $this->getContext()->user_profile->getTwitterUsername() ?
+                   $this->getContext()->user_profile->getTwitterUsername() : null);
+$instagram      = ($this->getContext()->user_profile && $this->getContext()->user_profile->getInstagramUsername() ?
+                   $this->getContext()->user_profile->getInstagramUsername() : null);
+$skype          = ($this->getContext()->user_profile && $this->getContext()->user_profile->getSkypeUsername() ?
+                   $this->getContext()->user_profile->getSkypeUsername() : null);
+$website        = ($this->getContext()->user_profile && $this->getContext()->user_profile->getWebsite() ?
+                   $this->getContext()->user_profile->getWebsite() : null);
+
+$profiledata = (
+  $github || $facebook || $twitter || $instagram || $skype || $website
+);
 
 $contributions = 0;
 $contributions += $this->getContext()->sum_documents;
@@ -38,15 +54,26 @@ require("./header.inc.phtml");
 <?php } else { ?>
           <p><?php echo $safe_biography; ?></p>
 <?php } ?>
-<?php if ($this->getContext()->user_profile) { ?>
+<?php if ($profiledata) { ?>
           <table style="clear:left;"><tbody>
-<?php // TODO: Check for NULL profile fields and handle them appropriately. ?>
-            <tr><th class="right">GitHub:</th><td class="left"><a href="https://github.com/<?php echo $this->getContext()->user_profile->getGitHubUsername(); ?>"><?php echo $this->getContext()->user_profile->getGitHubUsername(); ?></a></td></tr>
-            <tr><th class="right">Facebook:</th><td class="left"><a href="https://www.facebook.com/<?php echo $this->getContext()->user_profile->getFacebookUsername(); ?>"><?php echo $this->getContext()->user_profile->getFacebookUsername(); ?></a></td></tr>
-            <tr><th class="right">Twitter:</th><td class="left"><a href="https://twitter.com/<?php echo $this->getContext()->user_profile->getTwitterUsername(); ?>"><?php echo $this->getContext()->user_profile->getTwitterUsername(); ?></a></td></tr>
-            <tr><th class="right">Instagram:</th><td class="left"><a href="https://instagram.com/<?php echo $this->getContext()->user_profile->getInstagramUsername(); ?>"><?php echo $this->getContext()->user_profile->getInstagramUsername(); ?></a></td></tr>
-            <tr><th class="right">Skype:</th><td class="left"><?php echo $this->getContext()->user_profile->getSkypeUsername(); ?></td></tr>
-            <tr><th class="right">Website:</th><td class="left"><a href="<?php echo $this->getContext()->user_profile->getWebsite(); ?>"><?php echo $this->getContext()->user_profile->getWebsite(); ?></a></td></tr>
+<?php if ($github) { ?>
+            <tr><th class="right">GitHub:</th><td class="left"><a href="https://github.com/<?php echo rawurlencode($github) ?>"><?php echo htmlspecialchars($github, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php } ?>
+<?php if ($facebook) { ?>
+            <tr><th class="right">Facebook:</th><td class="left"><a href="https://www.facebook.com/<?php echo rawurlencode($facebook); ?>"><?php echo htmlspecialchars($facebook, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php } ?>
+<?php if ($twitter) { ?>
+            <tr><th class="right">Twitter:</th><td class="left"><a href="https://twitter.com/<?php echo rawurlencode($twitter); ?>"><?php echo htmlspecialchars($twitter, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php } ?>
+<?php if ($instagram) { ?>
+            <tr><th class="right">Instagram:</th><td class="left"><a href="https://instagram.com/<?php echo rawurlencode($instagram); ?>"><?php echo htmlspecialchars($instagram, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php } ?>
+<?php if ($skype) { ?>
+            <tr><th class="right">Skype:</th><td class="left"><a href="skype:<?php echo rawurlencode($skype); ?>?call"><?php echo htmlspecialchars($skype, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php } ?>
+<?php if ($website) { ?>
+            <tr><th class="right">Website:</th><td class="left"><a href="<?php echo $website; ?>"><?php echo htmlspecialchars($website, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php } ?>
           </tbody></table>
 <?php } ?>
         </section>
