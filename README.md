@@ -6,8 +6,8 @@ BNETDocs: Phoenix
 Preface
 -------
 BNETDocs is a web content management system (CMS) for the Battle.net&trade;
-online gaming service, with its purpose to document the Battle.net&trade;
-protocol.
+online gaming service protocol, with its purpose to document the
+Battle.net&trade; protocol.
 
 BNETDocs is in no way affiliated with or endorsed by Blizzard
 Entertainment&trade; or its brands, and is not intended to compete with
