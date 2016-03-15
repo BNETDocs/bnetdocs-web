@@ -4,8 +4,8 @@ namespace BNETDocs\Templates;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
-$title       = "View Account";
-$description = $this->getContext()->user->getName() . " on BNETDocs website";
+$title       = $this->getContext()->user->getName();
+$description = $this->getContext()->user->getName() . "'s user profile on BNETDocs";
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/" . $this->getContext()->user_id));
 $this->opengraph->attach(new Pair("type", "profile"));
 $this->opengraph->attach(new Pair("profile:username", $this->getContext()->user->getName()));
@@ -32,6 +32,7 @@ if (!$this->getContext()->user_profile) {
   $skype     = $this->getContext()->user_profile->getSkypeUsername();
   $website   = $this->getContext()->user_profile->getWebsite();
 }
+if ($biography) $description = $biography;
 $safe_biography = htmlspecialchars($biography, ENT_HTML5, "UTF-8");
 
 $profiledata = (
