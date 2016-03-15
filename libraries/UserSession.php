@@ -49,7 +49,7 @@ class UserSession implements Serializable {
     // Check if our token matches their token exactly:
     if ($obj->user_auth_token !== $uid->token) {
       // Invalidate their session in case this is a malicious attempt:
-      Common::$cache->set("bnetdocs-usersession-" . $uid, "", 1);
+      Common::$cache->set("bnetdocs-usersession-" . $uid->uid, "", 1);
       return null;
     }
 
