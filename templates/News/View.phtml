@@ -2,6 +2,7 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
 $title       = $this->context->news_post->getTitle();
@@ -20,9 +21,10 @@ $this->opengraph->attach(new Pair("article:section", $this->context->news_post->
 $url = "https://dev.bnetdocs.org/news/" . urlencode($this->context->news_post->getId());
 $url .= "/" . Common::sanitizeForUrl($this->context->news_post->getTitle(), true);
 
-$user_name = $this->context->news_post->getUser()->getName();
-$user_id   = $this->context->news_post->getUserId();
-$user_url  = "https://dev.bnetdocs.org/user/" . $user_id . "/" . Common::sanitizeForUrl($user_name, true);
+$user_name   = $this->context->news_post->getUser()->getName();
+$user_id     = $this->context->news_post->getUserId();
+$user_url    = "https://dev.bnetdocs.org/user/" . $user_id . "/" . Common::sanitizeForUrl($user_name, true);
+$user_avatar = "https:" . (new Gravatar($this->context->news_post->getUser()->getEmail()))->getUrl(22, "identicon");
 
 $this->additional_css[] = "/a/news.css";
 require("./header.inc.phtml");
@@ -34,7 +36,7 @@ require("./header.inc.phtml");
         <header><a href="<?php echo $url; ?>"><?php echo $this->context->news_post->getTitle(); ?></a></header>
         <section class="news"><img class="category" alt="<?php echo $this->context->news_post->getCategory()->getLabel(); ?>" title="<?php echo $this->context->news_post->getCategory()->getLabel(); ?>" src="https://dev.bnetdocs.org/a/news_categories/<?php echo $this->context->news_post->getCategory()->getFilename(); ?>"/><?php echo $this->context->news_post->getContent(true); ?></section>
         <footer>
-          <span class="float-left"><a href="<?php echo $user_url; ?>"><?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
           <span class="float-right"><?php echo $this->context->news_post->getPublishedDateTime()->format("l, F j, Y"); ?></span>
         </footer>
       </article>

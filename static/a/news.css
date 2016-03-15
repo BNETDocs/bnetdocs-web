@@ -17,3 +17,10 @@ article > section > img.category {
   padding: 8px 0px;
   vertical-align: top;
 }
+article > footer img.avatar {
+  border-radius: 3px;
+  float: left;
+  max-height: 22px;
+  max-width: 22px;
+  margin: 0px 8px 0px 0px;
+}
