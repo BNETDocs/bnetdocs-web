@@ -123,6 +123,7 @@
 	<h2>Navigation</h2>
 	<div id="divMain_Menu"><div id="author">Main Menu</div><div class="navmenu" id="bodyMain_Menu">
 		<a href="/">Main Page</a><br>
+		<a href="https://dev.bnetdocs.org/">BNETDocs: Phoenix</a><br>
 		<a href="/?mode=all">View News History</a><br>
 		<a href="generatedocs.php">Download BNETDocs as Text</a><br>
 		<a href="/?op=search">Search BNETDocs</a> &nbsp; <font color=red size=1>Incomplete</font><br>
