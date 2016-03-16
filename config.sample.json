@@ -15,8 +15,7 @@
       "password_length_min": 6,
       "username_length_max": 64,
       "username_length_min": 3
-    },
-    "version": "0.0.0-local"
+    }
   },
   "memcache": {
     "connect_timeout": 1.0,
