@@ -45,6 +45,3 @@ article > section > table img.avatar {
   max-width: 22px;
   margin: 0px 8px 0px 0px;
 }
-article > section > ol {
-  list-style-type: decimal;
-}
