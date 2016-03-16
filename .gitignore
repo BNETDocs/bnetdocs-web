@@ -19,6 +19,7 @@
 .Spotlight-V100
 .Trashes
 ._*
+/.rsync-target
 /config.phoenix.json
 /config.redux.json
 Thumbs.db
