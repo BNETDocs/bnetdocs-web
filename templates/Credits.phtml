@@ -2,6 +2,7 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\User;
 
@@ -11,6 +12,17 @@ $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/credits"));
 
 $users = [];
 
+$avatars = [];
+$getAvatar = function(&$avatars, User $user) {
+  $user_id = $user->getId();
+  if (isset($avatars[$user_id])) {
+    return $avatars[$user_id];
+  }
+  $avatars[$user_id] = new Gravatar($user->getEmail());
+  return $avatars[$user_id];
+};
+
+$this->additional_css[] = "/a/credits.css";
 require("./header.inc.phtml");
 ?>
       <article>
@@ -20,71 +32,111 @@ require("./header.inc.phtml");
         </section>
         <header>Documents</header>
         <section>
-          <ol type="1">
-<?php foreach ($this->context->top_contributors_by_documents as $item) {
+          <table><thead>
+            <tr>
+              <th class="rank">Rank</th>
+              <th class="who">Who</th>
+              <th class="sum">Sum</th>
+            </tr>
+          </thead><tbody>
+<?php $rank = 0; foreach ($this->context->top_contributors_by_documents as $item) {
+        ++$rank;
         if (is_null($item->user_id)) {
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
           $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">";
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">"
+            . "<img class=\"avatar\" src=\"https:"
+            . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
+            . "\"/> ";
           $sfx = "</a>";
         }
 ?>
-            <li><?php echo $pfx.$item->name.$sfx; ?> with <?php echo number_format($item->documents_authored); ?> document(s)</li>
+            <tr><td><?php echo $rank; ?></td><td><?php echo $pfx.$item->name.$sfx; ?></td><td><?php echo number_format($item->documents_authored); ?> document<?php echo ($item->documents_authored != 1 ? "s" : ""); ?></td></tr>
 <?php } ?>
-          </ol>
+          </tbody></table>
         </section>
         <header>News Posts</header>
         <section>
-          <ol type="1">
-<?php foreach ($this->context->top_contributors_by_news_posts as $item) {
+          <table><thead>
+            <tr>
+              <th class="rank">Rank</th>
+              <th class="who">Who</th>
+              <th class="sum">Sum</th>
+            </tr>
+          </thead><tbody>
+<?php $rank = 0; foreach ($this->context->top_contributors_by_news_posts as $item) {
+        ++$rank;
         if (is_null($item->user_id)) {
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
           $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">";
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">"
+            . "<img class=\"avatar\" src=\"https:"
+            . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
+            . "\"/> ";
           $sfx = "</a>";
         }
 ?>
-            <li><?php echo $pfx.$item->name.$sfx; ?> with <?php echo number_format($item->news_posts_created); ?> news post(s)</li>
+            <tr><td><?php echo $rank; ?></td><td><?php echo $pfx.$item->name.$sfx; ?></td><td><?php echo number_format($item->news_posts_created); ?> news post<?php echo ($item->news_posts_created != 1 ? "s" : ""); ?></td></tr>
 <?php } ?>
-          </ol>
+          </tbody></table>
         </section>
         <header>Packets</header>
         <section>
-          <ol type="1">
-<?php foreach ($this->context->top_contributors_by_packets as $item) {
+          <table><thead>
+            <tr>
+              <th class="rank">Rank</th>
+              <th class="who">Who</th>
+              <th class="sum">Sum</th>
+            </tr>
+          </thead><tbody>
+<?php $rank = 0; foreach ($this->context->top_contributors_by_packets as $item) {
+        ++$rank;
         if (is_null($item->user_id)) {
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
           $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">";
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">"
+            . "<img class=\"avatar\" src=\"https:"
+            . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
+            . "\"/> ";
           $sfx = "</a>";
         }
 ?>
-            <li><?php echo $pfx.$item->name.$sfx; ?> with <?php echo number_format($item->packets_authored); ?> packet(s)</li>
+            <tr><td><?php echo $rank; ?></td><td><?php echo $pfx.$item->name.$sfx; ?></td><td><?php echo number_format($item->packets_authored); ?> packet<?php echo ($item->packets_authored != 1 ? "s" : ""); ?></td></tr>
 <?php } ?>
-          </ol>
+          </tbody></table>
         </section>
         <header>Servers</header>
         <section>
-          <ol type="1">
-<?php foreach ($this->context->top_contributors_by_servers as $item) {
+          <table><thead>
+            <tr>
+              <th class="rank">Rank</th>
+              <th class="who">Who</th>
+              <th class="sum">Sum</th>
+            </tr>
+          </thead><tbody>
+<?php $rank = 0; foreach ($this->context->top_contributors_by_servers as $item) {
+        ++$rank;
         if (is_null($item->user_id)) {
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
           $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">";
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">"
+            . "<img class=\"avatar\" src=\"https:"
+            . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
+            . "\"/> ";
           $sfx = "</a>";
         }
 ?>
-            <li><?php echo $pfx.$item->name.$sfx; ?> with <?php echo number_format($item->servers_owned); ?> server(s)</li>
+            <tr><td><?php echo $rank; ?></td><td><?php echo $pfx.$item->name.$sfx; ?></td><td><?php echo number_format($item->servers_owned); ?> server<?php echo ($item->servers_owned != 1 ? "s" : ""); ?></td></tr>
 <?php } ?>
-          </ol>
+          </tbody></table>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
