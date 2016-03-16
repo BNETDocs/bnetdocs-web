@@ -3,9 +3,22 @@
  */
 
 table.servers {
-  font-size: 10pt;
+  border-collapse: collapse;
+  border-width: 0px;
+  font-size: smaller;
   line-height: 17px;
   width: 100%;
+}
+table.servers td {
+  border: 1px solid rgba(255,255,255,0.05);
+  border-left: 0px;
+  border-right: 0px;
+}
+table.servers tr:first-child td {
+  border-top: 0px;
+}
+table.servers tr:last-child td {
+  border-bottom: 0px;
 }
 table.servers td.status {
   width: 50px;
