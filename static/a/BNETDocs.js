@@ -35,6 +35,20 @@ function BNETDocs() {
     }
   };
 
+  this.fSelectText = function(obj) {
+    // copied from <http://goo.gl/dDuR8U>
+    // adapted from Denis Sadowski (via StackOverflow.com)
+    if (document.selection) {
+      var range = document.body.createTextRange();
+      range.moveToElementText(obj);
+      range.select();
+    } else if (window.getSelection) {
+      var range = document.createRange();
+      range.selectNode(obj);
+      window.getSelection().addRange(range);
+    }
+  };
+
   window.onload = function() {
     self.fHookExternalAnchors();
   };

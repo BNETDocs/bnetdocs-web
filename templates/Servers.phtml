@@ -46,7 +46,7 @@ require("./header.inc.phtml");
             <tr>
               <td class="left status <?php echo $status_subclass; ?>"><?php echo $status; ?></td>
               <td class="left label"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
-              <td class="left address"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
+              <td class="left address" onclick="bnetdocs.fSelectText(this);"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
               <td class="left updated">last updated <time datetime="<?php echo $server->getUpdatedDateTime()->format("c"); ?>"><?php echo Common::relativeDateTimeString($server->getUpdatedDateTime()); ?></time></td>
             </tr>
 <?php   } ?>
