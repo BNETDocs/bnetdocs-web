@@ -22,11 +22,20 @@ echo "${DEPLOY_TARGET}" > ${SOURCE_DIRECTORY}/.rsync-target
 
 set -e
 
-printf "[1/1] Syncing to deploy target...\n"
+printf "[1/4] Getting version identifier of this deploy...\n"
+DEPLOY_VERSION="$(git describe --always --tags)"
+
+printf "[2/4] Building version information into this deploy...\n"
+printf "${DEPLOY_VERSION}" > ${SOURCE_DIRECTORY}/.rsync-version
+
+printf "[3/4] Syncing to deploy target...\n"
 rsync -avzc --delete --delete-excluded --delete-after --progress \
   --exclude-from="${SOURCE_DIRECTORY}/rsync-exclude.txt" \
   --chown=nginx:www-data --rsync-path="sudo rsync" \
   "${SOURCE_DIRECTORY}" \
   ${DEPLOY_TARGET}:"${TARGET_DIRECTORY}"
+
+printf "[4/4] Post-deploy clean up...\n"
+rm ${SOURCE_DIRECTORY}/.rsync-version
 
 printf "Operation complete!\n"

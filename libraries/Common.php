@@ -190,7 +190,7 @@ final class Common {
 
   public static function versionProperties() {
     $versions           = new StdClass();
-    $versions->bnetdocs = self::$config->bnetdocs->version;
+    $versions->bnetdocs = file_get_contents("./.rsync-version");
     $versions->newrelic = phpversion("newrelic");
     $versions->php      = phpversion();
     return $versions;
