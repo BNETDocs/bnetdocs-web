@@ -78,7 +78,12 @@ class NewsPost {
           `title`,
           `user_id`
         FROM `news_posts`
-        ORDER BY `id` " . ($reverse ? "DESC" : "ASC") . ";
+        ORDER BY
+          IFNULL(`edited_datetime`, `created_datetime`)
+          " . ($reverse ? "DESC" : "ASC") . ",
+          `id`
+          " . ($reverse ? "DESC" : "ASC") . "
+        ;
       ");
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh news post");
