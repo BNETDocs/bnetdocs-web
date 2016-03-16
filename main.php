@@ -92,6 +92,7 @@ function main() {
   Common::$config   = json_decode(file_get_contents("./config.phoenix.json"));
   Common::$cache    = new Cache();
   Common::$database = null;
+  Common::$version  = Common::getVersionProperties();
 
   $router = new Router();
   $router->route();
