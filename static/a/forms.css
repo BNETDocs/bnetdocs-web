@@ -41,13 +41,10 @@ form input[disabled] {
   background-position: left top;
   background-repeat: repeat;
 }
-form input[type="reset"],
-button {
-  float: right;
-}
 form input[type="submit"],
 form input[type="reset"],
-button {
+button,
+a.button {
   background-color: rgba(128,128,128,0.4);
   border: 0px;
   -moz-box-sizing: border-box;
@@ -58,6 +55,10 @@ button {
   min-width: 80px;
   outline: none;
   padding: 4px 8px;
+}
+a.button {
+  display: inline-block;
+  text-align: center;
 }
 form input[type="submit"]:active,
 form input[type="reset"]:active,
