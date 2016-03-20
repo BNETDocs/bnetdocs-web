@@ -111,7 +111,6 @@ body > main > article > header {
   display: block;
   font: 14pt source sans pro;
   padding: 10px;
-  text-transform: uppercase;
 }
 body > main > article > header.no-select {
   cursor: default;
