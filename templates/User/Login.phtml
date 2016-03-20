@@ -7,39 +7,69 @@ $title       = "Account Login";
 $description = "This form allows an individual to log in to their account on BNETDocs";
 $this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/login"));
 
+switch ($this->getContext()->error) {
+  case "INVALID_CSRF":
+    $message = "The Cross-Site Request Forgery token was invalid. "
+      . "Either the log in form expired, or "
+      . "this may have been a malicious attempt to log you in.";
+    break;
+  case "ALREADY_LOGGED_IN":
+    $message = "You are already logged in, you must log out first.";
+    break;
+  case "EMPTY_EMAIL":
+    $message = "The email address was left blank.";
+    break;
+  case "USER_NOT_FOUND":
+  case "PASSWORD_INCORRECT":
+    $message = "Incorrect email address or password.";
+    break;
+  case "USER_DISABLED":
+    $message = "The account has been administratively disabled.";
+    break;
+  case "USER_NOT_VERIFIED":
+    $message = "The account's identity has not been verified yet.";
+    break;
+  case "LOGIN_DISABLED":
+    $message = "Logging in has been administratively disabled indefinitely.";
+    break;
+  default:
+    $message = $this->getContext()->error;
+}
+
 $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
       <article>
-<?php if (!isset($this->getContext()->user_session)) { ?>
+<?php if ($this->getContext()->error !== false) { ?>
         <header>Log In</header>
-        <form method="POST" action="?">
-          <section<?php if ($this->getContext()->bad_email) { ?> class="red"<?php } ?>>
-<?php if (is_string($this->getContext()->bad_email)) { ?>
-            <p class="center"><?php echo $this->getContext()->bad_email; ?></p>
+<?php if (!empty($message)) { ?>
+        <section class="red">
+          <p><?php echo $message; ?></p>
+        </section>
 <?php } ?>
+        <form method="POST" action="?">
+          <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
+          <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
+          <section>
             <label for="email">Email address:</label><br/>
             <input
               type="email"
               name="email"
               id="email"
-              value="<?php echo htmlspecialchars($this->getContext()->email, ENT_HTML5, "UTF-8"); ?>"
+              value=""
               tabindex="1"
               required
               autocomplete="email"
               autofocus="autofocus"
             />
           </section>
-          <section<?php if ($this->getContext()->bad_password) { ?> class="red"<?php } ?>>
-<?php if (is_string($this->getContext()->bad_password)) { ?>
-            <p class="center"><?php echo $this->getContext()->bad_password; ?></p>
-<?php } ?>
+          <section>
             <label for="password">Password:</label><br/>
             <input
               type="password"
               name="password"
               id="password"
-              value="<?php echo htmlspecialchars($this->getContext()->password, ENT_HTML5, "UTF-8"); ?>"
+              value=""
               tabindex="2"
             />
           </section>
