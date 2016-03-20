@@ -153,6 +153,73 @@ final class Common {
     return $string;
   }
 
+  public static function relativeUrlToAbsolute($value) {
+    // Current request
+    $current_scheme = (getenv("HTTP_PORT") == 443 ? "https" : "http") . ":";
+    $current_host   = getenv("HTTP_HOST");
+    $current_path   = getenv("DOCUMENT_URI");
+    $current_query  = getenv("QUERY_STRING");
+
+    // Placeholders
+    $scheme = null;
+    $host   = null;
+    $path   = null;
+    $query  = null;
+
+    // Split off query part
+    $i = strpos($value, "?");
+    if ($i !== false) {
+      $query = substr($value, $i + 1);
+      $value = substr($value, 0, $i);
+    }
+
+    // Retrieve the scheme from the $value
+    $i = strpos($value, "//");
+    if ($i !== false) {
+      $scheme = substr($value, 0, $i);
+      $value  = substr($value, $i);
+    }
+    if (empty($scheme)) $scheme = null; // Use current scheme further down
+
+    // Retrieve the host from the $value
+    if (substr($value, 0, 2) == "//") {
+      $value = substr($value, 2);
+      $i     = strpos($value, "/");
+      if ($i === false) {
+        $host  = $value;
+        $value = "";
+      } else {
+        $host  = substr($value, 0, $i);
+        $value = substr($value, $i);
+      }
+    }
+
+    // All what's left is the path
+    $path  = $value;
+    $value = "";
+
+    // If the path is empty, substitute our own
+    if (empty($path)) $path = $current_path;
+
+    // If the path is relative, splice it into current path
+    if (substr($path, 0, 1) != "/") {
+      $dir = dirname($current_path);
+      if ($dir == ".") {
+        $path = "/" . $path;
+      } else {
+        $path = "/" . $dir . "/" . $path;
+      }
+    }
+
+    // Use current values if none provided
+    if (is_null($scheme)) $scheme = $current_scheme;
+    if (is_null($host  )) $host   = $current_host;
+    if (is_null($path  )) $path   = $current_path;
+
+    // Build the url
+    return $scheme . "//" . $host . $path . ($query ? "?" . $query : "");
+  }
+
   public static function sanitizeForUrl($haystack, $lowercase = true) {
     $result = trim(preg_replace("/[^\da-z]+/im", "-", $haystack), "-");
     if ($lowercase) $result = strtolower($result);
