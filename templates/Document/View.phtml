@@ -1,18 +1,25 @@
 <?php
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Pair;
 
 $title       = $this->getContext()->document->getTitle();
-$description = "Document View Page";
-$this->opengraph->attach(new Pair("url", "/document/" . $this->getContext()->document_id));
+$description = Common::stripUpTo(trim(filter_var($this->getContext()->document->getContent(true), FILTER_SANITIZE_STRING)), "\n", 300);
+$this->opengraph->attach(new Pair("url", "/document/" . $this->getContext()->document->getId()));
 $this->opengraph->attach(new Pair("type", "article"));
+
+$url = Common::relativeUrlToAbsolute("/document/" . urlencode($this->getContext()->document->getId()));
+$url .= "/" . Common::sanitizeForUrl($this->getContext()->document->getTitle(), true);
 
 #$this->additional_css[] = "/a/document.css";
 require("./header.inc.phtml");
 ?>
       <article>
-        <header><?php echo htmlspecialchars($this->getContext()->document->getTitle(), ENT_HTML5, "UTF-8"); ?></header>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($this->getContext()->document->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
+        <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($this->getContext()->document->getTitle(), ENT_HTML5, "UTF-8"); ?></a></header>
         <section>
           <?php require("./NYI.inc.phtml"); ?>
         </section>
