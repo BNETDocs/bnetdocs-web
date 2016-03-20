@@ -122,7 +122,10 @@ body > main > article > header.no-select {
   -ms-user-select: none;
   user-select: none;
 }
-body > main > article > header.red {
+body > main > article header.green {
+  background-color: rgba(64,128,64,0.6);
+}
+body > main > article header.red {
   background-color: rgba(128,64,64,0.6);
 }
 body > main > article > header:first-of-type {
