@@ -6,7 +6,7 @@ use \BNETDocs\Libraries\Pair;
 
 $title       = $this->getContext()->user->getName();
 $description = $this->getContext()->user->getName() . "'s user profile on BNETDocs";
-$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/" . $this->getContext()->user_id));
+$this->opengraph->attach(new Pair("url", "/user/" . $this->getContext()->user_id));
 $this->opengraph->attach(new Pair("type", "profile"));
 $this->opengraph->attach(new Pair("profile:username", $this->getContext()->user->getName()));
 

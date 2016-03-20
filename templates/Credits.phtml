@@ -8,7 +8,7 @@ use \BNETDocs\Libraries\User;
 
 $title       = "Contributors";
 $description = "The top contributors to BNETDocs grouped by different types of content.";
-$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/credits"));
+$this->opengraph->attach(new Pair("url", "/credits"));
 
 $users = [];
 
@@ -45,8 +45,8 @@ require("./header.inc.phtml");
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">"
+          $pfx = "<a href=\"" . Common::relativeUrlToAbsolute("/user/" . urlencode($item->user_id) . "/"
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true)) . "\">"
             . "<img class=\"avatar\" src=\"https:"
             . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
             . "\"/> ";
@@ -72,8 +72,8 @@ require("./header.inc.phtml");
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">"
+          $pfx = "<a href=\"" . Common::relativeUrlToAbsolute("/user/" . urlencode($item->user_id) . "/"
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true)) . "\">"
             . "<img class=\"avatar\" src=\"https:"
             . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
             . "\"/> ";
@@ -99,8 +99,8 @@ require("./header.inc.phtml");
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">"
+          $pfx = "<a href=\"" . Common::relativeUrlToAbsolute("/user/" . urlencode($item->user_id) . "/"
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true)) . "\">"
             . "<img class=\"avatar\" src=\"https:"
             . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
             . "\"/> ";
@@ -126,8 +126,8 @@ require("./header.inc.phtml");
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-          $pfx = "<a href=\"https://dev.bnetdocs.org/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true) . "\">"
+          $pfx = "<a href=\"" . Common::relativeUrlToAbsolute("/user/" . urlencode($item->user_id) . "/"
+            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true)) . "\">"
             . "<img class=\"avatar\" src=\"https:"
             . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
             . "\"/> ";

@@ -155,7 +155,7 @@ final class Common {
 
   public static function relativeUrlToAbsolute($value) {
     // Current request
-    $current_scheme = (getenv("HTTP_PORT") == 443 ? "https" : "http") . ":";
+    $current_scheme = "https:";
     $current_host   = getenv("HTTP_HOST");
     $current_path   = getenv("DOCUMENT_URI");
     $current_query  = getenv("QUERY_STRING");

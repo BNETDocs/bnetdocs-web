@@ -5,7 +5,7 @@ use \BNETDocs\Libraries\Pair;
 
 $title       = "Account Login";
 $description = "This form allows an individual to log in to their account on BNETDocs";
-$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/login"));
+$this->opengraph->attach(new Pair("url", "/user/login"));
 
 switch ($this->getContext()->error) {
   case "INVALID_CSRF":

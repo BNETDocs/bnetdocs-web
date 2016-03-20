@@ -211,26 +211,26 @@ class Router {
             $pid = (isset($query["pid"]) ? $query["pid"] : null);
             $url = null; $code = 301;
             if ($op == "doc" && !is_null($did)) {
-              $url = "https://dev.bnetdocs.org/document/" . rawurlencode($did);
+              $url = Common::relativeUrlToAbsolute("/document/" . rawurlencode($did));
             } else if ($op == "news" && !is_null($nid)) {
-              $url = "https://dev.bnetdocs.org/news/" . rawurlencode($nid);
+              $url = Common::relativeUrlToAbsolute("/news/" . rawurlencode($nid));
             } else if ($op == "packet" && !is_null($pid)) {
-              $url = "https://dev.bnetdocs.org/packet/" . rawurlencode($pid);
+              $url = Common::relativeUrlToAbsolute("/packet/" . rawurlencode($pid));
             } else if ($op == "credits") {
-              $url = "https://dev.bnetdocs.org/credits";
+              $url = Common::relativeUrlToAbsolute("/credits");
             } else if ($op == "legalism") {
-              $url = "https://dev.bnetdocs.org/legal";
+              $url = Common::relativeUrlToAbsolute("/legal");
             } else if ($op == "login") {
-              $url = "https://dev.bnetdocs.org/user/login";
+              $url = Common::relativeUrlToAbsolute("/user/login");
             } else if ($op == "news") {
-              $url = "https://dev.bnetdocs.org/news";
+              $url = Common::relativeUrlToAbsolute("/news");
             } else if ($op == "register") {
-              $url = "https://dev.bnetdocs.org/user/register";
+              $url = Common::relativeUrlToAbsolute("/user/register");
             } else if ($op == "resetpw") {
-              $url = "https://dev.bnetdocs.org/user/resetpassword";
+              $url = Common::relativeUrlToAbsolute("/user/resetpassword");
             }
             if (is_null($url)) {
-              $url = "https://dev.bnetdocs.org/news";
+              $url = Common::relativeUrlToAbsolute("/news");
               $code = 302;
             }
             $controller = new RedirectController($url, $code);
@@ -266,7 +266,7 @@ class Router {
           case "newsrss.php":
             // Legacy BNETDocs Redux to BNETDocs Phoenix redirect.
             $controller = new RedirectController(
-              "https://dev.bnetdocs.org/news.rss", 301
+              Common::relativeUrlToAbsolute("/news.rss"), 301
             );
           break;
           case "packet":
@@ -286,7 +286,7 @@ class Router {
             switch ($subpath) {
               case "news":
                 $controller = new RedirectController(
-                  "https://dev.bnetdocs.org/news.rss", 301
+                  Common::relativeUrlToAbsolute("/news.rss"), 301
                 );
               break;
               default:

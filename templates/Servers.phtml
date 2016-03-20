@@ -8,7 +8,7 @@ use \BNETDocs\Libraries\Pair;
 
 $title       = "Servers";
 $description = "A list of servers that our automated system checks the status of. The status represents if the port is opened or closed, not if the service is functioning correctly.";
-$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/servers"));
+$this->opengraph->attach(new Pair("url", "/servers"));
 
 $servers_by_type = [];
 foreach ($this->context->servers as $server) {
@@ -23,7 +23,7 @@ require("./header.inc.phtml");
         <header>Server List</header>
         <section>
           <p>Below is a list of servers that our automated system checks the status of. The status represents if the port is opened or closed, not if the service is functioning correctly.</p>
-          <p>We have a total of <strong><?php echo number_format(count($this->context->servers)); ?> servers</strong> that we monitor. <a href="https://dev.bnetdocs.org/servers.json">Click here</a> to see this list in JSON format.</p>
+          <p>We have a total of <strong><?php echo number_format(count($this->context->servers)); ?> servers</strong> that we monitor. <a href="<?php echo Common::relativeUrlToAbsolute("/servers.json"); ?>">Click here</a> to see this list in JSON format.</p>
         </section>
       </article>
       <article>

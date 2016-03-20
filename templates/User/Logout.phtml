@@ -5,7 +5,7 @@ use \BNETDocs\Libraries\Pair;
 
 $title       = "Logout";
 $description = "Log out of the BNETDocs website";
-$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/logout"));
+$this->opengraph->attach(new Pair("url", "/user/logout"));
 
 switch ($this->getContext()->error) {
   case "NOT_LOGGED_IN":

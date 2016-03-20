@@ -1,11 +1,12 @@
 <?php
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Pair;
 
 $title       = "Create Account";
 $description = "This form allows an individual to create an account on BNETDocs";
-$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/user/register"));
+$this->opengraph->attach(new Pair("url", "/user/register"));
 
 $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
@@ -20,7 +21,7 @@ require("./header.inc.phtml");
         <header class="red">Create Account</header>
         <section class="red">
           <p>You are currently logged in to an account. You must first logout of your account before using this form.</p>
-          <p><a class="button" href="https://dev.bnetdocs.org/user/logout">Logout</a></p>
+          <p><a class="button" href="<?php echo Common::relativeUrlToAbsolute("/user/logout"); ?>">Logout</a></p>
         </section>
 <?php } ?>
       </article>

@@ -8,9 +8,9 @@ use \BNETDocs\Libraries\Pair;
 $title       = $this->context->news_post->getTitle();
 $description = Common::stripUpTo(trim(filter_var($this->context->news_post->getContent(true), FILTER_SANITIZE_STRING)), "\n", 300);
 
-$this->opengraph->attach(new Pair("url", "https://dev.bnetdocs.org/news/" . $this->context->news_post_id));
+$this->opengraph->attach(new Pair("url", "/news/" . $this->context->news_post_id));
 $this->opengraph->attach(new Pair("type", "article"));
-$this->opengraph->attach(new Pair("image", "https://dev.bnetdocs.org/a/news_categories/" . $this->context->news_post->getCategory()->getFilename()));
+$this->opengraph->attach(new Pair("image", "/a/news_categories/" . $this->context->news_post->getCategory()->getFilename()));
 $this->opengraph->attach(new Pair("article:published_time", $this->context->news_post->getCreatedDateTime()->format("c")));
 if (!is_null($this->context->news_post->getEditedDateTime())) {
   $this->opengraph->attach(new Pair("article:modified_time", $this->context->news_post->getEditedDateTime()->format("c")));
@@ -18,23 +18,23 @@ if (!is_null($this->context->news_post->getEditedDateTime())) {
 $this->opengraph->attach(new Pair("article:author:username", $this->context->news_post->getUser()->getName()));
 $this->opengraph->attach(new Pair("article:section", $this->context->news_post->getCategory()->getLabel()));
 
-$url = "https://dev.bnetdocs.org/news/" . urlencode($this->context->news_post->getId());
+$url = Common::relativeUrlToAbsolute("/news/" . urlencode($this->context->news_post->getId()));
 $url .= "/" . Common::sanitizeForUrl($this->context->news_post->getTitle(), true);
 
 $user_name   = $this->context->news_post->getUser()->getName();
 $user_id     = $this->context->news_post->getUserId();
-$user_url    = "https://dev.bnetdocs.org/user/" . $user_id . "/" . Common::sanitizeForUrl($user_name, true);
+$user_url    = Common::relativeUrlToAbsolute("/user/" . $user_id . "/" . Common::sanitizeForUrl($user_name, true));
 $user_avatar = "https:" . (new Gravatar($this->context->news_post->getUser()->getEmail()))->getUrl(22, "identicon");
 
 $this->additional_css[] = "/a/news.css";
 require("./header.inc.phtml");
 ?>
       <article>
-        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-gplus-24px.png"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($this->context->news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-twitter-24px.png"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="https://dev.bnetdocs.org/a/social-facebook-24px.png"/></a>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($this->context->news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
         <header><a href="<?php echo $url; ?>"><?php echo $this->context->news_post->getTitle(); ?></a></header>
-        <section class="news"><img class="category" alt="<?php echo $this->context->news_post->getCategory()->getLabel(); ?>" title="<?php echo $this->context->news_post->getCategory()->getLabel(); ?>" src="https://dev.bnetdocs.org/a/news_categories/<?php echo $this->context->news_post->getCategory()->getFilename(); ?>"/><?php echo $this->context->news_post->getContent(true); ?></section>
+        <section class="news"><img class="category" alt="<?php echo $this->context->news_post->getCategory()->getLabel(); ?>" title="<?php echo $this->context->news_post->getCategory()->getLabel(); ?>" src="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/" . $this->context->news_post->getCategory()->getFilename()); ?>"/><?php echo $this->context->news_post->getContent(true); ?></section>
         <footer>
           <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
           <span class="float-right"><?php echo $this->context->news_post->getPublishedDateTime()->format("l, F j, Y"); ?></span>

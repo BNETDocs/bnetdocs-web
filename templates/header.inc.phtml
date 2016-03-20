@@ -2,22 +2,23 @@
 
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\User;
 
 ?><!DOCTYPE html>
 <html lang="en-US">
   <head>
     <title><?php echo $title; ?> - BNETDocs</title>
-    <link rel="stylesheet" href="https://dev.bnetdocs.org/a/main.css" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main.css"); ?>" type="text/css" media="all"/>
 <?php foreach ($this->additional_css as $path) { ?>
-    <link rel="stylesheet" type="text/css" href="https://dev.bnetdocs.org<?php echo $path; ?>" media="all"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute($path); ?>" media="all"/>
 <?php } ?>
-    <link rel="icon" href="https://dev.bnetdocs.org/favicon.png" type="image/png" sizes="48x48"/>
-    <link rel="stylesheet" type="text/css" href="https://static.carlbennett.me/font/SourceSansPro-Regular-201508251844.css"/>
-    <link rel="stylesheet" type="text/css" href="https://static.carlbennett.me/font/SourceCodePro-Regular-201508251844.css"/>
-    <script type="text/javascript" src="https://dev.bnetdocs.org/a/BNETDocs.js"><![CDATA[]]></script>
-    <link rel="alternate" href="https://dev.bnetdocs.org/news.rss" type="application/rss+xml" title="BNETDocs News"/>
-    <link rel="license" href="https://dev.bnetdocs.org/legal"/>
+    <link rel="icon" href="<?php echo Common::relativeUrlToAbsolute("/favicon.png"); ?>" type="image/png" sizes="48x48"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("//static.carlbennett.me/font/SourceSansPro-Regular-201508251844.css"); ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("//static.carlbennett.me/font/SourceCodePro-Regular-201508251844.css"); ?>"/>
+    <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute("/a/BNETDocs.js"); ?>"><![CDATA[]]></script>
+    <link rel="alternate" href="<?php echo Common::relativeUrlToAbsolute("/news.rss"); ?>" type="application/rss+xml" title="BNETDocs News"/>
+    <link rel="license" href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>"/>
     <meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding"/>
 <?php if (!empty($description)) { ?>
     <meta name="description" content="<?php echo $description; ?>"/>
@@ -33,11 +34,14 @@ use \BNETDocs\Libraries\User;
 <?php
     $ogimage = false;
     foreach ($this->opengraph as $og) {
-    if ($og->getKey() == "image") $ogimage = true;
+      $ogkey = $og->getKey();
+      $ogval = $og->getValue();
+      if ($ogkey == "image") $ogimage = true;
+      if ($ogkey == "url" || $ogkey == "image") $ogval = Common::relativeUrlToAbsolute($ogval);
 ?>
-    <meta property="og:<?php echo $og->getKey(); ?>" content="<?php echo $og->getValue(); ?>"/>
+    <meta property="og:<?php echo $ogkey; ?>" content="<?php echo $ogval; ?>"/>
 <?php } if (!$ogimage) { ?>
-    <meta property="og:image" content="https://dev.bnetdocs.org/a/news_categories/bnetdocs.png"/>
+    <meta property="og:image" content="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/bnetdocs.png"); ?>"/>
 <?php } ?>
   </head>
   <body>
@@ -45,23 +49,23 @@ use \BNETDocs\Libraries\User;
 <?php if (!(isset($slim_ui) && $slim_ui)) { ?>
     <nav>
       <a>Portal</a>
-      <a href="https://dev.bnetdocs.org/news">News</a>
-      <a href="https://dev.bnetdocs.org/credits">Contributors</a>
-      <a href="https://dev.bnetdocs.org/servers">Server List</a>
-      <a href="https://dev.bnetdocs.org/legal">Legal Policies</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/news"); ?>">News</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/credits"); ?>">Contributors</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/servers"); ?>">Server List</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>">Legal Policies</a>
       <a>Account Management</a>
 <?php if (isset($this->getContext()->user_session)) { ?>
-      <a href="https://dev.bnetdocs.org/user/logout">Logout</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/user/logout"); ?>">Logout</a>
 <?php } else { ?>
-      <a href="https://dev.bnetdocs.org/user/login">Account Login</a>
-      <a href="https://dev.bnetdocs.org/user/register">Create Account</a>
-      <a href="https://dev.bnetdocs.org/user/resetpassword">Reset Password</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/user/login"); ?>">Account Login</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/user/register"); ?>">Create Account</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/user/resetpassword"); ?>">Reset Password</a>
 <?php } ?>
       <a>Documentation</a>
-      <a href="https://dev.bnetdocs.org/document/search">Search Documents</a>
-      <a href="https://dev.bnetdocs.org/packet/search">Search Packets</a>
-      <a href="https://dev.bnetdocs.org/document/popular">Popular Documents</a>
-      <a href="https://dev.bnetdocs.org/packet/popular">Popular Packets</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/document/search"); ?>">Search Documents</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/search"); ?>">Search Packets</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/document/popular"); ?>">Popular Documents</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/popular"); ?>">Popular Packets</a>
     </nav>
     <main>
 <?php } else { ?>
