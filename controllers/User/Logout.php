@@ -6,6 +6,7 @@ use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
+use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\Logout as UserLogoutModel;
