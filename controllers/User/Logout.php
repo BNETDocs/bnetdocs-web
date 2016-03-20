@@ -52,9 +52,18 @@ class Logout extends Controller {
       return;
     }
     CSRF::invalidate($csrf_id);
+    $model->error        = false;
+    $user_id             = $model->user_session->user_id;
     $model->user_session->invalidate($router);
     $model->user_session = null;
-    $model->error        = false;
+    Logger::logEvent(
+      "user_logout",
+      $user_id,
+      getenv("REMOTE_ADDR"),
+      json_encode([
+        "error" => $model->error
+      ])
+    );
   }
 
 }
