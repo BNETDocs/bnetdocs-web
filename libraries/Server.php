@@ -158,10 +158,12 @@ class Server {
     $data->address          = (string) $data->address;
     $data->created_datetime = (string) $data->created_datetime;
     $data->id               = (int)    $data->id;
-    $data->label            = (string) $data->label;
     $data->port             = (int)    $data->port;
     $data->status_bitmask   = (int)    $data->status_bitmask;
     $data->type_id          = (int)    $data->type_id;
+
+    if (!is_null($data->label))
+      $data->label = (string) $data->label;
 
     if (!is_null($data->updated_datetime))
       $data->updated_datetime = (string) $data->updated_datetime;
