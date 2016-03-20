@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
+use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
@@ -21,6 +22,7 @@ class Search extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new DocumentSearchModel();
+    $model->documents    = Document::getAllDocuments();
     $model->user_session = UserSession::load($router);
     ob_start();
     $view->render($model);
