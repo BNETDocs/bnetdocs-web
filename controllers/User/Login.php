@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\DatabaseDriver;
@@ -25,20 +26,17 @@ class Login extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new UserLoginModel();
+    $model->csrf_id      = mt_rand();
+    $model->csrf_token   = CSRF::generate($model->csrf_id);
+    $model->error        = null;
     $model->user_session = UserSession::load($router);
-    $ttl = 300;
     if ($router->getRequestMethod() == "POST") {
-      $ttl = 0;
       $this->tryLogin($router, $model);
-    } else if ($model->user_session) {
-      $user            = new User($model->user_session->user_id);
-      $model->email    = $user->getEmail();
-      $model->password = "";
     }
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);
-    $router->setResponseTTL($ttl);
+    $router->setResponseTTL(0);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
     ob_end_clean();
@@ -48,84 +46,53 @@ class Login extends Controller {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $data            = $router->getRequestBodyArray();
-    $model->email    = (isset($data["email"   ]) ? $data["email"   ] : null);
-    $model->password = (isset($data["password"]) ? $data["password"] : null);
-    if (empty($model->email)) {
-      $model->bad_email = "Email address was left blank.";
-    } else {
-      $user = null;
-      try {
-        $user = new User(User::findIdByEmail($model->email));
-      } catch (UserNotFoundException $e) {
-        $user = null;
-      }
-      if (!$user) {
-        $success = $this->loginErrorNotFound($model);
-      } else if ($user->getOptionsBitmask() & User::OPTION_DISABLED) {
-        $success = $this->loginErrorDisabled($model);
-      } else if (!$user->getOptionsBitmask() & User::OPTION_VERIFIED) {
-        $success = $this->loginErrorNotVerified($model);
-      } else if (!$user->checkPassword($model->password)) {
-        $success = $this->loginErrorWrongPassword($model);
-      } else if (Common::$config->bnetdocs->user_login_disabled) {
-        $success = $this->loginErrorSiteDisabled($model);
-      } else {
-        $success = $this->loginSuccess($model, $router, $user);
-      }
-      $model->password = "";
-      Logger::logEvent(
-        "user_login",
-        ($user ? $user->getId() : null),
-        getenv("REMOTE_ADDR"),
-        json_encode([
-          "success"      => $success,
-          "email"        => $model->email,
-          "bad_email"    => $model->bad_email,
-          "bad_password" => $model->bad_password
-        ])
-      );
+    $data       = $router->getRequestBodyArray();
+    $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
+    $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
+    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
+    $email      = (isset($data["email"     ]) ? $data["email"     ] : null);
+    $password   = (isset($data["password"  ]) ? $data["password"  ] : null);
+    if (!$csrf_valid) {
+      $model->error = "INVALID_CSRF";
+      return;
     }
-  }
-
-  private function loginErrorNotFound(UserLoginModel &$model) {
-    $model->bad_email = "There is no account by that email address.";
-    return false;
-  }
-
-  private function loginErrorDisabled(UserLoginModel &$model) {
-    $model->bad_email    = "Your account has been disabled administratively.";
-    $model->bad_password = true;
-    return false;
-  }
-
-  private function loginErrorNotVerified(UserLoginModel &$model) {
-    $model->bad_email    = "Your account has not been verified yet.";
-    $model->bad_password = true;
-    return false;
-  }
-
-  private function loginErrorWrongPassword(UserLoginModel &$model) {
-    $model->bad_email    = "Incorrect email address or password.";
-    $model->bad_password = true;
-    return false;
-  }
-
-  private function loginErrorSiteDisabled(UserLoginModel &$model) {
-    $model->bad_email =
-      "Login has been disabled administratively for everyone.";
-    $model->bad_password = true;
-    return false;
-  }
-
-  private function loginSuccess(
-    UserLoginModel &$model, Router &$router, User &$user
-  ) {
-    $model->bad_email    = false;
-    $model->bad_password = false;
+    CSRF::invalidate($csrf_id);
+    if (isset($model->user_session)) {
+      $model->error = "ALREADY_LOGGED_IN";
+    } else if (empty($email)) {
+      $model->error = "EMPTY_EMAIL";
+    } else if (Common::$config->bnetdocs->user_login_disabled) {
+      $model->error = "LOGIN_DISABLED";
+    }
+    if ($model->error) return;
+    try {
+      $user = new User(User::findIdByEmail($email));
+    } catch (UserNotFoundException $e) {
+      $user = null;
+    }
+    if (!$user) {
+      $model->error = "USER_NOT_FOUND";
+    } else if ($user->getOptionsBitmask() & User::OPTION_DISABLED) {
+      $model->error = "USER_DISABLED";
+    } else if (!$user->getOptionsBitmask() & User::OPTION_VERIFIED) {
+      $model->error = "USER_NOT_VERIFIED";
+    } else if (!$user->checkPassword($password)) {
+      $model->error = "PASSWORD_INCORRECT";
+    }
+    if ($model->error) return;
+    $model->error        = false;
+    $model->password     = "";
     $model->user_session = new UserSession($user->getId());
     $model->user_session->save($router);
-    return true;
+    Logger::logEvent(
+      "user_login",
+      ($user ? $user->getId() : null),
+      getenv("REMOTE_ADDR"),
+      json_encode([
+        "email" => $model->email,
+        "error" => $model->error
+      ])
+    );
   }
 
 }
