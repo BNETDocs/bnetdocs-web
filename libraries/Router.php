@@ -18,6 +18,7 @@ use \BNETDocs\Controllers\Status as StatusController;
 use \BNETDocs\Controllers\User\Login as UserLoginController;
 use \BNETDocs\Controllers\User\Logout as UserLogoutController;
 use \BNETDocs\Controllers\User\Register as UserRegisterController;
+use \BNETDocs\Controllers\User\ResetPassword as UserResetPasswordController;
 use \BNETDocs\Controllers\User\View as UserViewController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
@@ -225,8 +226,8 @@ class Router {
               $url = "https://dev.bnetdocs.org/news";
             } else if ($op == "register") {
               $url = "https://dev.bnetdocs.org/user/register";
-            /*} else if ($op == "resetpw") {
-              $url = "https://dev.bnetdocs.org/user/resetpassword";*/
+            } else if ($op == "resetpw") {
+              $url = "https://dev.bnetdocs.org/user/resetpassword";
             }
             if (is_null($url)) {
               $url = "https://dev.bnetdocs.org/news";
@@ -309,6 +310,10 @@ class Router {
               break;
               case "register": case "register.htm": case "register.html":
                 $controller = new UserRegisterController();
+              break;
+              case "resetpassword": case "resetpassword.htm":
+              case "resetpassword.html":
+                $controller = new UserResetPasswordController();
               break;
               default:
                 if (is_numeric($subpath)) {
