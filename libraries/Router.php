@@ -5,6 +5,7 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Controllers\Credits as CreditsController;
 use \BNETDocs\Controllers\Document\Popular as DocumentPopularController;
 use \BNETDocs\Controllers\Document\Search as DocumentSearchController;
+use \BNETDocs\Controllers\Document\View as DocumentViewController;
 use \BNETDocs\Controllers\Legal as LegalController;
 use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
@@ -247,7 +248,13 @@ class Router {
                 $controller = new DocumentPopularController();
               break;
               default:
-                throw new ControllerNotFoundException($path . "/" . $subpath);
+                if (is_numeric($subpath)) {
+                  $controller = new DocumentViewController($subpath);
+                } else {
+                  throw new ControllerNotFoundException(
+                    $path . "/" . $subpath
+                  );
+                }
             }
           break;
           case "legal": case "legal.htm": case "legal.html": case "legal.txt":

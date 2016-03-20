@@ -1,0 +1,22 @@
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Pair;
+
+$title       = $this->getContext()->document->getTitle();
+$description = "Document View Page";
+$this->opengraph->attach(new Pair("url", "/document/" . $this->getContext()->document_id));
+$this->opengraph->attach(new Pair("type", "article"));
+
+#$this->additional_css[] = "/a/document.css";
+require("./header.inc.phtml");
+?>
+      <article>
+        <header><?php echo htmlspecialchars($this->getContext()->document->getTitle(), ENT_HTML5, "UTF-8"); ?></header>
+        <section>
+          <?php require("./NYI.inc.phtml"); ?>
+        </section>
+        <section>
+<?php echo $this->getContext()->document->getContent(true); ?>
+        </section>
+<?php require("./footer.inc.phtml"); ?>

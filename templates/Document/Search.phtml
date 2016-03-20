@@ -2,6 +2,7 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Pair;
 
 $title       = "Search Documents";
@@ -16,6 +17,15 @@ usort($documents, function($a, $b){
   if ($a1 == $b1) return 0;
   return ($a1 < $b1 ? -1 : 1);
 });
+
+// Remove documents that are not published
+$i = count($documents) - 1;
+while ($i >= 0) {
+  if (!($documents[$i]->getOptionsBitmask() & Document::OPTION_PUBLISHED)) {
+    unset($documents[$i]);
+  }
+  --$i;
+}
 
 require("./header.inc.phtml");
 ?>

@@ -37,6 +37,7 @@ class Document {
       $this->options_bitmask  = null;
       $this->title            = null;
       $this->user_id          = null;
+      $this->refresh();
     } else if ($data instanceof StdClass) {
       self::normalize($data);
       $this->content          = $data->content;
@@ -96,7 +97,7 @@ class Document {
       $md = new Markdown();
       return $md->text($this->content);
     } else {
-      return htmlspecialchars($this->content, ENT_HTML5, "UTF-8");
+      return $this->content;
     }
   }
 
