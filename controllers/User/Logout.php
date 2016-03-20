@@ -61,9 +61,7 @@ class Logout extends Controller {
       "user_logout",
       $user_id,
       getenv("REMOTE_ADDR"),
-      json_encode([
-        "error" => $model->error
-      ])
+      json_encode(["error" => $model->error])
     );
   }
 

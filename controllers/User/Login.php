@@ -88,10 +88,7 @@ class Login extends Controller {
       "user_login",
       ($user ? $user->getId() : null),
       getenv("REMOTE_ADDR"),
-      json_encode([
-        "email" => $model->email,
-        "error" => $model->error
-      ])
+      json_encode(["error" => $model->error])
     );
   }
 
