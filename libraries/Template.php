@@ -8,6 +8,8 @@ use \SplObjectStorage;
 
 final class Template {
 
+  const TEMPLATE_DIR = "/templates";
+
   protected $additional_css;
   protected $context;
   protected $opengraph;
@@ -31,7 +33,7 @@ final class Template {
   public function render() {
     $cwd = getcwd();
     try {
-      chdir($cwd . "/templates");
+      chdir($cwd . self::TEMPLATE_DIR);
       if (!file_exists($this->template)) {
         throw new TemplateNotFoundException($this);
       }
