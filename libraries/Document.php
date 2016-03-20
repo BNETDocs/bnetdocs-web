@@ -8,6 +8,7 @@ use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\Markdown;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;

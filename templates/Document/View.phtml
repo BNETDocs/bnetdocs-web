@@ -21,9 +21,10 @@ require("./header.inc.phtml");
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
         <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($this->getContext()->document->getTitle(), ENT_HTML5, "UTF-8"); ?></a></header>
         <section>
-          <?php require("./NYI.inc.phtml"); ?>
-        </section>
-        <section>
 <?php echo $this->getContext()->document->getContent(true); ?>
+        </section>
+        <header>Comments</header>
+        <section>
+          <?php require("./NYI.inc.phtml"); ?>
         </section>
 <?php require("./footer.inc.phtml"); ?>
