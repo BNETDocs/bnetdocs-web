@@ -113,6 +113,44 @@ class Document {
     }
   }
 
+  public static function getDocumentsByUserId($user_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        SELECT
+          `content`,
+          `created_datetime`,
+          `edited_count`,
+          `edited_datetime`,
+          `id`,
+          `options_bitmask`,
+          `title`,
+          `user_id`
+        FROM `documents`
+        WHERE `user_id` = :user_id
+        ORDER BY `id` ASC;
+      ");
+      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot query documents by user id");
+      }
+      $documents = [];
+      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        $documents[] = new self($row);
+        Common::$cache->set(
+          "bnetdocs-document-" . $row->id, serialize($row), 300
+        );
+      }
+      $stmt->closeCursor();
+      return $documents;
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot query documents by user id", $e);
+    }
+    return null;
+  }
+
   public function getEditedCount() {
     return $this->edited_count;
   }

@@ -5,6 +5,7 @@ namespace BNETDocs\Controllers\User;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Credits;
+use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\Router;
@@ -61,7 +62,9 @@ class View extends Controller {
       $this->user_id
     );
 
-    $model->documents  = ($model->sum_documents  ? true : null);
+    $model->documents  = ($model->sum_documents  ?
+      Document::getDocumentsByUserId($this->user_id) : null
+    );
     $model->news_posts = ($model->sum_news_posts ? true : null);
     $model->packets    = ($model->sum_packets    ? true : null);
     $model->servers    = ($model->sum_servers    ? true : null);
