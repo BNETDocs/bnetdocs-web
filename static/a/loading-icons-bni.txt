@@ -1,0 +1,101 @@
+Loading icons.bni
+tA-Kane
+Thursday, January 2, 2003
+Updated same date, at 4:30 PM.
+Updated January 22, 2003 at 12:30 PM.
+Updated February 4, 2003 at 2:12 AM
+
+I've written this file because I do not know of any other documents that show how to read Battle.net's icons.bni file.
+
+Thanks to Skywing and Adron for some minor corrections and clarifications.
+
+ 
+
+The following terms are used in this document...
+BYTE - if you don't know what this is, then you don't belong in the computer world.
+WORD - 2 Byte unsigned integer
+DWORD - 4 byte unsigned integer
+STRING - Sequence of bytes, either alone, preceeded by a length-integer, or with a trailing NULL byte.
+x-List - The list (specified by type, such as DWORD-List) is an array of the type, with the end of the array being a zero of the type.
+
+If you need to know about endians, all of the file is in little-endian format. If you don't know what endians are, then just ignore this, as you're most likely not going to need to know about it.
+
+The Battle.net's icons file (icons.bni, icons_STAR.bni, etc) file is basically a header decribing the contents of an embedded standard TGA (targa) file. So, here's the format of the header...
+
+DWORD - HeaderLength (always 0x10) - Length of this BNI header
+WORD - BNI Version (This document only supports 0x01)
+WORD - Unused (always 0x00)
+DWORD - NumIcons - Number of icons
+DWORD - DataStart - Length of the BNI file header, and start position of TGA file
+
+From there, there's an array of structures, the length of the array being NumIcons
+
+DWORD - FlagValue - User's flags must match this value after a BitwiseAnd of the two for this icon to be valid
+DWORD - IconWidth - Icon's width (used to extrapolate the correct width from the TGA picture)
+DWORD - IconHeight - Icon's height (used to extrapolate the correct height from the TGA picture)
+DWORD-List - Software - Only included if flags is zero, User's software must be this value for this icon to be valid. Because the BNI file uses a DWORD-List to match software, the same software icon could be used for users with the different software. The end of the list is specified by a DWORD with a value of zero, and list has a maximum length of 31 DWORDs.
+
+Then from there, is the file data for the embedded standard TGA picture file.
+Though it would be the most effective for you to read up on the TGA picture standard, I'll show you how to get the basics down so that you can get the TGA picture...
+
+The TGA header format is as follows...
+
+BYTE - InfoLength - Length of the TGA file's INFO variable
+BYTE - ColorMapType - Type of color map (I do not support color maps)
+BYTE - ImageType - Type of image (I support only run-length true-color image types (0x0A))
+5 BYTES - ColorMapSpecification - Color map data (I ignore this)
+WORD - XOrigin - X position to start image from (based on Descriptor's pixel start location)
+WORD - YOrigin - Y position to start image from (based on Descriptor's pixel start location)
+WORD - Width - Picture width, in pixels
+WORD - Height - Picture height, in pixels
+BYTE - Depth - Picture depth, in bits (I only support 24 bit depth)
+BYTE - Descriptor
+Bits 5 and 4 (bitwise, 00110000) specify the corner to start coloring the pixels...
+Bottom left: 0, 0
+Bottom right: 0, 1
+Top left: 1, 0
+Top right: 1, 1
+I have not seen any icons file that does not start in the bottom left corner.
+
+STRING - Info - Picture info. Not a null-terminated string, instead, the length-byte is InfoLength.
+
+From there is pixel data..., and even pixel data has its own structure. This provided structure is assuming the picture is a 24-bit TGA.
+
+BYTE - PacketHeader - Specifies whether the "packet of pixel data" is a run-length packet (all pixels are same color), or not.
+Bit 7 (bitwise, 10000000) specifies whether the current pixel packet is a run-length packet.
+Bits 6 through 0 specify the number of pixels included in this "packet".
+If bit 7 is 1, then all pixels are the same color, and there is only 1 color provided.
+If bit 7 is 0, then not all pixels are the same color, so there is 1 color for each pixel.
+BYTE - Blue - Blue value in RGB spectrum
+BYTE - Green - Green value in RGB spectrum
+BYTE - Red - Red value in RGB spectrum
+
+Note that the PacketHeader's PixelCount is 0-based, so if the value is zero, then 1 pixel is to be colored, and if PixelCount is 127, then 128 pixels are to be colored.
+
+From there on is the TGA file footer, which I ignore.
+
+ 
+
+Once you've created the TGA picture, you should display the picture and see if the picture makes any sese, or just looks like it's jargled. If it makes sense (eg, it looks like there's a bunch of icons stacked vertically ontop of eachother, then you've successfully created the picture) it's now up to you to extrapolate those icons from the TGA picture. If the TGA picture looks like jargled pixels, then either you screwed up in your code, or the icons file uses a format which I have not yet seen.
+
+********************
+**ADDITIONAL NOTES**
+********************
+The old icons.bnis started in the top right corner instead of the bottom left, so it may be a good idea to support that too.
+
+Icons should be matched in the order in which they appear in the file... after the first match, you should stop searching and display that icon.
+
+Blizzard (flags 0x01), Battle.net (0x08), Operator (0x02), and Moderator (0x04) are always sorted above other users in that order; although these appear above all other icons in icons.bni, the [userlist] sort order is hardcoded in the game, and is not extracted from icons.bni.
+
+Blizzard's games support the .bni files to be in 24-bit and 32-bit TGAs. Though I have only seen 24-bit TGAs in the .bni files, it would be wise to support 32-bit TGAs as well.
+
+ 
+
+Thanks to Skywing and Adron for some minor corrections and clarifications.
+
+Updated February 4, 2003 at 2:12 AM
+Updated January 22, 2003 at 12:30 PM.
+Thursday, January 2, 2003
+Updated same date, at 4:30 PM.
+tA-Kane
+Loading icons.bni
