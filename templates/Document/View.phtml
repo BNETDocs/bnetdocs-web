@@ -23,9 +23,12 @@ require("./header.inc.phtml");
         <section>
 <?php echo $this->getContext()->document->getContent(true); ?>
         </section>
+      </article>
+      <article>
         <header>Comments</header>
         <section>
           <?php require("./NYI.inc.phtml"); ?>
+          <p class="center">If you'd like to leave a suggestion or concern, you can do so <a href="https://github.com/BNETDocs/bnetdocs-web/issues/new?labels[]=bnetdocs-phoenix&labels[]=question&body=<?php echo rawurlencode("Hi,\n\n<fill in your question here>\n\nThanks!\n\nReference: " . $url); ?>" rel="external">over on GitHub</a>. Sorry for the trouble!</p>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
