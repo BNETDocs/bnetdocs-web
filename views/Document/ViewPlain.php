@@ -1,12 +1,12 @@
 <?php
 
-namespace BNETDocs\Views\News;
+namespace BNETDocs\Views\Document;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
 use \BNETDocs\Libraries\Model;
 use \BNETDocs\Libraries\View;
-use \BNETDocs\Models\News\View as NewsViewModel;
+use \BNETDocs\Models\Document\View as DocumentViewModel;
 
 class ViewPlain extends View {
 
@@ -15,12 +15,12 @@ class ViewPlain extends View {
   }
 
   public function render(Model &$model) {
-    if (!$model instanceof NewsViewModel) {
+    if (!$model instanceof DocumentViewModel) {
       throw new IncorrectModelException();
     }
-    echo $model->news_post->getTitle() . "\n";
-    echo str_repeat("=", strlen($model->news_post->getTitle())) . "\n\n";
-    echo $model->news_post->getContent(false);
+    echo $model->document->getTitle() . "\n";
+    echo str_repeat("=", strlen($model->document->getTitle())) . "\n\n";
+    echo $model->document->getContent(false);
   }
 
 }

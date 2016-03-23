@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\View as DocumentViewModel;
 use \BNETDocs\Views\Document\ViewHtml as DocumentViewHtmlView;
+use \BNETDocs\Views\Document\ViewPlain as DocumentViewPlainView;
 use \DateTime;
 use \DateTimeZone;
 
@@ -26,6 +27,9 @@ class View extends Controller {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
         $view = new DocumentViewHtmlView();
+      break;
+      case "txt":
+        $view = new DocumentViewPlainView();
       break;
       default:
         throw new UnspecifiedViewException();
