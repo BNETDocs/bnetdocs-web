@@ -25,13 +25,13 @@ require("./header.inc.phtml");
 ?>
       <article>
 <?php if (is_null($this->getContext()->error)) { ?>
-        <header>Log Out</header>
+        <header>Logout</header>
         <form method="POST" action="?">
           <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
           <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
           <section>
             <p>If you are sure you wish to log out, press the button below.</p>
-            <p><input type="submit" value="Logout"/></p>
+            <p><input type="submit" value="Log Out"/></p>
           </section>
         </form>
 <?php } else if ($this->getContext()->error === false) { ?>
