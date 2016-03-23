@@ -4,7 +4,7 @@ namespace BNETDocs\Models\Document;
 
 use \BNETDocs\Libraries\Model;
 
-class Sitemap extends Model {
+class Index extends Model {
 
   public $user_session;
 

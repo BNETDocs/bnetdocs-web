@@ -5,22 +5,21 @@ namespace BNETDocs\Views\Document;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
 use \BNETDocs\Libraries\Model;
+use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\View;
-use \BNETDocs\Models\Document\Sitemap as DocumentSitemapModel;
+use \BNETDocs\Models\Document\Index as DocumentIndexModel;
 
-class SitemapJSON extends View {
+class IndexHtml extends View {
 
   public function getMimeType() {
-    return "application/json;charset=utf-8";
+    return "text/html;charset=utf-8";
   }
 
   public function render(Model &$model) {
-    if (!$model instanceof DocumentSitemapModel) {
+    if (!$model instanceof DocumentIndexModel) {
       throw new IncorrectModelException();
     }
-    echo json_encode([
-      "documents" => $model->documents
-    ], Common::prettyJSONIfBrowser());
+    (new Template($model, "Document/Index"))->render();
   }
 
 }

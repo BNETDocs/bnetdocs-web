@@ -7,9 +7,9 @@ use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\User;
 
-$title       = "Document Sitemap";
-$description = "The sitemap for documents on BNETDocs";
-$this->opengraph->attach(new Pair("url", "/document/sitemap"));
+$title       = "Document Index";
+$description = "The index for documents on BNETDocs";
+$this->opengraph->attach(new Pair("url", "/document/index"));
 
 $avatars = [];
 $getAvatar = function(&$avatars, &$user) {
@@ -24,7 +24,7 @@ $getAvatar = function(&$avatars, &$user) {
 require("./header.inc.phtml");
 ?>
       <article>
-        <header>Document Sitemap</header>
+        <header>Document Index</header>
         <section>
           <table>
             <thead>

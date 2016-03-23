@@ -9,32 +9,32 @@ use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
-use \BNETDocs\Models\Document\Sitemap as DocumentSitemapModel;
-use \BNETDocs\Views\Document\SitemapHtml as DocumentSitemapHtmlView;
-use \BNETDocs\Views\Document\SitemapJSON as DocumentSitemapJSONView;
+use \BNETDocs\Models\Document\Index as DocumentIndexModel;
+use \BNETDocs\Views\Document\IndexHtml as DocumentIndexHtmlView;
+use \BNETDocs\Views\Document\IndexJSON as DocumentIndexJSONView;
 use \DateTime;
 use \DateTimeZone;
 
-class Sitemap extends Controller {
+class Index extends Controller {
 
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
-        $view = new DocumentSitemapHtmlView();
+        $view = new DocumentIndexHtmlView();
       break;
       case "json":
-        $view = new DocumentSitemapJSONView();
+        $view = new DocumentIndexJSONView();
       break;
       default:
         throw new UnspecifiedViewException();
     }
-    $model = new DocumentSitemapModel();
+    $model = new DocumentIndexModel();
     
     $model->documents     = Document::getAllDocuments();
     $model->user_session  = UserSession::load($router);
 
     // Alphabetically sort the documents for HTML
-    if ($view instanceof DocumentSitemapHtmlView && $model->documents) {
+    if ($view instanceof DocumentIndexHtmlView && $model->documents) {
       usort($model->documents, function($a, $b){
         $a1 = $a->getTitle();
         $b1 = $b->getTitle();
@@ -56,7 +56,7 @@ class Sitemap extends Controller {
     }
 
     // Objectify for JSON
-    if ($view instanceof DocumentSitemapJSONView) {
+    if ($view instanceof DocumentIndexJSONView) {
       $model->timestamp = new DateTime("now", new DateTimeZone("UTC"));
       $documents = [];
       foreach ($model->documents as $document) {
