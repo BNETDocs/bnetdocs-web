@@ -3,43 +3,47 @@ namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
+use \BNETDocs\Libraries\User;
 
 $title       = "Document Sitemap";
 $description = "The sitemap for documents on BNETDocs";
 $this->opengraph->attach(new Pair("url", "/document/sitemap"));
 
-// Alphabetically sort the documents
-$documents = $this->getContext()->documents;
-if ($documents) {
-  usort($documents, function($a, $b){
-    $a1 = $a->getTitle();
-    $b1 = $b->getTitle();
-    if ($a1 == $b1) return 0;
-    return ($a1 < $b1 ? -1 : 1);
-  });
-}
-
-// Remove documents that are not published
-$i = count($documents) - 1;
-while ($i >= 0) {
-  if (!($documents[$i]->getOptionsBitmask() & Document::OPTION_PUBLISHED)) {
-    unset($documents[$i]);
+$avatars = [];
+$getAvatar = function(&$avatars, &$user) {
+  $user_id = $user->getId();
+  if (isset($avatars[$user_id])) {
+    return $avatars[$user_id];
   }
-  --$i;
-}
+  $avatars[$user_id] = new Gravatar($user->getEmail());
+  return $avatars[$user_id];
+};
 
 require("./header.inc.phtml");
 ?>
       <article>
         <header>Document Sitemap</header>
         <section>
-          <p>Matched documents: <?php echo number_format(count($documents)); ?></p>
-          <ul>
-<?php foreach ($documents as $document) { ?>
-            <li><a href="<?php echo Common::relativeUrlToAbsolute("/document/" . urlencode($document->getId()) . "/" . Common::sanitizeForUrl($document->getTitle(), true)); ?>"><?php echo htmlspecialchars($document->getTitle(), ENT_HTML5, "UTF-8"); ?></a></li>
+          <table>
+            <thead>
+              <tr>
+                <th class="left">Found <?php echo number_format($this->getContext()->sum_documents); ?> document<?php echo ($this->getContext()->sum_documents != 1 ? "s" : ""); ?></th>
+                <th class="left">Author</th>
+              </tr>
+            </thead><tbody>
+<?php foreach ($this->getContext()->documents as $document) {
+        $user       = $document->getUser();
+        $user_url   = Common::relativeUrlToAbsolute("/user/" . urlencode($user->getId()) . "/" . Common::sanitizeForUrl($user->getName(), true));
+        $avatar_url = "https:" . $getAvatar($avatars, $user)->getUrl(22, "identicon");
+?>
+              <tr>
+                <td><a href="<?php echo Common::relativeUrlToAbsolute("/document/" . urlencode($document->getId()) . "/" . Common::sanitizeForUrl($document->getTitle(), true)); ?>"><?php echo htmlspecialchars($document->getTitle(), ENT_HTML5, "UTF-8"); ?></a></td>
+                <td><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/> <?php echo htmlspecialchars($user->getName(), ENT_HTML5, "UTF-8"); ?></a></td>
+              </tr>
 <?php } ?>
-          </ul>
+          </tbody></table>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
