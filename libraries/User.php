@@ -76,6 +76,45 @@ class User {
     }
   }
 
+  public function changePassword($new_password) {
+    $password_hash = null; $password_salt = null;
+    self::createPassword($new_password, $password_hash, $password_salt);
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare("
+        UPDATE `users` SET
+          `password_hash` = :password_hash,
+          `password_salt` = :password_salt
+        WHERE `id` = :user_id;
+      ");
+      $stmt->bindParam(":user_id", $this->id, PDO::PARAM_STR);
+      $stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);
+      $stmt->bindParam(":password_salt", $password_salt, PDO::PARAM_STR);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) {
+        $this->password_hash = (string) $password_hash;
+        $this->password_salt = (string) $password_salt;
+        $key = "bnetdocs-user-" . $this->id;
+        $obj = Common::$cache->get($key);
+        if ($obj !== false) {
+          $obj = unserialize($obj);
+          $obj->password_hash = $this->password_hash;
+          $obj->password_salt = $this->password_salt;
+          $obj = serialize($obj);
+          Common::$cache->set($key, $obj, 300);
+        }
+      }
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot change user password", $e);
+    } finally {
+      return $successful;
+    }
+  }
+
   public function checkPassword($password) {
     if (is_null($this->password_hash)
       || is_null($this->password_salt))
