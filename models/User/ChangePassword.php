@@ -10,7 +10,7 @@ class ChangePassword extends Model {
 
   public function __construct() {
     parent::__construct();
-    $this-user_session = null;
+    $this->user_session = null;
   }
 
 }

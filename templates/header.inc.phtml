@@ -56,6 +56,7 @@ use \BNETDocs\Libraries\User;
       <a>Account Management</a>
 <?php if (isset($this->getContext()->user_session)) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/logout"); ?>">Logout</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/user/changepassword"); ?>">Change Password</a>
 <?php } else { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/login"); ?>">Account Login</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/register"); ?>">Create Account</a>
