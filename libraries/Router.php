@@ -16,6 +16,7 @@ use \BNETDocs\Controllers\PageNotFound as PageNotFoundController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Controllers\Servers as ServersController;
 use \BNETDocs\Controllers\Status as StatusController;
+use \BNETDocs\Controllers\User\ChangePassword as UserChangePasswordController;
 use \BNETDocs\Controllers\User\Login as UserLoginController;
 use \BNETDocs\Controllers\User\Logout as UserLogoutController;
 use \BNETDocs\Controllers\User\Register as UserRegisterController;
@@ -217,6 +218,8 @@ class Router {
               $url = Common::relativeUrlToAbsolute("/news/" . rawurlencode($nid));
             } else if ($op == "packet" && !is_null($pid)) {
               $url = Common::relativeUrlToAbsolute("/packet/" . rawurlencode($pid));
+            } else if ($op == "cpw") {
+              $url = Common::relativeUrlToAbsolute("/user/changepassword");
             } else if ($op == "credits") {
               $url = Common::relativeUrlToAbsolute("/credits");
             } else if ($op == "legalism") {
@@ -309,6 +312,10 @@ class Router {
           break;
           case "user":
             switch ($subpath) {
+              case "changepassword": case "changepassword.htm":
+              case "changepassword.html":
+                $controller = new UserChangePasswordController();
+              break;
               case "login": case "login.htm": case "login.html":
                 $controller = new UserLoginController();
               break;
