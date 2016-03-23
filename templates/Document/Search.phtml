@@ -9,42 +9,18 @@ $title       = "Search Documents";
 $description = "Search the documents on BNETDocs";
 $this->opengraph->attach(new Pair("url", "/document/search"));
 
-// Alphabetically sort the documents
-$documents = $this->getContext()->documents;
-if ($documents) {
-  usort($documents, function($a, $b){
-    $a1 = $a->getTitle();
-    $b1 = $b->getTitle();
-    if ($a1 == $b1) return 0;
-    return ($a1 < $b1 ? -1 : 1);
-  });
-}
-
-// Remove documents that are not published
-$i = count($documents) - 1;
-while ($i >= 0) {
-  if (!($documents[$i]->getOptionsBitmask() & Document::OPTION_PUBLISHED)) {
-    unset($documents[$i]);
-  }
-  --$i;
-}
-
 require("./header.inc.phtml");
 ?>
       <article>
         <header>Search Documents</header>
         <section>
           <?php require("./NYI.inc.phtml"); ?>
-          <p class="center">Until this feature is complete, this page will simply list all documents.</p>
         </section>
-        <header>Results</header>
+      </article>
+      <article>
+        <header>Suggestion</header>
         <section>
-          <p>Matched documents: <?php echo number_format(count($documents)); ?></p>
-          <ul>
-<?php foreach ($documents as $document) { ?>
-            <li><a href="<?php echo Common::relativeUrlToAbsolute("/document/" . urlencode($document->getId()) . "/" . Common::sanitizeForUrl($document->getTitle(), true)); ?>"><?php echo htmlspecialchars($document->getTitle(), ENT_HTML5, "UTF-8"); ?></a></li>
-<?php } ?>
-          </ul>
+          <p><a href="<?php echo Common::relativeUrlToAbsolute("/document/sitemap"); ?>">Click here</a> to see all of the documents.</p>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>

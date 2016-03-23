@@ -5,6 +5,7 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Controllers\Credits as CreditsController;
 use \BNETDocs\Controllers\Document\Popular as DocumentPopularController;
 use \BNETDocs\Controllers\Document\Search as DocumentSearchController;
+use \BNETDocs\Controllers\Document\Sitemap as DocumentSitemapController;
 use \BNETDocs\Controllers\Document\View as DocumentViewController;
 use \BNETDocs\Controllers\Legal as LegalController;
 use \BNETDocs\Controllers\Maintenance as MaintenanceController;
@@ -246,6 +247,10 @@ class Router {
             switch ($subpath) {
               case "search": case "search.htm": case "search.html":
                 $controller = new DocumentSearchController();
+              break;
+              case "sitemap": case "sitemap.htm": case "sitemap.html":
+              case "sitemap.json":
+                $controller = new DocumentSitemapController();
               break;
               case "popular": case "popular.htm": case "popular.html":
                 $controller = new DocumentPopularController();

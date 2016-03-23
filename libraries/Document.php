@@ -9,6 +9,8 @@ use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Markdown;
+use \DateTime;
+use \DateTimeZone;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;

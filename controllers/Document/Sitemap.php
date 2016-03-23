@@ -4,23 +4,29 @@ namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
+use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
-use \BNETDocs\Models\Document\Search as DocumentSearchModel;
-use \BNETDocs\Views\Document\SearchHtml as DocumentSearchHtmlView;
+use \BNETDocs\Models\Document\Sitemap as DocumentSitemapModel;
+use \BNETDocs\Views\Document\SitemapHtml as DocumentSitemapHtmlView;
+use \BNETDocs\Views\Document\SitemapJSON as DocumentSitemapJSONView;
 
-class Search extends Controller {
+class Sitemap extends Controller {
 
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
-        $view = new DocumentSearchHtmlView();
+        $view = new DocumentSitemapHtmlView();
+      break;
+      case "json":
+        $view = new DocumentSitemapJSONView();
       break;
       default:
         throw new UnspecifiedViewException();
     }
-    $model = new DocumentSearchModel();
+    $model = new DocumentSitemapModel();
+    $model->documents    = Document::getAllDocuments();
     $model->user_session = UserSession::load($router);
     ob_start();
     $view->render($model);
