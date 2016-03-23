@@ -1,6 +1,7 @@
 <?php
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Pair;
 
 $title       = "Account Login";
@@ -79,6 +80,10 @@ require("./header.inc.phtml");
               value="Log In"
               tabindex="3"
             />
+            <a class="button" style="margin-left:8px;"
+              href="<?php echo Common::relativeUrlToAbsolute("/user/resetpassword"); ?>"
+              tabindex="4"
+            >Recover Password</a>
           </section>
         </form>
 <?php } else { ?>
