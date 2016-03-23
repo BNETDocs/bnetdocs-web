@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\View as NewsViewModel;
 use \BNETDocs\Views\News\ViewHtml as NewsViewHtmlView;
+use \BNETDocs\Views\News\ViewPlain as NewsViewPlainView;
 
 class View extends Controller {
 
@@ -24,6 +25,9 @@ class View extends Controller {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
         $view = new NewsViewHtmlView();
+      break;
+      case "txt":
+        $view = new NewsViewPlainView();
       break;
       default:
         throw new UnspecifiedViewException();
