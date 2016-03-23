@@ -179,7 +179,6 @@ body > main > article > footer {
   margin: 0px;
   min-height: 20px;
   padding: 10px;
-  text-transform: uppercase;
 }
 body > footer {
   box-sizing: border-box;
