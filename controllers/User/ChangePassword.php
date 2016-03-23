@@ -70,7 +70,13 @@ class ChangePassword extends Controller {
     }
     $old_password_hash = $user->getPasswordHash();
     $old_password_salt = $user->getPasswordSalt();
-    $success           = $user->changePassword($pw2);
+    try {
+      $success = $user->changePassword($pw2);
+    } catch (QueryException $e) {
+      // SQL error occurred. We can show a friendly message to the user while
+      // also notifying this problem to staff.
+      Logger::logException($e);
+    }
     $new_password_hash = $user->getPasswordHash();
     $new_password_salt = $user->getPasswordSalt();
     if (!$success) {
