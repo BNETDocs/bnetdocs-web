@@ -29,12 +29,12 @@ require("./header.inc.phtml");
           <img class="avatar" src="https:<?php echo $gravatar->getUrl(75, "identicon"); ?>" />
           <strong><?php echo $safe_name; ?></strong><br />
 <?php if (!$this->getContext()->biography) { ?>
-          <p style="font-size:90%;"><em>(no biography information.)</em></p>
+          <p class="biography"><em>(no biography information.)</em></p>
 <?php } else { ?>
-          <p style="font-size:90%;"><?php echo $safe_biography; ?></p>
+          <p class="biography"><?php echo $safe_biography; ?></p>
 <?php } ?>
 <?php if ($this->getContext()->profiledata) { ?>
-          <table style="clear:left;"><tbody>
+          <table class="profiledata"><tbody>
 <?php if ($this->getContext()->github) { ?>
             <tr><th class="right">GitHub:</th><td class="left"><a href="https://github.com/<?php echo rawurlencode($this->getContext()->github) ?>"><?php echo htmlspecialchars($this->getContext()->github, ENT_HTML5, "UTF-8"); ?></a></td></tr>
 <?php } ?>

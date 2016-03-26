@@ -17,3 +17,13 @@ article > section > img.avatar {
   padding: 0px;
   vertical-align: top;
 }
+p.biography {
+  font-size: 90%;
+}
+table.profiledata {
+  clear: left;
+  width: initial;
+}
+table.profiledata th {
+  width: 100px;
+}
