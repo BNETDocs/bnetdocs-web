@@ -25,7 +25,7 @@ require("./header.inc.phtml");
 ?>
       <article>
 <?php if (is_null($this->getContext()->error)) { ?>
-        <header>Logout</header>
+        <header>Account Logout</header>
         <form method="POST" action="?">
           <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
           <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>

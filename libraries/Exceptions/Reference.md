@@ -19,3 +19,4 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | 12         | `NewsCategoryNotFoundException` | News category not found                              |
 | 13         | `PacketNotFoundException`       | Packet not found                                     |
 | 14         | `DocumentNotFoundException`     | Document not found                                   |
+| 15         | `RecaptchaException`            | `$message`                                           |

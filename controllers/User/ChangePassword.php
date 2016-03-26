@@ -89,7 +89,7 @@ class ChangePassword extends Controller {
       $model->user_session->user_id,
       getenv("REMOTE_ADDR"),
       json_encode([
-        "error" => $model->error,
+        "error"             => $model->error,
         "old_password_hash" => $old_password_hash,
         "old_password_salt" => $old_password_salt,
         "new_password_hash" => $new_password_hash,

@@ -5,10 +5,11 @@
       "BNETDocs has to take a brief moment to do some system maintenance. We'll be back shortly."
     ],
     "user_login_disabled": false,
+    "user_password_pepper": "bnetdocs-INSERTRANDOMVALUEHERE",
     "user_register_disabled": false,
     "user_register_requirements": {
       "email_duplicate_allowed": false,
-      "email_validate_regex": true,
+      "email_validate_quick": true,
       "password_allow_email": false,
       "password_allow_username": false,
       "password_length_max": null,
@@ -39,5 +40,10 @@
     ],
     "timeout": 3,
     "username": "bnetdocs"
+  },
+  "recaptcha": {
+    "secret": "google-provided-value",
+    "sitekey": "google-provided-value",
+    "url": "https://www.google.com/recaptcha/api/siteverify"
   }
 }
