@@ -35,7 +35,7 @@ class Credits extends Controller {
 
   protected function getCredits(CreditsModel &$model) {
     $credits = new CreditsLib();
-    $model->total_users = $credits->getTotalUsers();
+    $model->total_users = CreditsLib::getTotalUsers();
     $model->top_contributors_by_documents
       = &$credits->getTopContributorsByDocuments();
     $model->top_contributors_by_news_posts

@@ -11,10 +11,10 @@ use \PDOException;
 
 class Credits {
 
-  public function &getTotalUsers() {
+  public static function &getTotalUsers($no_cache = false) {
     $cache_key = "bnetdocs-credits-totalusers";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return (int) $cache_val;
+    if (!$no_cache && $cache_val !== false) return (int) $cache_val;
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
