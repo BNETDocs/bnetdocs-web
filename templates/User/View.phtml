@@ -17,55 +17,8 @@ $this->opengraph->attach(new Pair("image", "https:" . $gravatar->getUrl(null, "i
 
 $safe_name = htmlspecialchars($this->getContext()->user->getName(), ENT_HTML5, "UTF-8");
 
-if (!$this->getContext()->user_profile) {
-  $biography = null;
-  $github    = null;
-  $facebook  = null;
-  $twitter   = null;
-  $instagram = null;
-  $skype     = null;
-  $website   = null;
-} else {
-  $biography = $this->getContext()->user_profile->getBiography();
-  $github    = $this->getContext()->user_profile->getGitHubUsername();
-  $facebook  = $this->getContext()->user_profile->getFacebookUsername();
-  $twitter   = $this->getContext()->user_profile->getTwitterUsername();
-  $instagram = $this->getContext()->user_profile->getInstagramUsername();
-  $skype     = $this->getContext()->user_profile->getSkypeUsername();
-  $website   = $this->getContext()->user_profile->getWebsite();
-}
-if ($biography) $description = $biography;
-$safe_biography = htmlspecialchars($biography, ENT_HTML5, "UTF-8");
-
-$profiledata = (
-  $github || $facebook || $twitter || $instagram || $skype || $website
-);
-
-$contributions = 0;
-$contributions += $this->getContext()->sum_documents;
-$contributions += $this->getContext()->sum_news_posts;
-$contributions += $this->getContext()->sum_packets;
-$contributions += $this->getContext()->sum_servers;
-
-// Alphabetically sort the documents
-$documents = $this->getContext()->documents;
-if ($documents) {
-  usort($documents, function($a, $b){
-    $a1 = $a->getTitle();
-    $b1 = $b->getTitle();
-    if ($a1 == $b1) return 0;
-    return ($a1 < $b1 ? -1 : 1);
-  });
-}
-
-// Remove documents that are not published
-$i = count($documents) - 1;
-while ($i >= 0) {
-  if (!($documents[$i]->getOptionsBitmask() & Document::OPTION_PUBLISHED)) {
-    unset($documents[$i]);
-  }
-  --$i;
-}
+if ($this->getContext()->biography) $description = $biography;
+$safe_biography = htmlspecialchars($this->getContext()->biography, ENT_HTML5, "UTF-8");
 
 $this->additional_css[] = "/a/userprofile.css";
 require("./header.inc.phtml");
@@ -75,30 +28,30 @@ require("./header.inc.phtml");
         <section class="accountinfo">
           <img class="avatar" src="https:<?php echo $gravatar->getUrl(75, "identicon"); ?>" />
           <strong><?php echo $safe_name; ?></strong><br />
-<?php if (!$biography) { ?>
-          <p><em style="font-size:smaller;">(no biography information.)</em></p>
+<?php if (!$this->getContext()->biography) { ?>
+          <p style="font-size:90%;"><em>(no biography information.)</em></p>
 <?php } else { ?>
-          <p><?php echo $safe_biography; ?></p>
+          <p style="font-size:90%;"><?php echo $safe_biography; ?></p>
 <?php } ?>
-<?php if ($profiledata) { ?>
+<?php if ($this->getContext()->profiledata) { ?>
           <table style="clear:left;"><tbody>
-<?php if ($github) { ?>
-            <tr><th class="right">GitHub:</th><td class="left"><a href="https://github.com/<?php echo rawurlencode($github) ?>"><?php echo htmlspecialchars($github, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php if ($this->getContext()->github) { ?>
+            <tr><th class="right">GitHub:</th><td class="left"><a href="https://github.com/<?php echo rawurlencode($this->getContext()->github) ?>"><?php echo htmlspecialchars($this->getContext()->github, ENT_HTML5, "UTF-8"); ?></a></td></tr>
 <?php } ?>
-<?php if ($facebook) { ?>
-            <tr><th class="right">Facebook:</th><td class="left"><a href="https://www.facebook.com/<?php echo rawurlencode($facebook); ?>"><?php echo htmlspecialchars($facebook, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php if ($this->getContext()->facebook) { ?>
+            <tr><th class="right">Facebook:</th><td class="left"><a href="https://www.facebook.com/<?php echo rawurlencode($this->getContext()->facebook); ?>"><?php echo htmlspecialchars($this->getContext()->facebook, ENT_HTML5, "UTF-8"); ?></a></td></tr>
 <?php } ?>
-<?php if ($twitter) { ?>
-            <tr><th class="right">Twitter:</th><td class="left"><a href="https://twitter.com/<?php echo rawurlencode($twitter); ?>"><?php echo htmlspecialchars($twitter, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php if ($this->getContext()->twitter) { ?>
+            <tr><th class="right">Twitter:</th><td class="left"><a href="https://twitter.com/<?php echo rawurlencode($this->getContext()->twitter); ?>"><?php echo htmlspecialchars($this->getContext()->twitter, ENT_HTML5, "UTF-8"); ?></a></td></tr>
 <?php } ?>
-<?php if ($instagram) { ?>
-            <tr><th class="right">Instagram:</th><td class="left"><a href="https://instagram.com/<?php echo rawurlencode($instagram); ?>"><?php echo htmlspecialchars($instagram, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php if ($this->getContext()->instagram) { ?>
+            <tr><th class="right">Instagram:</th><td class="left"><a href="https://instagram.com/<?php echo rawurlencode($this->getContext()->instagram); ?>"><?php echo htmlspecialchars($this->getContext()->instagram, ENT_HTML5, "UTF-8"); ?></a></td></tr>
 <?php } ?>
-<?php if ($skype) { ?>
-            <tr><th class="right">Skype:</th><td class="left"><a href="skype:<?php echo rawurlencode($skype); ?>?call"><?php echo htmlspecialchars($skype, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php if ($this->getContext()->skype) { ?>
+            <tr><th class="right">Skype:</th><td class="left"><a href="skype:<?php echo rawurlencode($this->getContext()->skype); ?>?call"><?php echo htmlspecialchars($this->getContext()->skype, ENT_HTML5, "UTF-8"); ?></a></td></tr>
 <?php } ?>
-<?php if ($website) { ?>
-            <tr><th class="right">Website:</th><td class="left"><a href="<?php echo $website; ?>"><?php echo htmlspecialchars($website, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php if ($this->getContext()->website) { ?>
+            <tr><th class="right">Website:</th><td class="left"><a href="<?php echo $this->getContext()->website; ?>"><?php echo htmlspecialchars($this->getContext()->website, ENT_HTML5, "UTF-8"); ?></a></td></tr>
 <?php } ?>
           </tbody></table>
 <?php } ?>
@@ -107,7 +60,7 @@ require("./header.inc.phtml");
         <section>
           <ul>
             <li><strong><?php echo $safe_name; ?></strong> has been a member for <?php echo $this->getContext()->user_est; ?> (since <time datetime="<?php echo $this->getContext()->user->getCreatedDateTime()->format("c"); ?>"><?php echo $this->getContext()->user->getCreatedDateTime()->format("l, F j, Y"); ?></time>).</li>
-<?php if ($contributions == 0) { ?>
+<?php if ($this->getContext()->contributions == 0) { ?>
             <li><strong><?php echo $safe_name; ?></strong> has not made any contributions to BNETDocs.</li>
 <?php } else { ?>
             <li><strong><?php echo $safe_name; ?></strong> is the owner or author of:
@@ -135,7 +88,7 @@ require("./header.inc.phtml");
         <header>Documents</header>
         <section>
           <ul>
-<?php foreach ($documents as $document) { ?>
+<?php foreach ($this->getContext()->documents as $document) { ?>
             <li><a href="<?php echo Common::relativeUrlToAbsolute("/document/" . urlencode($document->getId()) . "/" . Common::sanitizeForUrl($document->getTitle(), true)); ?>"><?php echo htmlspecialchars($document->getTitle()); ?></a></li>
 <?php } ?>
           </ul>

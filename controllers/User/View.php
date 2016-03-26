@@ -62,12 +62,38 @@ class View extends Controller {
       $this->user_id
     );
 
+    $model->contributions = 0;
+    $model->contributions += $model->sum_documents;
+    $model->contributions += $model->sum_news_posts;
+    $model->contributions += $model->sum_packets;
+    $model->contributions += $model->sum_servers;
+
     $model->documents  = ($model->sum_documents  ?
       Document::getDocumentsByUserId($this->user_id) : null
     );
     $model->news_posts = ($model->sum_news_posts ? true : null);
     $model->packets    = ($model->sum_packets    ? true : null);
     $model->servers    = ($model->sum_servers    ? true : null);
+
+    if ($model->documents) {
+      // Alphabetically sort the documents
+      usort($model->documents, function($a, $b){
+        $a1 = $a->getTitle();
+        $b1 = $b->getTitle();
+        if ($a1 == $b1) return 0;
+        return ($a1 < $b1 ? -1 : 1);
+      });
+
+      // Remove documents that are not published
+      $i = count($model->documents) - 1;
+      while ($i >= 0) {
+        if (!($model->documents[$i]->getOptionsBitmask()
+          & Document::OPTION_PUBLISHED)) {
+          unset($model->documents[$i]);
+        }
+        --$i;
+      }
+    }
 
     $model->user = new UserLib($this->user_id);
 
@@ -82,9 +108,29 @@ class View extends Controller {
 
     try {
       $model->user_profile = new UserProfile($this->user_id);
+      $model->biography    = $model->user_profile->getBiography();
+      $model->github       = $model->user_profile->getGitHubUsername();
+      $model->facebook     = $model->user_profile->getFacebookUsername();
+      $model->twitter      = $model->user_profile->getTwitterUsername();
+      $model->instagram    = $model->user_profile->getInstagramUsername();
+      $model->skype        = $model->user_profile->getSkypeUsername();
+      $model->website      = $model->user_profile->getWebsite();
     } catch (UserProfileNotFoundException $e) {
       $model->user_profile = null;
+      $model->biography    = null;
+      $model->github       = null;
+      $model->facebook     = null;
+      $model->twitter      = null;
+      $model->instagram    = null;
+      $model->skype        = null;
+      $model->website      = null;
     }
+    
+    $model->profiledata = (
+      $model->github  || $model->facebook  ||
+      $model->twitter || $model->instagram ||
+      $model->skype   || $model->website
+    );
   }
 
 }
