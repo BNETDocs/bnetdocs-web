@@ -6,24 +6,31 @@ use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
-$title       = $this->getContext()->user->getName();
-$description = $this->getContext()->user->getName() . "'s user profile on BNETDocs";
-$this->opengraph->attach(new Pair("url", "/user/" . $this->getContext()->user_id));
+$object_id = $this->getContext()->user_id;
+$object    = $this->getContext()->user;
+
+$title       = ($object ? $object->getName() : "User Not Found");
+$description = ($object ? $object->getName() . "'s user profile on BNETDocs" : "The requested user does not exist or could not be found.");
+$this->opengraph->attach(new Pair("url", "/user/" . urlencode($object_id)));
 $this->opengraph->attach(new Pair("type", "profile"));
-$this->opengraph->attach(new Pair("profile:username", $this->getContext()->user->getName()));
 
-$gravatar = new Gravatar($this->getContext()->user->getEmail());
-$this->opengraph->attach(new Pair("image", "https:" . $gravatar->getUrl(null, "identicon")));
+if ($object) {
+  $this->opengraph->attach(new Pair("profile:username", $object->getName()));
+  
+  $gravatar = new Gravatar($object->getEmail());
+  $this->opengraph->attach(new Pair("image", "https:" . $gravatar->getUrl(null, "identicon")));
 
-$safe_name = htmlspecialchars($this->getContext()->user->getName(), ENT_HTML5, "UTF-8");
+  $safe_name = htmlspecialchars($object->getName(), ENT_HTML5, "UTF-8");
 
-if ($this->getContext()->biography) $description = $biography;
-$safe_biography = htmlspecialchars($this->getContext()->biography, ENT_HTML5, "UTF-8");
+  if ($this->getContext()->biography) $description = $biography;
+  $safe_biography = htmlspecialchars($this->getContext()->biography, ENT_HTML5, "UTF-8");
+}
 
 $this->additional_css[] = "/a/userprofile.css";
 require("./header.inc.phtml");
 ?>
       <article>
+<?php if ($object) { ?>
         <header>User Profile</header>
         <section class="accountinfo">
           <img class="avatar" src="https:<?php echo $gravatar->getUrl(75, "identicon"); ?>" />
@@ -59,7 +66,7 @@ require("./header.inc.phtml");
         <header>User Statistics</header>
         <section>
           <ul>
-            <li><strong><?php echo $safe_name; ?></strong> has been a member for <?php echo $this->getContext()->user_est; ?> (since <time datetime="<?php echo $this->getContext()->user->getCreatedDateTime()->format("c"); ?>"><?php echo $this->getContext()->user->getCreatedDateTime()->format("l, F j, Y"); ?></time>).</li>
+            <li><strong><?php echo $safe_name; ?></strong> has been a member for <?php echo $object_est; ?> (since <time datetime="<?php echo $object->getCreatedDateTime()->format("c"); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time>).</li>
 <?php if ($this->getContext()->contributions == 0) { ?>
             <li><strong><?php echo $safe_name; ?></strong> has not made any contributions to BNETDocs.</li>
 <?php } else { ?>
@@ -82,6 +89,10 @@ require("./header.inc.phtml");
           </ul>
 <?php } ?>
         </section>
+<?php } else { ?>
+        <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
+        <section class="red"><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></section>
+<?php } ?>
       </article>
 <?php if (isset($this->getContext()->documents)) { ?>
       <article>

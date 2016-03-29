@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
+use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User as UserLib;
@@ -39,7 +40,7 @@ class View extends Controller {
     $this->getUserInfo($model);
     ob_start();
     $view->render($model);
-    $router->setResponseCode(200);
+    $router->setResponseCode(($model->user ? 200 : 404));
     $router->setResponseTTL(0);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
@@ -49,6 +50,46 @@ class View extends Controller {
   protected function getUserInfo(UserViewModel &$model) {
     $model->user_id = $this->user_id;
 
+    // Try to get the user
+    try {
+      $model->user = new UserLib($this->user_id);
+    } catch (UserNotFoundException $e) {
+      $model->user = null;
+      return;
+    }
+
+    // Try to get their user profile
+    try {
+      $model->user_profile = new UserProfile($this->user_id);
+      $model->biography    = $model->user_profile->getBiography();
+      $model->github       = $model->user_profile->getGitHubUsername();
+      $model->facebook     = $model->user_profile->getFacebookUsername();
+      $model->twitter      = $model->user_profile->getTwitterUsername();
+      $model->instagram    = $model->user_profile->getInstagramUsername();
+      $model->skype        = $model->user_profile->getSkypeUsername();
+      $model->website      = $model->user_profile->getWebsite();
+    } catch (UserProfileNotFoundException $e) {
+      // Not a problem
+    }
+
+    // Should we display profile data at all?
+    $model->profiledata = (
+      $model->github  || $model->facebook  ||
+      $model->twitter || $model->instagram ||
+      $model->skype   || $model->website
+    );
+
+    // How long have they been a member?
+    $model->user_est = Common::intervalToString(
+      $model->user->getCreatedDateTime()->diff(
+        new DateTime("now", new DateTimeZone("UTC"))
+      )
+    );
+    $user_est_comma = strpos($model->user_est, ",");
+    if ($user_est_comma !== false)
+      $model->user_est = substr($model->user_est, 0, $user_est_comma);
+
+    // Summary of contributions
     $model->sum_documents = Credits::getTotalDocumentsByUserId(
       $this->user_id
     );
@@ -62,12 +103,14 @@ class View extends Controller {
       $this->user_id
     );
 
+    // Total number of contributions
     $model->contributions = 0;
     $model->contributions += $model->sum_documents;
     $model->contributions += $model->sum_news_posts;
     $model->contributions += $model->sum_packets;
     $model->contributions += $model->sum_servers;
 
+    // References to the contributions
     $model->documents  = ($model->sum_documents  ?
       Document::getDocumentsByUserId($this->user_id) : null
     );
@@ -75,6 +118,7 @@ class View extends Controller {
     $model->packets    = ($model->sum_packets    ? true : null);
     $model->servers    = ($model->sum_servers    ? true : null);
 
+    // Process documents
     if ($model->documents) {
       // Alphabetically sort the documents
       usort($model->documents, function($a, $b){
@@ -94,43 +138,6 @@ class View extends Controller {
         --$i;
       }
     }
-
-    $model->user = new UserLib($this->user_id);
-
-    $model->user_est = Common::intervalToString(
-      $model->user->getCreatedDateTime()->diff(
-        new DateTime("now", new DateTimeZone("UTC"))
-      )
-    );
-    $user_est_comma = strpos($model->user_est, ",");
-    if ($user_est_comma !== false)
-      $model->user_est = substr($model->user_est, 0, $user_est_comma);
-
-    try {
-      $model->user_profile = new UserProfile($this->user_id);
-      $model->biography    = $model->user_profile->getBiography();
-      $model->github       = $model->user_profile->getGitHubUsername();
-      $model->facebook     = $model->user_profile->getFacebookUsername();
-      $model->twitter      = $model->user_profile->getTwitterUsername();
-      $model->instagram    = $model->user_profile->getInstagramUsername();
-      $model->skype        = $model->user_profile->getSkypeUsername();
-      $model->website      = $model->user_profile->getWebsite();
-    } catch (UserProfileNotFoundException $e) {
-      $model->user_profile = null;
-      $model->biography    = null;
-      $model->github       = null;
-      $model->facebook     = null;
-      $model->twitter      = null;
-      $model->instagram    = null;
-      $model->skype        = null;
-      $model->website      = null;
-    }
-    
-    $model->profiledata = (
-      $model->github  || $model->facebook  ||
-      $model->twitter || $model->instagram ||
-      $model->skype   || $model->website
-    );
   }
 
 }
