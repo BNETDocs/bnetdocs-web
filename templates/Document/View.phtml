@@ -4,24 +4,32 @@ namespace BNETDocs\Templates;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Pair;
 
-$title       = $this->getContext()->document->getTitle();
-$description = Common::stripUpTo(trim(filter_var($this->getContext()->document->getContent(true), FILTER_SANITIZE_STRING)), "\n", 300);
-$this->opengraph->attach(new Pair("url", "/document/" . $this->getContext()->document->getId()));
+$object_id = $this->getContext()->document_id;
+$object    = $this->getContext()->document;
+
+$title       = ($object ? $object->getTitle() : "Document Not Found");
+$description = Common::stripUpTo(trim(filter_var(
+  ($object ? $object->getContent(true) : "The requested document does not exist or could not be found."),
+  FILTER_SANITIZE_STRING
+)), "\n", 300);
+$this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)));
 $this->opengraph->attach(new Pair("type", "article"));
 
-$url = Common::relativeUrlToAbsolute("/document/" . urlencode($this->getContext()->document->getId()));
-$url .= "/" . Common::sanitizeForUrl($this->getContext()->document->getTitle(), true);
+$url = Common::relativeUrlToAbsolute("/document/" . urlencode($object_id));
+if ($object)
+  $url .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
 
 #$this->additional_css[] = "/a/document.css";
 require("./header.inc.phtml");
 ?>
       <article>
+<?php if ($object) { ?>
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($this->getContext()->document->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-        <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($this->getContext()->document->getTitle(), ENT_HTML5, "UTF-8"); ?></a></header>
+        <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($object->getTitle(), ENT_HTML5, "UTF-8"); ?></a></header>
         <section>
-<?php echo $this->getContext()->document->getContent(true); ?>
+<?php echo $object->getContent(true); ?>
         </section>
       </article>
       <article>
@@ -30,5 +38,9 @@ require("./header.inc.phtml");
           <?php require("./NYI.inc.phtml"); ?>
           <p class="center">If you'd like to leave a suggestion or concern, you can do so <a href="https://github.com/BNETDocs/bnetdocs-web/issues/new?labels[]=bnetdocs-phoenix&labels[]=question&body=<?php echo rawurlencode("Hi,\n\n<fill in your question here>\n\nThanks!\n\nReference: " . $url); ?>" rel="external">over on GitHub</a>. Sorry for the trouble!</p>
         </section>
+<?php } else { ?>
+        <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
+        <section class="red"><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></section>
+<?php } ?>
       </article>
 <?php require("./footer.inc.phtml"); ?>
