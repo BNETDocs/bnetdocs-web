@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
+use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
@@ -37,7 +38,7 @@ class View extends Controller {
     $this->getNewsPost($model);
     ob_start();
     $view->render($model);
-    $router->setResponseCode(200);
+    $router->setResponseCode(($model->news_post ? 200 : 404));
     $router->setResponseTTL(0);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
@@ -46,7 +47,11 @@ class View extends Controller {
 
   protected function getNewsPost(NewsViewModel &$model) {
     $model->news_post_id = $this->news_post_id;
-    $model->news_post    = new NewsPost($this->news_post_id);
+    try {
+      $model->news_post = new NewsPost($this->news_post_id);
+    } catch (NewsPostNotFoundException $e) {
+      $model->news_post = null;
+    }
   }
 
 }

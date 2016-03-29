@@ -5,39 +5,50 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
-$title       = $this->context->news_post->getTitle();
-$description = Common::stripUpTo(trim(filter_var($this->context->news_post->getContent(true), FILTER_SANITIZE_STRING)), "\n", 300);
+$object_id = $this->getContext()->news_post_id;
+$object    = $this->getContext()->news_post;
 
-$this->opengraph->attach(new Pair("url", "/news/" . $this->context->news_post_id));
+$title       = ($object ? $object->getTitle() : "News Post Not Found");
+$description = Common::stripUpTo(trim(filter_var(
+  ($object ? $object->getContent(true) : "The requested news post does not exist or could not be found."),
+  FILTER_SANITIZE_STRING
+)), "\n", 300);
+
+$this->opengraph->attach(new Pair("url", "/news/" . urlencode($object_id)));
 $this->opengraph->attach(new Pair("type", "article"));
-$this->opengraph->attach(new Pair("image", "/a/news_categories/" . $this->context->news_post->getCategory()->getFilename()));
-$this->opengraph->attach(new Pair("article:published_time", $this->context->news_post->getCreatedDateTime()->format("c")));
-if (!is_null($this->context->news_post->getEditedDateTime())) {
-  $this->opengraph->attach(new Pair("article:modified_time", $this->context->news_post->getEditedDateTime()->format("c")));
+if ($object) {
+  $this->opengraph->attach(new Pair("image", "/a/news_categories/" . $object->getCategory()->getFilename()));
+  $this->opengraph->attach(new Pair("article:published_time", $object->getCreatedDateTime()->format("c")));
+  if (!is_null($object->getEditedDateTime())) {
+    $this->opengraph->attach(new Pair("article:modified_time", $object->getEditedDateTime()->format("c")));
+  }
+  $this->opengraph->attach(new Pair("article:author:username", $object->getUser()->getName()));
+  $this->opengraph->attach(new Pair("article:section", $object->getCategory()->getLabel()));
 }
-$this->opengraph->attach(new Pair("article:author:username", $this->context->news_post->getUser()->getName()));
-$this->opengraph->attach(new Pair("article:section", $this->context->news_post->getCategory()->getLabel()));
 
-$url = Common::relativeUrlToAbsolute("/news/" . urlencode($this->context->news_post->getId()));
-$url .= "/" . Common::sanitizeForUrl($this->context->news_post->getTitle(), true);
+$url = Common::relativeUrlToAbsolute("/news/" . urlencode($object_id));
 
-$user_name   = $this->context->news_post->getUser()->getName();
-$user_id     = $this->context->news_post->getUserId();
-$user_url    = Common::relativeUrlToAbsolute("/user/" . $user_id . "/" . Common::sanitizeForUrl($user_name, true));
-$user_avatar = "https:" . (new Gravatar($this->context->news_post->getUser()->getEmail()))->getUrl(22, "identicon");
+if ($object) {
+  $url        .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
+  $user_name   = $object->getUser()->getName();
+  $user_id     = $object->getUserId();
+  $user_url    = Common::relativeUrlToAbsolute("/user/" . $user_id . "/" . Common::sanitizeForUrl($user_name, true));
+  $user_avatar = "https:" . (new Gravatar($object->getUser()->getEmail()))->getUrl(22, "identicon");
+}
 
 $this->additional_css[] = "/a/news.css";
 require("./header.inc.phtml");
 ?>
       <article>
+<?php if ($object) { ?>
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($this->context->news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-        <header><a href="<?php echo $url; ?>"><?php echo $this->context->news_post->getTitle(); ?></a></header>
-        <section class="news"><img class="category" alt="<?php echo $this->context->news_post->getCategory()->getLabel(); ?>" title="<?php echo $this->context->news_post->getCategory()->getLabel(); ?>" src="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/" . $this->context->news_post->getCategory()->getFilename()); ?>"/><?php echo $this->context->news_post->getContent(true); ?></section>
+        <header><a href="<?php echo $url; ?>"><?php echo $object->getTitle(); ?></a></header>
+        <section class="news"><img class="category" alt="<?php echo $object->getCategory()->getLabel(); ?>" title="<?php echo $object->getCategory()->getLabel(); ?>" src="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/" . $object->getCategory()->getFilename()); ?>"/><?php echo $object->getContent(true); ?></section>
         <footer>
           <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
-          <span class="float-right"><?php echo $this->context->news_post->getPublishedDateTime()->format("l, F j, Y"); ?></span>
+          <span class="float-right"><?php echo $object->getPublishedDateTime()->format("l, F j, Y"); ?></span>
         </footer>
       </article>
       <article>
@@ -46,5 +57,9 @@ require("./header.inc.phtml");
           <?php require("./NYI.inc.phtml"); ?>
           <p class="center">If you'd like to leave a suggestion or concern, you can do so <a href="https://github.com/BNETDocs/bnetdocs-web/issues/new?labels[]=bnetdocs-phoenix&labels[]=question&body=<?php echo rawurlencode("Hi,\n\n<fill in your question here>\n\nThanks!\n\nReference: " . $url); ?>" rel="external">over on GitHub</a>. Sorry for the trouble!</p>
         </section>
+<?php } else { ?>
+        <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
+        <section class="red"><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></section>
+<?php } ?>
       </article>
 <?php require("./footer.inc.phtml"); ?>
