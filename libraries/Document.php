@@ -254,7 +254,14 @@ class Document {
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
       self::normalize($row);
-      $this->label = $row->label;
+      $this->content          = $row->content;
+      $this->created_datetime = $row->created_datetime;
+      $this->edited_count     = $row->edited_count;
+      $this->edited_datetime  = $row->edited_datetime;
+      $this->id               = $row->id;
+      $this->options_bitmask  = $row->options_bitmask;
+      $this->title            = $row->title;
+      $this->user_id          = $row->user_id;
       Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
