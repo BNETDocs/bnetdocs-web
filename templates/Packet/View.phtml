@@ -1,0 +1,46 @@
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Pair;
+
+$object_id = $this->getContext()->packet_id;
+$object    = $this->getContext()->packet;
+
+$title       = ($object ? $object->getPacketName() : "Packet Not Found");
+$description = Common::stripUpTo(trim(filter_var(
+  ($object ? $object->getPacketRemarks(true) : "The requested packet does not exist or could not be found."),
+  FILTER_SANITIZE_STRING
+)), "\n", 300);
+$this->opengraph->attach(new Pair("url", "/packet/" . urlencode($object_id)));
+$this->opengraph->attach(new Pair("type", "article"));
+
+$url = Common::relativeUrlToAbsolute("/packet/" . urlencode($object_id));
+if ($object)
+  $url .= "/" . Common::sanitizeForUrl($object->getPacketName(), true);
+
+#$this->additional_css[] = "/a/packet.css";
+require("./header.inc.phtml");
+?>
+      <article>
+<?php if ($object) { ?>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($object->getPacketName()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
+        <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8"); ?></a></header>
+        <section>
+<?php echo $object->getPacketRemarks(true); ?>
+        </section>
+      </article>
+      <article>
+        <header>Comments</header>
+        <section>
+          <?php require("./NYI.inc.phtml"); ?>
+          <p class="center">If you'd like to leave a suggestion or concern, you can do so <a href="https://github.com/BNETDocs/bnetdocs-web/issues/new?labels[]=bnetdocs-phoenix&labels[]=question&body=<?php echo rawurlencode("Hi,\n\n<fill in your question here>\n\nThanks!\n\nReference: " . $url); ?>" rel="external">over on GitHub</a>. Sorry for the trouble!</p>
+        </section>
+<?php } else { ?>
+        <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
+        <section class="red"><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></section>
+<?php } ?>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

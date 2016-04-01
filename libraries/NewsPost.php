@@ -20,8 +20,8 @@ use \StdClass;
 
 class NewsPost {
 
-  const OPTION_MARKDOWN  = 1;
-  const OPTION_PUBLISHED = 2;
+  const OPTION_MARKDOWN  = 0x00000001;
+  const OPTION_PUBLISHED = 0x00000002;
 
   protected $category_id;
   protected $content;

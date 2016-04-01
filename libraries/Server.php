@@ -17,8 +17,8 @@ use \StdClass;
 
 class Server {
 
-  const STATUS_ONLINE   = 1;
-  const STATUS_DISABLED = 2;
+  const STATUS_ONLINE   = 0x00000001;
+  const STATUS_DISABLED = 0x00000002;
 
   protected $address;
   protected $created_datetime;

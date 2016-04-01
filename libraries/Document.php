@@ -9,6 +9,7 @@ use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Markdown;
+use \BNETDocs\Libraries\User;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -18,8 +19,8 @@ use \StdClass;
 
 class Document {
 
-  const OPTION_MARKDOWN  = 1;
-  const OPTION_PUBLISHED = 2;
+  const OPTION_MARKDOWN  = 0x00000001;
+  const OPTION_PUBLISHED = 0x00000002;
 
   protected $content;
   protected $created_datetime;
@@ -217,7 +218,7 @@ class Document {
     $cache_key = "bnetdocs-document-" . $this->id;
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
+      $cache_val              = unserialize($cache_val);
       $this->content          = $cache_val->content;
       $this->created_datetime = $cache_val->created_datetime;
       $this->edited_count     = $cache_val->edited_count;

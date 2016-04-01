@@ -13,6 +13,7 @@ use \BNETDocs\Controllers\News as NewsController;
 use \BNETDocs\Controllers\News\View as NewsViewController;
 use \BNETDocs\Controllers\Packet\Popular as PacketPopularController;
 use \BNETDocs\Controllers\Packet\Search as PacketSearchController;
+use \BNETDocs\Controllers\Packet\View as PacketViewController;
 use \BNETDocs\Controllers\PageNotFound as PageNotFoundController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Controllers\Servers as ServersController;
@@ -293,7 +294,13 @@ class Router {
                 $controller = new PacketPopularController();
               break;
               default:
-                throw new ControllerNotFoundException($path . "/" . $subpath);
+                if (is_numeric($subpath)) {
+                  $controller = new PacketViewController($subpath);
+                } else {
+                  throw new ControllerNotFoundException(
+                    $path . "/" . $subpath
+                  );
+                }
             }
           break;
           case "rss":
