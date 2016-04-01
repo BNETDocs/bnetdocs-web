@@ -262,7 +262,7 @@ code {
   font-family: source code pro, courier new, monospace;
   font-size: 85%;
   line-height: 16pt;
-  margin: 0;
+  margin: 0px;
   padding: 0.1em 0px 0.1em 0px;
 }
 code:before,
