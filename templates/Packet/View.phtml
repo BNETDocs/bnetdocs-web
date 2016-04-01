@@ -16,18 +16,32 @@ $this->opengraph->attach(new Pair("url", "/packet/" . urlencode($object_id)));
 $this->opengraph->attach(new Pair("type", "article"));
 
 $url = Common::relativeUrlToAbsolute("/packet/" . urlencode($object_id));
-if ($object)
+if ($object) {
   $url .= "/" . Common::sanitizeForUrl($object->getPacketName(), true);
 
-#$this->additional_css[] = "/a/packet.css";
+  $packet_id = "0x" . strtoupper(substr("0" . dechex($object->getPacketId()), -2));
+  $title = $packet_id . " " . $title;
+}
+
+$this->additional_css[] = "/a/packet.css";
 require("./header.inc.phtml");
 ?>
       <article>
 <?php if ($object) { ?>
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($object->getPacketName()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($packet_id . " " . $object->getPacketName()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-        <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8"); ?></a></header>
+        <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($packet_id . " " . $object->getPacketName(), ENT_HTML5, "UTF-8"); ?></a></header>
+        <section>
+          <table class="info"><tbody>
+            <tr><th style="width:20%;">Message Id:</th><td><?php echo $packet_id; ?></td></tr>
+            <tr><th>Message Name:</th><td><?php echo htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8"); ?></td></tr>
+            <tr><th>Direction:</th><td><?php require("./NYI.inc.phtml"); ?></td></tr>
+            <tr><th>Used By:</th><td><?php require("./NYI.inc.phtml"); ?></td></tr>
+            <tr><th>Format:</th><td><pre><code><?php echo $object->getPacketFormat(); ?></code></pre></td></tr>
+          </tbody></table>
+        </section>
+        <header>Remarks</header>
         <section>
 <?php echo $object->getPacketRemarks(true); ?>
         </section>

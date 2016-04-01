@@ -1,0 +1,14 @@
+/**
+ * BNETDocs (C) 2015 Creative Commons CC-BY-NC-SA 4.0 License
+ */
+
+article > section > table.info th,
+article > section > table.info td {
+  text-align: left;
+  vertical-align: top;
+}
+article > section > table.info tr th:first-child,
+article > section > table.info tr td:first-child {
+  text-align: right;
+  vertical-align: top;
+}
