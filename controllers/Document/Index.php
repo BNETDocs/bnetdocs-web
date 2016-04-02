@@ -61,15 +61,8 @@ class Index extends Controller {
       $documents = [];
       foreach ($model->documents as $document) {
         $user = $document->getUser();
-        $documents[] = [
-          "content"          => $document->getContent(false),
-          "created_datetime" => self::renderDateTime($document->getCreatedDateTime()),
-          "edited_count"     => $document->getEditedCount(),
-          "edited_datetime"  => self::renderDateTime($document->getEditedDateTime()),
-          "id"               => $document->getId(),
-          "options_bitmask"  => $document->getOptionsBitmask(),
-          "title"            => $document->getTitle(),
-          "user"             => [
+        if ($user) {
+          $user = [
             "avatar_url" => "https:"
               . (new Gravatar($user->getEmail()))->getUrl(null, "identicon"),
             "id"     => $user->getId(),
@@ -78,7 +71,17 @@ class Index extends Controller {
               "/user/" . $user->getId() . "/"
               . Common::sanitizeForUrl($user->getName())
             )
-          ]
+          ];
+        }
+        $documents[] = [
+          "content"          => $document->getContent(false),
+          "created_datetime" => self::renderDateTime($document->getCreatedDateTime()),
+          "edited_count"     => $document->getEditedCount(),
+          "edited_datetime"  => self::renderDateTime($document->getEditedDateTime()),
+          "id"               => $document->getId(),
+          "options_bitmask"  => $document->getOptionsBitmask(),
+          "title"            => $document->getTitle(),
+          "user"             => $user
         ];
       }
       $model->documents = $documents;

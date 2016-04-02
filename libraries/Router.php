@@ -13,6 +13,7 @@ use \BNETDocs\Controllers\News as NewsController;
 use \BNETDocs\Controllers\News\View as NewsViewController;
 use \BNETDocs\Controllers\Packet\Popular as PacketPopularController;
 use \BNETDocs\Controllers\Packet\Search as PacketSearchController;
+use \BNETDocs\Controllers\Packet\Index as PacketIndexController;
 use \BNETDocs\Controllers\Packet\View as PacketViewController;
 use \BNETDocs\Controllers\PageNotFound as PageNotFoundController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
@@ -246,15 +247,15 @@ class Router {
           break;
           case "document":
             switch ($subpath) {
-              case "search": case "search.htm": case "search.html":
-                $controller = new DocumentSearchController();
-              break;
               case "index": case "index.htm": case "index.html":
               case "index.json":
                 $controller = new DocumentIndexController();
               break;
               case "popular": case "popular.htm": case "popular.html":
                 $controller = new DocumentPopularController();
+              break;
+              case "search": case "search.htm": case "search.html":
+                $controller = new DocumentSearchController();
               break;
               default:
                 if (is_numeric($subpath)) {
@@ -287,11 +288,15 @@ class Router {
           break;
           case "packet":
             switch ($subpath) {
-              case "search": case "search.htm": case "search.html":
-                $controller = new PacketSearchController();
+              case "index": case "index.htm": case "index.html":
+              case "index.json":
+                $controller = new PacketIndexController();
               break;
               case "popular": case "popular.htm": case "popular.html":
                 $controller = new PacketPopularController();
+              break;
+              case "search": case "search.htm": case "search.html":
+                $controller = new PacketSearchController();
               break;
               default:
                 if (is_numeric($subpath)) {

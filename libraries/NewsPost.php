@@ -170,6 +170,7 @@ class NewsPost {
   }
 
   public function getUser() {
+    if (is_null($this->user_id)) return null;
     return new User($this->user_id);
   }
 

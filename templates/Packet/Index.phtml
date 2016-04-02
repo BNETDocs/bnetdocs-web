@@ -2,14 +2,14 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
-use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\User;
 
-$title       = "Document Index";
-$description = "The index for documents on BNETDocs";
-$this->opengraph->attach(new Pair("url", "/document/index"));
+$title       = "Packet Index";
+$description = "The index for packets on BNETDocs";
+$this->opengraph->attach(new Pair("url", "/packet/index"));
 
 $avatars = [];
 $getAvatar = function(&$avatars, &$user) {
@@ -24,24 +24,24 @@ $getAvatar = function(&$avatars, &$user) {
 require("./header.inc.phtml");
 ?>
       <article>
-        <header>Document Index</header>
+        <header>Packet Index</header>
         <section>
           <table>
             <thead>
               <tr>
-                <th class="left">Found <?php echo number_format($this->getContext()->sum_documents); ?> document<?php echo ($this->getContext()->sum_documents != 1 ? "s" : ""); ?></th>
+                <th class="left">Found <?php echo number_format($this->getContext()->sum_packets); ?> packet<?php echo ($this->getContext()->sum_packets != 1 ? "s" : ""); ?></th>
                 <th class="left">Author</th>
               </tr>
             </thead><tbody>
-<?php foreach ($this->getContext()->documents as $document) {
-        $user       = $document->getUser();
+<?php foreach ($this->getContext()->packets as $packet) {
+        $user         = $packet->getUser();
         if ($user) {
           $user_url   = Common::relativeUrlToAbsolute("/user/" . urlencode($user->getId()) . "/" . Common::sanitizeForUrl($user->getName(), true));
           $avatar_url = "https:" . $getAvatar($avatars, $user)->getUrl(22, "identicon");
         }
 ?>
               <tr>
-                <td><a href="<?php echo Common::relativeUrlToAbsolute("/document/" . urlencode($document->getId()) . "/" . Common::sanitizeForUrl($document->getTitle(), true)); ?>"><?php echo htmlspecialchars($document->getTitle(), ENT_HTML5, "UTF-8"); ?></a></td>
+                <td><a href="<?php echo Common::relativeUrlToAbsolute("/packet/" . urlencode($packet->getId()) . "/" . Common::sanitizeForUrl($packet->getPacketName(), true)); ?>"><?php echo htmlspecialchars($packet->getPacketName(), ENT_HTML5, "UTF-8"); ?></a></td>
                 <td><?php if ($user) { ?><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/> <?php echo htmlspecialchars($user->getName(), ENT_HTML5, "UTF-8"); ?></a><?php } else { ?>Anonymous<?php } ?></td>
               </tr>
 <?php } ?>
