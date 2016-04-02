@@ -36,9 +36,14 @@ class Index extends Controller {
     // Alphabetically sort the packets for HTML
     if ($view instanceof PacketIndexHtmlView && $model->packets) {
       usort($model->packets, function($a, $b){
-        $a1 = $a->getPacketName();
-        $b1 = $b->getPacketName();
-        if ($a1 == $b1) return 0;
+        $a1 = $a->getPacketApplicationLayerId();
+        $b1 = $b->getPacketApplicationLayerId();
+        if ($a1 == $b1) {
+          $a2 = $a->getPacketId();
+          $b2 = $b->getPacketId();
+          if ($a2 == $b2) return 0;
+          return ($a2 < $b2 ? -1 : 1);
+        }
         return ($a1 < $b1 ? -1 : 1);
       });
     }
