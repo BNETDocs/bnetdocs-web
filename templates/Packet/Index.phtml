@@ -39,9 +39,10 @@ require("./header.inc.phtml");
           $user_url   = Common::relativeUrlToAbsolute("/user/" . urlencode($user->getId()) . "/" . Common::sanitizeForUrl($user->getName(), true));
           $avatar_url = "https:" . $getAvatar($avatars, $user)->getUrl(22, "identicon");
         }
+        $packet_id = $packet->getPacketId(true);
 ?>
               <tr>
-                <td><a href="<?php echo Common::relativeUrlToAbsolute("/packet/" . urlencode($packet->getId()) . "/" . Common::sanitizeForUrl($packet->getPacketName(), true)); ?>"><?php echo htmlspecialchars($packet->getPacketName(), ENT_HTML5, "UTF-8"); ?></a></td>
+                <td><a href="<?php echo Common::relativeUrlToAbsolute("/packet/" . urlencode($packet->getId()) . "/" . Common::sanitizeForUrl($packet->getPacketName(), true)); ?>"><?php echo htmlspecialchars($packet_id . " " . $packet->getPacketName(), ENT_HTML5, "UTF-8"); ?></a></td>
                 <td><?php if ($user) { ?><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/> <?php echo htmlspecialchars($user->getName(), ENT_HTML5, "UTF-8"); ?></a><?php } else { ?>Anonymous<?php } ?></td>
               </tr>
 <?php } ?>

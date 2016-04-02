@@ -163,8 +163,9 @@ class Packet {
     return $this->packet_name;
   }
 
-  public function getPacketId() {
-    return $this->packet_id;
+  public function getPacketId($format = false) {
+    if (!$format) return $this->packet_id;
+    return "0x" . strtoupper(substr("0" . dechex($this->packet_id), -2));
   }
   
   public function getPacketRemarks($prepare) {

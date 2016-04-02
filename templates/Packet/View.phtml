@@ -19,7 +19,7 @@ $url = Common::relativeUrlToAbsolute("/packet/" . urlencode($object_id));
 if ($object) {
   $url .= "/" . Common::sanitizeForUrl($object->getPacketName(), true);
 
-  $packet_id = "0x" . strtoupper(substr("0" . dechex($object->getPacketId()), -2));
+  $packet_id = $object->getPacketId(true);
   $title = $packet_id . " " . $title;
 }
 
