@@ -12,12 +12,16 @@ $description = Common::stripUpTo(trim(filter_var(
   ($object ? $object->getContent(true) : "The requested document does not exist or could not be found."),
   FILTER_SANITIZE_STRING
 )), "\n", 300);
-$this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)));
 $this->opengraph->attach(new Pair("type", "article"));
 
 $url = Common::relativeUrlToAbsolute("/document/" . urlencode($object_id));
-if ($object)
+if ($object) {
   $url .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
+  $this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)
+    . "/" . Common::sanitizeForUrl($object->getTitle(), true)));
+} else {
+  $this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)));
+}
 
 #$this->additional_css[] = "/a/document.css";
 require("./header.inc.phtml");
