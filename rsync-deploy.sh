@@ -4,7 +4,7 @@ if [ -z "${SOURCE_DIRECTORY}" ]; then
   SOURCE_DIRECTORY="$(git rev-parse --show-toplevel)/"
 fi
 if [ -z "${TARGET_DIRECTORY}" ]; then
-  TARGET_DIRECTORY="/home/nginx/bnetdocs-dev"
+  TARGET_DIRECTORY="/home/nginx/bnetdocs-www"
 fi
 
 DEPLOY_TARGET="$1"

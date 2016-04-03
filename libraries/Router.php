@@ -210,27 +210,30 @@ class Router {
             // Try to route legacy BNETDocs Redux paths to Phoenix paths with a
             // 301 Permanent redirect, otherwise go to the news with 302 Found.
             $query = $this->getRequestQueryArray();
-            $op  = (isset($query["op"])  ? $query["op"]  : null);
-            $did = (isset($query["did"]) ? $query["did"] : null);
-            $nid = (isset($query["nid"]) ? $query["nid"] : null);
-            $pid = (isset($query["pid"]) ? $query["pid"] : null);
-            $url = null; $code = 301;
-            if ($op == "doc" && !is_null($did)) {
-              $url = Common::relativeUrlToAbsolute("/document/" . rawurlencode($did));
-            } else if ($op == "news" && !is_null($nid)) {
-              $url = Common::relativeUrlToAbsolute("/news/" . rawurlencode($nid));
-            } else if ($op == "packet" && !is_null($pid)) {
-              $url = Common::relativeUrlToAbsolute("/packet/" . rawurlencode($pid));
-            } else if ($op == "cpw") {
+            $did  = (isset($query["did" ]) ? $query["did" ] : null);
+            $lang = (isset($query["lang"]) ? $query["lang"] : null);
+            $nid  = (isset($query["nid" ]) ? $query["nid" ] : null);
+            $op   = (isset($query["op"  ]) ? $query["op"  ] : null);
+            $pid  = (isset($query["pid" ]) ? $query["pid" ] : null);
+            $url  = null; $code = 301;
+            if ($op == "cpw") {
               $url = Common::relativeUrlToAbsolute("/user/changepassword");
             } else if ($op == "credits") {
               $url = Common::relativeUrlToAbsolute("/credits");
+            } else if ($op == "doc" && !is_null($did)) {
+              $url = Common::relativeUrlToAbsolute("/document/" . rawurlencode($did));
+            } else if ($op == "generatecode" && !is_null($lang)) {
+              $url = Common::relativeUrlToAbsolute("/packet/index." . rawurlencode($lang));
             } else if ($op == "legalism") {
               $url = Common::relativeUrlToAbsolute("/legal");
             } else if ($op == "login") {
               $url = Common::relativeUrlToAbsolute("/user/login");
+            } else if ($op == "news" && !is_null($nid)) {
+              $url = Common::relativeUrlToAbsolute("/news/" . rawurlencode($nid));
             } else if ($op == "news") {
               $url = Common::relativeUrlToAbsolute("/news");
+            } else if ($op == "packet" && !is_null($pid)) {
+              $url = Common::relativeUrlToAbsolute("/packet/" . rawurlencode($pid));
             } else if ($op == "register") {
               $url = Common::relativeUrlToAbsolute("/user/register");
             } else if ($op == "resetpw") {
