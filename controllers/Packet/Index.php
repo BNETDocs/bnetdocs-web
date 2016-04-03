@@ -41,7 +41,12 @@ class Index extends Controller {
         if ($a1 == $b1) {
           $a2 = $a->getPacketId();
           $b2 = $b->getPacketId();
-          if ($a2 == $b2) return 0;
+          if ($a2 == $b2) {
+            $a3 = $a->getPacketDirectionId();
+            $b3 = $b->getPacketDirectionId();
+            if ($a3 == $b3) return 0;
+            return ($a3 < $a3 ? -1 : 1);
+          }
           return ($a2 < $b2 ? -1 : 1);
         }
         return ($a1 < $b1 ? -1 : 1);
