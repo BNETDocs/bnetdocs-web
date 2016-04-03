@@ -2,8 +2,8 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Cache;
+use \BNETDocs\Libraries\Common;
 
 class CSRF {
 

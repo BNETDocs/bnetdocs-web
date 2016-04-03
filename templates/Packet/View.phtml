@@ -36,7 +36,7 @@ require("./header.inc.phtml");
           <table class="info"><tbody>
             <tr><th style="width:20%;">Message Id:</th><td><?php echo $packet_id; ?></td></tr>
             <tr><th>Message Name:</th><td><?php echo htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8"); ?></td></tr>
-            <tr><th>Direction:</th><td><?php require("./NYI.inc.phtml"); ?></td></tr>
+            <tr><th>Direction:</th><td><?php echo htmlspecialchars($object->getPacketDirectionLabel(), ENT_HTML5, "UTF-8"); ?></td></tr>
             <tr><th>Used By:</th><td><?php require("./NYI.inc.phtml"); ?></td></tr>
             <tr><th>Format:</th><td><pre><code><?php echo $object->getPacketFormat(); ?></code></pre></td></tr>
           </tbody></table>

@@ -6,9 +6,12 @@ use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;
+use \BNETDocs\Libraries\Exceptions\PacketDirectionInvalidException;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Markdown;
+use \BNETDocs\Libraries\PacketApplicationLayer;
+use \BNETDocs\Libraries\PacketTransportLayer;
 use \BNETDocs\Libraries\User;
 use \DateTime;
 use \DateTimeZone;
@@ -18,6 +21,10 @@ use \PDOException;
 use \StdClass;
 
 class Packet {
+
+  const DIRECTION_CLIENT_SERVER = 1;
+  const DIRECTION_SERVER_CLIENT = 2;
+  const DIRECTION_PEER_TO_PEER  = 3;
 
   const OPTION_MARKDOWN  = 0x00000001;
   const OPTION_PUBLISHED = 0x00000002;
@@ -147,12 +154,36 @@ class Packet {
     return $this->options_bitmask;
   }
 
+  public function getPacketApplicationLayer() {
+    return new PacketApplicationLayer($this->packet_application_layer);
+  }
+
   public function getPacketApplicationLayerId() {
     return $this->packet_application_layer_id;
   }
 
   public function getPacketDirectionId() {
     return $this->packet_direction_id;
+  }
+
+  public function getPacketDirectionLabel() {
+    switch ($this->packet_direction_id) {
+      case self::DIRECTION_CLIENT_SERVER: return "Client to Server";
+      case self::DIRECTION_SERVER_CLIENT: return "Server to Client";
+      case self::DIRECTION_PEER_TO_PEER:  return "Peer to Peer";
+      default:
+        throw new PacketDirectionInvalidException($this->packet_direction_id);
+    }
+  }
+
+  public function getPacketDirectionTag() {
+    switch ($this->packet_direction_id) {
+      case self::DIRECTION_CLIENT_SERVER: return "C>S";
+      case self::DIRECTION_SERVER_CLIENT: return "S>C";
+      case self::DIRECTION_PEER_TO_PEER:  return "P2P";
+      default:
+        throw new PacketDirectionInvalidException($this->packet_direction_id);
+    }
   }
 
   public function getPacketFormat() {
@@ -178,6 +209,10 @@ class Packet {
     } else {
       return $this->packet_remarks;
     }
+  }
+
+  public function getPacketTransportLayer() {
+    return new PacketTransportLayer($this->packet_transport_layer_id);
   }
 
   public function getPacketTransportLayerId() {

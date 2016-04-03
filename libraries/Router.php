@@ -3,17 +3,17 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Controllers\Credits as CreditsController;
+use \BNETDocs\Controllers\Document\Index as DocumentIndexController;
 use \BNETDocs\Controllers\Document\Popular as DocumentPopularController;
 use \BNETDocs\Controllers\Document\Search as DocumentSearchController;
-use \BNETDocs\Controllers\Document\Index as DocumentIndexController;
 use \BNETDocs\Controllers\Document\View as DocumentViewController;
 use \BNETDocs\Controllers\Legal as LegalController;
 use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
 use \BNETDocs\Controllers\News\View as NewsViewController;
+use \BNETDocs\Controllers\Packet\Index as PacketIndexController;
 use \BNETDocs\Controllers\Packet\Popular as PacketPopularController;
 use \BNETDocs\Controllers\Packet\Search as PacketSearchController;
-use \BNETDocs\Controllers\Packet\Index as PacketIndexController;
 use \BNETDocs\Controllers\Packet\View as PacketViewController;
 use \BNETDocs\Controllers\PageNotFound as PageNotFoundController;
 use \BNETDocs\Controllers\Redirect as RedirectController;

@@ -2,8 +2,8 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Emails\User\Register as UserRegisterEmail;
 use \BNETDocs\Libraries\EmailMessage;
+use \BNETDocs\Libraries\Emails\User\Register as UserRegisterEmail;
 
 class EmailService {
 
