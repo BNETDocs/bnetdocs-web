@@ -12,9 +12,9 @@
 	#-------------
 
 		header('Cache-Control: max-age=0, must-revalidate, no-cache, no-store');
-		if($_SERVER['SERVER_PORT']!=443 || $_SERVER['HTTP_HOST']!='bnetdocs.org') {
+		if($_SERVER['SERVER_PORT']!=443 || $_SERVER['HTTP_HOST']!='redux.bnetdocs.org') {
 			http_response_code(301);
-			header('Location: https://bnetdocs.org'.$_SERVER['REQUEST_URI']);
+			header('Location: https://redux.bnetdocs.org'.$_SERVER['REQUEST_URI']);
 			exit;
 		}
 
