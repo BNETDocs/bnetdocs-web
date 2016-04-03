@@ -4,14 +4,19 @@ namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Gravatar;
+use \BNETDocs\Libraries\Packet;
+use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\Index as PacketIndexModel;
+use \BNETDocs\Views\Packet\IndexCpp as PacketIndexCppView;
 use \BNETDocs\Views\Packet\IndexHtml as PacketIndexHtmlView;
 use \BNETDocs\Views\Packet\IndexJSON as PacketIndexJSONView;
+use \BNETDocs\Views\Packet\IndexJava as PacketIndexJavaView;
+use \BNETDocs\Views\Packet\IndexPHP as PacketIndexPHPView;
+use \BNETDocs\Views\Packet\IndexVB as PacketIndexVBView;
 use \DateTime;
 use \DateTimeZone;
 
@@ -19,11 +24,23 @@ class Index extends Controller {
 
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
+      case "cpp":
+        $view = new PacketIndexCppView();
+      break;
       case "htm": case "html": case "":
         $view = new PacketIndexHtmlView();
       break;
+      case "java":
+        $view = new PacketIndexJavaView();
+      break;
       case "json":
         $view = new PacketIndexJSONView();
+      break;
+      case "php":
+        $view = new PacketIndexPHPView();
+      break;
+      case "vb":
+        $view = new PacketIndexVBView();
       break;
       default:
         throw new UnspecifiedViewException();
@@ -33,8 +50,8 @@ class Index extends Controller {
     $model->packets       = Packet::getAllPackets();
     $model->user_session  = UserSession::load($router);
 
-    // Alphabetically sort the packets for HTML
-    if ($view instanceof PacketIndexHtmlView && $model->packets) {
+    // Alphabetically sort the packets for non-json
+    if (!$view instanceof PacketIndexJSONView && $model->packets) {
       usort($model->packets, function($a, $b){
         $a1 = $a->getPacketApplicationLayerId();
         $b1 = $b->getPacketApplicationLayerId();
@@ -65,9 +82,13 @@ class Index extends Controller {
       }
     }
 
+    // Include timestamp if non-html
+    if (!$view instanceof PacketIndexHtmlView) {
+      $model->timestamp = new DateTime("now", new DateTimeZone("UTC"));
+    }
+
     // Objectify for JSON
     if ($view instanceof PacketIndexJSONView) {
-      $model->timestamp = new DateTime("now", new DateTimeZone("UTC"));
       $packets = [];
       foreach ($model->packets as $packet) {
         $user = $packet->getUser();
@@ -102,6 +123,17 @@ class Index extends Controller {
             . Common::sanitizeForUrl($packet->getPacketName())
           )
         ];
+      }
+      $model->packets = $packets;
+    }
+
+    // Remove duplicates if non-html and non-json
+    if (!$view instanceof PacketIndexHtmlView
+      && !$view instanceof PacketIndexJSONView) {
+      $packets = [];
+      foreach ($model->packets as $pkt) {
+        // This removes duplicates by overwriting keys that already exist.
+        $packets[$pkt->getPacketId().$pkt->getPacketName()] = $pkt;
       }
       $model->packets = $packets;
     }

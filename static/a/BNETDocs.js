@@ -1,6 +1,6 @@
 /**
  * BNETDocs: Phoenix
- * Copyright (C) 2003-2015 BNETDocs CC-BY-NC-SA 4.0
+ * Copyright (C) 2003-2016 BNETDocs CC-BY-NC-SA 4.0
  * <https://dev.bnetdocs.org/legal>
  *
  * The site should **ALWAYS** work if JavaScript is disabled. This script is
