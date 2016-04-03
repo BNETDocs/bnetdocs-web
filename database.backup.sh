@@ -53,7 +53,8 @@ mysql --host="${MYSQLHOST}" --user="root" --password="${MYSQLPASS}" << EOF
     email = CONCAT('redacted.email.', id, '@example.com'),
     display_name = NULL,
     password_hash = NULL,
-    password_salt = NULL;
+    password_salt = NULL,
+    options_bitmask = 0;
   COMMIT;
 EOF
 
