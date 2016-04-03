@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Redirect as RedirectModel;
 use \BNETDocs\Views\RedirectHtml as RedirectHtmlView;
