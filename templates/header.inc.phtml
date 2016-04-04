@@ -5,6 +5,13 @@ namespace BNETDocs\Templates;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\User;
 
+if (isset($this->getContext()->user_session)) {
+  $_header_user  = new User($this->getContext()->user_session->user_id);
+  $_header_staff = ($_header_user && $_header_user->isStaff());
+} else {
+  $_header_user = null;
+}
+
 ?><!DOCTYPE html>
 <html lang="en-US">
   <head>
@@ -69,6 +76,10 @@ use \BNETDocs\Libraries\User;
       <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index"); ?>">Packet Index</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/packet/search"); ?>">Search Packets</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/packet/popular"); ?>">Popular Packets</a>
+<?php if ($_header_staff) { ?>
+      <a>Administration</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/news/create"); ?>Create News Post</a>
+<?php } ?>
     </nav>
     <main>
 <?php } else { ?>

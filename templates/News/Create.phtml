@@ -1,0 +1,21 @@
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Gravatar;
+use \BNETDocs\Libraries\Pair;
+
+$title       = ($object ? $object->getTitle() : "News Post Not Found");
+$description = "This form allows an individual to create a news post.";
+
+$this->opengraph->attach(new Pair("url", "/news/create"));
+$this->opengraph->attach(new Pair("type", "article"));
+
+$this->additional_css[] = "/a/news.css";
+require("./header.inc.phtml");
+?>
+      <article>
+        <header>Create News Post</header>
+        <section><?php require("./NYI.inc.phtml"); ?></section>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

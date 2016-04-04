@@ -10,6 +10,7 @@ use \BNETDocs\Controllers\Document\View as DocumentViewController;
 use \BNETDocs\Controllers\Legal as LegalController;
 use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
+use \BNETDocs\Controllers\News\Create as NewsCreateController;
 use \BNETDocs\Controllers\News\View as NewsViewController;
 use \BNETDocs\Controllers\Packet\Index as PacketIndexController;
 use \BNETDocs\Controllers\Packet\Popular as PacketPopularController;
@@ -277,10 +278,20 @@ class Router {
             $controller = new NewsController();
           break;
           case "news":
-            if (is_numeric($subpath)) {
-              $controller = new NewsViewController($subpath);
-            } else {
-              $controller = new NewsController();
+            switch ($subpath) {
+              case "create": case "create.htm": case "create.html":
+                $controller = new NewsCreateController();
+              break;
+              default:
+                if (is_numeric($subpath)) {
+                  $controller = new NewsViewController($subpath);
+                } else if (empty($subpath)) {
+                  $controller = new NewsController();
+                } else {
+                  throw new ControllerNotFoundException(
+                    $path . "/" . $subpath
+                  );
+                }
             }
           break;
           case "newsrss.php":
