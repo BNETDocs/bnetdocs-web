@@ -283,24 +283,24 @@ class User {
 
   public function isStaff() {
     return ($this->options_bitmask & (
-      OPTION_ACL_DOCUMENT_CREATE  |
-      OPTION_ACL_DOCUMENT_MODIFY  |
-      OPTION_ACL_DOCUMENT_DELETE  |
-      OPTION_ACL_EVENT_LOG_VIEW   |
-      OPTION_ACL_EVENT_LOG_MODIFY |
-      OPTION_ACL_EVENT_LOG_DELETE |
-      OPTION_ACL_NEWS_CREATE      |
-      OPTION_ACL_NEWS_MODIFY      |
-      OPTION_ACL_NEWS_DELETE      |
-      OPTION_ACL_PACKET_CREATE    |
-      OPTION_ACL_PACKET_MODIFY    |
-      OPTION_ACL_PACKET_DELETE    |
-      OPTION_ACL_SERVER_CREATE    |
-      OPTION_ACL_SERVER_MODIFY    |
-      OPTION_ACL_SERVER_DELETE    |
-      OPTION_ACL_USER_CREATE      |
-      OPTION_ACL_USER_MODIFY      |
-      OPTION_ACL_USER_DELETE
+      self::OPTION_ACL_DOCUMENT_CREATE  |
+      self::OPTION_ACL_DOCUMENT_MODIFY  |
+      self::OPTION_ACL_DOCUMENT_DELETE  |
+      self::OPTION_ACL_EVENT_LOG_VIEW   |
+      self::OPTION_ACL_EVENT_LOG_MODIFY |
+      self::OPTION_ACL_EVENT_LOG_DELETE |
+      self::OPTION_ACL_NEWS_CREATE      |
+      self::OPTION_ACL_NEWS_MODIFY      |
+      self::OPTION_ACL_NEWS_DELETE      |
+      self::OPTION_ACL_PACKET_CREATE    |
+      self::OPTION_ACL_PACKET_MODIFY    |
+      self::OPTION_ACL_PACKET_DELETE    |
+      self::OPTION_ACL_SERVER_CREATE    |
+      self::OPTION_ACL_SERVER_MODIFY    |
+      self::OPTION_ACL_SERVER_DELETE    |
+      self::OPTION_ACL_USER_CREATE      |
+      self::OPTION_ACL_USER_MODIFY      |
+      self::OPTION_ACL_USER_DELETE
     ));
   }
 

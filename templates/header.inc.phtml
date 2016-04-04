@@ -78,7 +78,10 @@ if (isset($this->getContext()->user_session)) {
       <a href="<?php echo Common::relativeUrlToAbsolute("/packet/popular"); ?>">Popular Packets</a>
 <?php if ($_header_staff) { ?>
       <a>Administration</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/news/create"); ?>Create News Post</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/document/create"); ?>">Create Document</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/news/create"); ?>">Create News Post</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/create"); ?>">Create Packet</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/server/create"); ?>">Create Server</a>
 <?php } ?>
     </nav>
     <main>
