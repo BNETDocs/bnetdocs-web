@@ -6,10 +6,15 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\User;
 
 if (isset($this->getContext()->user_session)) {
-  $_header_user  = new User($this->getContext()->user_session->user_id);
-  $_header_staff = ($_header_user && $_header_user->isStaff());
+  $_header_user     = new User($this->getContext()->user_session->user_id);
+  $_header_user_url = Common::relativeUrlToAbsolute(
+    "/user/" . $_header_user->getId() . "/" . Common::sanitizeForUrl($_header_user->getName(), true)
+  );
+  $_header_staff    = ($_header_user && $_header_user->isStaff());
 } else {
-  $_header_user = null;
+  $_header_user     = null;
+  $_header_user_url = null;
+  $_header_staff    = null;
 }
 
 ?><!DOCTYPE html>
@@ -65,6 +70,8 @@ if (isset($this->getContext()->user_session)) {
 <?php if ($_header_user) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/logout"); ?>">Logout</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/changepassword"); ?>">Change Password</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute("/user/update"); ?>">Update Profile</a>
+      <a href="<?php echo Common::relativeUrlToAbsolute($_header_user_url); ?>">View Profile</a>
 <?php } else { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/login"); ?>">Account Login</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/register"); ?>">Create Account</a>
