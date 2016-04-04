@@ -67,7 +67,7 @@ class Product {
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
         $products[] = new self($row);
         Common::$cache->set(
-          "bnetdocs-product-" . $row->id, serialize($row), 300
+          "bnetdocs-product-" . $row->bnet_product_id, serialize($row), 300
         );
       }
       $stmt->closeCursor();
@@ -114,7 +114,7 @@ class Product {
   }
   
   public function refresh() {
-    $cache_key = "bnetdocs-product-" . $this->id;
+    $cache_key = "bnetdocs-product-" . $this->bnet_product_id;
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) {
       $cache_val = unserialize($cache_val);
@@ -137,7 +137,7 @@ class Product {
           `bnls_product_id`,
           `label`,
           `sort`,
-          `version_byte
+          `version_byte`
         FROM `products`
         WHERE `bnet_product_id` = :id
         LIMIT 1;
@@ -146,7 +146,7 @@ class Product {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh product");
       } else if ($stmt->rowCount() == 0) {
-        throw new PacketApplicationLayerNotFoundException($this->id);
+        throw new ProductNotFoundException($this->bnet_product_id);
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();

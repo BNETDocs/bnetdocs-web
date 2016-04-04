@@ -270,6 +270,38 @@ class Packet {
     }
   }
 
+  public function getUsedBy() {
+    $ckey = "bnetdocs-packetusedby-" . $this->id;
+    $cval = Common::$cache->get($ckey);
+    if ($cval !== false) return unserialize($cval);
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        SELECT
+          `bnet_product_id`
+        FROM `packet_used_by`
+        WHERE `id` = :id
+        ORDER BY `id` ASC;
+      ");
+      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot query packet used by");
+      }
+      $values = [];
+      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        $values[] = (int) $row->bnet_product_id;
+      }
+      $stmt->closeCursor();
+      Common::$cache->set($ckey, serialize($values), 300);
+      return $values;
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot query packet used by", $e);
+    }
+    return null;
+  }
+
   public function getUser() {
     if (is_null($this->user_id)) return null;
     return new User($this->user_id);

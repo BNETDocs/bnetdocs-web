@@ -40,7 +40,18 @@ require("./header.inc.phtml");
             <tr><th style="width:20%;">Message Id:</th><td><?php echo $packet_id; ?></td></tr>
             <tr><th>Message Name:</th><td><?php echo htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8"); ?></td></tr>
             <tr><th>Direction:</th><td><?php echo htmlspecialchars($object->getPacketDirectionLabel(), ENT_HTML5, "UTF-8"); ?></td></tr>
-            <tr><th>Used By:</th><td><?php require("./NYI.inc.phtml"); ?></td></tr>
+            <tr><th>Used By:</th><td><?php
+              $products = $this->getContext()->used_by;
+              if (count($products) == 1) {
+                echo htmlspecialchars($products[0]->getLabel(), ENT_HTML5, "UTF-8");
+              } else {
+                echo "<ul>";
+                foreach ($this->getContext()->used_by as $product) {
+                  echo "<li>" . htmlspecialchars($product->getLabel(), ENT_HTML5, "UTF-8") . "</li>";
+                }
+                echo "</ul>";
+              }
+            ?></td></tr>
             <tr><th>Format:</th><td><pre><code><?php echo $object->getPacketFormat(); ?></code></pre></td></tr>
           </tbody></table>
         </section>

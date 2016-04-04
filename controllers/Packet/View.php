@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Packet;
+use \BNETDocs\Libraries\Product;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\View as PacketViewModel;
@@ -42,6 +43,7 @@ class View extends Controller {
     } catch (PacketNotFoundException $e) {
       $model->packet     = null;
     }
+    $model->used_by      = $this->getUsedBy($model->packet);
     $model->user_session = UserSession::load($router);
     ob_start();
     $view->render($model);
@@ -50,6 +52,16 @@ class View extends Controller {
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
     ob_end_clean();
+  }
+
+  protected function getUsedBy(Packet &$packet) {
+    if (is_null($packet)) return null;
+    $used_by = $packet->getUsedBy();
+    $products = [];
+    foreach ($used_by as $bnet_product_id) {
+      $products[] = new Product($bnet_product_id);
+    }
+    return $products;
   }
 
 }
