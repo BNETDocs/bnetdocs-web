@@ -50,6 +50,8 @@ body > nav {
   font: 12pt source sans pro, verdana, arial, sans-serif;
   line-height: 20px;
   margin: 0px 270px;
+  max-height: calc(100% - 68px);
+  overflow: auto;
   padding: 10px;
   position: fixed;
   right: 50%;
