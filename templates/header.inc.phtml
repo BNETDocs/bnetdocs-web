@@ -62,7 +62,7 @@ if (isset($this->getContext()->user_session)) {
       <a href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>">Legal Policies</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("//redux.bnetdocs.org/"); ?>">BNETDocs Redux</a>
       <a>Account Management</a>
-<?php if (isset($this->getContext()->user_session)) { ?>
+<?php if ($_header_user) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/logout"); ?>">Logout</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/changepassword"); ?>">Change Password</a>
 <?php } else { ?>
