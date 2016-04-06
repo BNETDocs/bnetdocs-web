@@ -65,7 +65,8 @@ class View extends Controller {
     }
 
     // Don't show unpublished news posts to non-staff
-    if (!($model->news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)
+    if ($model->news_post
+      && !($model->news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)
       && !$model->acl_allowed) $model->news_post = null;
   }
 
