@@ -41,6 +41,18 @@ class News extends Controller {
 
   protected function getNews(NewsModel &$model) {
     $model->news_posts = NewsPost::getAllNews(true);
+
+    // Remove news posts that are not published
+    if ($model->news_posts) {
+      $i = count($model->news_posts) - 1;
+      while ($i >= 0) {
+        if (!($model->news_posts[$i]->getOptionsBitmask()
+          & NewsPost::OPTION_PUBLISHED)) {
+          unset($model->news_posts[$i]);
+        }
+        --$i;
+      }
+    }
   }
 
 }
