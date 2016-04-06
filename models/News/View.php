@@ -6,14 +6,18 @@ use \BNETDocs\Libraries\Model;
 
 class View extends Model {
 
-  public $news_post_id;
+  public $acl_allowed;
   public $news_post;
+  public $news_post_id;
+  public $user;
   public $user_session;
 
   public function __construct() {
     parent::__construct();
-    $this->news_post_id = null;
+    $this->acl_allowed  = null;
     $this->news_post    = null;
+    $this->news_post_id = null;
+    $this->user         = null;
     $this->user_session = null;
   }
 

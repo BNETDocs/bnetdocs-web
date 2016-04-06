@@ -8,6 +8,7 @@ use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\View as NewsViewModel;
 use \BNETDocs\Views\News\ViewHtml as NewsViewHtmlView;
@@ -35,6 +36,16 @@ class View extends Controller {
     }
     $model = new NewsViewModel();
     $model->user_session = UserSession::load($router);
+    $model->user         = (isset($model->user_session) ?
+                            new User($model->user_session->user_id) :
+                            null);
+    $model->acl_allowed  = ($model->user &&
+      $model->user->getOptionsBitmask() & (
+        User::OPTION_ACL_NEWS_CREATE |
+        User::OPTION_ACL_NEWS_MODIFY |
+        User::OPTION_ACL_NEWS_DELETE
+      )
+    );
     $this->getNewsPost($model);
     ob_start();
     $view->render($model);
@@ -52,6 +63,10 @@ class View extends Controller {
     } catch (NewsPostNotFoundException $e) {
       $model->news_post = null;
     }
+
+    // Don't show unpublished news posts to non-staff
+    if (!($model->news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)
+      && !$model->acl_allowed) $model->news_post = null;
   }
 
 }
