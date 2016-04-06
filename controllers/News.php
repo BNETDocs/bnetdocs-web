@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News as NewsModel;
 use \BNETDocs\Views\NewsHtml as NewsHtmlView;
@@ -29,6 +30,16 @@ class News extends Controller {
     }
     $model = new NewsModel();
     $model->user_session = UserSession::load($router);
+    $model->user         = (isset($model->user_session) ?
+                            new User($model->user_session->user_id) :
+                            null);
+    $model->acl_allowed  = ($model->user &&
+      $model->user->getOptionsBitmask() & (
+        User::OPTION_ACL_NEWS_CREATE |
+        User::OPTION_ACL_NEWS_MODIFY |
+        User::OPTION_ACL_NEWS_DELETE
+      )
+    );
     $this->getNews($model);
     ob_start();
     $view->render($model);
@@ -43,7 +54,7 @@ class News extends Controller {
     $model->news_posts = NewsPost::getAllNews(true);
 
     // Remove news posts that are not published
-    if ($model->news_posts) {
+    if (!$model->acl_allowed && $model->news_posts) {
       $i = count($model->news_posts) - 1;
       while ($i >= 0) {
         if (!($model->news_posts[$i]->getOptionsBitmask()

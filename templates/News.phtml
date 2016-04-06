@@ -3,6 +3,7 @@ namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Gravatar;
+use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\User;
 
@@ -35,6 +36,9 @@ foreach ($this->context->news_posts as $news_post) {
         <a href="https://twitter.com/share?text=<?php echo urlencode($news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
         <header><a href="<?php echo $url; ?>"><?php echo $news_post->getTitle(); ?></a></header>
+<?php if (!($news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
+        <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
+<?php } ?>
         <section class="news"><img class="category" alt="<?php echo $news_post->getCategory()->getLabel(); ?>" title="<?php echo $news_post->getCategory()->getLabel(); ?>" src="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/" . $news_post->getCategory()->getFilename()); ?>"/><?php echo $news_post->getContent(true); ?></section>
         <footer>
           <span class="float-left"><a href="<?php echo Common::relativeUrlToAbsolute("/user/" . urlencode($user_id) . "/" . Common::sanitizeForUrl($users[$user_id]->getName(), true)); ?>"><img class="avatar" src="<?php echo $avatar; ?>"/> <?php echo htmlspecialchars($users[$user_id]->getName(), ENT_HTML5, "UTF-8"); ?></a></span>
