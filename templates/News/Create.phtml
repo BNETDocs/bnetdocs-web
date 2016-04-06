@@ -20,6 +20,12 @@ switch ($this->getContext()->error) {
       . "Either the create news post form expired, or "
       . "this may have been a malicious attempt to create a news post.";
     break;
+  case "EMPTY_TITLE":
+    $message = "The title of the news post is required.";
+    break;
+  case "EMPTY_CONTENT":
+    $message = "The content of the news post is required.";
+    break;
   default:
     $message = $this->getContext()->error;
 }
