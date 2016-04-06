@@ -4,6 +4,7 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
@@ -58,6 +59,38 @@ class NewsPost {
       $this->user_id          = $data->user_id;
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
+    }
+  }
+
+  public static function create(
+    $user_id, $category_id, $options_bitmask, $title, $content
+  ) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare("
+        INSERT INTO `news_posts` (
+          `id`, `created_datetime`, `edited_datetime`, `edited_count`,
+          `user_id`, `category_id`, `options_bitmask`, `title`, `content`
+        ) VALUES (
+          NULL, NOW(), NULL, 0,
+          :user_id, :category_id, :options_bitmask, :title, :content
+        );
+      ");
+      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+      $stmt->bindParam(":category_id", $category_id, PDO::PARAM_INT);
+      $stmt->bindParam(":options_bitmask", $options_bitmask, PDO::PARAM_INT);
+      $stmt->bindParam(":title", $title, PDO::PARAM_STR);
+      $stmt->bindParam(":content", $content, PDO::PARAM_STR);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot create news post", $e);
+    } finally {
+      //Credits::getTopContributorsByNewsPosts(true); // Refresh statistics
+      return $successful;
     }
   }
 

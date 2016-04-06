@@ -11,12 +11,12 @@ class CSRF {
 
   private function __construct() {}
 
-  public static function generate($id) {
+  public static function generate($id, $ttl = self::TTL) {
     $id = (int) $id;
     $t  = microtime(true);
     $s  = mt_rand();
     $v  = hash("sha256", $t * $s * $id);
-    Common::$cache->set("bnetdocs-csrf-" . $id, $v, self::TTL);
+    Common::$cache->set("bnetdocs-csrf-" . $id, $v, $ttl);
     return $v;
   }
 
