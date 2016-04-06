@@ -26,6 +26,10 @@ switch ($this->getContext()->error) {
   case "EMPTY_CONTENT":
     $message = "The content of the news post is required.";
     break;
+  case "INTERNAL_ERROR":
+    $message = "An internal error occurred while processing your request. "
+      . "Our staff has been notified of the issue. Try again later.";
+    break;
   default:
     $message = $this->getContext()->error;
 }
