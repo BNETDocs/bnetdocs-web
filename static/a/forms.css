@@ -31,6 +31,9 @@ form textarea {
   padding: 4px;
   width: 100%;
 }
+form textarea {
+  resize: vertical;
+}
 form input[type="text"]:focus,
 form input[type="email"]:focus,
 form input[type="password"]:focus,
