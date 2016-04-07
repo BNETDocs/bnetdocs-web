@@ -43,7 +43,11 @@ class View extends Controller {
     } catch (PacketNotFoundException $e) {
       $model->packet     = null;
     }
-    $model->used_by      = $this->getUsedBy($model->packet);
+    if ($model->packet) {
+      $model->used_by    = $this->getUsedBy($model->packet);
+    } else {
+      $model->used_by    = null;
+    }
     $model->user_session = UserSession::load($router);
     ob_start();
     $view->render($model);

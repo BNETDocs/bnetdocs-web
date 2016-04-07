@@ -7,11 +7,10 @@ use \BNETDocs\Libraries\Pair;
 $object_id = $this->getContext()->packet_id;
 $object    = $this->getContext()->packet;
 
-$title       = ($object ? $object->getPacketName() : "Packet Not Found");
-$description = Common::stripUpTo(trim(filter_var(
-  ($object ? $object->getPacketRemarks(true) : "The requested packet does not exist or could not be found."),
-  FILTER_SANITIZE_STRING
-)), "\n", 300);
+$title       = "Packet Not Found";
+$description = "The requested packet does not exist or could not be found.";
+$description = "The requested packet does not exist or could not be found.";
+
 $this->opengraph->attach(new Pair("type", "article"));
 
 $url = Common::relativeUrlToAbsolute("/packet/" . urlencode($object_id));
@@ -22,7 +21,11 @@ if ($object) {
 
   $packet_id = $object->getPacketId(true);
   $title = htmlspecialchars($object->getPacketDirectionTag(), ENT_HTML5, "UTF-8")
-    . " " . $packet_id . " " . $title;
+    . " " . $packet_id . " "
+    . htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8");
+  $description = Common::stripUpTo(trim(filter_var(
+    $object->getPacketRemarks(true), FILTER_SANITIZE_STRING
+  )), "\n", 300);
 } else {
   $this->opengraph->attach(new Pair("url", "/packet/" . urlencode($object_id)));
 }
@@ -35,7 +38,7 @@ require("./header.inc.phtml");
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
         <a href="https://twitter.com/share?text=<?php echo urlencode($packet_id . " " . $object->getPacketName()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-        <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($packet_id . " " . $object->getPacketName(), ENT_HTML5, "UTF-8"); ?></a></header>
+        <header><a href="<?php echo $url; ?>"><?php echo $title; ?></a></header>
         <section>
           <table class="info"><tbody>
             <tr><th style="width:20%;">Message Id:</th><td><?php echo $packet_id; ?></td></tr>

@@ -7,11 +7,9 @@ use \BNETDocs\Libraries\Pair;
 $object_id = $this->getContext()->document_id;
 $object    = $this->getContext()->document;
 
-$title       = ($object ? $object->getTitle() : "Document Not Found");
-$description = Common::stripUpTo(trim(filter_var(
-  ($object ? $object->getContent(true) : "The requested document does not exist or could not be found."),
-  FILTER_SANITIZE_STRING
-)), "\n", 300);
+$title       = "Document Not Found";
+$description = "The requested document does not exist or could not be found.";
+
 $this->opengraph->attach(new Pair("type", "article"));
 
 $url = Common::relativeUrlToAbsolute("/document/" . urlencode($object_id));
@@ -19,6 +17,10 @@ if ($object) {
   $url .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
   $this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)
     . "/" . Common::sanitizeForUrl($object->getTitle(), true)));
+  $title = htmlspecialchars($object->getTitle(), ENT_HTML5, "UTF-8");
+  $description = Common::stripUpTo(trim(filter_var(
+    $object->getContent(true), FILTER_SANITIZE_STRING
+  )), "\n", 300);
 } else {
   $this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)));
 }
@@ -31,7 +33,7 @@ require("./header.inc.phtml");
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
         <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-        <header><a href="<?php echo $url; ?>"><?php echo htmlspecialchars($object->getTitle(), ENT_HTML5, "UTF-8"); ?></a></header>
+        <header><a href="<?php echo $url; ?>"><?php echo $title; ?></a></header>
         <section>
 <?php echo $object->getContent(true); ?>
         </section>
