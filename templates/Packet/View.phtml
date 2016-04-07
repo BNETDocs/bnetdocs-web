@@ -21,7 +21,8 @@ if ($object) {
     . "/" . Common::sanitizeForUrl($object->getPacketName(), true)));
 
   $packet_id = $object->getPacketId(true);
-  $title = $packet_id . " " . $title;
+  $title = htmlspecialchars($object->getPacketDirectionTag(), ENT_HTML5, "UTF-8")
+    . " " . $packet_id . " " . $title;
 } else {
   $this->opengraph->attach(new Pair("url", "/packet/" . urlencode($object_id)));
 }
