@@ -3,6 +3,7 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 
 if (isset($this->getContext()->user_session)) {
@@ -20,6 +21,7 @@ if (isset($this->getContext()->user_session)) {
 ?><!DOCTYPE html>
 <html lang="en-US">
   <head>
+<?php echo Logger::getTimingHeader(); ?>
     <title><?php echo $title; ?> - BNETDocs</title>
     <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main.css"); ?>" type="text/css" media="all"/>
 <?php foreach ($this->additional_css as $path) { ?>
