@@ -1,6 +1,6 @@
 <?php require("./email/header.rich.inc.phtml"); ?>
 <p style="font-family:sans-serif;font-weight:bold;">Welcome to BNETDocs!</p>
 <p style="font-family:sans-serif;">Your account requires activation before being able to use this service. Click or copy and paste the link below into your browser to activate your account.</p>
-<p style="font-family:sans-serif;"><a href="https://dev.bnetdocs.org/user/activate?t=<?php echo rawurlencode($this->getContext()->token); ?>" rel="external">https://dev.bnetdocs.org/user/activate?t=<?php echo rawurlencode($this->getContext()->token); ?></a></p>
+<p style="font-family:sans-serif;"><a href="https://bnetdocs.org/user/activate?t=<?php echo rawurlencode($this->getContext()->token); ?>" rel="external">https://bnetdocs.org/user/activate?t=<?php echo rawurlencode($this->getContext()->token); ?></a></p>
 <p style="font-family:sans-serif;"><strong>Note:</strong> This link will only be available for 24 hours after registering. If you wait until it expires, you will need to complete a password reset.</p>
 <?php require("./email/footer.rich.inc.phtml"); ?>

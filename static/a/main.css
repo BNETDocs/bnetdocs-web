@@ -3,7 +3,7 @@
  */
 
 body {
-  background: #272727 url("https://static.carlbennett.me/img/main_bg.png") repeat fixed center;
+  background: #272727 url("/a/main_bg.png") repeat fixed center;
   color: #ddd;
   font: 11pt source sans pro, verdana, arial, sans-serif;
   margin: 48px 0px;
@@ -90,7 +90,7 @@ body > nav > a[href]:hover {
   text-decoration: none;
 }
 body > nav > a#nav-current {
-  background-image: url("https://dev.bnetdocs.org/a/nav_arrow.png");
+  background-image: url("/a/nav_arrow.png");
   background-position: left center;
   background-repeat: no-repeat;
 }
@@ -301,7 +301,7 @@ ol.lower-latin {
   list-style-type: lower-latin;
 }
 blockquote {
-  background-image: url("https://dev.bnetdocs.org/a/quote-symbol.png");
+  background-image: url("/a/quote-symbol.png");
   background-position: 0px -12px;
   background-repeat: no-repeat;
   margin: 0px;
