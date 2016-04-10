@@ -2,5 +2,5 @@
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 400;
-  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url('//static.carlbennett.me/font/SourceSansPro-Regular-201504292348.ttf') format('truetype');
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url('/a/font/SourceSansPro-Regular-201504292348.ttf') format('truetype');
 }
