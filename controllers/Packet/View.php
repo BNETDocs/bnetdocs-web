@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\Packet;
 
+use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
@@ -26,6 +27,26 @@ class View extends Controller {
   }
 
   public function run(Router &$router) {
+    $model = new PacketViewModel();
+    $model->packet_id = $this->packet_id;
+    try {
+      $model->packet  = new Packet($this->packet_id);
+    } catch (PacketNotFoundException $e) {
+      $model->packet  = null;
+    }
+    $pathArray = $router->getRequestPathArray();
+    if ($model->packet && (
+      !isset($pathArray[3]) || empty($pathArray[3]))) {
+      $redirect = new RedirectController(
+        Common::relativeUrlToAbsolute(
+          "/packet/" . $model->packet->getId() . "/"
+          . Common::sanitizeForUrl(
+            $model->packet->getPacketName(), true
+          )
+        ), 302
+      );
+      return $redirect->run($router);
+    }
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
         $view = new PacketViewHtmlView();
@@ -35,13 +56,6 @@ class View extends Controller {
       break;
       default:
         throw new UnspecifiedViewException();
-    }
-    $model = new PacketViewModel();
-    $model->packet_id    = $this->packet_id;
-    try {
-      $model->packet     = new Packet($this->packet_id);
-    } catch (PacketNotFoundException $e) {
-      $model->packet     = null;
     }
     if ($model->packet) {
       $model->used_by    = $this->getUsedBy($model->packet);

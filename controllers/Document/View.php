@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\Document;
 
+use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Document;
@@ -25,6 +26,26 @@ class View extends Controller {
   }
 
   public function run(Router &$router) {
+    $model              = new DocumentViewModel();
+    $model->document_id = $this->document_id;
+    try {
+      $model->document  = new Document($this->document_id);
+    } catch (DocumentNotFoundException $e) {
+      $model->document  = null;
+    }
+    $pathArray = $router->getRequestPathArray();
+    if ($model->document && (
+      !isset($pathArray[3]) || empty($pathArray[3]))) {
+      $redirect = new RedirectController(
+        Common::relativeUrlToAbsolute(
+          "/document/" . $model->document->getId() . "/"
+          . Common::sanitizeForUrl(
+            $model->document->getTitle(), true
+          )
+        ), 302
+      );
+      return $redirect->run($router);
+    }
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
         $view = new DocumentViewHtmlView();
@@ -34,13 +55,6 @@ class View extends Controller {
       break;
       default:
         throw new UnspecifiedViewException();
-    }
-    $model = new DocumentViewModel();
-    $model->document_id  = $this->document_id;
-    try {
-      $model->document   = new Document($this->document_id);
-    } catch (DocumentNotFoundException $e) {
-      $model->document   = null;
     }
     $model->user_session = UserSession::load($router);
     ob_start();
