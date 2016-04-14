@@ -28,6 +28,7 @@ use \BNETDocs\Controllers\User\ResetPassword as UserResetPasswordController;
 use \BNETDocs\Controllers\User\View as UserViewController;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
+use \BNETDocs\Libraries\UserSession;
 use \DateTime;
 use \DateTimeZone;
 use \SplObjectStorage;
@@ -181,13 +182,16 @@ class Router {
     );
 
     if (Common::checkIfBlizzard()) {
+      $user_session = UserSession::load($this);
       Logger::logMetric("is_blizzard_visit", true);
       Logger::logEvent(
         "blizzard_visit",
-        null, // TODO: Log their user_id here if applicable
+        ($user_session ? $user_session->user_id : null),
         getenv("REMOTE_ADDR"),
         json_encode([
-          "path" => $this->getRequestPathString(true)
+          "path" => $this->getRequestPathString(true),
+          "referer" => $this->getRequestHeader("Referer"),
+          "user_agent" => $this->getRequestHeader("User-Agent"),
         ])
       );
     } else {
