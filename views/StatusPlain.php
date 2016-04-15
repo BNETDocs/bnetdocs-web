@@ -19,6 +19,16 @@ class StatusPlain extends View {
     if (!$model instanceof StatusModel) {
       throw new IncorrectModelException();
     }
+    foreach ($model->healthcheck as $key => $val) {
+      if (is_bool($val))
+        echo "healthcheck_" . $key . " " . ($val ? "true" : "false") . "\n";
+      else if (is_null($val))
+        echo "healthcheck_" . $key . " null\n";
+      else if (is_scalar($val))
+        echo "healthcheck_" . $key . " " . $val . "\n";
+      else
+        echo "healthcheck_" . $key . " " . gettype($val) . "\n";
+    }
     echo "remote_address " . $model->remote_address . "\n";
     if ($model->remote_geoinfo) {
       foreach ($model->remote_geoinfo as $key => $val) {

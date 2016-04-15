@@ -20,6 +20,7 @@ class StatusJSON extends View {
       throw new IncorrectModelException();
     }
     echo json_encode([
+      "healthcheck"    => $model->healthcheck,
       "remote_address" => $model->remote_address,
       "remote_geoinfo" => $model->remote_geoinfo,
       "timestamp"      => $model->timestamp->format("r"),
