@@ -15,7 +15,7 @@ class News extends Model {
   public function __construct() {
     parent::__construct();
     $this->acl_allowed  = null;
-    $this->news_posts   = [];
+    $this->news_posts   = null;
     $this->pagination   = null;
     $this->user         = null;
     $this->user_session = null;
