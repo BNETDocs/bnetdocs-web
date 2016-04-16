@@ -95,6 +95,16 @@ class NewsPost {
   }
 
   public static function getAllNews($reverse) {
+    $cache_key = "bnetdocs-newsposts";
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false) {
+      $ids     = explode(",", $cache_val);
+      $objects = [];
+      foreach ($ids as $id) {
+        $objects[] = new self($id);
+      }
+      return $objects;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -121,15 +131,18 @@ class NewsPost {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh news post");
       }
-      $news_posts = [];
+      $ids     = [];
+      $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $news_posts[] = new self($row);
+        $ids[]     = (int) $row->id;
+        $objects[] = new self($row);
         Common::$cache->set(
           "bnetdocs-newspost-" . $row->id, serialize($row), 300
         );
       }
       $stmt->closeCursor();
-      return $news_posts;
+      Common::$cache->set($cache_key, implode(",", $ids), 300);
+      return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh news post", $e);
     }

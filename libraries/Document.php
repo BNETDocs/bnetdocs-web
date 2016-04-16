@@ -58,6 +58,16 @@ class Document {
   }
   
   public static function getAllDocuments() {
+    $cache_key = "bnetdocs-documents";
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false) {
+      $ids     = explode(",", $cache_val);
+      $objects = [];
+      foreach ($ids as $id) {
+        $objects[] = new self($id);
+      }
+      return $objects;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -78,15 +88,18 @@ class Document {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh documents");
       }
-      $documents = [];
+      $ids     = [];
+      $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $documents[] = new self($row);
+        $ids[]     = (int) $row->id;
+        $objects[] = new self($row);
         Common::$cache->set(
           "bnetdocs-document-" . $row->id, serialize($row), 300
         );
       }
       $stmt->closeCursor();
-      return $documents;
+      Common::$cache->set($cache_key, implode(",", $ids), 300);
+      return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh documents", $e);
     }

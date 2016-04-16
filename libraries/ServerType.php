@@ -33,6 +33,16 @@ class ServerType {
   }
 
   public static function getAllServerTypes() {
+    $cache_key = "bnetdocs-servertypes";
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false) {
+      $ids     = explode(",", $cache_val);
+      $objects = [];
+      foreach ($ids as $id) {
+        $objects[] = new self($id);
+      }
+      return $objects;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -47,15 +57,18 @@ class ServerType {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh server types");
       }
-      $servers = [];
+      $ids     = [];
+      $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $servers[] = new self($row);
+        $ids[]     = (int) $row->id;
+        $objects[] = new self($row);
         Common::$cache->set(
           "bnetdocs-servertype-" . $row->id, serialize($row), 300
         );
       }
       $stmt->closeCursor();
-      return $servers;
+      Common::$cache->set($cache_key, implode(",", $ids), 300);
+      return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh server types", $e);
     }

@@ -45,6 +45,16 @@ class Product {
   }
 
   public static function getAllProducts() {
+    $cache_key = "bnetdocs-products";
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false) {
+      $ids     = explode(",", $cache_val);
+      $objects = [];
+      foreach ($ids as $id) {
+        $objects[] = new self($id);
+      }
+      return $objects;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -63,15 +73,18 @@ class Product {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh products");
       }
-      $products = [];
+      $ids     = [];
+      $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $products[] = new self($row);
+        $ids[]     = (int) $row->bnet_product_id;
+        $objects[] = new self($row);
         Common::$cache->set(
           "bnetdocs-product-" . $row->bnet_product_id, serialize($row), 300
         );
       }
       $stmt->closeCursor();
-      return $products;
+      Common::$cache->set($cache_key, implode(",", $ids), 300);
+      return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh products", $e);
     }

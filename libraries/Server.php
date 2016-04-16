@@ -63,6 +63,16 @@ class Server {
   }
 
   public static function getAllServers() {
+    $cache_key = "bnetdocs-servers";
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false) {
+      $ids     = explode(",", $cache_val);
+      $objects = [];
+      foreach ($ids as $id) {
+        $objects[] = new self($id);
+      }
+      return $objects;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -89,15 +99,18 @@ class Server {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh servers");
       }
-      $servers = [];
+      $ids     = [];
+      $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $servers[] = new self($row);
+        $ids[]     = (int) $row->id;
+        $objects[] = new self($row);
         Common::$cache->set(
           "bnetdocs-server-" . $row->id, serialize($row), 300
         );
       }
       $stmt->closeCursor();
-      return $servers;
+      Common::$cache->set($cache_key, implode(",", $ids), 300);
+      return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh servers", $e);
     }
