@@ -6,6 +6,7 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\NewsPost;
+use \BNETDocs\Libraries\Pagination;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
@@ -14,8 +15,11 @@ use \BNETDocs\Views\NewsHtml as NewsHtmlView;
 use \BNETDocs\Views\NewsRSS as NewsRSSView;
 use \DateTime;
 use \DateTimeZone;
+use \OutOfBoundsException;
 
 class News extends Controller {
+
+  const NEWS_PER_PAGE = 5;
 
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
@@ -40,7 +44,9 @@ class News extends Controller {
         User::OPTION_ACL_NEWS_DELETE
       )
     );
-    $this->getNews($model);
+    $query = $router->getRequestQueryArray();
+    $page  = (isset($query["page"]) ? ((int) $query["page"]) - 1 : null);
+    $this->getNews($model, (!$view instanceof NewsRSSView), $page);
     ob_start();
     $view->render($model);
     $router->setResponseCode(200);
@@ -50,7 +56,7 @@ class News extends Controller {
     ob_end_clean();
   }
 
-  protected function getNews(NewsModel &$model) {
+  protected function getNews(NewsModel &$model, $paginate, $page) {
     $model->news_posts = NewsPost::getAllNews(true);
 
     // Remove news posts that are not published
@@ -64,6 +70,20 @@ class News extends Controller {
         --$i;
       }
     }
+
+    if ($paginate) {
+      try {
+        $model->pagination = new Pagination(
+          $model->news_posts, $page, self::NEWS_PER_PAGE
+        );
+        $model->news_posts = $model->pagination->getPage();
+      } catch (OutOfBoundsException $e) {
+        $model->news_posts = null;
+      }
+    } else {
+      $model->pagination = null;
+    }
+
   }
 
 }

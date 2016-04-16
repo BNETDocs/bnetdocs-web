@@ -8,6 +8,7 @@ class News extends Model {
 
   public $acl_allowed;
   public $news_posts;
+  public $pagination;
   public $user;
   public $user_session;
 
@@ -15,6 +16,7 @@ class News extends Model {
     parent::__construct();
     $this->acl_allowed  = null;
     $this->news_posts   = [];
+    $this->pagination   = null;
     $this->user         = null;
     $this->user_session = null;
   }
