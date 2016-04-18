@@ -22,7 +22,7 @@ if ($object) {
 
   $safe_name = htmlspecialchars($object->getName(), ENT_HTML5, "UTF-8");
 
-  if ($this->getContext()->biography) $description = $biography;
+  if ($this->getContext()->biography) $description = $this->getContext()->biography;
   $safe_biography = htmlspecialchars($this->getContext()->biography, ENT_HTML5, "UTF-8");
 }
 
