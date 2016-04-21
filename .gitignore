@@ -9,6 +9,7 @@
 *.iso
 *.jar
 *.log
+*.patch
 *.rar
 *.swp
 *.tar
