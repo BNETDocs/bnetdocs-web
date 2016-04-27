@@ -5,8 +5,8 @@
 body {
   background: #272727 url("/a/main_bg.png") repeat fixed center;
   color: #ddd;
-  font: 11pt source sans pro, verdana, arial, sans-serif;
-  margin: 48px 0px;
+  font: 13pt source sans pro, verdana, arial, sans-serif;
+  margin: 48px 0px 0px 0px;
   padding: 0px;
 }
 a,
@@ -44,18 +44,22 @@ header.main-page {
   user-select: none;
 }
 nav {
-  background-color: rgba(64,64,64,0.6);
-  border-radius: 0px 0px 8px 8px;
+  /* TODO
+   * JAVASCRIPT INTEGRATION
+   * AUTO-SHOW/HIDE
+   */
+  background-color: rgba(64,64,64,1);
   cursor: default;
-  font: 12pt source sans pro, verdana, arial, sans-serif;
-  line-height: 20px;
-  margin: 0px 270px;
-  max-height: calc(100% - 68px);
+  display: none; // FIXME
+  font: 16pt source sans pro, verdana, arial, sans-serif;
+  line-height: 28px;
   overflow: auto;
-  padding: 10px;
+  padding: 4px;
   position: fixed;
-  right: 50%;
-  width: 200px;
+  right: 0px;
+  left: 0px;
+  top: 48px;
+  width: 80%;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -67,23 +71,20 @@ nav > a {
   color: inherit;
   cursor: default;
   display: block;
-  font-size: 12pt;
+  font-size: 14pt;
   font-weight: bold;
-  padding-top: 10px;
-}
-nav > a:first-child {
-  padding-top: 0px;
 }
 nav > a:hover {
   text-decoration: none;
 }
 nav > a[href] {
+  border: 1px solid rgba(128,128,128,0.15);
   cursor: pointer;
+  display: inline-block;
   font-family: source sans pro, verdana, arial, sans-serif;
-  font-size: 12pt;
+  font-size: 13pt;
   font-weight: inherit;
   padding-top: 0px;
-  padding-left: 10px;
 }
 nav > a[href]:hover {
   background-color: rgba(128,128,128,0.15);
@@ -95,18 +96,21 @@ nav > a#nav-current {
   background-repeat: no-repeat;
 }
 main {
-  margin: auto;
   overflow: hidden;
-  width: 1000px;
+  width: 100%;
 }
-main > article {
-  margin: 0px 0px 0px 224px;
-  overflow: hidden;
-  padding: 10px 8px 0px 16px;
-}
+main > article,
 main.slim > article {
-  margin: 0px;
+  margin: 10px 0px;
   overflow: hidden;
+}
+main > article:first-of-type,
+main.slim > article:first-of-type {
+  margin-top: 0px;
+}
+main > article:last-of-type,
+main.slim > article:last-of-type {
+  margin-bottom: 0px;
 }
 main > article > header {
   background-color: rgba(64,64,64,0.6);
@@ -128,9 +132,6 @@ main > article header.green {
 }
 main > article header.red {
   background-color: rgba(128,64,64,0.6);
-}
-main > article > header:first-of-type {
-  border-radius: 8px 8px 0px 0px;
 }
 main > article .social-btn {
   display: inline-block;
@@ -161,9 +162,6 @@ main > article section.fixed-width-text {
   font-size: 85%;
   white-space: pre-wrap;
 }
-main > article section:last-child {
-  border-radius: 0px 0px 8px 8px;
-}
 main > article section > p:first-of-type {
   margin-top: 0px;
 }
@@ -175,7 +173,6 @@ main > article section img {
 }
 main > article > footer {
   background-color: rgba(64, 64, 64, 0.6);
-  border-radius: 0px 0px 8px 8px;
   display: block;
   font: 12pt source sans pro;
   margin: 0px;
@@ -202,23 +199,20 @@ p.pagination > a {
 p.pagination > a.active {
   background-color: rgba(128,128,128,0.8);
 }
-body > footer {
+footer.main-page,
+footer.main-page.slim {
   box-sizing: border-box;
   color: rgba(224,224,224,0.3);
-  font: 9pt source code pro, monospace;
-  margin: 32px auto 10px auto;
+  font: 8pt source code pro, monospace;
+  margin: 0px;
   overflow: hidden;
-  padding: 0px 0px 0px 224px;
+  padding: 20px;
   text-align: center;
-  width: 1000px;
-}
-body > footer.slim {
-  overflow: hidden;
-  padding: 0px;
+  width: 100%;
 }
 ::-webkit-scrollbar {
-  height: 0.8em;
-  width: 0.8em;
+  height: 0.6em;
+  width: 0.6em;
 }
 ::-webkit-scrollbar-track,
 ::-webkit-scrollbar-corner {
