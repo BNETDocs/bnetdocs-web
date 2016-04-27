@@ -1,0 +1,521 @@
+Updated 7-23-2003.
+
+	 BotNet Protocol Specification
+---------------------------------------
+
+This documentation covers BotNet revisions 0x01 through 0x04.
+
+The current protocol version is 0x01.  The maximum packet length is 511
+bytes.  The current server revision is 0x04 (Kp_Version_1).  Strings are
+limited to a length which is usually far less than the size of the
+packet.  Except where otherwise specified, exceeding the string length
+is a protocol violation.  String maximums are specified as: "(STRING:20)
+Unique bncs name".  Such a string has a maximum length of 20 characters,
+including the null.  Features added by server revisions are indicated by
+a parenthesized number.  For instance "(4) (DWORD) ID" indicates that
+revision 0x04 introduced a new DWORD related to identification.  If a second
+number is provided after a decimal point, the field is present only when the
+client has asserted awareness of at least that level.  Use packet 0xa to
+assert an awareness level.  The default is zero if none is specified.
+
+Additions in revision 0x04:
+* Introduced message notifying client of protocol violation.  This is
+the last message sent to a connection before the connection is closed.
+See packet 8 for the format of this message.
+
+Additions in revision 0x03:
+* Database is now visible in stat update message.
+
+
+Additions in revision 0x02:
+* Unique account names.  By default, everyone has an account name of "No
+Account".  You can log on as an account through message 0x0d.  Accounts
+are guaranteed to be unique (only one instance can be logged on at any
+given time) and are password protected.  Valid characters in account
+names are: Any alphanumeric characters, and [] brackets.  Hence "No
+Account" cannot be "spoofed" or faked.  Account names are given through
+a new field at the end of the stats change (0x06) message.  Note that
+creating an account does NOT log you on as that account.  When you log
+on as an account, all users on the BotNet will receive a stats change
+message (0x06) reflecting your new unique account name.
+
+* Administrative support.  The BotNet server now provides
+some basic administrative functionality to the server admin.  Admin
+functions are accessed through message 0x0c.
+
+You can use the following constants to refer to the new messages and
+functionality: ("SEND" indicates that the BotNet server sends this
+message, and "RECV" indicates that the client sends this message).
+
+#define ADMIN_MSG_KICK_USER						(0x00000000) /* SEND,RECV */
+#define ADMIN_MSG_BAN_USER						(0x00000001) /* SEND,RECV */
+#define ADMIN_MSG_QUERY_USER					(0x00000002) /* SEND,RECV */
+#define ADMIN_MSG_QUERY_BANS					(0x00000003) /* SEND,RECV */
+#define ADMIN_MSG_UNBAN							(0x00000004) /* SEND,RECV */
+#define ADMIN_MSG_NOTIFY_ADMIN_PRIVILEGES		(0x00000005) /* SEND	  */
+
+#define MSG_ID_ADMIN							(0x0000000c) /* SEND,RECV */
+
+#define ACCOUNT_MSG_LOGIN						(0x00000000) /* SEND,RECV */
+#define ACCOUNT_MSG_CHANGE_PASSWORD				(0x00000001) /* SEND,RECV */
+#define ACCOUNT_MSG_CREATE_ACCOUNT				(0x00000002) /* SEND,RECV */
+
+#define MSG_ID_ACCOUNT							(0x0000000d) /* SEND,RECV */
+
+
+
+Packet headers are formed as follows:
+(BYTE) protocol version
+(BYTE) packetid
+(SHORT) packetlen
+(...) DATA
+
+Current packets:
+(send to server) id 0x00: keepalive
+Contents: None.
+Response: None.  You should send this once every 2-3 minutes to enable
+the TCP layer to detect connection failures and report them to your
+application.
+
+(send to client) id 0x00: keepalive
+Contents: None.
+Response: None.  The server sends this message to detect connectivity
+failure; clients may safely ignore this message.  This message is sent
+only in the absence of recent activity upon the connection, so do not
+rely on it as a timing mechanism.
+
+(send to server) id 0x01: log on to botnet
+Contents:
+	(STRING:32) bot id
+	(STRING:64) hub password
+Response: For server versions 2 and newer, the server sends back a
+server version advisory (packet 0xa) after accepting a hub logon but
+before confirming such acceptance.  In version 4, if the hub logon is
+rejected, the client is disconnected and no messages are sent.  Prior to
+version 4, the client would receive a notification that the logon was
+unsuccessful.  See packet id 0x01 sent to client.
+
+(send to client) id 0x01: log on status
+Contents:
+	(BOOL) status : 0=FAIL, 1=OK.  In version 4, this message always
+		indicates success.
+	(4) (DWORD) client's IP address : clients inside a NAT device
+		may find this useful for learning their external address.
+Response: On success, the client should proceed to logon and acquire its
+database, as appropriate.
+
+(send to server) id 0x02: update bot stats
+Contents:
+	(STRING:20) unique username on battle.net : This string provides room
+		to specify a name mangle ("Someone#2"), but not to specify
+		gateway.
+	(STRING:36) current channel on battle.net : By convention,
+		"<Not logged on>" is used to indicate clients which are not
+		presently connected.
+	(DWORD) battle.net server ip
+	(STRING:96) database id (which database to use) : includes database
+		password.  Use the following format: "name password\0".
+	(DWORD) cycle status : 0=NotCycling, 1=Cycling
+Response: client receives packet id 0x02.  Client is also assigned a unique
+	botnet identification number.  Prior to receiving this number, clients
+	are prohibited from performing actions which cause interaction with
+	other users.
+
+(send to client) id 0x02: update bot status
+(DWORD) status : 0=FAIL, 1=OK.  In version 4, this message is always success.
+(DWORD) Optional dword which specifies administrative access, if it has
+	changed from its previous value.  If this dword is not present,
+	the client should assume that the access has not changed; the
+	default access is 0.  As noted in the documentation to message 6,
+	administrative access is expressed as a 32-bit mask of features
+	available.  Flags C and L enable insertion of client IP address
+	in message 6, if the client has also negotiated to use revision
+	1 packets (that is, fields marked 4.1 are in use).
+
+--
+
+(send to server) id 0x03: database modification
+Contents:
+	(DWORD) command
+	command 1: request user database
+		(4) (DWORD) Optional dword which specifies maximum age of entries to
+		transfer.  If specified, the server performs an incremental download
+		of the database by transferring all entries modified within the
+		specified window.  For instance, to retrieve changes that occured
+		within the past 5 minutes, use 300 for this value.  Under some
+		conditions, the server may decline to perform an incremental transfer
+		and instead perform a full transfer.  A full transfer is the default
+		if this parameter is omitted.
+	Response: The server responds with id 0x3 and a subcmd specifying the type
+		of transfer, then transfers all relevant database entries as user
+		modifications, then sends a database completion notify in id 0x3.
+		Note that the database transfer start/stop advisories were added in
+		version 4.  Earlier versions provide no inherent way to detect the
+		completion of the transfer.
+	command 2: add a database entry/modify a database entry
+		(STRING) usermask	   : this entry may be any length.
+		However, usermasks longer than 40 characters will be
+		rejected in the same manner as if the client did not
+		have permission to modify the database.  The uncapped
+		nature of this string is done to accomodate clients
+		which modify the database on behalf of users who have
+		not read this specification.  The client may thus relay
+		modification requests on excessively long names without
+		suffering a protocol violation.
+		(STRING:28) flags		: must be uppercase letters only
+		(4) (STRING:64) optional comment		: If this field
+		is omitted, it is presumed to be the null string.  this
+		field may contain any printable characters.  It is
+		distributed to other clients when the change is
+		successful, but is not saved for transmission during
+		subsequent database downloads.
+	Response: Dependent upon client's database notification mode and success
+		of the change.  If the client makes ACL changes immediately (the
+		default), a response is generated only if the modification was
+		rejected.  If the client awaits server confirmation of changes,
+		a response is generated only if the modification was accepted.
+		See packet id 0xa for information on how to specify notification mode.
+	command 3: remove a database entry
+		(STRING:40) usermask
+		(STRING:64) comment		: same as comment in command 2
+	Response: Same behavior as for database modify.
+
+(send to client) id 0x03: database change
+Contents:
+	(DWORD) command
+	(4) command 1: database download control
+		(DWORD) subtype	: this value is zero to indicate a full database
+		transfer is starting, 1 to indicate an incremental transfer is
+		starting, and 2 to indicate that a database transfer (of either type)
+		has finished.  Clients should clear their local ACL if subtype is 0.
+		Clients which display database modification notices to their users
+		are encouraged to disable such display during a database download,
+		as failure to do so would likely fill the screen with database changes.
+	Response: None.
+	command 2: new access list user/modify existing access list user.  During
+		a database download, user creations/modifications are sent in
+		this message.  Additionally, this message is used to confirm
+		successful database changes, to distribute changes made by other
+		clients, and to countermand changes which modified an existing entry.
+		(4.1) (DWORD) sending client's ID	: this is 0 when the message
+		originates from the server 
+		(4.1) (DWORD) timestamp of last modification to database entry
+		(STRING) usermask
+		(STRING) flags
+		(4.1) (STRING) comment		: this is picked by the sending entity and
+		is not parsed by the server.  Clients are encouraged to use this to
+		identify the user who requested the change.
+	Response: None.
+	command 3: remove a database entry
+		(4.1) (DWORD) sending client's ID	: this is 0 when the message
+		originates from the server 
+		(4.1) (DWORD) timestamp of last modification to database entry
+		(STRING) usermask
+		(4.1) (STRING) comment		: same as in command 2
+	Response: None.
+
+--
+
+(send to server) id 0x04: command to bots on same database
+Contents:
+	(STRING:32) sending user
+	(STRING:384) command
+Response: all clients on the same database as the sending client receive
+	packet id 0x04.  If the sending client does not have permission
+	to relay commands to other clients, only the sending client
+	receives command id 0x04 from the server.  The sending client
+	must have write access to the database, or have restricted
+	access and the command match a pre-defined list of acceptable
+	restricted user commands.  If the client does not meet the access
+	requirement, no response is generated to any user (including the sender
+	itself).
+
+(send to client) id 0x04: command over botnet
+Contents:
+	(4.1) (DWORD) sending client's ID
+	(4.1) (DWORD) distribution status
+		0 = broadcast to all users
+		1 = sent to database
+		2 = directed to this client specifically
+	(STRING) sender
+	(STRING) command
+Response: None.
+
+(send to server) id 0x05: cycle request
+(DWORD) count
+(STRING LIST) usernames of bots to cycle
+
+(send to client) id 0x05: cycle request notification
+(STRING) channel to cycle
+
+(send to server) id 0x06: request information about bots on botnet
+Contents: None documented.
+Response: The server sends a series of id 0x6 to the client, one per online
+	user.
+
+(send to client) id 0x06: botnet bot information
+Contents:
+	(DWORD) bot id
+	(4.1) (DWORD) database access flags
+		1 = read
+		2 = write
+		4 = restricted access
+	(4.1) (DWORD) administrative capabilities
+		Specified in Zerobot Traditional Flags Format (ZTFF):
+		A = superuser, can perform any administrative action
+		B = broadcast, may use talk-to-all
+		C = connection, may administer botnet connectivity
+		D = database, may create and maintain databases
+		I = ID control, may create and modify hub IDs
+		S = botnet service
+	(4.1) (Admin only) (DWORD) IP address of the bot being described
+	(STRING:20) bot name
+	(STRING:*) bot channel
+	(DWORD) bot server
+	(2) (STRING:16) unique account name
+	(3) (STRING:*) database
+
+(send to server) id 0x07: command over botnet to all botnet bots (send 0x04 to client)
+Contents: same as command id 0x4 to server.  The only difference between
+	these messages is the distribution status of the resulting message.
+Response: same as command id 0x4.
+
+(send to client) id 0x07: bot disconnecting from botnet
+(DWORD) bot id
+
+(send to server) id 0x08: command to specific botnet bot
+Contents:
+	(DWORD) target bot id
+	(STRING:32) sending user
+	(STRING:384) command
+Response: the server forwards the message to the specified bot in the
+	form of a msg 0x4, providing that:
+	1) The target is online
+	2) The sender has permission to forward commands.  Permission here
+		refers to both relaying and write access, as referenced in command
+		id 0x4.
+	3) The target is on the same database as the sending user
+
+(send to client) id 0x08: protocol violation
+Contents:
+	(DWORD) Error code.  This is message specific.
+	(BYTE) ID of the offending command
+	(WORD) Length of the offending packet
+	(WORD) Length of unprocessed data (length of packets which arrived after the offending packets)
+Response: None.  The server closes the botnet socket immediately after
+sending this message.
+Error codes:
+	1 = unrecognized command ID.  Any other code is command specific
+	Command 1:
+		2 = bad state, client is attempting to authenticate a second time
+		3 = bad size for hub ID
+		4 = bad size for hub password
+		5 = empty hub ID
+		6 = empty hub password
+	Command 2:
+		2 = bad state, client has not authenticated with command 1
+		3 = packet too small
+		4 = bad size for BNCSName
+		5 = 		channel
+		6 = missing server IP
+		7 = bad size for database string
+		8 = missing cycle status
+		9 = empty BNCSName
+		10 = empty channel
+		11 = bad server IP
+		12 = badly formed BNCSName
+		13 = badly formed database string
+	Command 3:
+		2 = missing subcommand
+		3 = bad state, client tried to perform a database
+			modification while invisible
+		4 = invalid subcommand
+		Subcommand 1:
+			No subcommand 1 specific errors.
+		Subcommand 2:
+			5 = missing entry name
+			6 = missing entry flags
+			7 = empty name
+			8 = empty flags
+			9 = malformed entry
+			10 = malformed flags
+		Subcommand 3:
+			5 = packet too small
+			6 = missing entry name
+			7 = empty entry name
+			8 = malformed entry name
+	Command 5:
+		2 = bad state, client tried to perform cycle while not visible
+		3 = missing count
+		4 = count is zero
+		5 = not enough data in packet to satisfy count
+		6 = specified more clients than exist on botnet
+	Command 6:
+		2 = bad state, client tried to query list while
+			invisible; this is illegal since the client is always
+			returned as the first entry in response to this command,
+			and the client must be visible to be returned
+	Command 7:
+		2 = bad state, client tried to issue command while invisible
+		3 = missing sender string
+		4 = missing command
+		5 = empty sender
+		6 = empty command
+		7 = malformed sender name
+	Command 8:
+		2 = bad state, client must be visible
+		3 = no target ID
+		4 = no sender string
+		5 = no command string
+		6 = bad target ID
+		7 = empty sender
+		8 = empty command
+		9 = malformed sender name
+	Command 9:
+		2 = bad state, client must be visible
+		3 = missing selector dword
+		4 = missing new password
+		5 = malformed password
+	Command 10:
+		2 = missing first dword
+		3 = missing second dword
+		4 = unexpected flags in second dword
+	Command 11:
+		2 = bad state, client must be visible
+		3 = missing distribution level
+		4 = missing emote
+		5 = missing target id
+		6 = missing text
+		7 = bad distribution level
+		8 = bad target (only if attempting to whisper a user)
+	Command 12:
+		2 = bad state, client must be visible
+		3 = missing subcommand
+		Other errors are subcommand specific.
+	Command 13:
+		1 = missing subcommand
+		2 = bad subcommand
+		3 = missing username
+		4 = empty username
+		5 = missing password
+		6 = empty password
+		There are no subcommand 0 specific errors.
+		Subcommand 1:
+			7 = missing new password
+			8 = empty new password
+		There are no subcommand 2 specific errors.
+
+(send to server) id 0x09: change database password * Requires 'full' access
+(DWORD) password to change (0: readonly, 1: full, 2: restricted)
+(STRING) new password
+
+(send to client) id 0x09: acknowledge communication version
+Contents:
+	(DWORD) communication version.  This message is sent to confirm
+	acceptance of msg 0x0a.  All subsequent messages will be formed in
+	this style.  That is, clients should not change parsing methods until
+	the server confirms the new style.
+Response: None
+
+(send to server) id 0x0a: specify communication version and client
+	capabilities
+Contents:
+	(DWORD) communication version.  Valid values are 0 (the default), or 1.
+	Messages which have conditionally added fields (as identified by the
+	4.X syntax) will contain fields for which X is not above this value.
+	(DWORD) client capabilities.  Currently only bit 0 is defined.  If set,
+	the client awaits server confirmation of database changes.  If clear,
+	the client updates the local ACL immediately and expects the server to
+	countermand prohibited changes.
+Response: The server updates the communication version and sends 0x9 to the
+	client.  Message 0xa may be sent at any time, and may be resent if the
+	client desires to change the negotiation version.
+
+(send to client) id 0x0a: botnet server version
+Contents:
+	(DWORD) version
+Version information:
+Version 1 supports all packets 0x00 through 0x0b.
+Version 2 supports messages 0x0c and 0x0d.
+Version 4 supports message 0xa to server.
+
+(send to server) id 0x0b: botnet chat
+Contents:
+	(DWORD) command
+		0	: message to all bots
+		1	: message to bots on the same database
+		2	: message to bot specified by id.
+	(DWORD) action	: 0x00=talk, 0x01=emote, any other is dropped
+	(DWORD) id	: for command 0x02, id of bot to send to, otherwise ignored.
+	(STRING:496) message: blank messages are dropped
+Response: the server generates 0xb to the specified other clients.  No
+response is sent to the sending client.
+
+(send to client) id 0x0b: botnet chat
+Contents:
+	(DWORD) command	: same as 0xb to server
+	(DWORD) action	: same as 0xb to server
+	(DWORD) id		: id of source bot (for all commands)
+	(STRING) message	: chat message text
+Response: None.
+
+(send to server) id 0x0d: account management
+Contents:
+	(DWORD) subcommand
+	(STRING:16) account name	: name to acquire
+	* Subcommand 0x00: Login:
+		(STRING:96) account password
+	* Subcommand 0x01: Change password:
+		(STRING:96) old password
+		(STRING:96) new password
+	* Subcommand 0x02: Account create:
+		(STRING:96) account password
+Response: The server returns the result code in 0xd.
+Other subcommand values are reserved for future use.
+The server ensures that there is never more than one user online using a
+given account name.  Account names are restricted to alphanumeric
+characters, brackets, underscores, and dashes.  Invalid characters
+result in failure to create/logon the account.
+
+(send to client) id 0x0d: account management reply
+Contents:
+	(DWORD)	subcommand --- This is the same subcommand as the message being replied to.
+	(BOOL)	: Success/Failure for subcommand
+Response: None.
+
+(send to server) id 0x0e: database change mode.
+	This message marks a client as using certain older versions of
+	BotNetClient.DLL; it is due to be reclaimed in the future and
+	should not be used.
+
+(send to client) id 0x0e: response to c->s 0x0e.
+	This may be safely ignored in preference of specifying database
+	negation behavior as the second parameter of 0x0a.
+
+(send to server) id 0x10: set chat options
+Contents:
+	(BYTE) Subcommand.  Presently only subcommand 0 is defined.
+	* Subcommand 0: chat drop options; the client may omit the
+		four bytes of data, in which case the command will not affect
+		current chat options but will still generate a notification of
+		resulting options.
+		(BYTE) setting for broadcast
+		(BYTE) setting for database
+		(BYTE) setting for whisper
+		(BYTE) refuse whispers from other databases
+		For each of the first three bytes, 0 (the default for
+		clients which do not send this message) allows all chat
+		to be received.  1 refuses chat from users who are not
+		on an account.  2 refuses all chat.  Note that messages
+		from administrators ignore these settings.  This command
+		is provided in recognition that some clients drop all
+		chat received from certain sources.  Such clients may
+		use this command to advise the server of their intent to
+		discard chat.
+Response:
+	The server sends back a message with the same subcommand.  See below for contents.
+
+(send to client) id 0x10: inform chat options
+Contents:
+	(BYTE) Subcommand.  Presently only subcommand 0 is defined.
+	* Subcommand 0: chat drop options.  Same contents as 0x10 to server.

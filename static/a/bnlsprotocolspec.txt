@@ -1,0 +1,1288 @@
+BNLS - Battle.net Logon Server - Protocol Specification
+=======================================================
+Document written by Yoni and Skywing.
+
+
+-----------------------------------------------
+
+
+UPDATE 01.11.2006:
+
+A new message - BNLS_VERSIONCHECKEX2 (0x1A) has been defined.  This message is not
+currently active on BNLS; however, if activated, it will allow extended future
+compatibility with new variations on the version checking mechanism.
+
+The legacy version check messages (BNLS_VERSIONCHECK, BNLS_VERSIONCHECKEX) will continue to default to the old-style version check system, for compatibility reasons.
+As a result, you must switch to the new version check message if you wish to support products that use the new-style version check system (or future systems).
+
+
+-----------------------------------------------
+
+
+UPDATE 22.01.2006:
+
+The documentation for BNLS_LOGONPROOF (0x03) and BNLS_CHANGEPROOF (0x06) has been updated.
+These messages now include a work around for a Battle.net server bug that would in some cases cause the Battle.net server to improperly reject a logon request.
+If BNLS detects this condition, it will send a zeroed proof to the client.  The client should then abort the logon sequence and retry the Battle.net connection.
+There is no other way to work around this problem besides abandoning the current logon sequence, which involves reconnecting to Battle.net.
+
+The server NLS messages provided by BNLS are not affected by this Battle.net-specific bug.
+
+
+-----------------------------------------------
+
+
+UPDATE 19.01.2006:
+
+A new message - BNLS_VERSIONCHECKEX (0x18) has been created to improve efficiency and support multiple pending requests.
+The message combines the functionality of BNLS_VERSIONCHECK and BNLS_REQUESTVERSIONBYTE, and adds a cookie that is returned with each request.
+Because requests are executed out of order, the cookie field is important if you are making multiple outstanding BNLS_VERSIONCHECKEX requests.
+
+
+-----------------------------------------------
+
+
+UPDATE 14.08.2004:
+
+The behavior for how BNLS handles account logins has been changed again.
+Since the removal of the requirement of accounts, the behavior has been like this:
+If the client sends a valid account name, but a wrong auth password, BNLS lets the client in (and registers an "anonymous" login).
+Now, it has changed to:
+If the client sends a valid account name, but a wrong auth password, BNLS disconnects the client. Login anonymously in a different way please.
+One way to login anonymously is to simply not send BNLS_AUTHORIZE (0x0e), nor BNLS_AUTHORIZEPROOF (0x0f).
+This behavior has changed to allow people who still own accounts to disable old bots by changing their auth password, as was possible before.
+
+The documentation of BNLS_AUTHORIZEPROOF (0x0f) has been changed accordingly.
+
+
+-----------------------------------------------
+
+
+UPDATE 07.08.2004:
+
+A new status code, 0x0F, has been documented for SID_AUTH_ACCOUNTLOGONPROOF (0x54).
+Thanks to UserLoser for spotting and reporting this one.
+
+
+-----------------------------------------------
+
+
+UPDATE 28.06.2004:
+
+Accounts are no longer required.
+The documentation of BNLS_AUTHORIZE (0x0e) and BNLS_AUTHORIZEPROOF (0x0f) has been changed accordingly.
+
+
+-----------------------------------------------
+
+
+UPDATE 19.04.2004:
+
+Added BNLSChecksumCls.cs as a C# code sample.
+This file is unofficial and unsupported - it was donated by l)ragon or dRAgoN or however he spells it.
+Use this at your own risk. We cannot be held responsible for any damage caused by use or misuse of this file.
+Which is just as well, since we cannot be held responsible for any damage caused by use or misuse of anything else that has to do with BNLS, anyway.
+
+
+-----------------------------------------------
+
+
+UPDATE 20.01.2004:
+
+The documentation for BNLS_LOGONPROOF (0x03), BNLS_CHANGEPROOF (0x06), and BNLS_UPGRADEPROOF (0x08) has been updated to accurately state that these operations are mutually exclusive and cannot be performed simultaneously (on the same connection).
+This is not a change in the protocol policy; BNLS has never permitted clients to perform these operations simultaneously (on the same connection).
+
+
+-----------------------------------------------
+
+
+UPDATE 18.12.2003:
+
+The documentation for SID_AUTH_ACCOUNTLOGONPROOF (0x54) has been updated to include the status code 0x0E, which states that an E-mail should be registered for the account.
+The E-mail registration packets are not documented here. You don't have to register the account, though, so this status code may be safely ignored and treated as a success code.
+
+
+-----------------------------------------------
+
+
+UPDATE 01.07.2003:
+
+Warcraft III: The Frozen Throne CD-keys, version checks, and version byte requests are
+fully supported.  Related documentation has been updated accordingly to match the new
+functionality.
+The new product identifier, PRODUCT_THEFROZENTHRONE is defined as the value 0x08.
+
+
+-----------------------------------------------
+
+
+UPDATE 17.02.2003:
+
+The documentation for BNLS_HASHDATA (0x0b) has been updated.
+There are now flags available for extended functionality.
+A significant flag is HASHDATA_FLAG_DOUBLEHASH (0x02), which lets the client calculate a double-hash of a password in one BNLS message (instead of two messages previously).
+
+
+-----------------------------------------------
+
+
+UPDATE 25.12.2002:
+
+Changed "the official BNLS server" under "BNLS General Info" from www.valhallalegends.com to bnls.valhallalegends.com.
+Note: The IP address is currently the same, but using bnls.valhallalegends.com ensures compatibility in case the IP changes in the future.
+
+
+-----------------------------------------------
+
+
+UPDATE 03.10.2002:
+
+Added several new messages related to support for checking NLS logons (both revisions 1 and 2).  These messages are intended to be used by Battle.net server emulators.
+Added BNLS_RESERVESERVERSLOTS (0x12).
+This message must be used before any other server-oriented message, and is used to allocate a given number of slots for performing concurrent NLS operations.
+Added BNLS_SERVERLOGONCHALLENGE (0x13).
+This message is used to calculate the server's response to SID_AUTH_ACCOUNTLOGON (0x53).
+Added BNLS_SERVERLOGONPROOF (0x14).
+This message is used to both calculate the server's response to SID_AUTH_ACCOUNTLOGONPROOF (0x54), and to verify a client's logon attempt.
+The NLS logon checking messages are signifigantly optimized for servers that share a single connection for all logon checking requests.
+For maxium performance, server applications should share a single connection for all logon checking operations, as this will greatly reduce overhead and response times.
+Using a seperate connection for each logon checking request is much slower than using a shared (persistant) connection, and is strongly discouraged.
+
+
+-----------------------------------------------
+
+
+UPDATE 07.09.2002:
+
+Changed the documentation on the message SID_AUTH_INFO (0x50), and added a new message: BNLS_VERIFYSERVER (0x11).
+The Battle.net servers sometimes (currently only with Warcraft 3) send a signature calculated from the server's IP address on the end of the SID_AUTH_INFO (0x50) message.
+Use BNLS_VERIFYSERVER (0x11) to verify this signature.
+
+
+-----------------------------------------------
+
+
+UPDATE 16.08.2002:
+
+Added a new message: BNLS_REQUESTVERSIONBYTE (0x10).
+This message is optional. You can use it to retrieve the latest version byte for a specified product.
+
+
+-----------------------------------------------
+
+
+UPDATE 28.07.2002:
+
+As of today, BNLS no longer allows unauthorized clients.
+Any client must complete authorization through the BNLS_AUTHORIZE (0x0e) and BNLS_AUTHORIZEPROOF (0x0f) messages immediately upon connection.
+If any message is sent before authorization is completed, the connection is terminated.
+
+
+-----------------------------------------------
+
+
+UPDATE 25.07.2002:
+
+Changed the documentation on the message BNLS_AUTHORIZE (0x0e), and added a new message: BNLS_AUTHORIZEPROOF (0x0f).
+Now, instead of sending the password in plaintext, a simple checksum algorithm is used.
+(Note: As the update below says, it is still possible to not authorize, but this will be changed in a few days.)
+
+
+-----------------------------------------------
+
+
+UPDATE 25.07.2002:
+
+The documentation for SID_AUTH_ACCOUNTUPGRADEPROOF (0x58) incorrectly stated:
+"0x00: Password changed!"
+This was changed to:
+"0x00: Account upgraded!"
+
+
+-----------------------------------------------
+
+
+UPDATE 25.07.2002:
+
+Added a new message: BNLS_AUTHORIZE (0x0e).
+NOTE: The documentation states "This message must be sent before sending any other message."
+However, currently it is possible to get away without authorizing.
+This is to give bot authors the time to implement this message.
+When BNLS is modified to no longer allow unauthorized clients, this document will be updated.
+
+
+-----------------------------------------------
+
+
+UPDATE 23.07.2002:
+
+Added status codes to SID_AUTH_CHECK (0x51):
+0x0210: Invalid LOD CD-key.
+0x0211: LOD CD-key in use. (More info: CD-key owner name of the user who's using the CD-key.)
+0x0212: LOD CD-key banned by Battle.net.
+0x0213: LOD CD-key has invalid product code.
+
+
+-----------------------------------------------
+
+
+UPDATE 09.07.2002:
+
+Added status code to SID_AUTH_CHECK (0x51):
+"0x0200: Invalid CD-key."
+
+
+-----------------------------------------------
+
+
+UPDATE 08.07.2002:
+
+Changed the documentation for BNLS_CHOOSENLSREVISION (0x0d).
+The revision numbers are no longer defined in the protocol specification.
+The client should just pass the revision from SID_AUTH_INFO (0x50) directly to BNLS_CHOOSENLSREVISION (0x0d).
+This is for future compatibility - when more revisions are added, the clients will not need to change anything to support them - they will only need to be implemented on the BNLS server.
+
+
+-----------------------------------------------
+
+
+UPDATE 08.07.2002:
+
+SID_AUTH_INFO (0x50) documentation incorrectly stated:
+"(BOOL) TRUE if NLS (New Logon System) is enabled for the specified product ID, or FALSE otherwise."
+This was changed to:
+"(DWORD) The NLS revision to use."
+The notes for this message and the documentation for BNLS_CHOOSENLSREVISION (0x0d) were modified accordingly.
+
+
+-----------------------------------------------
+
+
+UPDATE 07.07.2002:
+
+Added a new message: BNLS_CHOOSENLSREVISION (0x0d).
+NOTE: If you want to log on as Warcraft 3 Retail, you must use this message.
+For backward compatibility, however, it is not necessary to send this message to log on as other clients.
+
+
+-----------------------------------------------
+
+
+UPDATE 07.07.2002:
+
+SID_AUTH_INFO (0x50) documentation stated:
+"(DWORD) Platform ID. Valid platform IDs are: 'IX86' (Intel x86), 'PMAC' (Macintosh)."
+This was changed to:
+"(DWORD) Platform ID. Valid platform IDs are: 'IX86' (Intel x86), 'PMAC' (Macintosh generic), 'XMAC' (Macintosh OS-X)."
+
+
+-----------------------------------------------
+
+
+UPDATE 30.06.2002:
+
+Added to BNLS General Info:
+"If the BNLS server doesn't receive any message from a client for 1 minute, the client is disconnected. The BNLS_NULL (0x00) message may be used to keep a connection alive."
+
+
+-----------------------------------------------
+
+
+UPDATE 30.06.2002:
+
+Added note to BNLS_UPGRADECHALLENGE (0x07) documentation:
+"Important: You must send BNLS_LOGONCHALLENGE (0x02) or BNLS_CHANGECHALLENGE (0x05) before sending this. Otherwise, the results are meaningless."
+
+
+-----------------------------------------------
+
+
+UPDATE 30.06.2002:
+
+BNLS_CDKEY_EX (0x0c) documentation for the flag CDKEY_SAME_SESSION_KEY (0x01) incorrectly stated:
+"When used in combination with CDKEY_GIVEN_SESSION_KEY (0x02), a single client session key is specified immediately after the flags."
+This was changed to:
+"When used in combination with CDKEY_GIVEN_SESSION_KEY (0x02), a single client session key is specified immediately after the server session key(s)."
+
+
+-----------------------------------------------
+
+
+Unless otherwise specified, the ambiguous data types used in the BNLS protocol and the BNCS protocol are defined as:
+
+BYTE: 8-bit unsigned integer.
+CHAR: 8-bit signed integer.
+WORD: 16-bit unsigned integer in Intel (little-endian) byte order.
+SHORT: 16-bit signed integer in Intel (little-endian) byte order.
+DWORD: 32-bit unsigned integer in Intel (little-endian) byte order.*
+LONG: 32-bit signed integer in Intel (little-endian) byte order.
+ULONGLONG: 64-bit unsigned integer in Intel (little-endian) byte order.
+String: Null-terminated ANSI (multi-byte) string.
+BOOL: Same as DWORD, but has only two valid values: TRUE (1), and FALSE (0).
+
+* There may be fields that appear to be 4-char strings, but are actually DWORDs.
+For example, the DWORD 'IX86' looks like the string "68XI" without a null-terminator.
+
+
+
+BNLS General Info
+-----------------
+
+The BNLS server listens on TCP/IP port 9367.
+The official BNLS server is bnls.valhallalegends.com.
+
+BNLS message format:
+
+(WORD) Message size, including this 3-byte header
+(BYTE) Message ID
+(....) Message-dependant data
+
+There are currently 21 supported message IDs.
+
+#define BNLS_NULL                       (0x00)
+#define BNLS_CDKEY                      (0x01)
+#define BNLS_LOGONCHALLENGE             (0x02)
+#define BNLS_LOGONPROOF                 (0x03)
+#define BNLS_CREATEACCOUNT              (0x04)
+#define BNLS_CHANGECHALLENGE            (0x05)
+#define BNLS_CHANGEPROOF                (0x06)
+#define BNLS_UPGRADECHALLENGE           (0x07)
+#define BNLS_UPGRADEPROOF               (0x08)
+#define BNLS_VERSIONCHECK               (0x09)
+#define BNLS_CONFIRMLOGON               (0x0a)
+#define BNLS_HASHDATA                   (0x0b)
+#define BNLS_CDKEY_EX                   (0x0c)
+#define BNLS_CHOOSENLSREVISION          (0x0d)
+#define BNLS_AUTHORIZE                  (0x0e)
+#define BNLS_AUTHORIZEPROOF             (0x0f)
+#define BNLS_REQUESTVERSIONBYTE         (0x10)
+#define BNLS_VERIFYSERVER               (0x11)
+#define BNLS_RESERVESERVERSLOTS         (0x12)
+#define BNLS_SERVERLOGONCHALLENGE       (0x13)
+#define BNLS_SERVERLOGONPROOF           (0x14)
+#define BNLS_RESERVED0                  (0x15)
+#define BNLS_RESERVED1                  (0x16)
+#define BNLS_RESERVED2                  (0x17)
+#define BNLS_VERSIONCHECKEX             (0x18)
+#define BNLS_RESERVED3                  (0x19)
+#define BNLS_VERSIONCHECKEX2            (0x1a)
+
+A message and its response have the same ID. (The response to BNLS_CDKEY is BNLS_CDKEY, etc)
+
+Requests are handled asynchronously, so do not expect that the server will respond to messages in the order that the client sent them.
+
+If an ill-formed or unrecognized message is sent, the server closes the connection.
+
+If the BNLS server doesn't receive any message from a client for 1 minute, the client is disconnected. The BNLS_NULL (0x00) message may be used to keep a connection alive.
+
+
+
+BNLS_NULL (0x00)
+----------------
+
+This message is empty and may be used to keep the connection alive.
+The client is not required to send this.
+There is no response from the server.
+
+
+
+BNLS_CDKEY (0x01)
+-----------------
+
+This message will encrypt your CD-key, and will reply with the properly encoded CD-key as it is supposed to be sent in the message SID_AUTH_CHECK (0x51). It now works with CD-keys of all products.
+
+(DWORD) Session key from Battle.net. This is the second DWORD in SID_AUTH_INFO (0x50).
+(String) CD-key. No dashes or spaces.
+
+Response:
+---------
+
+(BOOL) Success (TRUE if successful, FALSE otherwise). If this is FALSE, there is no more data in this message.
+(DWORD) Client session key.
+(9 DWORDs) CD-key data.
+
+
+
+BNLS_LOGONCHALLENGE (0x02)
+--------------------------
+
+This message will give you data you need for SID_AUTH_ACCOUNTLOGON (0x53).
+You must send this before you can send BNLS_LOGONPROOF (0x03).
+
+(String) Account name.
+(String) Account password.
+
+Response:
+---------
+
+(8 DWORDs) Data for SID_AUTH_ACCOUNTLOGON (0x53).
+
+
+
+BNLS_LOGONPROOF (0x03)
+----------------------
+
+This message will parse data from SID_AUTH_ACCOUNTLOGON (0x53) and will reply with data to send in SID_AUTH_ACCOUNTLOGONPROOF (0x54).
+You must send BNLS_LOGONCHALLENGE (0x02) before you can send this.
+This message cannot be used simultaneously with BNLS_CHANGEPROOF (0x06) or BNLS_UPGRADEPROOF (0x08).
+
+(16 DWORDs) Data from SID_AUTH_ACCOUNTLOGON (0x53).
+
+Response:
+---------
+
+(5 DWORDs) Data for SID_AUTH_ACCOUNTLOGONPROOF (0x54).*
+
+
+* If this data is composed entirely of zeroes, then BNLS has detected a condition that would cause the Battle.net server to improperly fail your logon request.
+In this case, you must reconnect to Battle.net.
+
+
+
+BNLS_CREATEACCOUNT (0x04)
+-------------------------
+
+This message will give you data you need for SID_AUTH_ACCOUNTCREATE (0x52).
+
+(String) Account name.
+(String) Account password.
+
+Response:
+---------
+
+(16 DWORDs) Data for SID_AUTH_ACCOUNTCREATE (0x52).
+
+
+
+BNLS_CHANGECHALLENGE (0x05)
+---------------------------
+
+This message will give you data you need for SID_AUTH_ACCOUNTCHANGE (0x55).
+This message is used to change the password of an existing account.
+You must send this before you can send BNLS_CHANGEPROOF (0x06).
+
+(String) Account name.
+(String) Account old password.
+(String) Account new password.
+
+Response:
+---------
+
+(8 DWORDs) Data for SID_AUTH_ACCOUNTCHANGE (0x55).
+
+
+
+BNLS_CHANGEPROOF (0x06)
+-----------------------
+
+This message will parse data from SID_AUTH_ACCOUNTCHANGE (0x55) and will reply with data to send in SID_AUTH_ACCOUNTCHANGEPROOF (0x56).
+You must send BNLS_CHANGECHALLENGE (0x05) before you can send this.
+This message cannot be used simultaneously with BNLS_LOGONPROOF (0x03) or BNLS_UPGRADEPROOF (0x08).
+
+(16 DWORDs) Data from SID_AUTH_ACCOUNTCHANGE (0x55).
+
+Response:
+---------
+
+(21 DWORDs) Data for SID_AUTH_ACCOUNTCHANGEPROOF (0x56).*
+
+
+* If the last five DWORDs of this data are composed entirely of zeroes, then BNLS has detected a condition that would cause the Battle.net server to improperly fail your password change request.
+In this case, you must reconnect to Battle.net.
+
+
+
+BNLS_UPGRADECHALLENGE (0x07)
+----------------------------
+
+This message will give you data you need for SID_AUTH_ACCOUNTUPGRADE (0x57).
+This message is used to upgrade an existing account from Old Logon System to New Logon System.
+You must send this before you can send BNLS_UPGRADEPROOF (0x08).
+
+Important: You must send BNLS_LOGONCHALLENGE (0x02) or BNLS_CHANGECHALLENGE (0x05) before sending this. Otherwise, the results are meaningless.
+
+Note: Since Old Logon System and New Logon System are incompatible, you can change the password and upgrade the account at the same time.
+This is not required - the old password and the new password may be identical for this message.
+
+(String) Account name.
+(String) Account old password.
+(String) Account new password. (May be identical to old password but still must be provided.)
+
+Response:
+---------
+
+(BOOL) Success code. If this is TRUE, you may send SID_AUTH_ACCOUNTUPGRADE (0x57).
+Currently, no error conditions are defined, so this is always TRUE.
+
+
+
+BNLS_UPGRADEPROOF (0x08)
+------------------------
+
+This message will parse data from SID_AUTH_ACCOUNTUPGRADE (0x57) and will reply with data to send in SID_AUTH_ACCOUNTUPGRADEPROOF (0x58).
+You must send BNLS_UPGRADECHALLENGE (0x07) before you can send this.
+This message cannot be used simultaneously with BNLS_LOGONPROOF (0x03) or BNLS_CHANGEPROOF (0x06).
+
+(DWORD) Session key from SID_AUTH_ACCOUNTUPGRADE (0x57).
+
+Response:
+---------
+
+(22 DWORDs) Data for SID_AUTH_ACCOUNTUPGRADEPROOF (0x58).
+
+
+
+BNLS_VERSIONCHECK (0x09)
+------------------------
+
+This message will request a fast version check. Now works with all products.
+
+(DWORD) Product ID.*
+(DWORD) Version DLL digit in the range 0-7. (For example, for IX86Ver1.mpq this is 1)
+(String) Checksum formula.
+
+* Valid product IDs are:
+
+#define PRODUCT_STARCRAFT             (0x01)
+#define PRODUCT_BROODWAR              (0x02)
+#define PRODUCT_WAR2BNE               (0x03)
+#define PRODUCT_DIABLO2               (0x04)
+#define PRODUCT_LORDOFDESTRUCTION     (0x05)
+#define PRODUCT_JAPANSTARCRAFT        (0x06)
+#define PRODUCT_WARCRAFT3             (0x07)
+#define PRODUCT_THEFROZENTHRONE       (0x08)
+
+Response:
+---------
+
+(BOOL) Success (TRUE if successful, FALSE otherwise). If this is FALSE, there is no more data in this message.
+(DWORD) Version.
+(DWORD) Checksum.
+(String) Version check stat string.
+
+
+
+BNLS_CONFIRMLOGON (0x0a)
+------------------------
+
+This message will confirm that the server really knows your password.
+May be used after "proof" messages: BNLS_LOGONPROOF (0x03), BNLS_CHANGEPROOF (0x06), BNLS_UPGRADEPROOF (0x08).
+
+(5 DWORDs) Password proof from Battle.net.
+
+Response:
+---------
+
+(BOOL) TRUE if the server knows your password, FALSE otherwise.
+If this is FALSE, the Battle.net connection should be closed by the client.
+
+
+
+BNLS_HASHDATA (0x0b)
+--------------------
+
+This message will calculate the hash of the given data.
+The hashing algorithm used is the Battle.net standard hashing algorithm also known as "broken SHA-1".
+
+(DWORD) The size of the data to be hashed. Note: This is no longer restricted to 64 bytes.
+(DWORD) Flags.*
+(Any type of data) Data to be hashed.
+(Optional DWORD) Client key. Present only if HASHDATA_FLAG_DOUBLEHASH (0x02) is specified.
+(Optional DWORD) Server key. Present only if HASHDATA_FLAG_DOUBLEHASH (0x02) is specified.
+(Optional DWORD) Cookie. Present only if HASHDATA_FLAG_COOKIE (0x04) is specified.
+
+* The flags may be zero, or any bitwise combination of the defined flags.
+Currently, the following flags are defined:
+
+#define HASHDATA_FLAG_UNUSED          (0x01)
+#define HASHDATA_FLAG_DOUBLEHASH      (0x02)
+#define HASHDATA_FLAG_COOKIE          (0x04)
+
+HASHDATA_FLAG_UNUSED (0x01):
+This flag has no effect.
+
+HASHDATA_FLAG_DOUBLEHASH (0x02):
+If this flag is present, the server will calculate a double hash.
+First it will calculate the hash of the data. Then it will prepend the client key and the server key to the resulting hash, and calculate the hash of the result.
+If this flag is present, the client key and server key DWORDs must be specified in the request after the data.
+This may be used to calculate password hashes for the "Old Logon System".
+
+HASHDATA_FLAG_COOKIE (0x04):
+If this flag is present, a cookie DWORD is specified in the request.
+This is an application-defined value that is echoed back to the client in the response.
+
+
+
+Response:
+---------
+
+(5 DWORDs) The data hash.
+(Optional DWORD) Cookie. Same as the cookie from the request. Present only if HASHDATA_FLAG_COOKIE (0x04) is specified.
+
+
+
+BNLS_CDKEY_EX (0x0c)
+--------------------
+
+This message will encrypt your CD-key or CD-keys using the given flags.
+
+(DWORD) Cookie. This value has no special meaning to the server and will simply be echoed to the client in the response.
+(BYTE) Amount of CD-keys to encrypt. Must be between 1 and 32.
+(DWORD) Flags.*
+(DWORD or DWORDs) Server session key(s), depending on the flags.
+(Optional DWORD or DWORDs) Client session key(s), depending on the flags.
+(String or strings) CD-keys. No dashes or spaces. The client can use multiple types of CD-keys in the same packet.
+
+* The flags may be zero, or any bitwise combination of the defined flags.
+Currently, the following flags are defined:
+
+#define CDKEY_SAME_SESSION_KEY          (0x01)
+#define CDKEY_GIVEN_SESSION_KEY         (0x02)
+#define CDKEY_MULTI_SERVER_SESSION_KEYS (0x04)
+#define CDKEY_OLD_STYLE_RESPONSES       (0x08)
+
+CDKEY_SAME_SESSION_KEY (0x01):
+This flag specifies that all the returned CD-keys will use the same client session key.
+When used in combination with CDKEY_GIVEN_SESSION_KEY (0x02), a single client session key is specified immediately after the server session key(s).
+When used without CDKEY_GIVEN_SESSION_KEY (0x02), a client session key isn't sent in the request, and the server will create one.
+When not used, each CD-key gets its own client session key.
+This flag has no effect if the amount of CD-keys to encrypt is 1.
+
+CDKEY_GIVEN_SESSION_KEY (0x02):
+This flag specifies that the client session keys to be used are specified in the request.
+When used in combination with CDKEY_SAME_SESSION_KEY (0x01), a single client session key is specified immediately after the server session key(s).
+When used without CDKEY_SAME_SESSION_KEY (0x01), an array of client session keys (as many as the amount of CD-keys) is specified.
+When not used, client session keys aren't included in the request.
+
+CDKEY_MULTI_SERVER_SESSION_KEYS (0x04):
+This flag specifies that each CD-key has its own server session key.
+When specified, an array of server session keys (as many as the amount of CD-keys) is specified.
+When not specified, a single server session key is specified.
+This flag has no effect if the amount of CD-keys to encrypt is 1.
+
+CDKEY_OLD_STYLE_RESPONSES (0x08):
+Specifies that the response to this packet is a number of BNLS_CDKEY (0x01) responses, instead of a BNLS_CDKEY_EX (0x0c) response.
+The responses are guaranteed to be in the order of the CD-keys' appearance in the request.
+Note that when this flag is specified, the Cookie cannot be echoed. (It must still be included in the request.)
+
+
+
+Note: When using Lord of Destruction, two CD-keys are encrypted, and they must share the same client session key.
+There are several ways to do this:
+One way is to provide both CD-keys in BNLS_CDKEY_EX (0x0c) using the flag CDKEY_SAME_SESSION_KEY (0x01).
+Another way is to use BNLS_CDKEY (0x01) to encrypt the first CD-key, then use BNLS_CDKEY_EX (0x0c) using the flag CDKEY_GIVEN_SESSION_KEY (0x02) to encrypt the second CD-key with the same client session key.
+
+
+
+Response:
+---------
+
+When the flags don't contain CDKEY_OLD_STYLE_RESPONSES (0x08), the response is a BNLS_CDKEY_EX (0x0c) message:
+
+(DWORD) Cookie. Same as the value sent to the server in the request.
+(BYTE) Amount of CD-keys that were requested.
+(BYTE) Amount of CD-keys that were successfully encrypted.
+(DWORD) Bit mask for the success code of each CD-key. Each bit of the 32 bits in this DWORD is 1 for success or 0 for failure. The least significant bit specifies the success code of the first CD-key provided. Bits that exceed the amount of CD-keys provided are set to 0.
+
+The following fields repeat for each successful CD-key (they do not exist for failed CD-keys):
+
+(DWORD) Client session key.
+(9 DWORDs) CD-key data.
+
+
+
+BNLS_CHOOSENLSREVISION (0x0d)
+-------------------------------
+
+This message instructs the server which revision of NLS you want to use.
+
+(DWORD) NLS revision number.
+
+The NLS revision number is given by Battle.net in SID_AUTH_INFO (0x50).
+
+
+
+Response:
+---------
+
+(BOOL) Success code.
+If this is TRUE, the revision number was recognized by the server and will be used.
+If this is FALSE, the revision number was rejected by the server and this request is ignored.
+
+NOTE: The default revision number is 1.
+Therefore, if Battle.net reports a revision number of 1, this message may be omitted.
+
+
+
+BNLS_AUTHORIZE (0x0e)
+---------------------
+
+NOTE: You no longer have to send this.
+This message logs on to the BNLS server.
+
+(String) Bot ID.
+
+Note: The bot ID is not case sensitive, and is limited to 31 characters.
+This message must be sent before sending any other message.
+To get a bot ID and password, ask Yoni or Skywing.
+
+
+
+Response:
+---------
+
+The following response is always sent:
+
+(DWORD) Server code.
+
+The client will calculate the checksum of the auth password and the server code using the BNLS Checksum Algorithm, described in the appendix at the bottom of this document.
+The result is sent in BNLS_AUTHORIZEPROOF (0x0f).
+
+If the bot ID sent in BNLS_AUTHORIZE (0x0e) did not exist, then this message is still sent, as backwards compatibility with the previous version of BNLS, which required authorization.
+
+
+
+BNLS_AUTHORIZEPROOF (0x0f)
+--------------------------
+
+This is sent to the server when receiving the status code in BNLS_AUTHORIZE (0x0e).
+
+(DWORD) Checksum. For more info, see the appendix at the bottom of this document.
+
+
+
+Response:
+---------
+
+If the client sent a valid account name, but a wrong password checksum, then BNLS disconnects the client.
+If the client sent an invalid account name, or a valid account name with a correct password checksum, the following response is sent:
+
+(DWORD) Status code.
+
+The following status codes are defined:
+
+#define STATUS_AUTHORIZED               (0x00)
+#define STATUS_UNAUTHORIZED             (0x01)
+
+STATUS_AUTHORIZED (0x00) means the login was performed as a registered account.
+STATUS_UNAUTHORIZED (0x01) means an anonymous login was performed.
+
+
+
+BNLS_REQUESTVERSIONBYTE (0x10)
+------------------------------
+
+This message requests the latest version byte for a given product.
+The version byte is sent to Battle.net in SID_AUTH_INFO (0x50).
+
+(DWORD) Product ID.*
+
+* Valid product IDs are:
+
+#define PRODUCT_STARCRAFT             (0x01)
+#define PRODUCT_BROODWAR              (0x02)
+#define PRODUCT_WAR2BNE               (0x03)
+#define PRODUCT_DIABLO2               (0x04)
+#define PRODUCT_LORDOFDESTRUCTION     (0x05)
+#define PRODUCT_JAPANSTARCRAFT        (0x06)
+#define PRODUCT_WARCRAFT3             (0x07)
+#define PRODUCT_THEFROZENTHRONE       (0x08)
+
+
+
+Response:
+---------
+
+(DWORD) On failure (invalid product ID), this is 0. On success, this is equal to the requested product ID.
+(DWORD) Latest version byte for specified product. If the previous DWORD is 0, this DWORD is not included in the message.
+
+
+
+BNLS_VERIFYSERVER (0x11)
+------------------------
+
+This messages verifies a server's signature, which is based on the server's IP.
+The signature is optional (currently sent only with Warcraft 3), and is sent in SID_AUTH_INFO (0x50).
+
+(DWORD) Server's IP.
+(128 bytes) Signature.
+
+
+
+Response:
+---------
+
+(BOOL) Success. (If this is TRUE, the signature matches the server's IP - if this is FALSE, it does not.)
+
+
+
+BNLS_RESERVESERVERSLOTS (0x12)
+------------------------------
+
+This message reserves a number of slots for concurrent NLS checking operations.
+No other NLS checking messages can be sent before this message has been sent.
+This message cannot be sent more than once per connection.
+
+(DWORD) Number of slots to reserve.
+
+BNLS may limit the number of slots to a reasonable value.
+
+
+
+Response:
+---------
+
+(DWORD) Number of slots reserved.
+
+This may be equal to the number of slots requested, although it does not necessarily have to be the same value.
+Valid slot indicies are in the range of [0, Number of slots reserved - 1].
+Each slot stores state information about a NLS checking operation.
+A logon checking session must be finished on the same slot on which it was started.
+If a logon checking session is abandoned before it is completed, no special action is required.  Starting a new logon checking session on a slot overwrites all previous state information.
+A logon checking session cannot be resumed if the connection to BNLS is interrupted before it is completed.
+
+
+
+BNLS_SERVERLOGONCHALLENGE (0x13)
+--------------------------------
+
+This message initializes a new logon checking session and calculates the values needed for the server's reply to SID_AUTH_ACCOUNTLOGON (0x53).
+BNLS_RESERVESERVERSLOTS (0x12) must be sent before this message to reserve slots for logon checking sessions.
+
+(DWORD) Slot index.
+(DWORD) NLS revision number.
+(16 DWORDs) Data from account database.
+(8 DWORDs) Data from the client's SID_AUTH_ACCOUNTLOGON (0x53) request.
+
+Both the slot indicies and the NLS revision number follow their respective conventions introduced earlier in this document.
+The account database data is first received from the client's SID_AUTH_ACCOUNTCREATE (0x04) message.  This information must be stored by the server's account database for logon checking.
+If the account database data is invalid, then the logon checking session will not succeed.
+This message initializes a slot with all the information required for it to operate, including the NLS revision.
+Although BNLS supports switching the NLS revision of a given slot, it can respond to requests slightly faster if the same NLS revision is used for the same slots in a given connection.
+
+
+
+Response:
+---------
+
+(DWORD) Slot index.
+(16 DWORDs) Data for the server's SID_AUTH_ACCOUNTLOGON (0x53) response.
+
+The slot index is returned since individual operations may be returned in a different order than they are requested.
+This message can also be used to calculate the server's SID_AUTH_ACCOUNTCHANGE (0x55) response.
+Simply substitute the SID_AUTH_ACCOUNTLOGON (0x53) data with the SID_AUTH_ACCOUNTCHANGE (0x55) data.
+
+
+
+BNLS_SERVERLOGONPROOF (0x14)
+----------------------------
+
+This message performs two operations.
+First, it checks if the client's logon was successful.
+Second, it calculates the data for the server's reply to SID_AUTH_ACCOUNTLOGONPROOF (0x54).
+If this data is not correct, then the client will not accept the logon attempt as valid.
+
+(DWORD) Slot index.
+(5 DWORDs) Data from the client's SID_AUTH_ACCOUNTLOGONPROOF (0x54) request.
+(STRING) The client's account name.
+
+
+
+Response:
+---------
+
+(DWORD) Slot index.
+(BOOL) Success. (If this is TRUE, then the client's logon information was valid.  Otherwise, if it is FALSE, then the client's logon information was invalid, and the logon request must be denied.)
+(5 DWORDs) Data for the server's SID_AUTH_ACCOUNTLOGONPROOF (0x54) response.
+
+After this message is received, the logon checking sequence for a particular logon session is complete.
+This message can also be used to calculate the server's SID_AUTH_ACCOUNTCHANGEPROOF (0x56) response, and check the client's change password request.
+Simply substitute the SID_AUTH_ACCOUNTLOGONPROOF (0x54) data with the SID_AUTH_ACCOUNTCHANGEPROOF (0x56) data.
+
+
+
+BNLS_VERSIONCHECKEX (0x18)
+--------------------------
+
+This message performs two operations.
+First, will request a fast version check. Now works with all products.
+Second, it will request the current version code for the given product (eliminating the need for BNLS_REQUESTVERSIONBYTE).
+
+(DWORD) Product ID.*
+(DWORD) Version DLL digit in the range 0-7. (For example, for IX86Ver1.mpq this is 1)
+(DWORD) Flags.**
+(DWORD) Cookie.
+(String) Checksum formula.
+
+* Valid product IDs are:
+
+#define PRODUCT_STARCRAFT             (0x01)
+#define PRODUCT_BROODWAR              (0x02)
+#define PRODUCT_WAR2BNE               (0x03)
+#define PRODUCT_DIABLO2               (0x04)
+#define PRODUCT_LORDOFDESTRUCTION     (0x05)
+#define PRODUCT_JAPANSTARCRAFT        (0x06)
+#define PRODUCT_WARCRAFT3             (0x07)
+#define PRODUCT_THEFROZENTHRONE       (0x08)
+
+** The flags field is currently reserved and must be set to zero or you will be disconnected.
+
+
+
+Response:
+---------
+
+(BOOL) Success (TRUE if successful, FALSE otherwise). If this is FALSE, the next DWORD is the provided cookie, following which the message ends.
+(DWORD) Version.
+(DWORD) Checksum.
+(String) Version check stat string.
+(DWORD) Cookie.
+(DWORD) The latest version code for this product.
+
+
+
+BNLS_VERSIONCHECKEX2 (0x1A)
+---------------------------
+
+This message performs two operations.
+First, will request a fast version check. Now works with all products.
+Second, it will request the current version code for the given product (eliminating the need for BNLS_REQUESTVERSIONBYTE).
+This message does not require the client to perform any parsing on the version check MPQ filenames.
+Instead, the full file name and timestamp are sent to the server.
+
+(DWORD) Product ID.*
+(DWORD) Flags.**
+(DWORD) Cookie.
+(ULONGLONG) Timestamp for version check archive.
+(String) Version check archive filename.
+(String) Checksum formula.
+
+* Valid product IDs are:
+
+#define PRODUCT_STARCRAFT             (0x01)
+#define PRODUCT_BROODWAR              (0x02)
+#define PRODUCT_WAR2BNE               (0x03)
+#define PRODUCT_DIABLO2               (0x04)
+#define PRODUCT_LORDOFDESTRUCTION     (0x05)
+#define PRODUCT_JAPANSTARCRAFT        (0x06)
+#define PRODUCT_WARCRAFT3             (0x07)
+#define PRODUCT_THEFROZENTHRONE       (0x08)
+
+** The flags field is currently reserved and must be set to zero or you will be disconnected.
+
+
+
+Response:
+---------
+
+(BOOL) Success (TRUE if successful, FALSE otherwise). If this is FALSE, the next DWORD is the provided cookie, following which the message ends.
+(DWORD) Version.
+(DWORD) Checksum.
+(String) Version check stat string.
+(DWORD) Cookie.
+(DWORD) The latest version code for this product.
+
+
+
+Related BNCS (Battle.net Chat Server) Messages
+----------------------------------------------
+
+The BNCS protocol is not discussed in this document.
+However, information about several BNCS messages related to BNLS is given here.
+There are 9 related BNCS messages with IDs in the range 0x50-0x58.
+
+#define SID_AUTH_INFO                   (0x50)
+#define SID_AUTH_CHECK                  (0x51)
+#define SID_AUTH_ACCOUNTCREATE          (0x52)
+#define SID_AUTH_ACCOUNTLOGON           (0x53)
+#define SID_AUTH_ACCOUNTLOGONPROOF      (0x54)
+#define SID_AUTH_ACCOUNTCHANGE          (0x55)
+#define SID_AUTH_ACCOUNTCHANGEPROOF     (0x56)
+#define SID_AUTH_ACCOUNTUPGRADE         (0x57)
+#define SID_AUTH_ACCOUNTUPGRADEPROOF    (0x58)
+
+
+
+SID_AUTH_INFO (0x50)
+--------------------
+
+Sent to the server immediately upon connection.
+
+(DWORD) Protocol ID. Always 0.
+(DWORD) Platform ID. Valid platform IDs are: 'IX86' (Intel x86), 'PMAC' (Macintosh generic), 'XMAC' (Macintosh OS-X).
+(DWORD) Product ID. Valid product IDs are: 'STAR', 'SEXP', 'W2BN', 'D2DV', 'D2XP', 'JSTR', 'WAR3'.
+(DWORD) Version byte.**
+(DWORD) Product language.*
+(DWORD) Local IP, for NAT compatibility.*
+(LONG) Time zone bias multiplied by -60, for example, GMT-8 gets the value 480: (-8*-60).*
+(DWORD) Locale ID. Value returned by GetSystemDefaultLCID.*
+(DWORD) Language ID. Value returned by GetSystemDefaultLangID.*
+(String) Country abbreviation, such as "USA".
+(String) Country name, such as "United States".
+
+* This field doesn't really matter and may just be 0.
+** You can now get this value from BNLS, via the BNLS_REQUESTVERSIONBYTE (0x10) message.
+
+
+
+The server responds to this message with a SID_PING (0x25) that is not discussed here, and a SID_AUTH_INFO (0x50) reply:
+
+(DWORD) The NLS revision to use.*
+(DWORD) Session key.
+(DWORD) Nobody knows what the hell this is.
+(FILETIME) A Win32 FILETIME structure specifying the file time of the version MPQ file.
+(String) The filename of the version MPQ file.
+(String) Checksum formula.
+(Optional 128 bytes) Server signature.**
+
+* If this is nonzero, it specifies the revision of NLS to be used.
+The New Logon System messages (range 0x52-0x58) will be used.
+Use BNLS_CHOOSENLSREVISION (0x0d) to send the revision to the BNLS server.
+If this is zero, the Old Logon System messages (not documented here) will be used.
+
+** Not always present (currently only present with Warcraft 3). Use BNLS_VERIFYSERVER (0x11) to verify this signature.
+
+The client should now use a few BNLS functions: BNLS_CDKEY (0x01) or BNLS_CDKEY_EX (0x0c) using the given session key, and BNLS_VERSIONCHECK (0x09) using the given version MPQ filename digit and checksum formula.
+Also, the optional BNLS_VERIFYSERVER (0x11) message may be used.
+
+
+
+SID_AUTH_CHECK (0x51)
+---------------------
+
+(DWORD) Client session key.*
+(DWORD) Version.**
+(DWORD) Checksum.**
+(DWORD) Amount of CD-keys. This is typically 2 for Lord of Destruction, 1 otherwise.***
+(BOOL) TRUE for spawn (Starcraft, Japan Starcraft and Warcraft 2 only), FALSE for normal.
+(9 DWORDs) CD-key data.*
+(Optional 9 DWORDs) CD-key data for second CD-key, if using Lord of Destruction.***
+(String) Version check stat string.**
+(String) CD-key owner name.
+
+
+* This is returned by the BNLS server in BNLS_CDKEY (0x01) response.
+** This is returned by the BNLS server in BNLS_VERSIONCHECK (0x09) response.
+*** If using Lord of Destruction, all keys must have the same client session key.
+Therefore, the message BNLS_CDKEY (0x01) cannot be used, since it generates a different client session key for each call.
+For this, you must use BNLS_CDKEY_EX (0x0c).
+
+Response:
+---------
+
+(DWORD) Status code.*
+(String) More info, depending on status. (If this is empty, a null-terminator is still sent.)
+
+* Valid status codes are: ("More info" is empty unless otherwise stated)
+
+0x0000: Passed version and CD-key check.
+
+0x0100: Game version recognized, but out of date. (More info: Filename of patch MPQ file.)
+0x0101: Game version unrecognized.
+
+0x0200: Invalid CD-key.
+0x0201: CD-key in use. (More info: CD-key owner name of the user who's using the CD-key.)
+0x0202: CD-key banned by Battle.net.
+0x0203: Invalid CD-key for this product.
+
+0x0210: Invalid LOD CD-key.
+0x0211: LOD CD-key in use. (More info: CD-key owner name of the user who's using the CD-key.)
+0x0212: LOD CD-key banned by Battle.net.
+0x0213: LOD CD-key has invalid product code.
+
+Other: Failed version and CD-key check.
+
+
+
+SID_AUTH_ACCOUNTCREATE (0x52)
+-----------------------------
+
+(16 DWORDs) Data from BNLS_CREATEACCOUNT (0x04) response.
+(String) Username.
+
+Response:
+---------
+
+(DWORD) Status code.*
+(5 DWORDs) Password proof.**
+
+* Valid status codes are:
+
+0x00: Account created successfully. Proceed to send BNLS_LOGONCHALLENGE (0x02) and SID_AUTH_ACCOUNTLOGON (0x53).
+0x07: Username must be at least 2 chars. (???)
+0x08: Name contains an illegal character.
+0x09: Name contains an illegal word.
+0x0a: Not enough alphanumeric chars in name. (???)
+0x0b: Name contains adjacent punctuation characters.
+0x0c: Name contains too many punctuation characters. (???)
+Any other: Account already exists.
+
+** This proves the Battle.net server knows your password. The client should use BNLS_CONFIRMLOGON (0x0a) to verify the proof, and if it is incorrect, terminate the connection.
+If the statuscode is nonzero, these 5 DWORDs are zero.
+
+
+
+SID_AUTH_ACCOUNTLOGON (0x53)
+----------------------------
+
+(8 DWORDs) Data from BNLS_LOGONCHALLENGE (0x02).
+(String) Username.
+
+Response:
+---------
+
+(DWORD) Status code.*
+(16 DWORDs) Data to send to BNLS_LOGONPROOF (0x03).**
+
+* Valid status codes are:
+
+0x00: Logon accepted, requires proof. Proceed to send BNLS_LOGONPROOF (0x03) and SID_AUTH_ACCOUNTLOGONPROOF (0x54).
+0x01: Account doesn't exist. Proceed to send BNLS_CREATEACCOUNT (0x04) and SID_AUTH_ACCOUNTCREATE (0x52).
+0x05: Account requires upgrade. Proceed to send BNLS_UPGRADECHALLENGE (0x07) and SID_AUTH_ACCOUNTUPGRADE (0x57).
+Other: Unknown (failure).
+
+** If the status code is nonzero, these 16 DWORDs are all zeroes.
+
+
+
+SID_AUTH_ACCOUNTLOGONPROOF (0x54)
+---------------------------------
+
+(5 DWORDs) Data from BNLS_LOGONPROOF (0x03).
+
+Response:
+---------
+
+(DWORD) Status code.*
+(5 DWORDs) Password proof.**
+
+* Valid status codes are:
+
+0x00: Logon successful! Proceed to send SID_ENTERCHAT (0x0a) - not documented here.
+0x02: Incorrect password.
+0x0E: An E-mail should be registered for this account. The E-mail registration packets are not documented here. You don't have to register the account, though, so this status code may be safely ignored and treated as a success code.
+0x0F: Different error. The 5 DWORDs in the password proof will all be zero, but following them will be a null-terminated string, explaining the error. Example: "Your account has been closed (8)."
+
+** This proves the Battle.net server knows your password. The client should use BNLS_CONFIRMLOGON (0x0a) to verify the proof, and if it is incorrect, terminate the connection.
+If the statuscode is nonzero, these 5 DWORDs are zero.
+
+
+
+SID_AUTH_ACCOUNTCHANGE (0x55)
+-----------------------------
+
+(8 DWORDs) Data from BNLS_CHANGECHALLENGE (0x05).
+(String) Username.
+
+Response:
+---------
+
+(DWORD) Status code.*
+(16 DWORDs) Data to send to BNLS_CHANGEPROOF (0x06).**
+
+* Valid status codes are:
+
+0x00: Change accepted, requires proof. Proceed to send BNLS_CHANGEPROOF (0x06) and SID_AUTH_ACCOUNTCHANGEPROOF (0x56).
+0x01: Account doesn't exist. Proceed to send BNLS_CREATEACCOUNT (0x04) and SID_AUTH_ACCOUNTCREATE (0x52).
+0x05: Account requires upgrade. Proceed to send BNLS_UPGRADECHALLENGE (0x07) and SID_AUTH_ACCOUNTUPGRADE (0x57).
+Other: Unknown (failure).
+
+** If the status code is nonzero, these 16 DWORDs are all zeroes.
+
+
+
+SID_AUTH_ACCOUNTCHANGEPROOF (0x56)
+----------------------------------
+
+(21 DWORDs) Data from BNLS_CHANGEPROOF (0x06).
+
+Response:
+---------
+
+(DWORD) Status code.*
+(5 DWORDs) Password proof.**
+
+* Valid status codes are:
+
+0x00: Password changed!
+0x02: Incorrect old password.
+
+** This proves the Battle.net server knows your password. The client should use BNLS_CONFIRMLOGON (0x0a) to verify the proof, and if it is incorrect, terminate the connection.
+If the statuscode is nonzero, these 5 DWORDs are zero.
+
+
+
+SID_AUTH_ACCOUNTUPGRADE (0x57)
+------------------------------
+
+Send this when status code is 0x05 for SID_AUTH_ACCOUNTLOGON (0x53) or SID_AUTH_ACCOUNTCHANGE (0x55).
+The request is empty, but *must* follow a failed SID_AUTH_ACCOUNTLOGON (0x53) or SID_AUTH_ACCOUNTCHANGE (0x55).
+Also, before sending this, send a BNLS_UPGRADECHALLENGE (0x07).
+
+Response:
+---------
+
+(DWORD) Status code.*
+(DWORD) Server session key to send to BNLS_UPGRADEPROOF (0x08).
+
+* Valid status codes are:
+
+0x00: Upgrade request accepted.
+Other: Upgrade request denied.
+
+
+
+SID_AUTH_ACCOUNTUPGRADEPROOF (0x58)
+-----------------------------------
+
+(22 DWORDs) Data from BNLS_UPGRADEPROOF (0x08).
+
+Response:
+---------
+
+(DWORD) Status code.*
+(5 DWORDs) Password proof.**
+
+* Valid status codes are:
+
+0x00: Account upgraded!
+0x02: Incorrect old password.
+
+** This proves the Battle.net server knows your password. The client should use BNLS_CONFIRMLOGON (0x0a) to verify the proof, and if it is incorrect, terminate the connection.
+If the statuscode is nonzero, these 5 DWORDs are zero.
+
+
+
+
+
+
+
+APPENDIX - BNLS Checksum Algorithm
+----------------------------------
+
+The BNLS checksum algorithm calculates the checksum of a password using the 32-bit server code received in BNLS_AUTHORIZE (0x0e).
+
+Create an ANSI string whose length is the length of the password + 8 characters.
+Copy the password to the beginning. (Note that the password is case sensitive.)
+In the last 8 characters, store the hexadecimal representation of the server code, in uppercase, padded with zeroes on the left.
+Calculate the standard CRC-32 checksum (using the standard polynomial 0xEDB88320) of the string.
+The result is the BNLS checksum, to be sent in BNLS_AUTHORIZEPROOF (0x0f).
+
+
+Source code:
+------------
+VB:  http://www.valhallalegends.com/yoni/BNLSChecksum.bas
+C++: http://www.valhallalegends.com/yoni/BNLSChecksum.cpp
+
+In the sample code (in both languages), the checksum for BNLS_AUTHORIZEPROOF (0x0f) is the return value of BNLSChecksum(AuthPassword, ServerCode), where ServerCode is the value from BNLS_AUTHORIZE (0x0e).
+
+Update: This is now available in C#: http://www.valhallalegends.com/yoni/BNLSChecksumCls.cs.txt
+This file is unofficial and unsupported.
+
+
+Sample checksums:
+-----------------
+The sample checksums can be used to check the correctness of your code.
+BNLSChecksum("Sample", 0x0123ABCD)    == 0x12FDED88
+BNLSChecksum("Checksums", 0xBAADF00D) == 0x0098F911
+
