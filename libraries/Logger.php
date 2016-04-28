@@ -42,7 +42,7 @@ class Logger {
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) {
       self::$event_types = unserialize($cache_val);
-      return;
+      return self::$event_types;
     }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
