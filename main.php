@@ -21,9 +21,11 @@ function main() {
     }
     $path = str_replace("\\", "/", $path);
     $classShortName = $path;
-    $path = getenv("DOCUMENT_ROOT") . "/" . $path . ".php";
+    $docroot = getenv("DOCUMENT_ROOT");
+    if (empty($docroot)) $docroot = ".";
+    $path = $docroot . "/" . $path . ".php";
     if (!file_exists($path)) {
-      throw new ClassNotFoundException($classShortName);
+      trigger_error("Class not found: " . $classShortName, E_USER_ERROR);
     }
     require_once($path);
   });
@@ -45,7 +47,6 @@ function main() {
         header($key . ": " . $val);
       }
     }
-    $flags = (Common::isBrowser(getenv("HTTP_USER_AGENT")) ? JSON_PRETTY_PRINT : 0);
     $json = [
       "error" => [
         "exception" => (new ReflectionClass($e))->getShortName(),
@@ -54,12 +55,14 @@ function main() {
       ],
     ];
     if (ini_get("display_errors")) {
-      $json["error"]["file"] = Common::stripLeftPattern($e->getFile(), "/home/nginx/bnetdocs-dev");
+      $json["error"]["file"] = Common::stripLeftPattern(
+        $e->getFile(), getenv("DOCUMENT_ROOT")
+      );
       $json["error"]["line"] = $e->getLine();
     }
     Logger::logMetric("error_data", json_encode($json, JSON_PRETTY_PRINT));
     Logger::logException($e);
-    die(json_encode($json, $flags));
+    die(json_encode($json, Common::prettyJSONIfBrowser()));
   });
 
   set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext){
@@ -70,7 +73,6 @@ function main() {
     header("Content-Type: application/json;charset=utf-8");
     header("Expires: 0");
     header("Pragma: max-age=0");
-    $flags = (Common::isBrowser(getenv("HTTP_USER_AGENT")) ? JSON_PRETTY_PRINT : 0);
     $json = [
       "error" => [
         "exception" => null,
@@ -79,12 +81,14 @@ function main() {
     ];
     if (ini_get("display_errors")) {
       $json["error"]["message"] = $errstr;
-      $json["error"]["file"] = Common::stripLeftPattern($errfile, "/home/nginx/bnetdocs-dev");
+      $json["error"]["file"] = Common::stripLeftPattern(
+        $errfile, getenv("DOCUMENT_ROOT")
+      );
       $json["error"]["line"] = $errline;
     }
     Logger::logMetric("error_data", json_encode($json, JSON_PRETTY_PRINT));
     Logger::logError($errno, $errstr, $errfile, $errline, $errcontext);
-    die(json_encode($json, $flags));
+    die(json_encode($json, Common::prettyJSONIfBrowser()));
   });
 
   Logger::initialize();
