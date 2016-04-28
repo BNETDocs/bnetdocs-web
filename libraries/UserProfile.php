@@ -90,7 +90,7 @@ class UserProfile {
   }
 
   protected static function normalize(StdClass &$data) {
-    $data->id = (int) $data->id;
+    $data->user_id = (int) $data->user_id;
 
     if (!is_null($data->biography))
       $data->biography = (string) $data->biography;
