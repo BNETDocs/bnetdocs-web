@@ -14,7 +14,10 @@ class Credits {
   public static function &getTotalUsers($no_cache = false) {
     $cache_key = "bnetdocs-credits-totalusers";
     $cache_val = Common::$cache->get($cache_key);
-    if (!$no_cache && $cache_val !== false) return (int) $cache_val;
+    if (!$no_cache && $cache_val !== false) {
+      $cache_val = (int) $cache_val;
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -32,7 +35,10 @@ class Credits {
   public function &getTopContributorsByDocuments() {
     $cache_key = "bnetdocs-credits-documents";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return unserialize($cache_val);
+    if ($cache_val !== false) {
+      $cache_val = unserialize($cache_val);
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -68,7 +74,10 @@ class Credits {
   public function &getTopContributorsByNewsPosts() {
     $cache_key = "bnetdocs-credits-newsposts";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return unserialize($cache_val);
+    if ($cache_val !== false) {
+      $cache_val = unserialize($cache_val);
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -104,7 +113,10 @@ class Credits {
   public function &getTopContributorsByPackets() {
     $cache_key = "bnetdocs-credits-packets";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return unserialize($cache_val);
+    if ($cache_val !== false) {
+      $cache_val = unserialize($cache_val);
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -140,7 +152,10 @@ class Credits {
   public function &getTopContributorsByServers() {
     $cache_key = "bnetdocs-credits-servers";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return unserialize($cache_val);
+    if ($cache_val !== false) {
+      $cache_val = unserialize($cache_val);
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -176,7 +191,10 @@ class Credits {
   public static function getTotalDocumentsByUserId($user_id) {
     $cache_key = "bnetdocs-credits-documentsbyuserid-" . (int) $user_id;
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return (int) $cache_val;
+    if ($cache_val !== false) {
+      $cache_val = (int) $cache_val;
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -194,7 +212,10 @@ class Credits {
   public static function getTotalNewsPostsByUserId($user_id) {
     $cache_key = "bnetdocs-credits-newspostsbyuserid-" . (int) $user_id;
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return (int) $cache_val;
+    if ($cache_val !== false) {
+      $cache_val = (int) $cache_val;
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -212,7 +233,10 @@ class Credits {
   public static function getTotalPacketsByUserId($user_id) {
     $cache_key = "bnetdocs-credits-packetsbyuserid-" . (int) $user_id;
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return (int) $cache_val;
+    if ($cache_val !== false) {
+      $cache_val = (int) $cache_val;
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -230,7 +254,10 @@ class Credits {
   public static function getTotalServersByUserId($user_id) {
     $cache_key = "bnetdocs-credits-serversbyuserid-" . (int) $user_id;
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) return (int) $cache_val;
+    if ($cache_val !== false) {
+      $cache_val = (int) $cache_val;
+      return $cache_val;
+    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
