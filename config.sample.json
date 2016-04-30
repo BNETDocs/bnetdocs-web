@@ -4,6 +4,7 @@
       false,
       "BNETDocs has to take a brief moment to do some system maintenance. We'll be back shortly."
     ],
+    "mobile_site_enabled": false,
     "user_login_disabled": false,
     "user_password_pepper": "bnetdocs-INSERTRANDOMVALUEHERE",
     "user_register_disabled": false,
