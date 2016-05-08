@@ -177,8 +177,9 @@ class Router {
     $pathArray = $this->getRequestPathArray();
     $path      = (isset($pathArray[1]) ? $pathArray[1] : null);
     $subpath   = (isset($pathArray[2]) ? $pathArray[2] : null);
+    $fullpath  = $path . (!empty($subpath) ? "/" . $subpath : "");
     Logger::setTransactionName(
-      $path . (isset($subpath) ? "/" . $subpath : "")
+      $fullpath ? $fullpath : "main()"
     );
 
     if (Common::checkIfBlizzard()) {
