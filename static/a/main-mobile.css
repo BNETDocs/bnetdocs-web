@@ -181,7 +181,6 @@ main > article > footer {
 }
 main > p.pagination {
   text-align: center;
-  margin-left: 232px;
 }
 p.pagination > a {
   background-color: rgba(128,128,128,0.4);
