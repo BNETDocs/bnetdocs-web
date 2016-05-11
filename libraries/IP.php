@@ -59,7 +59,7 @@ class IP {
     $ip_net_bits = substr($binaryip, 0, $maskbits);
     $net_bits    = substr($binarynet, 0, $maskbits);
 
-    if ($ip_net_bits !== $net_bits) echo "NO\n"; else echo "YES\n";
+    return ($ip_net_bits === $net_bits);
   }
 
   private static function inet_to_bits($inet) {
