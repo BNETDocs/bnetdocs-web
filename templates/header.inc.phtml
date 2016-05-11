@@ -23,8 +23,14 @@ if (isset($this->getContext()->user_session)) {
   <head>
 <?php echo Logger::getTimingHeader(); ?>
     <title><?php echo $title; ?> - BNETDocs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<?php if (Common::$config->bnetdocs->mobile_site_enabled) { ?>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main.css"); ?>" type="text/css" media="(min-width:1000px)"/>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main-mobile.css"); ?>" type="text/css" media="(max-width:999px)"/>
+<?php } else { ?>
     <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main.css"); ?>" type="text/css" media="all"/>
-<?php foreach ($this->additional_css as $path) { ?>
+<?php }
+      foreach ($this->additional_css as $path) { ?>
     <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute($path); ?>" media="all"/>
 <?php } ?>
     <link rel="icon" href="<?php echo Common::relativeUrlToAbsolute("/favicon.png"); ?>" type="image/png" sizes="48x48"/>
@@ -59,7 +65,7 @@ if (isset($this->getContext()->user_session)) {
 <?php } ?>
   </head>
   <body>
-    <header>BNETDocs</header>
+    <header class="main-page">BNETDocs</header>
 <?php if (!(isset($slim_ui) && $slim_ui)) { ?>
     <nav>
       <a>Portal</a>
