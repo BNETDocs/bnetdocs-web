@@ -1,0 +1,20 @@
+/**
+ * BNETDocs (C) 2016 Creative Commons CC-BY-NC-SA 4.0 License
+ */
+
+table.comments td {
+  vertical-align: top;
+}
+table.comments td p:first-of-type {
+  margin-top: 0px;
+}
+table.comments td p:last-of-type {
+  margin-bottom: 0px;
+}
+table.comments td:first-child {
+  width: 200px;
+}
+time.comment_timestamp {
+  color: rgba(128,128,128,1);
+  font-size: smaller;
+}

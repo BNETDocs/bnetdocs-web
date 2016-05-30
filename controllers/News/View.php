@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\News;
 
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
@@ -68,6 +69,14 @@ class View extends Controller {
     if ($model->news_post
       && !($model->news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)
       && !$model->acl_allowed) $model->news_post = null;
+
+    // Load comments
+    if ($model->news_post) {
+      $model->comments = Comment::getAll(
+        Comment::PARENT_TYPE_NEWS_POST,
+        $model->news_post_id
+      );
+    }
   }
 
 }
