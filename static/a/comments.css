@@ -14,6 +14,9 @@ table.comments td p:last-of-type {
 table.comments td:first-child {
   width: 200px;
 }
+table.comments td:last-child {
+  font-size: small;
+}
 time.comment_timestamp {
   color: rgba(128,128,128,1);
   font-size: smaller;
