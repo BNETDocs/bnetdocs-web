@@ -199,6 +199,14 @@ class NewsPost {
     return $this->id;
   }
 
+  public function getMarkdown() {
+    return $this->options_bitmask & self::OPTION_MARKDOWN;
+  }
+
+  public function getPublished() {
+    return $this->options_bitmask & self::OPTION_PUBLISHED;
+  }
+
   public function getOptionsBitmask() {
     return $this->options_bitmask;
   }
@@ -299,6 +307,94 @@ class NewsPost {
       throw new QueryException("Cannot refresh news post", $e);
     }
     return false;
+  }
+
+  public function save() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        UPDATE
+          `news_posts`
+        SET
+          `category_id` = :category_id,
+          `content` = :content,
+          `created_datetime` = :created_dt,
+          `edited_count` = :edited_count,
+          `edited_datetime` = :edited_dt,
+          `options_bitmask` = :options,
+          `title` = :title,
+          `user_id` = :user_id
+        WHERE
+          `id` = :id
+        LIMIT 1;
+      ");
+      $stmt->bindParam(":category_id", $this->category_id, PDO::PARAM_INT);
+      $stmt->bindParam(":content", $this->content, PDO::PARAM_INT);
+      $stmt->bindParam(":created_dt", $this->created_datetime, PDO::PARAM_INT);
+      $stmt->bindParam(":edited_count", $this->edited_count, PDO::PARAM_INT);
+      $stmt->bindParam(":edited_dt", $this->edited_datetime, PDO::PARAM_INT);
+      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(":options", $this->options_bitmask, PDO::PARAM_INT);
+      $stmt->bindParam(":title", $this->title, PDO::PARAM_INT);
+      $stmt->bindParam(":user_id", $this->user_id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot save news post");
+      }
+      $stmt->closeCursor();
+      
+      $object                   = new StdClass();
+      $object->category_id      = $this->category_id;
+      $object->content          = $this->content;
+      $object->created_datetime = $this->created_datetime;
+      $object->edited_count     = $this->edited_count;
+      $object->edited_datetime  = $this->edited_datetime;
+      $object->id               = $this->id;
+      $object->options_bitmask  = $this->options_bitmask;
+      $object->title            = $this->title;
+      $object->user_id          = $this->user_id;
+
+      $cache_key = "bnetdocs-newspost-" . $this->id;
+      Common::$cache->set($cache_key, serialize($object), 300);
+      
+      return true;
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot save news post", $e);
+    }
+    return false;
+  }
+
+  public function setContent($value) {
+    $this->content = $value;
+  }
+
+  public function setEditedCount($value) {
+    $this->edited_count = $value;
+  }
+
+  public function setEditedDateTime(\DateTime $value) {
+    $this->edited_datetime = $value->format("Y-m-d H:i:s");
+  }
+
+  public function setMarkdown($value) {
+    if ($value) {
+      $this->options_bitmask |= self::OPTION_MARKDOWN;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_MARKDOWN;
+    }
+  }
+
+  public function setPublished($value) {
+    if ($value) {
+      $this->options_bitmask |= self::OPTION_PUBLISHED;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_PUBLISHED;
+    }
+  }
+
+  public function setTitle($value) {
+    $this->title = $value;
   }
 
 }

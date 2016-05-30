@@ -5,9 +5,12 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Pair;
+use \BNETDocs\Libraries\User;
 
-$object_id = $this->getContext()->news_post_id;
-$object    = $this->getContext()->news_post;
+$object       = $this->getContext()->news_post;
+$object_id    = $this->getContext()->news_post_id;
+$user_session = $this->getContext()->user_session;
+$logged_in    = ($user_session ? new User($user_session->user_id) : null);
 
 $title       = ($object ? $object->getTitle() : "News Post Not Found");
 $description = Common::stripUpTo(trim(filter_var(
@@ -27,7 +30,10 @@ if ($object) {
   $this->opengraph->attach(new Pair("article:section", $object->getCategory()->getLabel()));
 }
 
-$url = Common::relativeUrlToAbsolute("/news/" . urlencode($object_id));
+$url          = Common::relativeUrlToAbsolute("/news/" . urlencode($object_id));
+$edit_url     = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($object_id));
+$edit_visible = ($logged_in && ($logged_in->getOptionsBitmask()
+                  & User::OPTION_ACL_NEWS_MODIFY));
 
 if ($object) {
   $url        .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
@@ -42,9 +48,12 @@ require("./header.inc.phtml");
 ?>
       <article>
 <?php if ($object) { ?>
-        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
+<?php if ($edit_visible) { ?>
+        <a href="<?php echo $edit_url; ?>" class="header-button float-right">Edit</a>
+<?php } ?>
         <header><a href="<?php echo $url; ?>"><?php echo $object->getTitle(); ?></a></header>
 <?php if (!($object->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
         <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>

@@ -27,6 +27,11 @@ if (is_null($news_posts) || empty($news_posts)) {
       </article>
 <?php
 } else {
+  
+  $user_session = $this->getContext()->user_session;
+  $logged_in    = ($user_session ? new User($user_session->user_id) : null);
+  $edit_visible = ($logged_in && ($logged_in->getOptionsBitmask()
+                  & User::OPTION_ACL_NEWS_MODIFY));
 
   $avatars = [];
   $getAvatar = function(&$avatars, $user_id) {
@@ -41,13 +46,17 @@ if (is_null($news_posts) || empty($news_posts)) {
   foreach ($this->getContext()->news_posts as $news_post) {
     $url = Common::relativeUrlToAbsolute("/news/" . urlencode($news_post->getId()));
     $url .= "/" . Common::sanitizeForUrl($news_post->getTitle(), true);
+    $edit_url = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($news_post->getId()));
     $user_id = $news_post->getUserId();
     $avatar = "https:" . $getAvatar($avatars, $user_id)->getUrl(22, "identicon");
     if (!isset($users[$user_id])) $users[$user_id] = new User($user_id); ?>
       <article>
-        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="social-btn float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
+        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
+        <a href="https://twitter.com/share?text=<?php echo urlencode($news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
+        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
+<?php if ($edit_visible) { ?>
+        <a href="<?php echo $edit_url; ?>" class="header-button float-right">Edit</a>
+<?php } ?>
         <header><a href="<?php echo $url; ?>"><?php echo $news_post->getTitle(); ?></a></header>
 <?php if (!($news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
         <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
