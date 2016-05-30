@@ -40,7 +40,6 @@ require("./header.inc.phtml");
       <article>
 <?php if ($this->getContext()->error !== false) { ?>
         <header>Create News Post</header>
-        <section><?php require("./NYI.inc.phtml"); ?></section>
 <?php if (!empty($message)) { ?>
         <section class="red"><p><?php echo $message; ?></p></section>
 <?php } ?>
