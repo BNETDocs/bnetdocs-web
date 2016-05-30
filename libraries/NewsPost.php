@@ -357,6 +357,7 @@ class NewsPost {
 
       $cache_key = "bnetdocs-newspost-" . $this->id;
       Common::$cache->set($cache_key, serialize($object), 300);
+      Common::$cache->delete("bnetdocs-newsposts");
       
       return true;
     } catch (PDOException $e) {
