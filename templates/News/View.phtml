@@ -30,10 +30,13 @@ if ($object) {
   $this->opengraph->attach(new Pair("article:section", $object->getCategory()->getLabel()));
 }
 
-$url          = Common::relativeUrlToAbsolute("/news/" . urlencode($object_id));
-$edit_url     = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($object_id));
-$edit_visible = ($logged_in && ($logged_in->getOptionsBitmask()
-                  & User::OPTION_ACL_NEWS_MODIFY));
+$url            = Common::relativeUrlToAbsolute("/news/" . urlencode($object_id));
+$edit_url       = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($object_id));
+$delete_url     = Common::relativeUrlToAbsolute("/news/delete?id=" . urlencode($object_id));
+$edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
+                & User::OPTION_ACL_NEWS_MODIFY));
+$delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
+                & User::OPTION_ACL_NEWS_MODIFY));
 
 if ($object) {
   $url        .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
@@ -53,6 +56,9 @@ require("./header.inc.phtml");
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
 <?php if ($edit_visible) { ?>
         <a href="<?php echo $edit_url; ?>" class="header-button float-right">Edit</a>
+<?php } ?>
+<?php if ($delete_visible) { ?>
+        <a href="<?php echo $delete_url; ?>" class="header-button float-right">Delete</a>
 <?php } ?>
         <header><a href="<?php echo $url; ?>"><?php echo $object->getTitle(); ?></a></header>
 <?php if (!($object->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>

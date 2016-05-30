@@ -28,10 +28,12 @@ if (is_null($news_posts) || empty($news_posts)) {
 <?php
 } else {
   
-  $user_session = $this->getContext()->user_session;
-  $logged_in    = ($user_session ? new User($user_session->user_id) : null);
-  $edit_visible = ($logged_in && ($logged_in->getOptionsBitmask()
+  $user_session   = $this->getContext()->user_session;
+  $logged_in      = ($user_session ? new User($user_session->user_id) : null);
+  $edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
                   & User::OPTION_ACL_NEWS_MODIFY));
+  $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
+                  & User::OPTION_ACL_NEWS_DELETE));
 
   $avatars = [];
   $getAvatar = function(&$avatars, $user_id) {
@@ -47,6 +49,7 @@ if (is_null($news_posts) || empty($news_posts)) {
     $url = Common::relativeUrlToAbsolute("/news/" . urlencode($news_post->getId()));
     $url .= "/" . Common::sanitizeForUrl($news_post->getTitle(), true);
     $edit_url = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($news_post->getId()));
+    $delete_url = Common::relativeUrlToAbsolute("/news/delete?id=" . urlencode($news_post->getId()));
     $user_id = $news_post->getUserId();
     $avatar = "https:" . $getAvatar($avatars, $user_id)->getUrl(22, "identicon");
     if (!isset($users[$user_id])) $users[$user_id] = new User($user_id); ?>
@@ -56,6 +59,9 @@ if (is_null($news_posts) || empty($news_posts)) {
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
 <?php if ($edit_visible) { ?>
         <a href="<?php echo $edit_url; ?>" class="header-button float-right">Edit</a>
+<?php } ?>
+<?php if ($delete_visible) { ?>
+        <a href="<?php echo $delete_url; ?>" class="header-button float-right">Delete</a>
 <?php } ?>
         <header><a href="<?php echo $url; ?>"><?php echo $news_post->getTitle(); ?></a></header>
 <?php if (!($news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
