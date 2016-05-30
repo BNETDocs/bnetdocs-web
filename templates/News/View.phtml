@@ -36,7 +36,7 @@ $delete_url     = Common::relativeUrlToAbsolute("/news/delete?id=" . urlencode($
 $edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
                 & User::OPTION_ACL_NEWS_MODIFY));
 $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
-                & User::OPTION_ACL_NEWS_MODIFY));
+                & User::OPTION_ACL_NEWS_DELETE));
 
 if ($object) {
   $url        .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
