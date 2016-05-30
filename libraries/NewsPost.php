@@ -86,6 +86,7 @@ class NewsPost {
       $stmt->bindParam(":content", $content, PDO::PARAM_STR);
       $successful = $stmt->execute();
       $stmt->closeCursor();
+      if ($successful) Common::$cache->delete("bnetdocs-newsposts");
     } catch (PDOException $e) {
       throw new QueryException("Cannot create news post", $e);
     } finally {
