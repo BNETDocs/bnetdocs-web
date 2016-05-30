@@ -57,9 +57,18 @@ require("./header.inc.phtml");
             htmlspecialchars($this->getContext()->csrf_token, ENT_HTML5, "UTF-8");
           ?>"/>
           <section>
+            <label for="category">Category:</label><br/>
+            <select name="category" id="category" tabindex="1" required
+            autofocus="autofocus" size="<?php echo min(count($this->getContext()->news_categories), 10); ?>">
+<?php $category = $this->getContext()->category;
+      foreach ($this->getContext()->news_categories as $item) { ?>
+              <option value="<?php echo htmlspecialchars($item->getId(), ENT_HTML5, "UTF-8"); ?>"<?php if ($category === $item->getId()) { ?> selected="selected"<?php } ?>><?php echo htmlspecialchars($item->getLabel(), ENT_HTML5, "UTF-8"); ?></option>
+<?php } ?>
+            </select>
+          </section>
+          <section>
             <label for="title">Title:</label><br/>
-            <input type="text" name="title" id="title" tabindex="1" required
-              autofocus="autofocus"
+            <input type="text" name="title" id="title" tabindex="2" required
               value="<?php echo
                 htmlspecialchars($this->getContext()->title, ENT_HTML5, "UTF-8");
               ?>"/>
@@ -68,20 +77,20 @@ require("./header.inc.phtml");
             <label for="content">Content:</label>
             <span style="float:right;">
               <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
-              <input type="checkbox" name="markdown" id="markdown" tabindex="3"
+              <input type="checkbox" name="markdown" id="markdown" tabindex="4"
                 title="Use markdown or use raw HTML" value="1"<?php
                   if ($this->getContext()->markdown)
                     echo " checked=\"checked\"";
                 ?>/>
             </span>
-            <textarea name="content" id="content" tabindex="2" required
+            <textarea name="content" id="content" tabindex="3" required
               style="height:200px;"><?php echo
                 htmlspecialchars($this->getContext()->content, ENT_HTML5, "UTF-8");
               ?></textarea>
           </section>
           <section>
-            <input type="submit" name="publish" value="Publish"/>
-            <input type="submit" name="save" value="Unpublish"/>
+            <input type="submit" name="publish" value="Publish" tabindex="5"/>
+            <input type="submit" name="save" value="Unpublish" tabindex="6"/>
           </section>
         </form>
 <?php } ?>

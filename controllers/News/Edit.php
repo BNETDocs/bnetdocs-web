@@ -9,6 +9,7 @@ use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
@@ -30,22 +31,24 @@ class Edit extends Controller {
         throw new UnspecifiedViewException();
     }
 
-    $data                = $router->getRequestQueryArray();
-    $model               = new NewsEditModel();
-    $model->content      = null;
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id, 900); // 15 minutes
-    $model->error        = null;
-    $model->markdown     = null;
-    $model->news_post_id = (isset($data["id"]) ? $data["id"] : null);
-    $model->news_post    = null;
-    $model->published    = null;
-    $model->title        = null;
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) : null);
+    $data                   = $router->getRequestQueryArray();
+    $model                  = new NewsEditModel();
+    $model->category        = null;
+    $model->content         = null;
+    $model->csrf_id         = mt_rand();
+    $model->csrf_token      = CSRF::generate($model->csrf_id, 900); // 15 mins
+    $model->error           = null;
+    $model->markdown        = null;
+    $model->news_categories = null;
+    $model->news_post_id    = (isset($data["id"]) ? $data["id"] : null);
+    $model->news_post       = null;
+    $model->published       = null;
+    $model->title           = null;
+    $model->user_session    = UserSession::load($router);
+    $model->user            = (isset($model->user_session) ?
+                               new User($model->user_session->user_id) : null);
 
-    $model->acl_allowed  = ($model->user &&
+    $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_MODIFY
     );
 
@@ -58,6 +61,15 @@ class Edit extends Controller {
     } else {
       $flags = $model->news_post->getOptionsBitmask();
 
+      $model->news_categories = NewsCategory::getAll();
+      usort($model->news_categories, function($a, $b){
+        $oA = $a->getSortId();
+        $oB = $b->getSortId();
+        if ($oA == $oB) return 0;
+        return ($oA < $oB) ? -1 : 1;
+      });
+
+      $model->category  = $model->news_post->getCategoryId();
       $model->content   = $model->news_post->getContent(false);
       $model->markdown  = ($flags & NewsPost::OPTION_MARKDOWN);
       $model->published = ($flags & NewsPost::OPTION_PUBLISHED);
@@ -90,12 +102,14 @@ class Edit extends Controller {
     $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
     $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
+    $category   = (isset($data["category"  ]) ? $data["category"  ] : null);
     $title      = (isset($data["title"     ]) ? $data["title"     ] : null);
     $markdown   = (isset($data["markdown"  ]) ? $data["markdown"  ] : null);
     $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
     $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
     $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
 
+    $model->category = $category;
     $model->title    = $title;
     $model->markdown = $markdown;
     $model->content  = $content;
@@ -117,6 +131,7 @@ class Edit extends Controller {
     try {
 
       // TODO: Set category id
+      $model->news_post->setCategoryId($model->category);
       $model->news_post->setTitle($model->title);
       $model->news_post->setMarkdown($model->markdown);
       $model->news_post->setContent($model->content);
@@ -154,6 +169,7 @@ class Edit extends Controller {
       json_encode([
         "error"           => $model->error,
         "news_post_id"    => $model->news_post_id,
+        "category"        => $model->news_post->getCategoryId(),
         "title"           => $model->news_post->getTitle(),
         "content"         => $model->news_post->getContent(false),
         "options_bitmask" => $model->news_post->getOptionsBitmask(),

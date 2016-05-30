@@ -366,6 +366,10 @@ class NewsPost {
     return false;
   }
 
+  public function setCategoryId($value) {
+    $this->category_id = $value;
+  }
+
   public function setContent($value) {
     $this->content = $value;
   }
