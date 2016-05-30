@@ -22,20 +22,27 @@ echo "${DEPLOY_TARGET}" > ${SOURCE_DIRECTORY}/.rsync-target
 
 set -e
 
-printf "[1/4] Getting version identifier of this deploy...\n"
+printf "[1/5] Verifying this is the correct repository...\n"
+[ "$(grep "BNETDocs\/bnetdocs-web" ${SOURCE_DIRECTORY}/.git/config)" != "" ] \
+  || $(
+    printf "Error: Wrong repository currently in working directory.\n" 1>&2
+    exit 1
+)
+
+printf "[2/5] Getting version identifier of this deploy...\n"
 DEPLOY_VERSION="$(git describe --always --tags)"
 
-printf "[2/4] Building version information into this deploy...\n"
+printf "[3/5] Building version information into this deploy...\n"
 printf "${DEPLOY_VERSION}" > ${SOURCE_DIRECTORY}/.rsync-version
 
-printf "[3/4] Syncing to deploy target...\n"
+printf "[4/5] Syncing to deploy target...\n"
 rsync -avzc --delete --delete-excluded --delete-after --progress \
   --exclude-from="${SOURCE_DIRECTORY}/rsync-exclude.txt" \
   --chown=nginx:www-data --rsync-path="sudo rsync" \
   "${SOURCE_DIRECTORY}" \
   ${DEPLOY_TARGET}:"${TARGET_DIRECTORY}"
 
-printf "[4/4] Post-deploy clean up...\n"
+printf "[5/5] Post-deploy clean up...\n"
 rm ${SOURCE_DIRECTORY}/.rsync-version
 
 printf "Operation complete!\n"
