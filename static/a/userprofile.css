@@ -27,3 +27,8 @@ table.profiledata {
 table.profiledata th {
   width: 100px;
 }
+table.stats td {
+  text-align: center;
+  vertical-align: top;
+  width: 50%;
+}
