@@ -130,7 +130,6 @@ class Edit extends Controller {
     
     try {
 
-      // TODO: Set category id
       $model->news_post->setCategoryId($model->category);
       $model->news_post->setTitle($model->title);
       $model->news_post->setMarkdown($model->markdown);
@@ -155,7 +154,7 @@ class Edit extends Controller {
       $success = false;
 
     }
-    
+
     if (!$success) {
       $model->error = "INTERNAL_ERROR";
     } else {

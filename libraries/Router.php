@@ -11,6 +11,7 @@ use \BNETDocs\Controllers\Legal as LegalController;
 use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
 use \BNETDocs\Controllers\News\Create as NewsCreateController;
+use \BNETDocs\Controllers\News\Delete as NewsDeleteController;
 use \BNETDocs\Controllers\News\Edit as NewsEditController;
 use \BNETDocs\Controllers\News\View as NewsViewController;
 use \BNETDocs\Controllers\Packet\Index as PacketIndexController;
@@ -290,6 +291,9 @@ class Router {
               break;
               case "edit": case "edit.htm": case "edit.html":
                 $controller = new NewsEditController();
+              break;
+              case "delete": case "delete.htm": case "delete.html":
+                $controller = new NewsDeleteController();
               break;
               default:
                 if (is_numeric($subpath)) {

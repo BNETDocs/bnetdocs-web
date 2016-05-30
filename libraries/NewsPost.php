@@ -95,6 +95,30 @@ class NewsPost {
     }
   }
 
+  public static function delete($id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare("
+        DELETE FROM `news_posts` WHERE `id` = :id LIMIT 1;
+      ");
+      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) {
+        Common::$cache->delete("bnetdocs-newspost-" . (int) $id);
+        Common::$cache->delete("bnetdocs-newsposts");
+      }
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot delete news post", $e);
+    } finally {
+      //Credits::getTopContributorsByNewsPosts(true); // Refresh statistics
+      return $successful;
+    }
+  }
+
   public static function getAllNews($reverse) {
     $cache_key = "bnetdocs-newsposts";
     $cache_val = Common::$cache->get($cache_key);

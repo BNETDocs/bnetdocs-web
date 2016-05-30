@@ -6,21 +6,21 @@ use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
 $title       = "Edit News Post";
-$description = "This form allows an individual to create a news post.";
+$description = "This form allows an individual to edit a news post.";
 
-$this->opengraph->attach(new Pair("url", "/news/create"));
+$this->opengraph->attach(new Pair("url", "/news/edit"));
 $this->opengraph->attach(new Pair("type", "article"));
 
 switch ($this->getContext()->error) {
   case "ACL_NOT_SET":
-    $message = "You do not have the privilege to create news posts.";
+    $message = "You do not have the privilege to edit news posts.";
     break;
   case "NOT_FOUND":
     $message = "Cannot find news post by that id.";
     break;
   case "INVALID_CSRF":
     $message = "The Cross-Site Request Forgery token was invalid. "
-      . "Either the create news post form expired, or "
+      . "Either the edit news post form expired, or "
       . "this may have been a malicious attempt to create a news post.";
     break;
   case "EMPTY_TITLE":
@@ -97,7 +97,7 @@ require("./header.inc.phtml");
 <?php } else { ?>
         <header class="green">Edit News Post</header>
         <section class="green">
-          <p>Your news post has been created.</p>
+          <p>Your news post has been edited.</p>
           <p>Use the navigation to the left to move to another page.</p>
         </section>
 <?php } ?>

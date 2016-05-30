@@ -1,0 +1,63 @@
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Pair;
+
+$title       = "Delete News Post";
+$description = "This form allows an individual to delete a news post.";
+
+$this->opengraph->attach(new Pair("url", "/news/delete"));
+$this->opengraph->attach(new Pair("type", "article"));
+
+switch ($this->getContext()->error) {
+  case "ACL_NOT_SET":
+    $message = "You do not have the privilege to delete news posts.";
+    break;
+  case "NOT_FOUND":
+    $message = "Cannot find news post by that id.";
+    break;
+  case "INVALID_CSRF":
+    $message = "The Cross-Site Request Forgery token was invalid. "
+      . "Either the delete news post form expired, or "
+      . "this may have been a malicious attempt to delete a news post.";
+    break;
+  case "INTERNAL_ERROR":
+    $message = "An internal error occurred while processing your request. "
+      . "Our staff has been notified of the issue. Try again later.";
+    break;
+  default:
+    $message = $this->getContext()->error;
+}
+
+$this->additional_css[] = "/a/forms.css";
+require("./header.inc.phtml");
+?>
+      <article>
+<?php if (is_null($this->getContext()->error)) { ?>
+        <header>Delete News Post</header>
+        <form method="POST" action="?id=<?php echo
+            htmlspecialchars($this->getContext()->id, ENT_HTML5, "UTF-8"); ?>">
+          <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
+          <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
+          <section>
+            <p>Are you sure you wish to delete this news post?</p>
+            <p><input type="text" readonly="readonly" value="<?php echo htmlspecialchars($this->getContext()->title, ENT_HTML5, "UTF-8"); ?>" tabindex="1"/></p>
+            <p><input type="submit" value="Delete News Post" tabindex="2" autofocus="autofocus"/></p>
+          </section>
+        </form>
+<?php } else if ($this->getContext()->error === false) { ?>
+        <header class="green">News Post Deleted</header>
+        <section class="green">
+          <p>You have successfully deleted the news post!</p>
+          <p>Use the navigation to the left to move to another page.</p>
+        </section>
+<?php } else { ?>
+        <header class="red">Delete News Post</header>
+        <section class="red">
+          <p>An error occurred while attempting to delete the news post.</p>
+          <p><?php echo $message; ?></p>
+          <p>Use the navigation to the left to move to another page.</p>
+        </section>
+<?php } ?>
+      </article>
+<?php require("./footer.inc.phtml"); ?>
