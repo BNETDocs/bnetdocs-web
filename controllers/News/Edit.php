@@ -169,10 +169,10 @@ class Edit extends Controller {
       json_encode([
         "error"           => $model->error,
         "news_post_id"    => $model->news_post_id,
-        "category"        => $model->news_post->getCategoryId(),
+        "category_id"     => $model->news_post->getCategoryId(),
+        "options_bitmask" => $model->news_post->getOptionsBitmask(),
         "title"           => $model->news_post->getTitle(),
         "content"         => $model->news_post->getContent(false),
-        "options_bitmask" => $model->news_post->getOptionsBitmask(),
       ])
     );
   }
