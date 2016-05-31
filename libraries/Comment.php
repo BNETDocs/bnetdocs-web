@@ -88,8 +88,8 @@ class Comment {
           `user_id`
         FROM `comments`
         ORDER BY
-          `created_datetime` DESC,
-          `id` DESC
+          `created_datetime` ASC,
+          `id` ASC
         ;
       ");
       if (!$stmt->execute()) {
@@ -199,6 +199,44 @@ class Comment {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+    try {
+      $stmt = Common::$database->prepare("
+        SELECT
+          `content`,
+          `created_datetime`,
+          `edited_count`,
+          `edited_datetime`,
+          `id`,
+          `parent_id`,
+          `parent_type`,
+          `user_id`
+        FROM `comments`
+        WHERE `id` = :id
+        LIMIT 1;
+      ");
+      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot refresh comment");
+      } else if ($stmt->rowCount() == 0) {
+        throw new CommentNotFoundException($this->id);
+      }
+      $row = $stmt->fetch(PDO::FETCH_OBJ);
+      $stmt->closeCursor();
+      self::normalize($row);
+      $this->content          = $row->content;
+      $this->created_datetime = $row->created_datetime;
+      $this->edited_count     = $row->edited_count;
+      $this->edited_datetime  = $row->edited_datetime;
+      $this->id               = $row->id;
+      $this->parent_id        = $row->parent_id;
+      $this->parent_type      = $row->parent_type;
+      $this->user_id          = $row->user_id;
+      Common::$cache->set($ck, serialize($row), 300);
+      return true;
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot refresh comment", $e);
+    }
+    return false;
   }
 
 }
