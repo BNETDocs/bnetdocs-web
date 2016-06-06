@@ -33,7 +33,7 @@ final class Template {
   public function render() {
     $cwd = getcwd();
     try {
-      chdir($cwd . self::TEMPLATE_DIR);
+      chdir($cwd . DIRECTORY_SEPARATOR . "templates");
       if (!file_exists($this->template)) {
         throw new TemplateNotFoundException($this);
       }
@@ -48,7 +48,8 @@ final class Template {
   }
 
   public function setTemplate($template) {
-    $this->template = "./" . $template . ".phtml";
+    $this->template = "." . DIRECTORY_SEPARATOR
+      . str_replace("/", DIRECTORY_SEPARATOR, $template) . ".phtml";
     Logger::logMetric("template", $template);
   }
 
