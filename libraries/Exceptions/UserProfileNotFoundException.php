@@ -9,7 +9,7 @@ use \Exception;
 class UserProfileNotFoundException extends BNETDocsException {
 
   public function __construct($query, Exception &$prev_ex = null) {
-    parent::__construct("User profile not found", 11, $prev_ex);
+    parent::__construct("User profile not found", 12, $prev_ex);
     Logger::logMetric("query", $query);
   }
 

@@ -8,7 +8,7 @@ use \Exception;
 class RecaptchaException extends BNETDocsException {
 
   public function __construct($message, Exception &$prev_ex = null) {
-    parent::__construct($message, 15, $prev_ex);
+    parent::__construct($message, 16, $prev_ex);
   }
 
 }

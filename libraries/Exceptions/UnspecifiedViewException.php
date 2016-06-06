@@ -5,10 +5,12 @@ namespace BNETDocs\Libraries\Exceptions;
 use \BNETDocs\Libraries\Exceptions\BNETDocsException;
 use \Exception;
 
-class IncorrectModelException extends BNETDocsException {
+class UnspecifiedViewException extends BNETDocsException {
 
   public function __construct(Exception $prev_ex = null) {
-    parent::__construct("Incorrect model provided to view", 4, $prev_ex);
+    parent::__construct(
+      "Unspecified view provided to controller", 3, $prev_ex
+    );
   }
 
 }

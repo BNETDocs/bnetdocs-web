@@ -8,7 +8,7 @@ use \Exception;
 class QueryException extends BNETDocsException {
 
   public function __construct($message, Exception &$prev_ex = null) {
-    parent::__construct($message, 6, $prev_ex);
+    parent::__construct($message, 7, $prev_ex);
   }
 
 }

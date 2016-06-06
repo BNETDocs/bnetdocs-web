@@ -9,7 +9,7 @@ use \Exception;
 class PacketTransportLayerFoundException extends BNETDocsException {
 
   public function __construct($query, Exception &$prev_ex = null) {
-    parent::__construct("Packet direction is invalid", 18, $prev_ex);
+    parent::__construct("Packet direction is invalid", 19, $prev_ex);
     Logger::logMetric("query", $query);
   }
 

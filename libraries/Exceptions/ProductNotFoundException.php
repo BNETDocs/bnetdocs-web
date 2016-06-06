@@ -9,7 +9,7 @@ use \Exception;
 class ProductNotFoundException extends BNETDocsException {
 
   public function __construct($query, Exception &$prev_ex = null) {
-    parent::__construct("Product not found", 19, $prev_ex);
+    parent::__construct("Product not found", 20, $prev_ex);
     Logger::logMetric("query", $query);
   }
 

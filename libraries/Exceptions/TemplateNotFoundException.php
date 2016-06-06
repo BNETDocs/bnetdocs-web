@@ -10,7 +10,9 @@ use \Exception;
 class TemplateNotFoundException extends BNETDocsException {
 
   public function __construct(Template &$template, Exception &$prev_ex = null) {
-    parent::__construct("Unable to locate template required to load this view", 4, $prev_ex);
+    parent::__construct(
+      "Unable to locate template required to load this view", 5, $prev_ex
+    );
   }
 
 }

@@ -7,20 +7,21 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | ---------- | ----------------------------------------- | ---------------------------------------------------- |
 | 1          | `ClassNotFoundException`                  | Required class `$className` not found                |
 | 2          | `ControllerNotFoundException`             | Unable to find a suitable controller given the path  |
-| 3          | `IncorrectModelException`                 | Incorrect model provided to view                     |
-| 4          | `TemplateNotFoundException`               | Unable to locate template required to load this view |
-| 5          | `DatabaseUnavailableException`            | All configured databases are unavailable             |
-| 6          | `QueryException`                          | `$message`                                           |
-| 7          | `UserNotFoundException`                   | User not found                                       |
-| 8          | `NewsPostNotFoundException`               | News post not found                                  |
-| 9          | `ServerNotFoundException`                 | Server not found                                     |
-| 10         | `ServerTypeNotFoundException`             | Server type not found                                |
-| 11         | `UserProfileNotFoundException`            | User profile not found                               |
-| 12         | `NewsCategoryNotFoundException`           | News category not found                              |
-| 13         | `PacketNotFoundException`                 | Packet not found                                     |
-| 14         | `DocumentNotFoundException`               | Document not found                                   |
-| 15         | `RecaptchaException`                      | `$message`                                           |
-| 16         | `PacketApplicationLayerNotFoundException` | Packet application layer not found                   |
-| 17         | `PacketTransportLayerNotFoundException`   | Packet transport layer not found                     |
-| 18         | `PacketDirectionInvalidException`         | Packet direction is invalid                          |
-| 19         | `ProductNotFoundException`                | Product not found                                    |
+| 3          | `UnspecifiedViewException`                | Unspecified view provided to controller              |
+| 4          | `IncorrectModelException`                 | Incorrect model provided to view                     |
+| 5          | `TemplateNotFoundException`               | Unable to locate template required to load this view |
+| 6          | `DatabaseUnavailableException`            | All configured databases are unavailable             |
+| 7          | `QueryException`                          | `$message`                                           |
+| 8          | `UserNotFoundException`                   | User not found                                       |
+| 9          | `NewsPostNotFoundException`               | News post not found                                  |
+| 10         | `ServerNotFoundException`                 | Server not found                                     |
+| 11         | `ServerTypeNotFoundException`             | Server type not found                                |
+| 12         | `UserProfileNotFoundException`            | User profile not found                               |
+| 13         | `NewsCategoryNotFoundException`           | News category not found                              |
+| 14         | `PacketNotFoundException`                 | Packet not found                                     |
+| 15         | `DocumentNotFoundException`               | Document not found                                   |
+| 16         | `RecaptchaException`                      | `$message`                                           |
+| 17         | `PacketApplicationLayerNotFoundException` | Packet application layer not found                   |
+| 18         | `PacketTransportLayerNotFoundException`   | Packet transport layer not found                     |
+| 19         | `PacketDirectionInvalidException`         | Packet direction is invalid                          |
+| 20         | `ProductNotFoundException`                | Product not found                                    |

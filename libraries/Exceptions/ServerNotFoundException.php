@@ -9,7 +9,7 @@ use \Exception;
 class ServerNotFoundException extends BNETDocsException {
 
   public function __construct($query, Exception &$prev_ex = null) {
-    parent::__construct("Server not found", 9, $prev_ex);
+    parent::__construct("Server not found", 10, $prev_ex);
     Logger::logMetric("query", $query);
   }
 
