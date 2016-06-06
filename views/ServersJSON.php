@@ -32,8 +32,14 @@ class ServersJSON extends View {
     foreach ($model->servers as $server) {
       $created_datetime = $server->getCreatedDateTime();
       $updated_datetime = $server->getUpdatedDateTime();
-      if (!is_null($created_datetime)) $created_datetime = $created_datetime->format("r");
-      if (!is_null($updated_datetime)) $updated_datetime = $updated_datetime->format("r");
+      if (!is_null($created_datetime)) $created_datetime = [
+        "iso"  => $created_datetime->format("r"),
+        "unix" => $created_datetime->getTimestamp(),
+      ];
+      if (!is_null($updated_datetime)) $updated_datetime = [
+        "iso"  => $updated_datetime->format("r"),
+        "unix" => $updated_datetime->getTimestamp(),
+      ];
       $content["servers"][] = [
         "address"          => $server->getAddress(),
         "created_datetime" => $created_datetime,
