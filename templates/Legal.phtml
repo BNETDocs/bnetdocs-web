@@ -1,6 +1,7 @@
 <?php
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Pair;
 
 $title       = "Legal Policies";
@@ -56,8 +57,11 @@ require("./header.inc.phtml");
       </article>
       <article>
         <header>License Agreement</header>
-        <section class="fixed-width-text"><?php
-          echo htmlspecialchars(file_get_contents("../LICENSE"), ENT_HTML5, "UTF-8");
-        ?></section>
+        <section>
+          <p>For a plaintext version of the document below, <a href="<?php echo Common::relativeUrlToAbsolute("/legal.txt"); ?>">click here</a>.</p>
+          <p><pre><code><?php
+            echo htmlentities(file_get_contents("../LICENSE"), ENT_HTML5, "UTF-8");
+            ?></code></pre></p>
+        </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
