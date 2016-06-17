@@ -87,11 +87,16 @@ class Comment {
           `parent_type`,
           `user_id`
         FROM `comments`
+        WHERE
+          `parent_type` = :parent_type AND
+          `parent_id` = :parent_id
         ORDER BY
           `created_datetime` ASC,
           `id` ASC
         ;
       ");
+      $stmt->bindParam(":parent_type", $parent_type, PDO::PARAM_INT);
+      $stmt->bindParam(":parent_id", $parent_id, PDO::PARAM_INT);
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh comment");
       }

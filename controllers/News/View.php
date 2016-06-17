@@ -58,7 +58,7 @@ class View extends Controller {
   }
 
   protected function getNewsPost(NewsViewModel &$model) {
-    $model->news_post_id = $this->news_post_id;
+    $model->news_post_id = (int) $this->news_post_id;
     try {
       $model->news_post = new NewsPost($this->news_post_id);
     } catch (NewsPostNotFoundException $e) {
