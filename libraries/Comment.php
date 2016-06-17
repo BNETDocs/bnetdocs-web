@@ -64,7 +64,7 @@ class Comment {
   public static function getAll($parent_type, $parent_id) {
     $ck = "bnetdocs-comment-" . $parent_type . "-" . $parent_id;
     $cv = Common::$cache->get($ck);
-    if ($cv !== false) {
+    if ($cv !== false && !empty($cv)) {
       $ids     = explode(",", $cv);
       $objects = [];
       foreach ($ids as $id) {
