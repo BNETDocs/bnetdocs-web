@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Exceptions\RecaptchaException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\Recaptcha;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
@@ -29,8 +30,12 @@ class Register extends Controller {
     $model = new UserRegisterModel();
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id);
-    $model->captcha_key  = Common::$config->recaptcha->sitekey;
     $model->error        = null;
+    $model->recaptcha    = new Recaptcha(
+      Common::$config->recaptcha->secret,
+      Common::$config->recaptcha->sitekey,
+      Common::$config->recaptcha->url
+    );
     $model->user_session = UserSession::load($router);
     if ($router->getRequestMethod() == "POST") {
       $this->tryRegister($router, $model);
@@ -69,7 +74,12 @@ class Register extends Controller {
       $data["g-recaptcha-response"]        :
       null
     );
-    if (!self::verifyCaptcha($captcha)) {
+    try {
+      if (!$model->recaptcha->verify($captcha, getenv("REMOTE_ADDR"))) {
+        $model->error = "INVALID_CAPTCHA";
+        return;
+      }
+    } catch (RecaptchaException $e) {
       $model->error = "INVALID_CAPTCHA";
       return;
     }
@@ -148,30 +158,6 @@ class Register extends Controller {
         "options_bitmask" => 0,
       ])
     );
-  }
-
-  protected static function verifyCaptcha($g_captcha_response) {
-    $data = [
-      "secret"   => Common::$config->recaptcha->secret,
-      "response" => $g_captcha_response,
-      "remoteip" => getenv("REMOTE_ADDR"),
-    ];
-    $r = Common::curlRequest(Common::$config->recaptcha->url, $data);
-    Logger::logMetric("response_code", $r->code);
-    Logger::logMetric("response_type", $r->type);
-    Logger::logMetric("response_data", $r->data);
-    if ($r->code != 200)
-      throw new RecaptchaException("Received bad HTTP status");
-    if (stripos($r->type, "json") === false)
-      throw new RecaptchaException("Received unknown content type");
-    if (empty($data))
-      throw new RecaptchaException("Received empty response");
-    $j = json_decode($r->data);
-    $e = json_last_error();
-    Logger::logMetric("json_last_error", $e);
-    if (!$j || $e !== JSON_ERROR_NONE || !property_exists($j, "success"))
-      throw new RecaptchaException("Received invalid response");
-    return ($j->success);
   }
 
 }

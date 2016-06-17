@@ -116,7 +116,7 @@ require("./header.inc.phtml");
                 <input type="password" name="pw2" id="pw2" tabindex="4"
                   value="" required<?php if ($af == "pw2") { ?> autofocus="autofocus"<?php } ?>/>
               </td></tr><tr><td colspan="2">
-                <div class="g-recaptcha" data-theme="dark" data-sitekey="<?php echo $this->getContext()->captcha_key; ?>"></div>
+                <div class="g-recaptcha" data-theme="dark" data-sitekey="<?php echo $this->getContext()->recaptcha->site_key; ?>"></div>
               </td></tr><tr><td colspan="2" style="padding-top:16px;">
                 <input type="submit" value="Register" tabindex="5"/>
               </td>
