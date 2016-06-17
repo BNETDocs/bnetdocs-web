@@ -76,7 +76,7 @@ require("./header.inc.phtml");
         <header>Comments</header>
         <section>
 <?php if (!$comments) { ?>
-          <p><em>(no comments yet)</em></p>
+          <p class="center"><em>no one has commented yet.</em></p>
 <?php } else { ?>
           <table class="comments"><tbody>
 <?php foreach ($comments as $c) {
