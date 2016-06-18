@@ -24,6 +24,6 @@ install:
   - pecl install geoip
   - pear install http2
 before_script:
-  - cp config.sample.json config.phoenix.json
+  - cp etc/config.sample.json etc/config.phoenix.json
 script:
   - bash -c 'set -e;for file in $(find ./src -type f -regex .*\.php -print); do php -e -l -f "$file"; done'
