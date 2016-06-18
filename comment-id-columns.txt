@@ -1,0 +1,13 @@
+id
+posterid
+catid
+subid
+pdid
+
+id       = comment id (unique comment identifier)
+posterid = user id (unique user identifier)
+pdid     = parent id (0 if news, id of document or packet otherwise)
+
+subid    = (0 if non-news, id of news post otherwise)
+catid    = (category; 0 = packet, 1 = news, 2 = document)
+
