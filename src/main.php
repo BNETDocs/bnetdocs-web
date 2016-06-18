@@ -34,7 +34,9 @@ function main() {
 
   Logger::initialize();
 
-  Common::$config   = json_decode(file_get_contents("./config.phoenix.json"));
+  Common::$config   = json_decode(file_get_contents(
+                        "../etc/config.phoenix.json"
+                      ));
   Common::$cache    = new Cache();
   Common::$database = null;
   Common::$version  = Common::getVersionProperties();

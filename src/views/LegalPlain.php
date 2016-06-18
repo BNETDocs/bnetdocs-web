@@ -18,7 +18,7 @@ class LegalPlain extends View {
     if (!$model instanceof LegalModel) {
       throw new IncorrectModelException();
     }
-    echo file_get_contents("./LICENSE");
+    echo file_get_contents("../LICENSE");
   }
 
 }

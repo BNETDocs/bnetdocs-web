@@ -7,7 +7,7 @@ if [ "${PROMPT}" != "Y" ] && [ "${PROMPT}" != "y" ]; then
   exit 1
 fi
 
-SRCDIR="$(git rev-parse --show-toplevel)/"
+SRCDIR="$(git rev-parse --show-toplevel)"
 
 MYSQLHOST="$1"
 if [ -z "${MYSQLHOST}" ]; then
@@ -78,6 +78,6 @@ sed -i 's/bnetdocs_phoenix_backup/bnetdocs_phoenix/g' /tmp/.database.sample.sql
 
 printf "[8/8] Moving database into current working directory...\n"
 pushd "$(git rev-parse --git-dir)"
-mv /tmp/.database.sample.sql ${SRCDIR}etc/database.sample.sql
+mv /tmp/.database.sample.sql ${SRCDIR}/etc/database.sample.sql
 
 printf "Operation complete!\n"
