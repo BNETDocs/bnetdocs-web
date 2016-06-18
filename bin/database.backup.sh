@@ -7,6 +7,8 @@ if [ "${PROMPT}" != "Y" ] && [ "${PROMPT}" != "y" ]; then
   exit 1
 fi
 
+SRCDIR="$(git rev-parse --show-toplevel)/"
+
 MYSQLHOST="$1"
 if [ -z "${MYSQLHOST}" ]; then
   read -p "Enter the MySQL server hostname: " MYSQLHOST
@@ -75,6 +77,7 @@ printf "[7/8] Renaming the redacted database locally...\n"
 sed -i 's/bnetdocs_phoenix_backup/bnetdocs_phoenix/g' /tmp/.database.sample.sql
 
 printf "[8/8] Moving database into current working directory...\n"
-mv /tmp/.database.sample.sql ./database.sample.sql
+pushd "$(git rev-parse --git-dir)"
+mv /tmp/.database.sample.sql ${SRCDIR}etc/database.sample.sql
 
 printf "Operation complete!\n"

@@ -26,4 +26,4 @@ install:
 before_script:
   - cp config.sample.json config.phoenix.json
 script:
-  - bash -c 'set -e;for file in $(find . -type f -regex .*\.php -print); do php -e -l -f "$file"; done'
+  - bash -c 'set -e;for file in $(find ./src -type f -regex .*\.php -print); do php -e -l -f "$file"; done'

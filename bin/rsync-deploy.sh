@@ -9,7 +9,7 @@ fi
 
 DEPLOY_TARGET="$1"
 if [ -z "${DEPLOY_TARGET}" ]; then
-  DEPLOY_TARGET="$(cat ${SOURCE_DIRECTORY}/.rsync-target 2>/dev/null)"
+  DEPLOY_TARGET="$(cat ${SOURCE_DIRECTORY}/bin/.rsync-target 2>/dev/null)"
 fi
 if [ -z "${DEPLOY_TARGET}" ]; then
   read -p "Enter the server to deploy to: " DEPLOY_TARGET
