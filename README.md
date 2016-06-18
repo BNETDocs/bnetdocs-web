@@ -27,12 +27,15 @@ Installation
  - Recommended location: `/home/nginx/bnetdocs-local/`
 2. Setup an nginx/php-fpm web server using
    [nginx-conf](https://github.com/carlbennett/nginx-conf) as the config.
- - Modify the example server config to use `local.bnetdocs.org` instead.
- - Add the following to the `local.bnetdocs.org` server config file:<br/>
-   `include conf.d/php.conf;`
- - Add the following to the `local.bnetdocs.org` server config file:<br/>
-   `location / { try_files /src/static$uri /src/main.php$is_args$args; }`
-3. Install additional php modules:
+3. Copy the `/etc/nginx-vhost-sample.conf` file to your local nginx.
+ - Recommended location: `/etc/nginx/sites-available/local.bnetdocs.org.conf`
+4. Create a symbolic link from
+   `/etc/nginx/sites-available/local.bnetdocs.org.conf` to
+   `/etc/nginx/sites-enabled/local.bnetdocs.org.conf`.
+5. Reconfigure your `local.bnetdocs.org.conf` file as necessary to work with
+   your environment. You will need to modify the `server_name` directives and
+   even quite possibly remove some `server` blocks.
+6. Install additional php modules:
  - php-gmp
  - php-mbstring
  - php-mcrypt
@@ -43,11 +46,11 @@ Installation
  - php-pecl-geoip
  - php-pecl-http
  - php-pecl-jsonc
-4. Start nginx and php-fpm on your server and ensure they begin running.
-5. Import and setup the sample database.
-6. Copy `/etc/config.sample.json` to `/etc/config.phoenix.json` and modify it
+7. Start nginx and php-fpm on your server and ensure they begin running.
+8. Import and setup the sample database.
+9. Copy `/etc/config.sample.json` to `/etc/config.phoenix.json` and modify it
    to your environment.
-7. Try accessing this endpoint:
+10. Try accessing this endpoint:
    [local.bnetdocs.org](https://local.bnetdocs.org)
  - You may need to modify your `/etc/hosts` file if your development
    environment is not your localhost.
