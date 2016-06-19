@@ -13,8 +13,8 @@ table.comments td p:last-of-type {
 }
 table.comments td:first-child {
   padding-top: 8px;
-  min-width: 200px;
-  max-width: 200px;
+  min-width: 180px;
+  max-width: 180px;
 }
 table.comments td:last-child {
   font-size: 10pt;
@@ -36,5 +36,5 @@ table.comments blockquote:last-child {
   margin-bottom: 0px;
 }
 table.comments code {
-  width: 518px;
+  width: 538px;
 }
