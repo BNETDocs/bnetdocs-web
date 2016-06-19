@@ -24,6 +24,7 @@
 .gitignore
 .gitkeep
 /.travis.yml
+/CONTRIBUTING.md
 /README.md
 /bin/
 /etc/.rsync-target
