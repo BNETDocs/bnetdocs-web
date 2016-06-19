@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Controllers\Redirect as RedirectController;
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Document;
@@ -27,7 +28,7 @@ class View extends Controller {
 
   public function run(Router &$router) {
     $model              = new DocumentViewModel();
-    $model->document_id = $this->document_id;
+    $model->document_id = (int) $this->document_id;
     try {
       $model->document  = new Document($this->document_id);
     } catch (DocumentNotFoundException $e) {
@@ -55,6 +56,12 @@ class View extends Controller {
       break;
       default:
         throw new UnspecifiedViewException();
+    }
+    if ($model->document) {
+      $model->comments = Comment::getAll(
+        Comment::PARENT_TYPE_DOCUMENT,
+        $model->document_id
+      );
     }
     $model->user_session = UserSession::load($router);
     ob_start();

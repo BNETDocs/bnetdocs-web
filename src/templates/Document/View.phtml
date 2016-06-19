@@ -2,8 +2,10 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
+$comments  = $this->getContext()->comments;
 $object_id = $this->getContext()->document_id;
 $object    = $this->getContext()->document;
 
@@ -26,6 +28,7 @@ if ($object) {
 }
 
 #$this->additional_css[] = "/a/document.css";
+$this->additional_css[] = "/a/comments.css";
 require("./header.inc.phtml");
 ?>
       <article>
@@ -41,8 +44,21 @@ require("./header.inc.phtml");
       <article>
         <header>Comments</header>
         <section>
-          <?php require("./NYI.inc.phtml"); ?>
-          <p class="center">If you'd like to leave a suggestion or concern, you can do so <a href="https://github.com/BNETDocs/bnetdocs-web/issues/new?labels[]=bnetdocs-phoenix&labels[]=question&body=<?php echo rawurlencode("Hi,\n\n<fill in your question here>\n\nThanks!\n\nReference: " . $url); ?>" rel="external">over on GitHub</a>. Sorry for the trouble!</p>
+<?php if (!$comments) { ?>
+          <p class="center"><em>no one has commented yet.</em></p>
+<?php } else { ?>
+          <table class="comments"><tbody>
+<?php foreach ($comments as $c) {
+        $c_user        = $c->getUser();
+        $c_user_name   = $c_user->getName();
+        $c_user_id     = $c->getUserId();
+        $c_user_url    = Common::relativeUrlToAbsolute("/user/" . $c_user_id . "/" . Common::sanitizeForUrl($c_user_name, true));
+        $c_user_avatar = "https:" . (new Gravatar($c_user->getEmail()))->getUrl(22, "identicon");
+?>
+            <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo htmlspecialchars($c_user_name, ENT_HTML5, "UTF-8"); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><?php echo $c->getContent(true); ?></td></tr>
+<?php } ?>
+          </tbody></table>
+<?php } ?>
         </section>
 <?php } else { ?>
         <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
