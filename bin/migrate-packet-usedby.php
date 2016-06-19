@@ -1,16 +1,21 @@
 #!/usr/bin/php
 <?php
 
-$config = json_decode(file_get_contents("../etc/config.phoenix.json"));
+$config1 = json_decode(file_get_contents("../etc/config.redux.json"));
+$config2 = json_decode(file_get_contents("../etc/config.phoenix.json"));
 
-$db_host = $config->mysql->servers[0]->hostname;
-$db_user = $config->mysql->username;
-$db_pass = $config->mysql->password;
-$db_old  = "bnetdocs_botdev";
-$db_new  = $config->mysql->database;
+$db1_host = $config1->database->hostname;
+$db1_user = $config1->database->username;
+$db1_pass = $config1->database->password;
+$db1_name = $config1->database->name;
 
-$link1 = mysqli_connect($db_host, $db_user, $db_pass, $db_old);
-$link2 = mysqli_connect($db_host, $db_user, $db_pass, $db_new);
+$db2_host = $config2->mysql->servers[0]->hostname;
+$db2_user = $config2->mysql->username;
+$db2_pass = $config2->mysql->password;
+$db2_name = $config2->mysql->database;
+
+$link1 = mysqli_connect($db1_host, $db1_user, $db1_pass, $db1_name);
+$link2 = mysqli_connect($db2_host, $db2_user, $db2_pass, $db2_name);
 
 $link2->query("TRUNCATE TABLE `packet_used_by`;");
 
