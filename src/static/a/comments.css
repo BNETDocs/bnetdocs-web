@@ -2,6 +2,9 @@
  * BNETDocs (C) 2016 Creative Commons CC-BY-NC-SA 4.0 License
  */
 
+table.comments {
+  table-layout: fixed;
+}
 table.comments td {
   vertical-align: top;
 }
@@ -12,9 +15,10 @@ table.comments td p:last-of-type {
   margin-bottom: 0px;
 }
 table.comments td:first-child {
-  padding-top: 8px;
-  min-width: 180px;
   max-width: 180px;
+  min-width: 180px;
+  padding-top: 8px;
+  width: 180px;
 }
 table.comments td:last-child {
   font-size: 10pt;
@@ -34,7 +38,4 @@ table.comments blockquote:first-child {
 }
 table.comments blockquote:last-child {
   margin-bottom: 0px;
-}
-table.comments code {
-  width: 538px;
 }
