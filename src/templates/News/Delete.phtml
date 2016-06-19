@@ -16,6 +16,9 @@ switch ($this->getContext()->error) {
   case "NOT_FOUND":
     $message = "Cannot find news post by that id.";
     break;
+  case "NOT_LOGGED_IN":
+    $message = "You must be logged in to delete news posts.";
+    break;
   case "INVALID_CSRF":
     $message = "The Cross-Site Request Forgery token was invalid. "
       . "Either the delete news post form expired, or "
