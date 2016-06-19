@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Controllers\Redirect as RedirectController;
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
@@ -28,7 +29,7 @@ class View extends Controller {
 
   public function run(Router &$router) {
     $model = new PacketViewModel();
-    $model->packet_id = $this->packet_id;
+    $model->packet_id = (int) $this->packet_id;
     try {
       $model->packet  = new Packet($this->packet_id);
     } catch (PacketNotFoundException $e) {
@@ -58,6 +59,10 @@ class View extends Controller {
         throw new UnspecifiedViewException();
     }
     if ($model->packet) {
+      $model->comments = Comment::getAll(
+        Comment::PARENT_TYPE_PACKET,
+        $model->packet_id
+      );
       $model->used_by    = $this->getUsedBy($model->packet);
     } else {
       $model->used_by    = null;
