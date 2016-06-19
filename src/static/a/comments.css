@@ -12,12 +12,29 @@ table.comments td p:last-of-type {
   margin-bottom: 0px;
 }
 table.comments td:first-child {
-  width: 200px;
+  padding-top: 8px;
+  min-width: 200px;
+  max-width: 200px;
 }
 table.comments td:last-child {
-  font-size: small;
+  font-size: 10pt;
+  line-height: 12pt;
 }
-time.comment_timestamp {
+
+table.comments time.comment_timestamp {
   color: rgba(128,128,128,1);
   font-size: smaller;
+}
+
+table.comments blockquote {
+  margin: 10px 0px;
+}
+table.comments blockquote:first-child {
+  margin-top: 0px;
+}
+table.comments blockquote:last-child {
+  margin-bottom: 0px;
+}
+table.comments code {
+  width: 518px;
 }
