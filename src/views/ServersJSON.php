@@ -49,7 +49,7 @@ class ServersJSON extends View {
         "status_bitmask"   => $server->getStatusBitmask(),
         "type_id"          => $server->getTypeId(),
         "updated_datetime" => $updated_datetime,
-        "user_id"          => $server->getUserId()
+        "user"             => $server->getUser()
       ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Controllers\API\Comment as APICommentController;
 use \BNETDocs\Controllers\Credits as CreditsController;
 use \BNETDocs\Controllers\Document\Index as DocumentIndexController;
 use \BNETDocs\Controllers\Document\Popular as DocumentPopularController;
@@ -252,6 +253,17 @@ class Router {
               $code = 302;
             }
             $controller = new RedirectController($url, $code);
+          break;
+          case "api":
+            switch ($subpath) {
+              case "comment":
+                $controller = new APICommentController();
+              break;
+              default:
+                throw new ControllerNotFoundException(
+                  $path . "/" . $subpath
+                );
+            }
           break;
           case "credits": case "credits.htm": case "credits.html":
             $controller = new CreditsController();

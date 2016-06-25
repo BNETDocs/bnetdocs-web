@@ -49,6 +49,7 @@ if ($object) {
 
 $this->additional_css[] = "/a/news.css";
 $this->additional_css[] = "/a/comments.css";
+if ($logged_in) $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
       <article>
@@ -91,6 +92,15 @@ require("./header.inc.phtml");
           </tbody></table>
 <?php } ?>
         </section>
+<?php if ($logged_in) { ?>
+        <section>
+          <form method="POST" action="?">
+            <p class="center"><label for="comment-content">Comment on this post:</label></p>
+            <p class="center"><textarea id="comment-content" name="comment-content" cols="80" rows="5"></textarea></p>
+            <p class="center"><input type="submit" value="Comment"/></p>
+          </form>
+        </section>
+<?php } ?>
 <?php } else { ?>
         <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
         <section class="red"><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></section>

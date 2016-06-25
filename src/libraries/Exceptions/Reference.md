@@ -25,3 +25,4 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | 18         | `PacketTransportLayerNotFoundException`   | Packet transport layer not found                     |
 | 19         | `PacketDirectionInvalidException`         | Packet direction is invalid                          |
 | 20         | `ProductNotFoundException`                | Product not found                                    |
+| 21         | `CommentNotFoundException`                | Comment not found                                    |

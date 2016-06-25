@@ -12,11 +12,12 @@ use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
+use \JsonSerializable;
 use \PDO;
 use \PDOException;
 use \StdClass;
 
-class User {
+class User implements JsonSerializable {
 
   const OPTION_ACL_DOCUMENT_CREATE  = 0x00000001;
   const OPTION_ACL_DOCUMENT_MODIFY  = 0x00000002;
@@ -302,6 +303,27 @@ class User {
       self::OPTION_ACL_USER_MODIFY      |
       self::OPTION_ACL_USER_DELETE
     ));
+  }
+
+  public function jsonSerialize() {
+    $created_datetime = $this->getCreatedDateTime();
+    if (!is_null($created_datetime)) $created_datetime = [
+      "iso"  => $created_datetime->format("r"),
+      "unix" => $created_datetime->getTimestamp(),
+    ];
+
+    $verified_datetime = $this->getVerifiedDateTime();
+    if (!is_null($verified_datetime)) $verified_datetime = [
+      "iso"  => $verified_datetime->format("r"),
+      "unix" => $verified_datetime->getTimestamp(),
+    ];
+
+    return [
+      "created_datetime"  => $created_datetime,
+      "id"                => $this->getId(),
+      "name"              => $this->getName(),
+      "verified_datetime" => $verified_datetime,
+    ];
   }
 
   protected static function normalize(StdClass &$data) {

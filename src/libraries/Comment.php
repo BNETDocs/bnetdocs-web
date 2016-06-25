@@ -13,11 +13,12 @@ use \BNETDocs\Libraries\User;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
+use \JsonSerializable;
 use \PDO;
 use \PDOException;
 use \StdClass;
 
-class Comment {
+class Comment implements JsonSerializable {
 
   const PARENT_TYPE_DOCUMENT  = 0;
   const PARENT_TYPE_COMMENT   = 1;
@@ -171,6 +172,31 @@ class Comment {
 
   public function getUserId() {
     return $this->user_id;
+  }
+
+  public function jsonSerialize() {
+    $created_datetime = $this->getCreatedDateTime();
+    if (!is_null($created_datetime)) $created_datetime = [
+      "iso"  => $created_datetime->format("r"),
+      "unix" => $created_datetime->getTimestamp(),
+    ];
+
+    $edited_datetime = $this->getEditedDateTime();
+    if (!is_null($edited_datetime)) $edited_datetime = [
+      "iso"  => $edited_datetime->format("r"),
+      "unix" => $edited_datetime->getTimestamp(),
+    ];
+    
+    return [
+      "content"          => $this->getContent(true),
+      "created_datetime" => $created_datetime,
+      "edited_count"     => $this->getEditedCount(),
+      "edited_datetime"  => $edited_datetime,
+      "id"               => $this->getId(),
+      "parent_id"        => $this->getParentId(),
+      "parent_type"      => $this->getParentType(),
+      "user"             => $this->getUser(),
+    ];
   }
 
   protected static function normalize(StdClass &$data) {
