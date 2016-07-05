@@ -1,27 +1,25 @@
-BNETDocs: Phoenix
-=================
+# BNETDocs: Phoenix
 
 [![Build Status](https://travis-ci.org/BNETDocs/bnetdocs-web.svg?branch=phoenix)](https://travis-ci.org/BNETDocs/bnetdocs-web)
 
-Preface
--------
-BNETDocs is a web content management system (CMS) for the Battle.net&trade;
-online gaming service protocol, with its purpose to document the
-Battle.net&trade; protocol.
+## Preface
+BNETDocs is a web content management system (CMS) and documentation software
+for the Battle.net&trade; online gaming service's protocol. It provides a means
+for documenting the protocol and encouraging discussion on it.
 
 BNETDocs is in no way affiliated with or endorsed by Blizzard
 Entertainment&trade; or its brands, and is not intended to compete with
 or undermine Blizzard Entertainment&trade; or Battle.net&trade;. Persons using
 this software understand that the information provided within is collected
-knowledge from years of observations and may be inaccurate. All aforementioned
+knowledge from years of observations and may be inaccurate. BNETDocs does not
+provide a warranty of any kind to the nature of its content. All aforementioned
 trademarks are the property of their respective owners. See the LICENSE file at
 the root of this repository for more info.
 
 **BNETDocs: Phoenix** is the successor to
 [BNETDocs: Redux](https://github.com/BNETDocs/bnetdocs-web/tree/redux).
 
-Installation
-------------
+## Installation
 
 1. Clone this repository to a local directory on your development environment.
  - Recommended location: `/home/nginx/bnetdocs-local/`
