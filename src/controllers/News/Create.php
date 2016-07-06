@@ -39,15 +39,13 @@ class Create extends Controller {
       $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_CREATE
     );
 
-    if ($model->acl_allowed) {
-      $model->news_categories = NewsCategory::getAll();
-      usort($model->news_categories, function($a, $b){
-        $oA = $a->getSortId();
-        $oB = $b->getSortId();
-        if ($oA == $oB) return 0;
-        return ($oA < $oB) ? -1 : 1;
-      });
-    }
+    $model->news_categories = NewsCategory::getAll();
+    usort($model->news_categories, function($a, $b){
+      $oA = $a->getSortId();
+      $oB = $b->getSortId();
+      if ($oA == $oB) return 0;
+      return ($oA < $oB) ? -1 : 1;
+    });
 
     if ($router->getRequestMethod() == "POST") {
       $this->handlePost($router, $model);
