@@ -24,6 +24,5 @@
 /etc/config.phoenix.json
 /etc/config.redux.json
 /tmp/
-Thumbs.db
-
 /vendor/
+Thumbs.db
