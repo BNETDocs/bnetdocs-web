@@ -1,0 +1,41 @@
+{
+    "name": "bnetdocs/bnetdocs-web",
+    "description": "BNETDocs - The Battle.net™ protocol documentation website",
+    "type": "project",
+    "keywords": [
+        "battle.net",
+        "protocol",
+        "documentation",
+        "battlenet",
+        "b.net",
+        "bnet",
+        "docs",
+        "classic",
+        "warcraft",
+        "starcraft",
+        "diablo",
+        "bot",
+        "reverse",
+        "engineer"
+    ],
+    "homepage": "https://github.com/BNETDocs/bnetdocs-web",
+    "license": "CC-BY-NC-SA 4.0",
+    "authors": [
+        {
+            "name": "Carl Bennett",
+            "email": "carlbennett@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "ext-curl": "*",
+        "ext-geoip": "*",
+        "ext-gmp": "*",
+        "ext-http": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-mcrypt": "*",
+        "ext-memcached": "*",
+        "ext-pdo": "*",
+        "php-64bit": ">=5.5.0"
+    }
+}

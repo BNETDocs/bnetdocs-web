@@ -25,3 +25,5 @@
 /etc/config.redux.json
 /tmp/
 Thumbs.db
+
+/vendor/

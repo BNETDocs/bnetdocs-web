@@ -12,6 +12,8 @@ use \ReflectionClass;
 
 function main() {
 
+  require_once("../vendor/autoload.php");
+
   spl_autoload_register(function($className){
     $path = $className;
     if (substr($path, 0, 8) == "BNETDocs") $path = substr($path, 9);
