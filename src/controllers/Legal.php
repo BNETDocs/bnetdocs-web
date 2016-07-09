@@ -25,6 +25,7 @@ class Legal extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new LegalModel();
+    $model->license      = file_get_contents("../LICENSE.txt");
     $model->user_session = UserSession::load($router);
     ob_start();
     $view->render($model);

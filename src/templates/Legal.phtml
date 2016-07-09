@@ -60,7 +60,7 @@ require("./header.inc.phtml");
         <section>
           <p>For a plaintext version of the document below, <a href="<?php echo Common::relativeUrlToAbsolute("/legal.txt"); ?>">click here</a>.</p>
           <p><pre><code><?php
-            echo htmlentities(file_get_contents("../../LICENSE.txt"), ENT_HTML5, "UTF-8");
+            echo htmlentities($this->getContext()->license, ENT_HTML5, "UTF-8");
             ?></code></pre></p>
         </section>
       </article>
