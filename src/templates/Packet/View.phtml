@@ -65,11 +65,17 @@ require("./header.inc.phtml");
               if (count($products) == 1) {
                 echo htmlspecialchars($products[0]->getLabel(), ENT_HTML5, "UTF-8");
               } else {
-                echo "<ul>";
-                foreach ($this->getContext()->used_by as $product) {
-                  echo "<li>" . htmlspecialchars($product->getLabel(), ENT_HTML5, "UTF-8") . "</li>";
+                $j = count($this->getContext()->used_by);
+                for ($i = 0; $i < $j; ++$i) {
+                  echo htmlspecialchars($this->getContext()->used_by[$i]->getLabel(), ENT_HTML5, "UTF-8");
+                  if ($i + 1 < $j) {
+                    ++$i;
+                    echo ", ";
+                    echo htmlspecialchars($this->getContext()->used_by[$i]->getLabel(), ENT_HTML5, "UTF-8") . "<br/>";
+                  } else {
+                    echo "<br/>";
+                  }
                 }
-                echo "</ul>";
               }
             ?></td></tr>
             <tr><th>Format:</th><td><p><pre><code><?php echo $object->getPacketFormat(); ?></code></pre></p></td></tr>
@@ -80,7 +86,9 @@ require("./header.inc.phtml");
 <?php echo $object->getPacketRemarks(true); ?>
         </section>
         <footer>
+<?php if ($user_id !== null) { ?>
           <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
+<?php } ?>
 <?php if ($object->getEditedDateTime() !== null) { ?>
           <span class="float-right"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?> | Edited: <?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></span>
 <?php } else { ?>
