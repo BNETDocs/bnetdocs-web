@@ -16,13 +16,21 @@ $this->opengraph->attach(new Pair("type", "article"));
 
 $url = Common::relativeUrlToAbsolute("/document/" . urlencode($object_id));
 if ($object) {
+
   $url .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
   $this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)
     . "/" . Common::sanitizeForUrl($object->getTitle(), true)));
-  $title = htmlspecialchars($object->getTitle(), ENT_HTML5, "UTF-8");
+
+  $title       = htmlspecialchars($object->getTitle(), ENT_HTML5, "UTF-8");
   $description = Common::stripUpTo(trim(filter_var(
     $object->getContent(true), FILTER_SANITIZE_STRING
   )), "\n", 300);
+
+  $user_name   = $object->getUser()->getName();
+  $user_id     = $object->getUserId();
+  $user_url    = Common::relativeUrlToAbsolute("/user/" . $user_id . "/" . Common::sanitizeForUrl($user_name, true));
+  $user_avatar = "https:" . (new Gravatar($object->getUser()->getEmail()))->getUrl(22, "identicon");
+
 } else {
   $this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)));
 }
@@ -40,6 +48,14 @@ require("./header.inc.phtml");
         <section>
 <?php echo $object->getContent(true); ?>
         </section>
+        <footer>
+          <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
+<?php if ($object->getEditedDateTime() !== null) { ?>
+          <span class="float-right"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?> | Edited: <?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></span>
+<?php } else { ?>
+          <span class="float-right"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></span>
+<?php } ?>
+        </footer>
       </article>
       <article>
         <header>Comments</header>
