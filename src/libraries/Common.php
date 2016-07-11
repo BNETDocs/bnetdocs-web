@@ -69,6 +69,29 @@ final class Common {
     return $response;
   }
 
+  public static function formatFileSize($value) {
+
+    $bytes     = $value;
+    $kilobytes = 1024;
+    $megabytes = 1024 * $kilobytes;
+    $gigabytes = 1024 * $megabytes;
+    $terabytes = 1024 * $gigabytes;
+
+    if ($bytes >= $terabytes) {
+      $bytes = round($bytes / $terabytes, 2) . " TiB";
+    } else if ($bytes >= $gigabytes) {
+      $bytes = round($bytes / $gigabytes, 2) . " GiB";
+    } else if ($bytes >= $megabytes) {
+      $bytes = round($bytes / $megabytes, 2) . " MiB";
+    } else if ($bytes >= $kilobytes) {
+      $bytes = round($bytes / $kilobytes, 2) . " KiB";
+    } else {
+      $bytes = $bytes . " B";
+    }
+
+    return $bytes;
+  }
+
   public static function getVersionProperties() {
     $versions           = new StdClass();
     $versions->bnetdocs = file_get_contents("../etc/.rsync-version");
