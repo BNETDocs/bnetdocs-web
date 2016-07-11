@@ -112,7 +112,29 @@ class Attachment implements JsonSerializable {
   }
 
   public function getContent() {
-    return "NOT YET IMPLEMENTED"; // TODO: Retrieve file from database
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        SELECT `content`
+        FROM `attachments`
+        WHERE `id` = :id
+        LIMIT 1;
+      ");
+      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot get attachment content");
+      } else if ($stmt->rowCount() == 0) {
+        throw new AttachmentNotFoundException($this->id);
+      }
+      $row = $stmt->fetch(PDO::FETCH_OBJ);
+      $stmt->closeCursor();
+      return $row->content;
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot get attachment content", $e);
+    }
+    return false;
   }
 
   public function getContentSize($format = false) {
