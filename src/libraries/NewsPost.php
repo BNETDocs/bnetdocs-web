@@ -256,7 +256,7 @@ class NewsPost {
   public function getUserId() {
     return $this->user_id;
   }
-  
+
   protected static function normalize(StdClass &$data) {
     $data->category_id      = (int)    $data->category_id;
     $data->content          = (string) $data->content;
@@ -368,7 +368,7 @@ class NewsPost {
         throw new QueryException("Cannot save news post");
       }
       $stmt->closeCursor();
-      
+
       $object                   = new StdClass();
       $object->category_id      = $this->category_id;
       $object->content          = $this->content;
@@ -383,7 +383,7 @@ class NewsPost {
       $cache_key = "bnetdocs-newspost-" . $this->id;
       Common::$cache->set($cache_key, serialize($object), 300);
       Common::$cache->delete("bnetdocs-newsposts");
-      
+
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot save news post", $e);

@@ -94,7 +94,7 @@ class NewsCategory {
   public function getId() {
     return $this->id;
   }
-  
+
   public function getLabel() {
     return $this->label;
   }
@@ -102,13 +102,13 @@ class NewsCategory {
   public function getSortId() {
     return $this->sort_id;
   }
-  
+
   protected static function normalize(StdClass &$data) {
     $data->filename         = (string) $data->filename;
     $data->id               = (int)    $data->id;
     $data->label            = (string) $data->label;
     $data->sort_id          = (string) $data->sort_id;
-    
+
     return true;
   }
 

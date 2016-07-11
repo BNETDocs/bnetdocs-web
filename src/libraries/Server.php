@@ -29,7 +29,7 @@ class Server {
   protected $type_id;
   protected $updated_datetime;
   protected $user_id;
-  
+
   public function __construct($data) {
     if (is_numeric($data)) {
       $this->address          = null;
@@ -187,7 +187,7 @@ class Server {
 
     return true;
   }
-  
+
   public function refresh() {
     $cache_key = "bnetdocs-server-" . $this->id;
     $cache_val = Common::$cache->get($cache_key);

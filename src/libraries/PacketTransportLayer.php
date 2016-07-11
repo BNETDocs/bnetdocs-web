@@ -98,7 +98,7 @@ class PacketTransportLayer {
 
     return true;
   }
-  
+
   public function refresh() {
     $cache_key = "bnetdocs-packettransportlayer-" . $this->id;
     $cache_val = Common::$cache->get($cache_key);

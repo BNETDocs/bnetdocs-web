@@ -114,7 +114,7 @@ final class Common {
     if (stripos($user_agent, "Trident" ) !== false) return true;
     if (stripos($user_agent, "Blink"   ) !== false) return true;
 
-    // Not a browser 
+    // Not a browser
     return false;
   }
 

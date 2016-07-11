@@ -125,7 +125,7 @@ class Product {
 
     return true;
   }
-  
+
   public function refresh() {
     $cache_key = "bnetdocs-product-" . $this->bnet_product_id;
     $cache_val = Common::$cache->get($cache_key);

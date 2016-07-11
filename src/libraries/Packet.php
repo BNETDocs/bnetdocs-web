@@ -78,7 +78,7 @@ class Packet {
       throw new InvalidArgumentException("Cannot use data argument");
     }
   }
-  
+
   public static function getAllPackets() {
     $cache_key = "bnetdocs-packets";
     $cache_val = Common::$cache->get($cache_key);

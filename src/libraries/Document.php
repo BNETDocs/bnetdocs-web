@@ -56,7 +56,7 @@ class Document {
       throw new InvalidArgumentException("Cannot use data argument");
     }
   }
-  
+
   public static function getAllDocuments() {
     $cache_key = "bnetdocs-documents";
     $cache_val = Common::$cache->get($cache_key);
@@ -105,7 +105,7 @@ class Document {
     }
     return null;
   }
-  
+
   public function getContent($prepare) {
     if (!$prepare) {
       return $this->content;
@@ -170,7 +170,7 @@ class Document {
   public function getEditedCount() {
     return $this->edited_count;
   }
-  
+
   public function getEditedDateTime() {
     if (is_null($this->edited_datetime)) {
       return $this->edited_datetime;
@@ -210,7 +210,7 @@ class Document {
   public function getUserId() {
     return $this->user_id;
   }
-  
+
   protected static function normalize(StdClass &$data) {
     $data->content          = (string) $data->content;
     $data->created_datetime = (string) $data->created_datetime;
@@ -222,7 +222,7 @@ class Document {
     if (!is_null($data->edited_datetime))
       $data->edited_datetime = $data->edited_datetime;
 
-    if (!is_null($data->user_id))  
+    if (!is_null($data->user_id))
       $data->user_id = $data->user_id;
 
     return true;

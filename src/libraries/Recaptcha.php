@@ -50,5 +50,5 @@ class Recaptcha {
 
     return ($j->success);
   }
-  
+
 }

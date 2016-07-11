@@ -186,7 +186,7 @@ class Comment implements JsonSerializable {
       "iso"  => $edited_datetime->format("r"),
       "unix" => $edited_datetime->getTimestamp(),
     ];
-    
+
     return [
       "content"          => $this->getContent(true),
       "created_datetime" => $created_datetime,

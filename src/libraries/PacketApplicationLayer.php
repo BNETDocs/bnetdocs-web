@@ -98,7 +98,7 @@ class PacketApplicationLayer {
 
     return true;
   }
-  
+
   public function refresh() {
     $cache_key = "bnetdocs-packetapplicationlayer-" . $this->id;
     $cache_val = Common::$cache->get($cache_key);

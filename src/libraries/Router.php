@@ -327,7 +327,7 @@ class Router {
           break;
           case "packet":
             switch ($subpath) {
-              case "index": case "index.cpp": case "index.htm": 
+              case "index": case "index.cpp": case "index.htm":
               case "index.html": case "index.java": case "index.json":
               case "index.php": case "index.vb":
                 $controller = new PacketIndexController();
