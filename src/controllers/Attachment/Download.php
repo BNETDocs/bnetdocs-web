@@ -16,6 +16,8 @@ use \BNETDocs\Views\Attachment\DownloadRaw as DownloadRawView;
 
 class Download extends Controller {
 
+  const TTL_ONE_YEAR = 31536000;
+
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
       case "":
@@ -40,7 +42,7 @@ class Download extends Controller {
     ob_start();
     $view->render($model);
     $router->setResponseCode(($model->attachment ? 200 : 404));
-    $router->setResponseTTL(31536000); // 1 year
+    $router->setResponseTTL(self::TTL_ONE_YEAR);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     if ($model->extra_headers) {
       foreach ($model->extra_headers as $name => $value) {
