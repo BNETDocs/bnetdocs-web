@@ -5,9 +5,10 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
-$comments  = $this->getContext()->comments;
-$object_id = $this->getContext()->document_id;
-$object    = $this->getContext()->document;
+$attachments = $this->getContext()->attachments;
+$comments    = $this->getContext()->comments;
+$object_id   = $this->getContext()->document_id;
+$object      = $this->getContext()->document;
 
 $title       = "Document Not Found";
 $description = "The requested document does not exist or could not be found.";
@@ -57,6 +58,26 @@ require("./header.inc.phtml");
 <?php } ?>
         </footer>
       </article>
+<?php if ($attachments) { ?>
+      <article>
+        <header>Attachments</header>
+        <section>
+          <table><thead><th>Filename</th><th>Size</th><th>Upload Date</th><th>Author</th></thead><tbody>
+<?php foreach ($attachments as $a) {
+        $a_filename      = htmlentities($a->getFilename(), ENT_HTML5, "UTF-8");
+        $a_size          = $a->getContentSize(true);
+        $a_uploaddate    = $a->getCreatedDateTime()->format("l, F j, Y");
+        $a_author_name   = $a->getUser()->getName();
+        $a_author_id     = $a->getUserId();
+        $a_author_url    = Common::relativeUrlToAbsolute("/user/" . $a_author_id . "/" . Common::sanitizeForUrl($a_author_name, true));
+        $a_author_avatar = "https:" . (new Gravatar($a->getUser()->getEmail()))->getUrl(22, "identicon");
+?>
+            <tr><td><?php echo $a_filename; ?></td><td><?php echo $a_size; ?></td><td><?php echo $a_uploaddate; ?></td><td><a href="<?php echo $a_author_url; ?>"><img class="avatar" src="<?php echo $a_author_avatar; ?>"/> <?php echo htmlspecialchars($a_author_name, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+<?php } ?>
+          </tbody></table>
+        </section>
+      </article>
+<?php } ?>
       <article>
         <header>Comments</header>
         <section>

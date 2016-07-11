@@ -6,6 +6,7 @@ use \BNETDocs\Libraries\Model;
 
 class View extends Model {
 
+  public $attachments;
   public $comments;
   public $document;
   public $document_id;
@@ -13,6 +14,7 @@ class View extends Model {
 
   public function __construct() {
     parent::__construct();
+    $this->attachments  = null;
     $this->comments     = null;
     $this->document     = null;
     $this->document_id  = null;

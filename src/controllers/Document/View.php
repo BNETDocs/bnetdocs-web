@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Controllers\Redirect as RedirectController;
+use \BNETDocs\Libraries\Attachment;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
@@ -58,6 +59,10 @@ class View extends Controller {
         throw new UnspecifiedViewException();
     }
     if ($model->document) {
+      $model->attachments = Attachment::getAll(
+        Comment::PARENT_TYPE_DOCUMENT,
+        $model->document_id
+      );
       $model->comments = Comment::getAll(
         Comment::PARENT_TYPE_DOCUMENT,
         $model->document_id

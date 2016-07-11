@@ -26,3 +26,4 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | 19         | `PacketDirectionInvalidException`         | Packet direction is invalid                          |
 | 20         | `ProductNotFoundException`                | Product not found                                    |
 | 21         | `CommentNotFoundException`                | Comment not found                                    |
+| 22         | `AttachmentNotFoundException`             | Attachment not found                                 |
