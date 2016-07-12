@@ -22,8 +22,7 @@ the root of this repository for more info.
 
 ### Clone this repository
 ```sh
-cd ~
-git clone git@github.com:BNETDocs/bnetdocs-web.git
+git clone git@github.com:BNETDocs/bnetdocs-web.git ~/bnetdocs-web
 ```
 
 ### Install nginx
