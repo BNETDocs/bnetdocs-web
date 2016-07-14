@@ -85,4 +85,4 @@ cp ./etc/config.sample.json ./etc/config.phoenix.json
 Try accessing this endpoint: [local.bnetdocs.org](https://local.bnetdocs.org)
 
 \* You may need to modify your `/etc/hosts` file if your development
-   environment is not your localhost.
+   environment is not your `localhost`.
