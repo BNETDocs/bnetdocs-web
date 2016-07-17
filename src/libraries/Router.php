@@ -209,7 +209,7 @@ class Router {
       $controller = new MaintenanceController(
         Common::$config->bnetdocs->maintenance[1]
       );
-    } else if (isset($redirect)) {
+    } else if ($redirect instanceof Pair) {
       $controller = new RedirectController(
         $redirect->getKey(), $redirect->getValue()
       );
