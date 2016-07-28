@@ -50,16 +50,19 @@ if (isset($this->getContext()->user_session)) {
     <meta property="og:title" content="<?php echo $title; ?>"/>
     <meta property="twitter:title" content="<?php echo $title; ?>"/>
 <?php
-    $ogimage = false;
+    $ogimage = false; $ogtype = false;
     foreach ($this->opengraph as $og) {
       $ogkey = $og->getKey();
       $ogval = $og->getValue();
       if ($ogkey == "image") $ogimage = true;
+      if ($ogkey == "type") $ogtype = true;
       if ($ogkey == "url" || $ogkey == "image") $ogval = Common::relativeUrlToAbsolute($ogval);
 ?>
     <meta property="og:<?php echo $ogkey; ?>" content="<?php echo $ogval; ?>"/>
 <?php } if (!$ogimage) { ?>
     <meta property="og:image" content="<?php echo Common::relativeUrlToAbsolute("/a/bnetdocs.png"); ?>"/>
+<?php } if (!$ogtype) { ?>
+    <meta property="og:type" content="website"/>
 <?php } ?>
   </head>
   <body>
