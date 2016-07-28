@@ -11,6 +11,10 @@ $title       = "Search Packets";
 $description = "Search the packets on BNETDocs";
 $this->opengraph->attach(new Pair("url", "/packet/search"));
 
+if (!empty($this->getContext()->query)) {
+  $title = $this->getContext()->query . " - " . $title;
+}
+
 $avatars = [];
 $getAvatar = function(&$avatars, &$user) {
   $user_id = $user->getId();
