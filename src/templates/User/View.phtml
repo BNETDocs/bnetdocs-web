@@ -16,7 +16,7 @@ $this->opengraph->attach(new Pair("type", "profile"));
 
 if ($object) {
   $this->opengraph->attach(new Pair("profile:username", $object->getName()));
-  
+
   $gravatar = new Gravatar($object->getEmail());
   $this->opengraph->attach(new Pair("image", "https:" . $gravatar->getUrl(null, "identicon")));
 

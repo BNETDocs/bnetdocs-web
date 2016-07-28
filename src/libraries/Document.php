@@ -202,6 +202,14 @@ class Document {
     return $this->title;
   }
 
+  public function getURI() {
+    return Common::relativeUrlToAbsolute(
+      "/document/" . $this->getId() . "/" . Common::sanitizeForUrl(
+        $this->getTitle(), true
+      )
+    );
+  }
+
   public function getUser() {
     if (is_null($this->user_id)) return null;
     return new User($this->user_id);

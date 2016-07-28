@@ -147,7 +147,7 @@ class Packet {
   public function getEditedCount() {
     return $this->edited_count;
   }
-  
+
   public function getEditedDateTime() {
     if (is_null($this->edited_datetime)) {
       return $this->edited_datetime;
@@ -211,7 +211,7 @@ class Packet {
     if (!$format) return $this->packet_id;
     return "0x" . strtoupper(substr("0" . dechex($this->packet_id), -2));
   }
-  
+
   public function getPacketRemarks($prepare) {
     if (!$prepare) {
       return $this->packet_remarks;
@@ -283,6 +283,14 @@ class Packet {
     }
   }
 
+  public function getURI() {
+    return Common::relativeUrlToAbsolute(
+      "/packet/" . $this->getId() . "/" . Common::sanitizeForUrl(
+        $this->getPacketName(), true
+      )
+    );
+  }
+
   public function getUsedBy() {
     $ckey = "bnetdocs-packetusedby-" . $this->id;
     $cval = Common::$cache->get($ckey);
@@ -340,7 +348,7 @@ class Packet {
     if (!is_null($data->edited_datetime))
       $data->edited_datetime = $data->edited_datetime;
 
-    if (!is_null($data->user_id))  
+    if (!is_null($data->user_id))
       $data->user_id = $data->user_id;
 
     return true;
