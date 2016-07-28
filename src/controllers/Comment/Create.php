@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
+use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Comment\Create as CreateModel;
@@ -86,6 +87,11 @@ class Create extends Controller {
       "parent_id"   => $p_id,
       "parent_type" => $p_type
     ];
+
+    Logger::logEvent(
+      "comment_created_news", $model->user_session->user_id,
+      getenv("REMOTE_ADDR"), json_encode($model->response)
+    );
 
     return 303;
   }
