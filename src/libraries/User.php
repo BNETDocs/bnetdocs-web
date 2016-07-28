@@ -267,6 +267,14 @@ class User implements JsonSerializable {
     return $this->password_salt;
   }
 
+  public function getURI() {
+    return Common::relativeUrlToAbsolute(
+      "/user/" . $this->getId() . "/" . Common::sanitizeForUrl(
+        $this->getName(), true
+      )
+    );
+  }
+
   public function getUsername() {
     return $this->username;
   }

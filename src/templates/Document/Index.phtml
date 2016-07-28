@@ -36,7 +36,7 @@ require("./header.inc.phtml");
 <?php foreach ($this->getContext()->documents as $document) {
         $user       = $document->getUser();
         if ($user) {
-          $user_url   = Common::relativeUrlToAbsolute("/user/" . urlencode($user->getId()) . "/" . Common::sanitizeForUrl($user->getName(), true));
+          $user_url   = $user->getURI();
           $avatar_url = "https:" . $getAvatar($avatars, $user)->getUrl(22, "identicon");
         }
 ?>
