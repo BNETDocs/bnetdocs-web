@@ -92,7 +92,7 @@ require("./header.inc.phtml");
         <section>
           <ul>
 <?php foreach ($this->getContext()->documents as $document) { ?>
-            <li><a href="<?php echo Common::relativeUrlToAbsolute("/document/" . urlencode($document->getId()) . "/" . Common::sanitizeForUrl($document->getTitle(), true)); ?>"><?php echo htmlspecialchars($document->getTitle()); ?></a></li>
+            <li><a href="<?php echo $document->getURI(); ?>"><?php echo htmlspecialchars($document->getTitle()); ?></a></li>
 <?php } ?>
           </ul>
         </section>

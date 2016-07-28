@@ -18,9 +18,8 @@ $this->opengraph->attach(new Pair("type", "article"));
 $url = Common::relativeUrlToAbsolute("/document/" . urlencode($object_id));
 if ($object) {
 
-  $url .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
-  $this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)
-    . "/" . Common::sanitizeForUrl($object->getTitle(), true)));
+  $url = $object->getURI();
+  $this->opengraph->attach(new Pair("url", $url));
 
   $title       = htmlspecialchars($object->getTitle(), ENT_HTML5, "UTF-8");
   $description = Common::stripUpTo(trim(filter_var(
