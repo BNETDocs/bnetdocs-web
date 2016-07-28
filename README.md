@@ -49,6 +49,8 @@ over the file and perform any updates to it as you see fit.
 sudo yum install php-fpm
 ```
 
+\* Use `dnf` instead of `yum` if you have it available.
+
 #### Debian / Ubuntu
 ```sh
 sudo apt-get update && sudo apt-get install php-fpm
