@@ -60,14 +60,38 @@ class View extends Controller {
 
     // Try to get their user profile
     try {
-      $model->user_profile = new UserProfile($this->user_id);
-      $model->biography    = $model->user_profile->getBiography();
-      $model->github       = $model->user_profile->getGitHubUsername();
-      $model->facebook     = $model->user_profile->getFacebookUsername();
-      $model->twitter      = $model->user_profile->getTwitterUsername();
-      $model->instagram    = $model->user_profile->getInstagramUsername();
-      $model->skype        = $model->user_profile->getSkypeUsername();
-      $model->website      = $model->user_profile->getWebsite();
+
+      $model->user_profile  = new UserProfile($this->user_id);
+
+      $model->biography     = $model->user_profile->getBiography();
+
+      $model->facebook      = $model->user_profile->getFacebookUsername();
+      $model->facebook_uri  = $model->user_profile->getFacebookURI();
+
+      $model->github        = $model->user_profile->getGitHubUsername();
+      $model->github_uri    = $model->user_profile->getGitHubURI();
+
+      $model->instagram     = $model->user_profile->getInstagramUsername();
+      $model->instagram_uri = $model->user_profile->getInstagramURI();
+
+      $model->phone         = $model->user_profile->getPhone();
+      $model->phone_uri     = $model->user_profile->getPhoneURI();
+
+      $model->reddit        = $model->user_profile->getRedditUsername();
+      $model->reddit_uri    = $model->user_profile->getRedditURI();
+
+      $model->skype         = $model->user_profile->getSkypeUsername();
+      $model->skype_uri     = $model->user_profile->getSkypeURI();
+
+      $model->steam_id      = $model->user_profile->getSteamId();
+      $model->steam_uri     = $model->user_profile->getSteamURI();
+
+      $model->twitter       = $model->user_profile->getTwitterUsername();
+      $model->twitter_uri   = $model->user_profile->getTwitterURI();
+
+      $model->website       = $model->user_profile->getWebsite();
+      $model->website_uri   = $model->user_profile->getWebsiteURI();
+
     } catch (UserProfileNotFoundException $e) {
       // Not a problem
     }

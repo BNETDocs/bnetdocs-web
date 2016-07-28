@@ -21,7 +21,9 @@ class UserProfile {
   protected $id;
   protected $instagram_username;
   protected $phone;
+  protected $reddit_username;
   protected $skype_username;
+  protected $steam_id;
   protected $twitter_username;
   protected $website;
 
@@ -33,7 +35,9 @@ class UserProfile {
       $this->id                 = (int) $data;
       $this->instagram_username = null;
       $this->phone              = null;
+      $this->reddit_username    = null;
       $this->skype_username     = null;
+      $this->steam_id           = null;
       $this->twitter_username   = null;
       $this->website            = null;
       $this->refresh();
@@ -45,7 +49,9 @@ class UserProfile {
       $this->id                 = $data->id;
       $this->instagram_username = $data->instagram_username;
       $this->phone              = $data->phone;
+      $this->reddit_username    = $data->reddit_username;
       $this->skype_username     = $data->skype_username;
+      $this->steam_id           = $data->steam_id;
       $this->twitter_username   = $data->twitter_username;
       $this->website            = $data->website;
     } else {
@@ -57,8 +63,16 @@ class UserProfile {
     return $this->biography;
   }
 
+  public function getFacebookURI() {
+    return "https://www.facebook.com/" . $this->getFacebookUsername();
+  }
+
   public function getFacebookUsername() {
     return $this->facebook_username;
+  }
+
+  public function getGitHubURI() {
+    return "https://github.com/" . $this->getGitHubUsername();
   }
 
   public function getGitHubUsername() {
@@ -69,6 +83,10 @@ class UserProfile {
     return $this->id;
   }
 
+  public function getInstagramURI() {
+    return "https://instagram.com/" . $this->getInstagramUsername();
+  }
+
   public function getInstagramUsername() {
     return $this->instagram_username;
   }
@@ -77,8 +95,36 @@ class UserProfile {
     return $this->phone;
   }
 
+  public function getPhoneURI() {
+    return "tel://" . $this->getPhone();
+  }
+
+  public function getRedditURI() {
+    return "https://www.reddit.com/user/" . $this->getRedditUsername();
+  }
+
+  public function getRedditUsername() {
+    return $this->reddit_username;
+  }
+
+  public function getSkypeURI() {
+    return "skype:" . $this->getSkypeUsername() . "?chat";
+  }
+
   public function getSkypeUsername() {
     return $this->skype_username;
+  }
+
+  public function getSteamId() {
+    return $this->steam_id;
+  }
+
+  public function getSteamURI() {
+    return "https://steamcommunity.com/profiles/" . $this->getSteamId();
+  }
+
+  public function getTwitterURI() {
+    return "https://twitter.com/" . $this->getTwitterUsername();
   }
 
   public function getTwitterUsername() {
@@ -86,11 +132,29 @@ class UserProfile {
   }
 
   public function getWebsite() {
-    return $this->website;
+    $value = strtolower($this->website);
+    if (substr($value, 0, 7) == "http://") {
+      return substr($value, 7);
+    } else if (substr($value, 0, 8) == "https://") {
+      return substr($value, 8);
+    } else {
+      return "http://" . $value;
+    }
+  }
+
+  public function getWebsiteURI() {
+    $value = strtolower($this->website);
+    if (substr($value, 0, 7) == "http://"
+      || substr($value, 0, 8) == "https://") {
+      return $value;
+    } else {
+      return "http://" . $value;
+    }
   }
 
   protected static function normalize(StdClass &$data) {
-    $data->user_id = (int) $data->user_id;
+    $data->user_id  = (int) $data->user_id;
+    $data->steam_id = (int) $data->steam_id;
 
     if (!is_null($data->biography))
       $data->biography = (string) $data->biography;
@@ -106,6 +170,9 @@ class UserProfile {
 
     if (!is_null($data->phone))
       $data->phone = (string) $data->phone;
+
+    if (!is_null($data->reddit_username))
+      $data->reddit_username = (string) $data->reddit_username;
 
     if (!is_null($data->skype_username))
       $data->skype_username = (string) $data->skype_username;
@@ -129,7 +196,9 @@ class UserProfile {
       $this->github_username    = $cache_val->github_username;
       $this->instagram_username = $cache_val->instagram_username;
       $this->phone              = $cache_val->phone;
+      $this->reddit_username    = $cache_val->reddit_username;
       $this->skype_username     = $cache_val->skype_username;
+      $this->steam_id           = $cache_val->steam_id;
       $this->twitter_username   = $cache_val->twitter_username;
       $this->website            = $cache_val->website;
       return true;
@@ -143,11 +212,13 @@ class UserProfile {
           `biography`,
           `facebook_username`,
           `github_username`,
-          `user_id`,
           `instagram_username`,
           `phone`,
+          `reddit_username`,
           `skype_username`,
+          `steam_id`,
           `twitter_username`,
+          `user_id`,
           `website`
         FROM `user_profiles`
         WHERE `user_id` = :id
@@ -167,7 +238,9 @@ class UserProfile {
       $this->github_username    = $row->github_username;
       $this->instagram_username = $row->instagram_username;
       $this->phone              = $row->phone;
+      $this->reddit_username    = $row->reddit_username;
       $this->skype_username     = $row->skype_username;
+      $this->steam_id           = $row->steam_id;
       $this->twitter_username   = $row->twitter_username;
       $this->website            = $row->website;
       Common::$cache->set($cache_key, serialize($row), 300);
