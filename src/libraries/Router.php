@@ -2,8 +2,8 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Controllers\API\Comment as APICommentController;
 use \BNETDocs\Controllers\Attachment\Download as AttachmentDownloadController;
+use \BNETDocs\Controllers\Comment\Create as CommentCreateController;
 use \BNETDocs\Controllers\Credits as CreditsController;
 use \BNETDocs\Controllers\Document\Index as DocumentIndexController;
 use \BNETDocs\Controllers\Document\Popular as DocumentPopularController;
@@ -266,10 +266,10 @@ class Router {
                 );
             }
           break;
-          case "api":
+          case "comment":
             switch ($subpath) {
-              case "comment":
-                $controller = new APICommentController();
+              case "create":
+                $controller = new CommentCreateController();
               break;
               default:
                 throw new ControllerNotFoundException(

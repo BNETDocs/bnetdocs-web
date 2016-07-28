@@ -1,6 +1,7 @@
 <?php
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\NewsPost;
@@ -80,7 +81,7 @@ require("./header.inc.phtml");
         </footer>
       </article>
       <article>
-        <header>Comments</header>
+        <header><a name="comments">Comments</a></header>
         <section>
 <?php if (!$comments) { ?>
           <p class="center"><em>no one has commented yet.</em></p>
@@ -100,9 +101,11 @@ require("./header.inc.phtml");
         </section>
 <?php if ($logged_in) { ?>
         <section>
-          <form method="POST" action="?">
+          <form method="POST" action="<?php echo Common::relativeUrlToAbsolute("/comment/create"); ?>">
+            <input type="hidden" name="parent_type" value="<?php echo Comment::PARENT_TYPE_NEWS_POST; ?>"/>
+            <input type="hidden" name="parent_id" value="<?php echo htmlspecialchars($object_id, ENT_HTML5, "UTF-8"); ?>"/>
             <p class="center"><label for="comment-content">Comment on this post:</label></p>
-            <p class="center"><textarea id="comment-content" name="comment-content" cols="80" rows="5"></textarea></p>
+            <p class="center"><textarea id="comment-content" name="content" cols="80" rows="5"></textarea></p>
             <p class="center"><input type="submit" value="Comment"/></p>
           </form>
         </section>

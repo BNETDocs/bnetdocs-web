@@ -7,7 +7,6 @@ use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
 use \BNETDocs\Libraries\Model;
 use \BNETDocs\Libraries\View;
 use \BNETDocs\Models\Status as StatusModel;
-use \ReflectionExtension;
 
 class StatusJSON extends View {
 

@@ -62,6 +62,35 @@ class Comment implements JsonSerializable {
     }
   }
 
+  public static function create($parent_type, $parent_id, $user_id, $content) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare("
+        INSERT INTO `comments` (
+          `id`, `parent_type`, `parent_id`, `user_id`, `created_datetime`,
+          `edited_count`, `edited_datetime`, `content`
+        ) VALUES (
+          NULL, :parent_type, :parent_id, :user_id, NOW(), 0, NULL, :content
+        );
+      ");
+      $stmt->bindParam(":parent_type", $parent_type, PDO::PARAM_INT);
+      $stmt->bindParam(":parent_id", $parent_id, PDO::PARAM_INT);
+      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+      $stmt->bindParam(":content", $content, PDO::PARAM_STR);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot create comment", $e);
+    } finally {
+      $ck = "bnetdocs-comment-" . $parent_type . "-" . $parent_id;
+      Common::$cache->delete($ck);
+      return $successful;
+    }
+  }
+
   public static function getAll($parent_type, $parent_id) {
     $ck = "bnetdocs-comment-" . $parent_type . "-" . $parent_id;
     $cv = Common::$cache->get($ck);
