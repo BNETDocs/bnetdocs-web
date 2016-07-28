@@ -283,7 +283,7 @@ final class Common {
     } else if ($i === false && $len > 0) {
       return self::stripToSnippet($buffer, $len);
     } else {
-      return substr($buffer, 0, $i);
+      return self::stripToSnippet(substr($buffer, 0, $i), $len);
     }
   }
 
