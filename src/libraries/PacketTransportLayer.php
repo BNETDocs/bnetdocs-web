@@ -38,7 +38,7 @@ class PacketTransportLayer {
   public static function getAllPacketTransportLayers() {
     $cache_key = "bnetdocs-packettransportlayers";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
+    if ($cache_val !== false && !empty($cache_val)) {
       $ids     = explode(",", $cache_val);
       $objects = [];
       foreach ($ids as $id) {

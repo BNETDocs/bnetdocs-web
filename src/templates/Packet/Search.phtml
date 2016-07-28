@@ -2,18 +2,58 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Packet;
+use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
+use \BNETDocs\Libraries\User;
 
 $title       = "Search Packets";
 $description = "Search the packets on BNETDocs";
 $this->opengraph->attach(new Pair("url", "/packet/search"));
 
+$avatars = [];
+$getAvatar = function(&$avatars, &$user) {
+  $user_id = $user->getId();
+  if (isset($avatars[$user_id])) {
+    return $avatars[$user_id];
+  }
+  $avatars[$user_id] = new Gravatar($user->getEmail());
+  return $avatars[$user_id];
+};
+
+$this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
       <article>
         <header>Search Packets</header>
         <section>
-          <?php require("./NYI.inc.phtml"); ?>
+          <form method="GET">
+            <input type="text" name="q" id="q" value="<?php echo htmlentities($this->getContext()->query, ENT_HTML5, "UTF-8"); ?>" tabindex="1" autofocus="autofocus"/>
+            <input type="submit" value="Submit"/>
+          </form>
+<?php if (!is_null($this->getContext()->packets)) { ?>
+          <table>
+            <thead>
+              <tr>
+                <th class="left">Found <?php echo number_format($this->getContext()->sum_packets); ?> packet<?php echo ($this->getContext()->sum_packets != 1 ? "s" : ""); ?> matching: <?php echo htmlentities($this->getContext()->query, ENT_HTML5, "UTF-8"); ?></th>
+                <th class="left">Author</th>
+              </tr>
+            </thead><tbody>
+<?php foreach ($this->getContext()->packets as $packet) {
+        $user         = $packet->getUser();
+        if ($user) {
+          $user_url   = $user->getURI();
+          $avatar_url = "https:" . $getAvatar($avatars, $user)->getUrl(22, "identicon");
+        }
+        $packet_id = $packet->getPacketId(true);
+?>
+              <tr>
+                <td><a href="<?php echo $packet->getURI(); ?>"><?php echo htmlspecialchars($packet->getPacketDirectionTag() . " " . $packet_id . " " . $packet->getPacketName(), ENT_HTML5, "UTF-8"); ?></a></td>
+                <td><?php if ($user) { ?><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/> <?php echo htmlspecialchars($user->getName(), ENT_HTML5, "UTF-8"); ?></a><?php } else { ?>Anonymous<?php } ?></td>
+              </tr>
+<?php } ?>
+          </tbody></table>
+<?php } ?>
         </section>
       </article>
       <article>

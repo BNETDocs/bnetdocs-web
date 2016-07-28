@@ -82,7 +82,7 @@ class Packet {
   public static function getAllPackets() {
     $cache_key = "bnetdocs-packets";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
+    if ($cache_val !== false && !empty($cache_val)) {
       $ids     = explode(",", $cache_val);
       $objects = [];
       foreach ($ids as $id) {
@@ -129,6 +129,65 @@ class Packet {
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh packets", $e);
+    }
+    return null;
+  }
+
+  public static function getAllPacketsBySearch($query) {
+    $cache_key = "bnetdocs-packetsearch-" . hash("md5", $query);
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false && !empty($cache_val)) {
+      $ids     = explode(",", $cache_val);
+      $objects = [];
+      foreach ($ids as $id) {
+        $objects[] = new self($id);
+      }
+      return $objects;
+    }
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        SELECT
+          `created_datetime`,
+          `edited_count`,
+          `edited_datetime`,
+          `id`,
+          `options_bitmask`,
+          `packet_application_layer_id`,
+          `packet_direction_id`,
+          `packet_format`,
+          `packet_id`,
+          `packet_name`,
+          `packet_remarks`,
+          `packet_transport_layer_id`,
+          `user_id`
+        FROM `packets`
+        WHERE
+          MATCH (`packet_remarks`, `packet_format`, `packet_name`)
+          AGAINST (:query IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)
+        ;
+      ");
+      $stmt->bindParam(":query", $query, PDO::PARAM_STR);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot search packets");
+      }
+      $ids     = [];
+      $objects = [];
+      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        $ids[]     = (int) $row->id;
+        $objects[] = new self($row);
+        Common::$cache->set(
+          "bnetdocs-packet-" . $row->id, serialize($row), 300
+        );
+      }
+      $stmt->closeCursor();
+      Common::$cache->set($cache_key, implode(",", $ids), 300);
+      return $objects;
+    } catch (PDOException $e) {
+      var_dump($e);die();
+      throw new QueryException("Cannot search packets", $e);
     }
     return null;
   }

@@ -66,7 +66,7 @@ class Server implements JsonSerializable {
   public static function getAllServers() {
     $cache_key = "bnetdocs-servers";
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
+    if ($cache_val !== false && !empty($cache_val)) {
       $ids     = explode(",", $cache_val);
       $objects = [];
       foreach ($ids as $id) {
