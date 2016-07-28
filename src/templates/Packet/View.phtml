@@ -15,16 +15,16 @@ $description = "The requested packet does not exist or could not be found.";
 $this->opengraph->attach(new Pair("type", "article"));
 
 $url = Common::relativeUrlToAbsolute("/packet/" . urlencode($object_id));
-if ($object) {
-  $url .= "/" . Common::sanitizeForUrl($object->getPacketName(), true);
-  $this->opengraph->attach(new Pair("url", "/packet/" . urlencode($object_id)
-    . "/" . Common::sanitizeForUrl($object->getPacketName(), true)));
 
+if ($object) {
+
+  $url       = $object->getURI();
   $packet_id = $object->getPacketId(true);
 
   $title = htmlspecialchars($object->getPacketDirectionTag(), ENT_HTML5, "UTF-8")
     . " " . $packet_id . " "
     . htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8");
+
   $description = Common::stripUpTo(trim(filter_var(
     $object->getPacketRemarks(true), FILTER_SANITIZE_STRING
   )), "\n", 300);
@@ -41,9 +41,9 @@ if ($object) {
     $user_avatar = null;
   }
 
-} else {
-  $this->opengraph->attach(new Pair("url", "/packet/" . urlencode($object_id)));
 }
+
+$this->opengraph->attach(new Pair("url", $url));
 
 $this->additional_css[] = "/a/packet.css";
 $this->additional_css[] = "/a/comments.css";

@@ -19,9 +19,14 @@ $description = Common::stripUpTo(trim(filter_var(
   FILTER_SANITIZE_STRING
 )), "\n", 300);
 
-$this->opengraph->attach(new Pair("url", "/news/" . urlencode($object_id)));
 $this->opengraph->attach(new Pair("type", "article"));
+
+$url = Common::relativeUrlToAbsolute("/news/" . urlencode($object_id));
+
 if ($object) {
+
+  $url = $object->getURI();
+
   $this->opengraph->attach(new Pair("image", "/a/news_categories/" . $object->getCategory()->getFilename()));
   $this->opengraph->attach(new Pair("article:published_time", $object->getCreatedDateTime()->format("c")));
   if (!is_null($object->getEditedDateTime())) {
@@ -29,9 +34,11 @@ if ($object) {
   }
   $this->opengraph->attach(new Pair("article:author:username", $object->getUser()->getName()));
   $this->opengraph->attach(new Pair("article:section", $object->getCategory()->getLabel()));
+
 }
 
-$url            = Common::relativeUrlToAbsolute("/news/" . urlencode($object_id));
+$this->opengraph->attach(new Pair("url", $url));
+
 $edit_url       = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($object_id));
 $delete_url     = Common::relativeUrlToAbsolute("/news/delete?id=" . urlencode($object_id));
 $edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
@@ -40,7 +47,6 @@ $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
                 & User::OPTION_ACL_NEWS_DELETE));
 
 if ($object) {
-  $url        .= "/" . Common::sanitizeForUrl($object->getTitle(), true);
   $user_name   = $object->getUser()->getName();
   $user_id     = $object->getUserId();
   $user_url    = $object->getUser()->getURI();

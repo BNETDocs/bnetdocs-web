@@ -16,12 +16,12 @@ $description = "The requested document does not exist or could not be found.";
 $this->opengraph->attach(new Pair("type", "article"));
 
 $url = Common::relativeUrlToAbsolute("/document/" . urlencode($object_id));
+
 if ($object) {
 
-  $url = $object->getURI();
-  $this->opengraph->attach(new Pair("url", $url));
-
+  $url         = $object->getURI();
   $title       = htmlspecialchars($object->getTitle(), ENT_HTML5, "UTF-8");
+
   $description = Common::stripUpTo(trim(filter_var(
     $object->getContent(true), FILTER_SANITIZE_STRING
   )), "\n", 300);
@@ -31,9 +31,9 @@ if ($object) {
   $user_url    = $object->getUser()->getURI();
   $user_avatar = "https:" . (new Gravatar($object->getUser()->getEmail()))->getUrl(22, "identicon");
 
-} else {
-  $this->opengraph->attach(new Pair("url", "/document/" . urlencode($object_id)));
 }
+
+$this->opengraph->attach(new Pair("url", $url));
 
 #$this->additional_css[] = "/a/document.css";
 $this->additional_css[] = "/a/comments.css";

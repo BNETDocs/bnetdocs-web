@@ -27,7 +27,7 @@ if (is_null($news_posts) || empty($news_posts)) {
       </article>
 <?php
 } else {
-  
+
   $user_session   = $this->getContext()->user_session;
   $logged_in      = ($user_session ? new User($user_session->user_id) : null);
   $edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
@@ -46,8 +46,7 @@ if (is_null($news_posts) || empty($news_posts)) {
 
   $users = [];
   foreach ($this->getContext()->news_posts as $news_post) {
-    $url = Common::relativeUrlToAbsolute("/news/" . urlencode($news_post->getId()));
-    $url .= "/" . Common::sanitizeForUrl($news_post->getTitle(), true);
+    $url = $news_post->getURI();
     $edit_url = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($news_post->getId()));
     $delete_url = Common::relativeUrlToAbsolute("/news/delete?id=" . urlencode($news_post->getId()));
     $user_id = $news_post->getUserId();

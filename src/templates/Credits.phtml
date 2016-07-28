@@ -97,8 +97,7 @@ require("./header.inc.phtml");
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-          $pfx = "<a href=\"" . Common::relativeUrlToAbsolute("/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true)) . "\">"
+          $pfx = "<a href=\"" . $users[$item->user_id]->getURI() . "\">"
             . "<img class=\"avatar\" src=\"https:"
             . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
             . "\"/> ";
@@ -124,8 +123,7 @@ require("./header.inc.phtml");
           $pfx = ""; $sfx = "";
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-          $pfx = "<a href=\"" . Common::relativeUrlToAbsolute("/user/" . urlencode($item->user_id) . "/"
-            . Common::sanitizeForUrl($users[$item->user_id]->getName(), true)) . "\">"
+          $pfx = "<a href=\"" . $users[$item->user_id]->getURI() . "\">"
             . "<img class=\"avatar\" src=\"https:"
             . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
             . "\"/> ";

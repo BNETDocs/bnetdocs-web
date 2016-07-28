@@ -11,10 +11,15 @@ $object    = $this->getContext()->user;
 
 $title       = ($object ? $object->getName() : "User Not Found");
 $description = ($object ? $object->getName() . "'s user profile on BNETDocs" : "The requested user does not exist or could not be found.");
-$this->opengraph->attach(new Pair("url", "/user/" . urlencode($object_id)));
+
 $this->opengraph->attach(new Pair("type", "profile"));
 
+$url = Common::relativeUrlToAbsolute("/user/" . urlencode($object_id));
+
 if ($object) {
+
+  $url = $object->getURI();
+
   $this->opengraph->attach(new Pair("profile:username", $object->getName()));
 
   $gravatar = new Gravatar($object->getEmail());
@@ -24,7 +29,10 @@ if ($object) {
 
   if ($this->getContext()->biography) $description = $this->getContext()->biography;
   $safe_biography = htmlspecialchars($this->getContext()->biography, ENT_HTML5, "UTF-8");
+
 }
+
+$this->opengraph->attach(new Pair("url", $url));
 
 $this->additional_css[] = "/a/userprofile.css";
 require("./header.inc.phtml");
