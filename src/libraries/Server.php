@@ -11,11 +11,12 @@ use \BNETDocs\Libraries\Exceptions\ServerNotFoundException;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
+use \JsonSerializable;
 use \PDO;
 use \PDOException;
 use \StdClass;
 
-class Server {
+class Server implements JsonSerializable {
 
   const STATUS_ONLINE   = 0x00000001;
   const STATUS_DISABLED = 0x00000002;
@@ -166,6 +167,32 @@ class Server {
 
   public function getUserId() {
     return $this->user_id;
+  }
+
+  public function jsonSerialize() {
+    $created_datetime = $this->getCreatedDateTime();
+    if (!is_null($created_datetime)) $created_datetime = [
+      "iso"  => $created_datetime->format("r"),
+      "unix" => $created_datetime->getTimestamp(),
+    ];
+
+    $updated_datetime = $this->getUpdatedDateTime();
+    if (!is_null($updated_datetime)) $updated_datetime = [
+      "iso"  => $updated_datetime->format("r"),
+      "unix" => $updated_datetime->getTimestamp(),
+    ];
+
+    return [
+      "address"          => $this->getAddress(),
+      "created_datetime" => $created_datetime,
+      "id"               => $this->getId(),
+      "label"            => $this->getLabel(),
+      "port"             => $this->getPort(),
+      "status_bitmask"   => $this->getStatusBitmask(),
+      "type_id"          => $this->getTypeId(),
+      "updated_datetime" => $updated_datetime,
+      "user"             => $this->getUser()
+    ];
   }
 
   protected static function normalize(StdClass &$data) {
