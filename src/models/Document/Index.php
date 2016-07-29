@@ -6,6 +6,8 @@ use \BNETDocs\Libraries\Model;
 
 class Index extends Model {
 
+  public $documents;
+  public $sum_documents;
   public $user_session;
 
   public function __construct() {
