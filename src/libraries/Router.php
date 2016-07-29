@@ -194,7 +194,7 @@ class Router {
         ($user_session ? $user_session->user_id : null),
         getenv("REMOTE_ADDR"),
         json_encode([
-          "path" => $this->getRequestPathString(true),
+          "uri" => $this->getRequestURI(),
           "referer" => $this->getRequestHeader("Referer"),
           "user_agent" => $this->getRequestHeader("User-Agent"),
         ])
