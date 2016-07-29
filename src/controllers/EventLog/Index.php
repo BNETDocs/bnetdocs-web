@@ -43,7 +43,7 @@ class Index extends Controller {
 
     ob_start();
     $view->render($model);
-    $router->setResponseCode(200);
+    $router->setResponseCode(($model->acl_allowed ? 200 : 403));
     $router->setResponseTTL(0);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
