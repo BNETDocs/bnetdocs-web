@@ -69,7 +69,11 @@ if (is_null($news_posts) || empty($news_posts)) {
         <section class="news"><img class="category" alt="<?php echo $news_post->getCategory()->getLabel(); ?>" title="<?php echo $news_post->getCategory()->getLabel(); ?>" src="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/" . $news_post->getCategory()->getFilename()); ?>"/><?php echo $news_post->getContent(true); ?></section>
         <footer>
           <span class="float-left"><a href="<?php echo $users[$user_id]->getURI(); ?>"><img class="avatar" src="<?php echo $avatar; ?>"/> <?php echo htmlspecialchars($users[$user_id]->getName(), ENT_HTML5, "UTF-8"); ?></a></span>
-          <span class="float-right"><?php echo $news_post->getPublishedDateTime()->format("l, F j, Y"); ?></span>
+<?php if ($news_post->getEditedDateTime() !== null) { ?>
+          <span class="float-right"><?php echo $news_post->getCreatedDateTime()->format("l, F j, Y"); ?> | Edited: <?php echo $news_post->getEditedDateTime()->format("l, F j, Y"); ?></span>
+<?php } else { ?>
+          <span class="float-right"><?php echo $news_post->getCreatedDateTime()->format("l, F j, Y"); ?></span>
+<?php } ?>
         </footer>
       </article>
 <?php }
