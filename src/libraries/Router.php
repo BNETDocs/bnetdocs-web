@@ -9,6 +9,7 @@ use \BNETDocs\Controllers\Document\Index as DocumentIndexController;
 use \BNETDocs\Controllers\Document\Popular as DocumentPopularController;
 use \BNETDocs\Controllers\Document\Search as DocumentSearchController;
 use \BNETDocs\Controllers\Document\View as DocumentViewController;
+use \BNETDocs\Controllers\EventLog\Index as EventLogIndexController;
 use \BNETDocs\Controllers\Legal as LegalController;
 use \BNETDocs\Controllers\Maintenance as MaintenanceController;
 use \BNETDocs\Controllers\News as NewsController;
@@ -300,6 +301,18 @@ class Router {
                     $path . "/" . $subpath
                   );
                 }
+            }
+          break;
+          case "event-log":
+            switch ($subpath) {
+              case "index": case "index.htm": case "index.html":
+              case "index.json":
+                $controller = new EventLogIndexController();
+              break;
+              default:
+                throw new ControllerNotFoundException(
+                  $path . "/" . $subpath
+                );
             }
           break;
           case "legal": case "legal.htm": case "legal.html": case "legal.txt":

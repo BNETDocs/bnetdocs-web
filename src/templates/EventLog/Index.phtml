@@ -1,0 +1,22 @@
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Gravatar;
+use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\Pair;
+use \BNETDocs\Libraries\User;
+
+$title       = "Event Log Index";
+$description = "The index for event logs on BNETDocs";
+$this->opengraph->attach(new Pair("url", "/event-log/index"));
+
+require("./header.inc.phtml");
+?>
+      <article>
+        <header>Event Log Index</header>
+        <section>
+<?php require("./NYI.inc.phtml"); ?>
+        </section>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

@@ -25,6 +25,11 @@ class Logger {
    */
   private function __construct() {}
 
+  public static function &getAllEvents() {
+    $event_log = [];
+    return $event_log;
+  }
+
   public static function &getEventType($event_name) {
     if (is_null(self::$event_types)) {
       self::getEventTypes();
