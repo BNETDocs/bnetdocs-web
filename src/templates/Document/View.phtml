@@ -1,14 +1,19 @@
 <?php
 namespace BNETDocs\Templates;
 
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
+use \BNETDocs\Libraries\User;
 
 $attachments = $this->getContext()->attachments;
 $comments    = $this->getContext()->comments;
 $object_id   = $this->getContext()->document_id;
 $object      = $this->getContext()->document;
+$user_session = $this->getContext()->user_session;
+$logged_in    = ($user_session ? new User($user_session->user_id) : null);
 
 $title       = "Document Not Found";
 $description = "The requested document does not exist or could not be found.";
@@ -35,6 +40,13 @@ if ($object) {
 
 $this->opengraph->attach(new Pair("url", $url));
 
+$edit_url       = Common::relativeUrlToAbsolute("/document/edit?id=" . urlencode($object_id));
+$delete_url     = Common::relativeUrlToAbsolute("/document/delete?id=" . urlencode($object_id));
+$edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
+                & User::OPTION_ACL_DOCUMENT_MODIFY));
+$delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
+                & User::OPTION_ACL_DOCUMENT_DELETE));
+
 #$this->additional_css[] = "/a/document.css";
 $this->additional_css[] = "/a/comments.css";
 require("./header.inc.phtml");
@@ -44,6 +56,12 @@ require("./header.inc.phtml");
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
         <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
+<?php if ($edit_visible) { ?>
+        <a href="<?php echo $edit_url; ?>" class="header-button float-right">Edit</a>
+<?php } ?>
+<?php if ($delete_visible) { ?>
+        <a href="<?php echo $delete_url; ?>" class="header-button float-right">Delete</a>
+<?php } ?>
         <header><a href="<?php echo $url; ?>"><?php echo $title; ?></a></header>
         <section>
 <?php echo $object->getContent(true); ?>

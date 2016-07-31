@@ -1,0 +1,94 @@
+<?php
+namespace BNETDocs\Templates;
+
+use \BNETDocs\Libraries\Common;
+use \BNETDocs\Libraries\Gravatar;
+use \BNETDocs\Libraries\Pair;
+
+$title       = "Edit Document";
+$description = "This form allows an individual to edit a document.";
+
+$this->opengraph->attach(new Pair("url", "/document/edit"));
+$this->opengraph->attach(new Pair("type", "article"));
+
+switch ($this->getContext()->error) {
+  case "ACL_NOT_SET":
+    $message = "You do not have the privilege to edit documents.";
+    break;
+  case "NOT_FOUND":
+    $message = "Cannot find document by that id.";
+    break;
+  case "INVALID_CSRF":
+    $message = "The Cross-Site Request Forgery token was invalid. Either the"
+      . "edit document form expired, or this may have been a malicious attempt"
+      . "to create a document.";
+    break;
+  case "EMPTY_TITLE":
+    $message = "The title of the document is required.";
+    break;
+  case "EMPTY_CONTENT":
+    $message = "The content of the document is required.";
+    break;
+  case "INTERNAL_ERROR":
+    $message = "An internal error occurred while processing your request. "
+      . "Our staff has been notified of the issue. Try again later.";
+    break;
+  default:
+    $message = $this->getContext()->error;
+}
+
+$this->additional_css[] = "/a/forms.css";
+require("./header.inc.phtml");
+?>
+      <article>
+<?php if ($this->getContext()->error !== false) { ?>
+        <header>Edit Document</header>
+<?php if (!empty($message)) { ?>
+        <section class="red"><p><?php echo $message; ?></p></section>
+<?php } ?>
+<?php if ($this->getContext()->error != "NOT_FOUND") { ?>
+        <form method="POST" action="?id=<?php echo
+            htmlspecialchars($this->getContext()->document_id, ENT_HTML5, "UTF-8"); ?>">
+          <input type="hidden" name="csrf_id" value="<?php echo
+            htmlspecialchars($this->getContext()->csrf_id, ENT_HTML5, "UTF-8");
+          ?>"/>
+          <input type="hidden" name="csrf_token" value="<?php echo
+            htmlspecialchars($this->getContext()->csrf_token, ENT_HTML5, "UTF-8");
+          ?>"/>
+          <section>
+            <label for="title">Title:</label><br/>
+            <input type="text" name="title" id="title" tabindex="1" required
+              value="<?php echo
+                htmlspecialchars($this->getContext()->title, ENT_HTML5, "UTF-8");
+              ?>"/>
+          </section>
+          <section>
+            <label for="content">Content:</label>
+            <span style="float:right;">
+              <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
+              <input type="checkbox" name="markdown" id="markdown" tabindex="3"
+                title="Use markdown or use raw HTML" value="1"<?php
+                  if ($this->getContext()->markdown)
+                    echo " checked=\"checked\"";
+                ?>/>
+            </span>
+            <textarea name="content" id="content" tabindex="2" required
+              style="height:200px;"><?php echo
+                htmlspecialchars($this->getContext()->content, ENT_HTML5, "UTF-8");
+              ?></textarea>
+          </section>
+          <section>
+            <input type="submit" name="publish" value="Publish" tabindex="4"/>
+            <input type="submit" name="save" value="Unpublish" tabindex="5"/>
+          </section>
+        </form>
+<?php } ?>
+<?php } else { ?>
+        <header class="green">Edit Document</header>
+        <section class="green">
+          <p>Your document has been edited.</p>
+          <p>Use the navigation to the left to move to another page.</p>
+        </section>
+<?php } ?>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

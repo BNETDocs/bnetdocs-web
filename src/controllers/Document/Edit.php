@@ -1,21 +1,20 @@
 <?php
 
-namespace BNETDocs\Controllers\News;
+namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\DatabaseDriver;
-use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
+use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\NewsCategory;
-use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
-use \BNETDocs\Models\News\Edit as NewsEditModel;
-use \BNETDocs\Views\News\EditHtml as NewsEditHtmlView;
+use \BNETDocs\Models\Document\Edit as DocumentEditModel;
+use \BNETDocs\Views\Document\EditHtml as DocumentEditHtmlView;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -25,55 +24,44 @@ class Edit extends Controller {
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
-        $view = new NewsEditHtmlView();
+        $view = new DocumentEditHtmlView();
       break;
       default:
         throw new UnspecifiedViewException();
     }
 
-    $data                   = $router->getRequestQueryArray();
-    $model                  = new NewsEditModel();
-    $model->category        = null;
-    $model->content         = null;
-    $model->csrf_id         = mt_rand();
-    $model->csrf_token      = CSRF::generate($model->csrf_id, 900); // 15 mins
-    $model->error           = null;
-    $model->markdown        = null;
-    $model->news_categories = null;
-    $model->news_post_id    = (isset($data["id"]) ? $data["id"] : null);
-    $model->news_post       = null;
-    $model->published       = null;
-    $model->title           = null;
-    $model->user_session    = UserSession::load($router);
-    $model->user            = (isset($model->user_session) ?
-                               new User($model->user_session->user_id) : null);
+    $data                = $router->getRequestQueryArray();
+    $model               = new DocumentEditModel();
+    $model->content      = null;
+    $model->csrf_id      = mt_rand();
+    $model->csrf_token   = CSRF::generate($model->csrf_id, 900); // 15 mins
+    $model->document     = null;
+    $model->document_id  = (isset($data["id"]) ? $data["id"] : null);
+    $model->error        = null;
+    $model->markdown     = null;
+    $model->published    = null;
+    $model->title        = null;
+    $model->user_session = UserSession::load($router);
+    $model->user         = (isset($model->user_session) ?
+                            new User($model->user_session->user_id) : null);
 
     $model->acl_allowed = ($model->user &&
-      $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_MODIFY
+      $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY
     );
 
-    try { $model->news_post = new NewsPost($model->news_post_id); }
-    catch (NewsPostNotFoundException $e) { $model->news_post = null; }
-    catch (InvalidArgumentException $e) { $model->news_post = null; }
+    try { $model->document = new Document($model->document_id); }
+    catch (DocumentNotFoundException $e) { $model->document = null; }
+    catch (InvalidArgumentException $e) { $model->document = null; }
 
-    if ($model->news_post === null) {
+    if ($model->document === null) {
       $model->error = "NOT_FOUND";
     } else {
-      $flags = $model->news_post->getOptionsBitmask();
+      $flags = $model->document->getOptionsBitmask();
 
-      $model->news_categories = NewsCategory::getAll();
-      usort($model->news_categories, function($a, $b){
-        $oA = $a->getSortId();
-        $oB = $b->getSortId();
-        if ($oA == $oB) return 0;
-        return ($oA < $oB) ? -1 : 1;
-      });
-
-      $model->category  = $model->news_post->getCategoryId();
-      $model->content   = $model->news_post->getContent(false);
-      $model->markdown  = ($flags & NewsPost::OPTION_MARKDOWN);
-      $model->published = ($flags & NewsPost::OPTION_PUBLISHED);
-      $model->title     = $model->news_post->getTitle();
+      $model->content   = $model->document->getContent(false);
+      $model->markdown  = ($flags & Document::OPTION_MARKDOWN);
+      $model->published = ($flags & Document::OPTION_PUBLISHED);
+      $model->title     = $model->document->getTitle();
 
       if ($router->getRequestMethod() == "POST") {
         $this->handlePost($router, $model);
@@ -89,7 +77,7 @@ class Edit extends Controller {
     ob_end_clean();
   }
 
-  protected function handlePost(Router &$router, NewsEditModel &$model) {
+  protected function handlePost(Router &$router, DocumentEditModel &$model) {
     if (!$model->acl_allowed) {
       $model->error = "ACL_NOT_SET";
       return;
@@ -130,20 +118,19 @@ class Edit extends Controller {
 
     try {
 
-      $model->news_post->setCategoryId($model->category);
-      $model->news_post->setTitle($model->title);
-      $model->news_post->setMarkdown($model->markdown);
-      $model->news_post->setContent($model->content);
-      $model->news_post->setPublished($publish);
+      $model->document->setTitle($model->title);
+      $model->document->setMarkdown($model->markdown);
+      $model->document->setContent($model->content);
+      $model->document->setPublished($publish);
 
-      $model->news_post->setEditedCount(
-        $model->news_post->getEditedCount() + 1
+      $model->document->setEditedCount(
+        $model->document->getEditedCount() + 1
       );
-      $model->news_post->setEditedDateTime(
+      $model->document->setEditedDateTime(
         new DateTime("now", new DateTimeZone("UTC"))
       );
 
-      $success = $model->news_post->save();
+      $success = $model->document->save();
 
     } catch (QueryException $e) {
 
@@ -162,16 +149,15 @@ class Edit extends Controller {
     }
 
     Logger::logEvent(
-      "news_edited",
+      "document_edited",
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([
         "error"           => $model->error,
-        "news_post_id"    => $model->news_post_id,
-        "category_id"     => $model->news_post->getCategoryId(),
-        "options_bitmask" => $model->news_post->getOptionsBitmask(),
-        "title"           => $model->news_post->getTitle(),
-        "content"         => $model->news_post->getContent(false),
+        "document_id"     => $model->document_id,
+        "options_bitmask" => $model->document->getOptionsBitmask(),
+        "title"           => $model->document->getTitle(),
+        "content"         => $model->document->getContent(false),
       ])
     );
   }
