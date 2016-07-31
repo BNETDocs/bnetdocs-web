@@ -31,9 +31,11 @@ printf "[1/5] Verifying this is the correct repository...\n"
 
 printf "[2/5] Getting version identifier of this deploy...\n"
 DEPLOY_VERSION="$(git describe --always --tags)"
+DEPLOY_VERSION_HASH="$(git rev-parse HEAD)"
 
 printf "[3/5] Building version information into this deploy...\n"
-printf "${DEPLOY_VERSION}" > ${SOURCE_DIRECTORY}/etc/.rsync-version
+printf "${DEPLOY_VERSION}\n" > ${SOURCE_DIRECTORY}/etc/.rsync-version
+printf "${DEPLOY_VERSION_HASH}" >> ${SOURCE_DIRECTORY}/etc/.rsync-version
 
 printf "[4/5] Syncing to deploy target...\n"
 rsync -avzc --delete --delete-excluded --delete-after --progress \

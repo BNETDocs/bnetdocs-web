@@ -95,6 +95,7 @@ final class Common {
   public static function getVersionProperties() {
     $versions           = new StdClass();
     $versions->bnetdocs = file_get_contents("../etc/.rsync-version");
+    $versions->bnetdocs = explode("\n", $versions->bnetdocs);
     $versions->newrelic = phpversion("newrelic");
     $versions->php      = phpversion();
     return $versions;
