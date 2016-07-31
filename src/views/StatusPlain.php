@@ -44,7 +44,13 @@ class StatusPlain extends View {
     }
     echo "timestamp " . $model->timestamp->format("r") . "\n";
     foreach ($model->version_info as $key => $val) {
-      echo "version_info_" . $key . " " . $val . "\n";
+      if (!is_scalar($val)) {
+        foreach ($val as $subkey => $subval) {
+          echo "version_info_" . $key . "_" . $subkey . " " . $subval . "\n";
+        }
+      } else {
+        echo "version_info_" . $key . " " . $val . "\n";
+      }
     }
   }
 
