@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Delete as DocumentDeleteModel;
 use \BNETDocs\Views\Document\DeleteHtml as DocumentDeleteHtmlView;

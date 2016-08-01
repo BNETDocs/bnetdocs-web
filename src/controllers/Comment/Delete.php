@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Comment\Delete as CommentDeleteModel;
 use \BNETDocs\Views\Comment\DeleteHtml as CommentDeleteHtmlView;

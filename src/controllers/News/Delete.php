@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\Delete as NewsDeleteModel;
 use \BNETDocs\Views\News\DeleteHtml as NewsDeleteHtmlView;
