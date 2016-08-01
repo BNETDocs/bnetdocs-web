@@ -32,13 +32,15 @@ switch ($this->getContext()->error) {
     $message = $this->getContext()->error;
 }
 
-$c             = $this->getContext()->comment;
-$c_id          = $c->getId();
-$c_user        = $c->getUser();
-$c_user_id     = $c->getUserId();
-$c_user_name   = $c_user->getName();
-$c_user_url    = $c_user->getURI();
-$c_user_avatar = $c_user->getAvatarURI(22);
+$c = $this->getContext()->comment;
+if ($c) {
+  $c_id          = $c->getId();
+  $c_user        = $c->getUser();
+  $c_user_id     = $c->getUserId();
+  $c_user_name   = $c_user->getName();
+  $c_user_url    = $c_user->getURI();
+  $c_user_avatar = $c_user->getAvatarURI(22);
+}
 
 $this->additional_css[] = "/a/comments.css";
 $this->additional_css[] = "/a/forms.css";
