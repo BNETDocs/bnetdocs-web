@@ -90,7 +90,10 @@ require("./header.inc.phtml");
         <section>
 <?php if (!$comments) { ?>
           <p class="center"><em>no one has commented yet.</em></p>
-<?php } else { ?>
+<?php } else {
+$c_edit_visible_master   = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
+$c_delete_visible_master = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
+?>
           <table class="comments"><tbody>
 <?php foreach ($comments as $c) {
         $c_id          = $c->getId();
@@ -100,8 +103,8 @@ require("./header.inc.phtml");
         $c_user_url    = $c_user->getURI();
         $c_user_avatar = $c_user->getAvatarURI(22);
 
-        $c_edit_visible = ($c_user_id == $logged_in_id);
-        $c_delete_visible = ($c_user_id == $logged_in_id);
+        $c_edit_visible = ($c_user_id == $logged_in_id || $c_edit_visible_master);
+        $c_delete_visible = ($c_user_id == $logged_in_id || $c_delete_visible_master);
 ?>
             <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time><?php if ($c_delete_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/delete?id=" . urlencode($c_id)); ?>">Delete</a><?php } if ($c_edit_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/edit?id=" . urlencode($c_id)); ?>">Edit</a><?php } ?></td><td><?php echo $c->getContent(true); ?></td></tr>
 <?php } ?>
