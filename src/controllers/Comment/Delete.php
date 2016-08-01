@@ -38,10 +38,17 @@ class Delete extends Controller {
     $model->parent_type  = null;
     $model->title        = null;
     $model->user_session = UserSession::load($router);
+    $model->user         = (isset($model->user_session) ?
+                            new User($model->user_session->user_id) : null);
 
     try { $model->comment = new Comment($model->id); }
     catch (CommentNotFoundException $e) { $model->comment = null; }
     catch (InvalidArgumentException $e) { $model->comment = null; }
+
+    $model->acl_allowed = ($model->user &&
+      ($model->user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE)
+      || ($model->user_session->user_id == $model->comment->getUserId())
+    );
 
     if ($model->comment === null) {
       $model->error = "NOT_FOUND";

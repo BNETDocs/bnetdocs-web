@@ -35,6 +35,12 @@ class Delete extends Controller {
     $model->id           = (isset($data["id"]) ? $data["id"] : null);
     $model->title        = null;
     $model->user_session = UserSession::load($router);
+    $model->user         = (isset($model->user_session) ?
+                            new User($model->user_session->user_id) : null);
+
+    $model->acl_allowed = ($model->user &&
+      $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE
+    );
 
     try { $model->document = new Document($model->id); }
     catch (DocumentNotFoundException $e) { $model->document = null; }
@@ -75,6 +81,11 @@ class Delete extends Controller {
       return;
     }
     CSRF::invalidate($csrf_id);
+
+    if (!$model->acl_allowed) {
+      $model->error = "ACL_NOT_SET";
+      return;
+    }
 
     $model->error = false;
 

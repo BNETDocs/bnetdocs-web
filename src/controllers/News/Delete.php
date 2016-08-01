@@ -35,6 +35,12 @@ class Delete extends Controller {
     $model->news_post    = null;
     $model->title        = null;
     $model->user_session = UserSession::load($router);
+    $model->user         = (isset($model->user_session) ?
+                            new User($model->user_session->user_id) : null);
+
+    $model->acl_allowed = ($model->user &&
+      $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_DELETE
+    );
 
     try { $model->news_post = new NewsPost($model->id); }
     catch (NewsPostNotFoundException $e) { $model->news_post = null; }
@@ -75,6 +81,11 @@ class Delete extends Controller {
       return;
     }
     CSRF::invalidate($csrf_id);
+
+    if (!$model->acl_allowed) {
+      $model->error = "ACL_NOT_SET";
+      return;
+    }
 
     $model->error = false;
 
