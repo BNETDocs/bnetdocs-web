@@ -307,6 +307,9 @@ class User implements JsonSerializable {
       self::OPTION_ACL_DOCUMENT_CREATE  |
       self::OPTION_ACL_DOCUMENT_MODIFY  |
       self::OPTION_ACL_DOCUMENT_DELETE  |
+      self::OPTION_ACL_COMMENT_VIEW     |
+      self::OPTION_ACL_COMMENT_MODIFY   |
+      self::OPTION_ACL_COMMENT_DELETE   |
       self::OPTION_ACL_EVENT_LOG_VIEW   |
       self::OPTION_ACL_EVENT_LOG_MODIFY |
       self::OPTION_ACL_EVENT_LOG_DELETE |
