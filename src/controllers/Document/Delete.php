@@ -1,18 +1,18 @@
 <?php
 
-namespace BNETDocs\Controllers\News;
+namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
+use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
-use \BNETDocs\Models\News\Delete as NewsDeleteModel;
-use \BNETDocs\Views\News\DeleteHtml as NewsDeleteHtmlView;
+use \BNETDocs\Models\Document\Delete as DocumentDeleteModel;
+use \BNETDocs\Views\Document\DeleteHtml as DocumentDeleteHtmlView;
 use \InvalidArgumentException;
 
 class Delete extends Controller {
@@ -20,30 +20,30 @@ class Delete extends Controller {
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
-        $view = new NewsDeleteHtmlView();
+        $view = new DocumentDeleteHtmlView();
       break;
       default:
         throw new UnspecifiedViewException();
     }
 
     $data                = $router->getRequestQueryArray();
-    $model               = new NewsDeleteModel();
+    $model               = new DocumentDeleteModel();
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id);
+    $model->document     = null;
     $model->error        = null;
     $model->id           = (isset($data["id"]) ? $data["id"] : null);
-    $model->news_post    = null;
     $model->title        = null;
     $model->user_session = UserSession::load($router);
 
-    try { $model->news_post = new NewsPost($model->id); }
-    catch (NewsPostNotFoundException $e) { $model->news_post = null; }
-    catch (InvalidArgumentException $e) { $model->news_post = null; }
+    try { $model->document = new Document($model->id); }
+    catch (DocumentNotFoundException $e) { $model->document = null; }
+    catch (InvalidArgumentException $e) { $model->document = null; }
 
-    if ($model->news_post === null) {
+    if ($model->document === null) {
       $model->error = "NOT_FOUND";
     } else {
-      $model->title = $model->news_post->getTitle();
+      $model->title = $model->document->getTitle();
 
       if ($router->getRequestMethod() == "POST") {
         $this->tryDelete($router, $model);
@@ -59,7 +59,7 @@ class Delete extends Controller {
     ob_end_clean();
   }
 
-  protected function tryDelete(Router &$router, NewsDeleteModel &$model) {
+  protected function tryDelete(Router &$router, DocumentDeleteModel &$model) {
     if (!isset($model->user_session)) {
       $model->error = "NOT_LOGGED_IN";
       return;
@@ -83,7 +83,7 @@ class Delete extends Controller {
 
     try {
 
-      $success = NewsPost::delete($id);
+      $success = Document::delete($id);
 
     } catch (QueryException $e) {
 
@@ -102,12 +102,12 @@ class Delete extends Controller {
     }
 
     Logger::logEvent(
-      "news_deleted",
+      "document_deleted",
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([
-        "error"        => $model->error,
-        "news_post_id" => $id,
+        "error"       => $model->error,
+        "document_id" => $id,
       ])
     );
   }

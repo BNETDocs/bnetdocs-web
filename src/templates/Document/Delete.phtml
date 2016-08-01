@@ -3,26 +3,26 @@ namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Pair;
 
-$title       = "Delete News Post";
-$description = "This form allows an individual to delete a news post.";
+$title       = "Delete Document";
+$description = "This form allows an individual to delete a document.";
 
-$this->opengraph->attach(new Pair("url", "/news/delete"));
+$this->opengraph->attach(new Pair("url", "/document/delete"));
 $this->opengraph->attach(new Pair("type", "article"));
 
 switch ($this->getContext()->error) {
   case "ACL_NOT_SET":
-    $message = "You do not have the privilege to delete news posts.";
+    $message = "You do not have the privilege to delete documents.";
     break;
   case "NOT_FOUND":
-    $message = "Cannot find news post by that id.";
+    $message = "Cannot find document by that id.";
     break;
   case "NOT_LOGGED_IN":
-    $message = "You must be logged in to delete news posts.";
+    $message = "You must be logged in to delete documents.";
     break;
   case "INVALID_CSRF":
-    $message = "The Cross-Site Request Forgery token was invalid. "
-      . "Either the delete news post form expired, or "
-      . "this may have been a malicious attempt to delete a news post.";
+    $message = "The Cross-Site Request Forgery token was invalid. Either the "
+      . "delete document form expired, or this may have been a malicious "
+      . "attempt to delete a document.";
     break;
   case "INTERNAL_ERROR":
     $message = "An internal error occurred while processing your request. "
@@ -37,27 +37,27 @@ require("./header.inc.phtml");
 ?>
       <article>
 <?php if (is_null($this->getContext()->error)) { ?>
-        <header>Delete News Post</header>
+        <header>Delete Document</header>
         <form method="POST" action="?id=<?php echo
             htmlspecialchars($this->getContext()->id, ENT_HTML5, "UTF-8"); ?>">
           <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
           <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
           <section>
-            <p>Are you sure you wish to delete this news post?</p>
+            <p>Are you sure you wish to delete this document?</p>
             <p><input type="text" readonly="readonly" value="<?php echo filter_var($this->getContext()->title, FILTER_SANITIZE_STRING); ?>" tabindex="1"/></p>
-            <p><input type="submit" value="Delete News Post" tabindex="2" autofocus="autofocus"/></p>
+            <p><input type="submit" value="Delete Document" tabindex="2" autofocus="autofocus"/></p>
           </section>
         </form>
 <?php } else if ($this->getContext()->error === false) { ?>
-        <header class="green">News Post Deleted</header>
+        <header class="green">Document Deleted</header>
         <section class="green">
-          <p>You have successfully deleted the news post!</p>
+          <p>You have successfully deleted the document!</p>
           <p>Use the navigation to the left to move to another page.</p>
         </section>
 <?php } else { ?>
-        <header class="red">Delete News Post</header>
+        <header class="red">Delete Document</header>
         <section class="red">
-          <p>An error occurred while attempting to delete the news post.</p>
+          <p>An error occurred while attempting to delete the document.</p>
           <p><?php echo $message; ?></p>
           <p>Use the navigation to the left to move to another page.</p>
         </section>
