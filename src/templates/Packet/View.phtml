@@ -2,7 +2,6 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
-use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
 $comments  = $this->getContext()->comments;
@@ -33,7 +32,7 @@ if ($object) {
     $user_name   = $object->getUser()->getName();
     $user_id     = $object->getUserId();
     $user_url    = $object->getUser()->getURI();
-    $user_avatar = "https:" . (new Gravatar($object->getUser()->getEmail()))->getUrl(22, "identicon");
+    $user_avatar = $object->getUser()->getAvatarURI(22);
   } else {
     $user_name   = null;
     $user_id     = null;
@@ -108,7 +107,7 @@ require("./header.inc.phtml");
         $c_user_name   = $c_user->getName();
         $c_user_id     = $c->getUserId();
         $c_user_url    = $c_user->getURI();
-        $c_user_avatar = "https:" . (new Gravatar($c_user->getEmail()))->getUrl(22, "identicon");
+        $c_user_avatar = $c_user->getAvatarURI(22);
 ?>
             <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo htmlspecialchars($c_user_name, ENT_HTML5, "UTF-8"); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><?php echo $c->getContent(true); ?></td></tr>
 <?php } ?>

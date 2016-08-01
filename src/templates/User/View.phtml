@@ -3,7 +3,6 @@ namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 
 $object_id = $this->getContext()->user_id;
@@ -22,8 +21,7 @@ if ($object) {
 
   $this->opengraph->attach(new Pair("profile:username", $object->getName()));
 
-  $gravatar = new Gravatar($object->getEmail());
-  $this->opengraph->attach(new Pair("image", "https:" . $gravatar->getUrl(null, "identicon")));
+  $this->opengraph->attach(new Pair("image", $object->getAvatarURI(null)));
 
   $safe_name = htmlspecialchars($object->getName(), ENT_HTML5, "UTF-8");
 
@@ -41,7 +39,7 @@ require("./header.inc.phtml");
 <?php if ($object) { ?>
         <header>User Profile</header>
         <section class="accountinfo">
-          <img class="avatar" src="https:<?php echo $gravatar->getUrl(75, "identicon"); ?>" />
+          <img class="avatar" src="<?php echo $object->getAvatarURI(75); ?>" />
           <strong><?php echo $safe_name; ?></strong><br />
 <?php if (!$this->getContext()->biography) { ?>
           <p class="biography"><em>(no biography information.)</em></p>

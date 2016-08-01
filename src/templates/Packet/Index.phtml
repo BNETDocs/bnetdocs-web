@@ -3,23 +3,12 @@ namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\User;
 
 $title       = "Packet Index";
 $description = "The index for packets on BNETDocs";
 $this->opengraph->attach(new Pair("url", "/packet/index"));
-
-$avatars = [];
-$getAvatar = function(&$avatars, &$user) {
-  $user_id = $user->getId();
-  if (isset($avatars[$user_id])) {
-    return $avatars[$user_id];
-  }
-  $avatars[$user_id] = new Gravatar($user->getEmail());
-  return $avatars[$user_id];
-};
 
 require("./header.inc.phtml");
 ?>
@@ -44,7 +33,7 @@ require("./header.inc.phtml");
         $user         = $packet->getUser();
         if ($user) {
           $user_url   = $user->getURI();
-          $avatar_url = "https:" . $getAvatar($avatars, $user)->getUrl(22, "identicon");
+          $avatar_url = $user->getAvatarURI(22);
         }
         $packet_id = $packet->getPacketId(true);
 ?>

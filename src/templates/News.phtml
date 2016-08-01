@@ -2,7 +2,6 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
-use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\User;
@@ -35,23 +34,14 @@ if (is_null($news_posts) || empty($news_posts)) {
   $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
                   & User::OPTION_ACL_NEWS_DELETE));
 
-  $avatars = [];
-  $getAvatar = function(&$avatars, $user_id) {
-    if (isset($avatars[$user_id])) {
-      return $avatars[$user_id];
-    }
-    $avatars[$user_id] = new Gravatar((new User($user_id))->getEmail());
-    return $avatars[$user_id];
-  };
-
   $users = [];
   foreach ($this->getContext()->news_posts as $news_post) {
     $url = $news_post->getURI();
     $edit_url = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($news_post->getId()));
     $delete_url = Common::relativeUrlToAbsolute("/news/delete?id=" . urlencode($news_post->getId()));
     $user_id = $news_post->getUserId();
-    $avatar = "https:" . $getAvatar($avatars, $user_id)->getUrl(22, "identicon");
-    if (!isset($users[$user_id])) $users[$user_id] = new User($user_id); ?>
+    if (!isset($users[$user_id])) $users[$user_id] = new User($user_id);
+    $avatar = $users[$user_id]->getAvatarURI(22); ?>
       <article>
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
         <a href="https://twitter.com/share?text=<?php echo urlencode($news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>

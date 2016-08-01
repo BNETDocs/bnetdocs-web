@@ -2,7 +2,6 @@
 namespace BNETDocs\Templates;
 
 use \BNETDocs\Libraries\Common;
-use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\User;
 
@@ -11,16 +10,6 @@ $description = "The top contributors to BNETDocs grouped by different types of c
 $this->opengraph->attach(new Pair("url", "/credits"));
 
 $users = [];
-
-$avatars = [];
-$getAvatar = function(&$avatars, User $user) {
-  $user_id = $user->getId();
-  if (isset($avatars[$user_id])) {
-    return $avatars[$user_id];
-  }
-  $avatars[$user_id] = new Gravatar($user->getEmail());
-  return $avatars[$user_id];
-};
 
 $this->additional_css[] = "/a/credits.css";
 require("./header.inc.phtml");
@@ -46,8 +35,8 @@ require("./header.inc.phtml");
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
           $pfx = "<a href=\"" . $users[$item->user_id]->getURI() . "\">"
-            . "<img class=\"avatar\" src=\"https:"
-            . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
+            . "<img class=\"avatar\" src=\""
+            . $users[$item->user_id]->getAvatarURI(22)
             . "\"/> ";
           $sfx = "</a>";
         }
@@ -72,8 +61,8 @@ require("./header.inc.phtml");
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
           $pfx = "<a href=\"" . $users[$item->user_id]->getURI() . "\">"
-            . "<img class=\"avatar\" src=\"https:"
-            . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
+            . "<img class=\"avatar\" src=\""
+            . $users[$item->user_id]->getAvatarURI(22)
             . "\"/> ";
           $sfx = "</a>";
         }
@@ -98,8 +87,8 @@ require("./header.inc.phtml");
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
           $pfx = "<a href=\"" . $users[$item->user_id]->getURI() . "\">"
-            . "<img class=\"avatar\" src=\"https:"
-            . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
+            . "<img class=\"avatar\" src=\""
+            . $users[$item->user_id]->getAvatarURI(22)
             . "\"/> ";
           $sfx = "</a>";
         }
@@ -124,8 +113,8 @@ require("./header.inc.phtml");
         } else {
           if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
           $pfx = "<a href=\"" . $users[$item->user_id]->getURI() . "\">"
-            . "<img class=\"avatar\" src=\"https:"
-            . $getAvatar($avatars, $users[$item->user_id])->getUrl(22, "identicon")
+            . "<img class=\"avatar\" src=\""
+            . $users[$item->user_id]->getAvatarURI(22)
             . "\"/> ";
           $sfx = "</a>";
         }

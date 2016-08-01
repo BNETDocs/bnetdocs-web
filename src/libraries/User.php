@@ -9,6 +9,7 @@ use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \BNETDocs\Libraries\Gravatar;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -225,6 +226,12 @@ class User implements JsonSerializable {
       throw new QueryException("Cannot query user id by username", $e);
     }
     return null;
+  }
+
+  public function getAvatarURI($size) {
+    return Common::relativeUrlToAbsolute(
+      (new Gravatar($this->getEmail()))->getUrl($size, "identicon")
+    );
   }
 
   public function getCreatedDateTime() {
