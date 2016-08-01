@@ -1,51 +1,41 @@
 <?php
 
-namespace BNETDocs\Controllers\News;
+namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\DatabaseDriver;
+use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\NewsCategory;
-use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
-use \BNETDocs\Models\News\Create as NewsCreateModel;
-use \BNETDocs\Views\News\CreateHtml as NewsCreateHtmlView;
+use \BNETDocs\Models\Document\Create as DocumentCreateModel;
+use \BNETDocs\Views\Document\CreateHtml as DocumentCreateHtmlView;
 
 class Create extends Controller {
 
   public function run(Router &$router) {
     switch ($router->getRequestPathExtension()) {
       case "htm": case "html": case "":
-        $view = new NewsCreateHtmlView();
+        $view = new DocumentCreateHtmlView();
       break;
       default:
         throw new UnspecifiedViewException();
     }
-    $model                  = new NewsCreateModel();
+    $model                  = new DocumentCreateModel();
     $model->csrf_id         = mt_rand();
     $model->csrf_token      = CSRF::generate($model->csrf_id, 900); // 15 mins
     $model->error           = null;
-    $model->news_categories = null;
     $model->user_session    = UserSession::load($router);
     $model->user            = (isset($model->user_session) ?
                                new User($model->user_session->user_id) : null);
 
     $model->acl_allowed  = ($model->user &&
-      $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_CREATE
+      $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_CREATE
     );
-
-    $model->news_categories = NewsCategory::getAll();
-    usort($model->news_categories, function($a, $b){
-      $oA = $a->getSortId();
-      $oB = $b->getSortId();
-      if ($oA == $oB) return 0;
-      return ($oA < $oB) ? -1 : 1;
-    });
 
     if ($router->getRequestMethod() == "POST") {
       $this->handlePost($router, $model);
@@ -62,7 +52,7 @@ class Create extends Controller {
     ob_end_clean();
   }
 
-  protected function handlePost(Router &$router, NewsCreateModel &$model) {
+  protected function handlePost(Router &$router, DocumentCreateModel &$model) {
     if (!$model->acl_allowed) {
       $model->error = "ACL_NOT_SET";
       return;
@@ -74,14 +64,12 @@ class Create extends Controller {
     $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
     $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    $category   = (isset($data["category"  ]) ? $data["category"  ] : null);
     $title      = (isset($data["title"     ]) ? $data["title"     ] : null);
     $markdown   = (isset($data["markdown"  ]) ? $data["markdown"  ] : null);
     $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
     $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
     $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
 
-    $model->category = $category;
     $model->title    = $title;
     $model->markdown = $markdown;
     $model->content  = $content;
@@ -99,15 +87,15 @@ class Create extends Controller {
     }
 
     $options_bitmask = 0;
-    if ($markdown) $options_bitmask |= NewsPost::OPTION_MARKDOWN;
-    if ($publish ) $options_bitmask |= NewsPost::OPTION_PUBLISHED;
+    if ($markdown) $options_bitmask |= Document::OPTION_MARKDOWN;
+    if ($publish ) $options_bitmask |= Document::OPTION_PUBLISHED;
 
     $user_id = $model->user_session->user_id;
 
     try {
 
-      $success = NewsPost::create(
-        $user_id, $category, $options_bitmask, $title, $content
+      $success = Document::create(
+        $user_id, $options_bitmask, $title, $content
       );
 
     } catch (QueryException $e) {
@@ -125,12 +113,11 @@ class Create extends Controller {
     }
 
     Logger::logEvent(
-      "news_created",
+      "document_created",
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([
         "error"           => $model->error,
-        "category_id"     => $category,
         "options_bitmask" => $options_bitmask,
         "title"           => $title,
         "content"         => $content,

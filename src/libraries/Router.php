@@ -5,6 +5,7 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Controllers\Attachment\Download as AttachmentDownloadController;
 use \BNETDocs\Controllers\Comment\Create as CommentCreateController;
 use \BNETDocs\Controllers\Credits as CreditsController;
+use \BNETDocs\Controllers\Document\Create as DocumentCreateController;
 use \BNETDocs\Controllers\Document\Edit as DocumentEditController;
 use \BNETDocs\Controllers\Document\Index as DocumentIndexController;
 use \BNETDocs\Controllers\Document\Popular as DocumentPopularController;
@@ -284,6 +285,9 @@ class Router {
           break;
           case "document":
             switch ($subpath) {
+              case "create":
+                $controller = new DocumentCreateController();
+              break;
               case "edit": case "edit.htm": case "edit.html":
                 $controller = new DocumentEditController();
               break;

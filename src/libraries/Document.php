@@ -57,6 +57,61 @@ class Document {
     }
   }
 
+  public static function create(
+    $user_id, $options_bitmask, $title, $content
+  ) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare("
+        INSERT INTO `documents` (
+          `id`, `created_datetime`, `edited_datetime`, `edited_count`,
+          `user_id`, `options_bitmask`, `title`, `content`
+        ) VALUES (
+          NULL, NOW(), NULL, 0, :user_id, :options_bitmask, :title, :content
+        );
+      ");
+      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+      $stmt->bindParam(":options_bitmask", $options_bitmask, PDO::PARAM_INT);
+      $stmt->bindParam(":title", $title, PDO::PARAM_STR);
+      $stmt->bindParam(":content", $content, PDO::PARAM_STR);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) Common::$cache->delete("bnetdocs-documents");
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot create document", $e);
+    } finally {
+      //Credits::getTopContributorsByDocuments(true); // Refresh statistics
+      return $successful;
+    }
+  }
+
+  public static function delete($id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare("
+        DELETE FROM `documents` WHERE `id` = :id LIMIT 1;
+      ");
+      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) {
+        Common::$cache->delete("bnetdocs-document-" . (int) $id);
+        Common::$cache->delete("bnetdocs-documents");
+      }
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot delete document", $e);
+    } finally {
+      //Credits::getTopContributorsByNewsPosts(true); // Refresh statistics
+      return $successful;
+    }
+  }
+
   public static function getAllDocuments() {
     $cache_key = "bnetdocs-documents";
     $cache_val = Common::$cache->get($cache_key);
