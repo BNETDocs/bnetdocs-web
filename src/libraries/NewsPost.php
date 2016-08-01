@@ -174,6 +174,47 @@ class NewsPost {
     return null;
   }
 
+  public static function getNewsPostsByUserId($user_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        SELECT
+          `category_id`,
+          `content`,
+          `created_datetime`,
+          `edited_count`,
+          `edited_datetime`,
+          `id`,
+          `options_bitmask`,
+          `title`,
+          `user_id`
+        FROM `news_posts`
+        WHERE `user_id` = :user_id
+        ORDER BY `id` ASC;
+      ");
+      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot query news posts by user id");
+      }
+      $ids     = [];
+      $objects = [];
+      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        $ids[]     = (int) $row->id;
+        $objects[] = new self($row);
+        Common::$cache->set(
+          "bnetdocs-newspost-" . $row->id, serialize($row), 300
+        );
+      }
+      $stmt->closeCursor();
+      return $objects;
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot query news posts by user id", $e);
+    }
+    return null;
+  }
+
   public function getCategory() {
     return new NewsCategory($this->category_id);
   }

@@ -96,11 +96,11 @@ require("./header.inc.phtml");
       <article>
         <header>Documents</header>
         <section>
-          <ul>
+          <table><tbody>
 <?php foreach ($this->getContext()->documents as $document) { ?>
-            <li><a href="<?php echo $document->getURI(); ?>"><?php echo htmlspecialchars($document->getTitle()); ?></a></li>
+            <tr><td><a href="<?php echo $document->getURI(); ?>"><?php echo htmlspecialchars($document->getTitle()); ?></a></td></tr>
 <?php } ?>
-          </ul>
+          </tbody></table>
         </section>
       </article>
 <?php } ?>
@@ -108,7 +108,11 @@ require("./header.inc.phtml");
       <article>
         <header>News Posts</header>
         <section>
-          <?php require("./NYI.inc.phtml"); ?>
+          <table><tbody>
+<?php foreach ($this->getContext()->news_posts as $news_post) { ?>
+            <tr><td><a href="<?php echo $news_post->getURI(); ?>"><?php echo htmlspecialchars($news_post->getTitle()); ?></a></td></tr>
+<?php } ?>
+          </tbody></table>
         </section>
       </article>
 <?php } ?>
@@ -116,7 +120,11 @@ require("./header.inc.phtml");
       <article>
         <header>Packets</header>
         <section>
-          <?php require("./NYI.inc.phtml"); ?>
+          <table><tbody>
+<?php foreach ($this->getContext()->packets as $packet) { ?>
+            <tr><td><a href="<?php echo $packet->getURI(); ?>"><?php echo htmlspecialchars($packet->getPacketDirectionTag(), ENT_HTML5, "UTF-8"); ?> <?php echo htmlspecialchars($packet->getPacketId(true), ENT_HTML5, "UTF-8"); ?> <?php echo htmlspecialchars($packet->getPacketName()); ?></a></td></tr>
+<?php } ?>
+          </tbody></table>
         </section>
       </article>
 <?php } ?>

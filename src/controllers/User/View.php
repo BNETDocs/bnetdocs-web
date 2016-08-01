@@ -9,6 +9,8 @@ use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
+use \BNETDocs\Libraries\NewsPost;
+use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User as UserLib;
 use \BNETDocs\Libraries\UserProfile;
@@ -138,8 +140,12 @@ class View extends Controller {
     $model->documents  = ($model->sum_documents  ?
       Document::getDocumentsByUserId($this->user_id) : null
     );
-    $model->news_posts = ($model->sum_news_posts ? true : null);
-    $model->packets    = ($model->sum_packets    ? true : null);
+    $model->news_posts = ($model->sum_news_posts ?
+      NewsPost::getNewsPostsByUserId($this->user_id): null
+    );
+    $model->packets    = ($model->sum_packets    ?
+      Packet::getPacketsByUserId($this->user_id) : null
+    );
     $model->servers    = ($model->sum_servers    ? true : null);
 
     // Process documents
@@ -158,6 +164,48 @@ class View extends Controller {
         if (!($model->documents[$i]->getOptionsBitmask()
           & Document::OPTION_PUBLISHED)) {
           unset($model->documents[$i]);
+        }
+        --$i;
+      }
+    }
+
+    // Process news posts
+    if ($model->news_posts) {
+      // Alphabetically sort the documents
+      usort($model->news_posts, function($a, $b){
+        $a1 = $a->getTitle();
+        $b1 = $b->getTitle();
+        if ($a1 == $b1) return 0;
+        return ($a1 < $b1 ? -1 : 1);
+      });
+
+      // Remove documents that are not published
+      $i = count($model->news_posts) - 1;
+      while ($i >= 0) {
+        if (!($model->news_posts[$i]->getOptionsBitmask()
+          & NewsPost::OPTION_PUBLISHED)) {
+          unset($model->news_posts[$i]);
+        }
+        --$i;
+      }
+    }
+
+    // Process packets
+    if ($model->packets) {
+      // Alphabetically sort the documents
+      usort($model->packets, function($a, $b){
+        $a1 = $a->getPacketName();
+        $b1 = $b->getPacketName();
+        if ($a1 == $b1) return 0;
+        return ($a1 < $b1 ? -1 : 1);
+      });
+
+      // Remove documents that are not published
+      $i = count($model->packets) - 1;
+      while ($i >= 0) {
+        if (!($model->packets[$i]->getOptionsBitmask()
+          & Packet::OPTION_PUBLISHED)) {
+          unset($model->packets[$i]);
         }
         --$i;
       }
