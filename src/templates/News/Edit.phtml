@@ -68,7 +68,7 @@ require("./header.inc.phtml");
             <label for="title">Title:</label><br/>
             <input type="text" name="title" id="title" tabindex="2" required
               value="<?php echo
-                htmlspecialchars($this->getContext()->title, ENT_HTML5, "UTF-8");
+                filter_var($this->getContext()->title, FILTER_SANITIZE_STRING);
               ?>"/>
           </section>
           <section>
