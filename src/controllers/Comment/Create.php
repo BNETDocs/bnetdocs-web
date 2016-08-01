@@ -9,6 +9,7 @@ use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Comment\Create as CreateModel;
 use \BNETDocs\Views\Comment\CreateJSON as CreateJSONView;
@@ -26,6 +27,12 @@ class Create extends Controller {
     }
     $model = new CreateModel();
     $model->user_session = UserSession::load($router);
+    $model->user         = (isset($model->user_session) ?
+                            new User($model->user_session->user_id) : null);
+
+    $model->acl_allowed  = ($model->user &&
+      $model->user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_CREATE
+    );
 
     $code = 500;
     if (!$model->user_session) {
@@ -57,27 +64,33 @@ class Create extends Controller {
     $p_type  = (isset($query["parent_type"]) ? $query["parent_type"] : null);
     $content = (isset($query["content"    ]) ? $query["content"    ] : null);
 
-    if ($p_id   !== null) $p_id   = (int) $p_id;
-    if ($p_type !== null) $p_type = (int) $p_type;
-
-    switch ($p_type) {
-      case CommentLib::PARENT_TYPE_DOCUMENT:  $origin = "/document/"; break;
-      case CommentLib::PARENT_TYPE_COMMENT:   $origin = "/comment/";  break;
-      case CommentLib::PARENT_TYPE_NEWS_POST: $origin = "/news/";     break;
-      case CommentLib::PARENT_TYPE_PACKET:    $origin = "/packet/";   break;
-      case CommentLib::PARENT_TYPE_SERVER:    $origin = "/server/";   break;
-      case CommentLib::PARENT_TYPE_USER:      $origin = "/user/";     break;
-      default: throw new UnexpectedValueException("Parent type: " . $p_type);
-    }
-    $origin = Common::relativeUrlToAbsolute($origin . $p_id . "#comments");
-    $model->origin = $origin;
-
-    if (empty($content)) {
+    if (!$model->acl_allowed) {
       $success = false;
     } else {
-      $success = CommentLib::create(
-        $p_type, $p_id, $model->user_session->user_id, $content
-      );
+
+      if ($p_id   !== null) $p_id   = (int) $p_id;
+      if ($p_type !== null) $p_type = (int) $p_type;
+
+      switch ($p_type) {
+        case CommentLib::PARENT_TYPE_DOCUMENT:  $origin = "/document/"; break;
+        case CommentLib::PARENT_TYPE_COMMENT:   $origin = "/comment/";  break;
+        case CommentLib::PARENT_TYPE_NEWS_POST: $origin = "/news/";     break;
+        case CommentLib::PARENT_TYPE_PACKET:    $origin = "/packet/";   break;
+        case CommentLib::PARENT_TYPE_SERVER:    $origin = "/server/";   break;
+        case CommentLib::PARENT_TYPE_USER:      $origin = "/user/";     break;
+        default: throw new UnexpectedValueException("Parent type: " . $p_type);
+      }
+      $origin = Common::relativeUrlToAbsolute($origin . $p_id . "#comments");
+      $model->origin = $origin;
+
+      if (empty($content)) {
+        $success = false;
+      } else {
+        $success = CommentLib::create(
+          $p_type, $p_id, $model->user_session->user_id, $content
+        );
+      }
+
     }
 
     $model->response = [
