@@ -127,19 +127,28 @@ class Register extends Controller {
       $model->error = "REGISTER_DISABLED";
       return;
     }
+
     try {
       if (!$req->email_duplicate_allowed && User::findIdByEmail($email)) {
         $model->error = "EMAIL_ALREADY_USED";
         return;
       }
     } catch (UserNotFoundException $e) {}
+
     try {
-      $success = User::create($email, $username, null, $pw1, 0);
+
+      $success = User::create(
+        $email, $username, null, $pw1, User::DEFAULT_OPTION
+      );
+
     } catch (QueryException $e) {
+
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
+
     }
+
     if (!$success) {
       $model->error = "INTERNAL_ERROR";
     } else {

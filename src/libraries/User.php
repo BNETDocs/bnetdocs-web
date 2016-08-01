@@ -20,6 +20,8 @@ use \StdClass;
 
 class User implements JsonSerializable {
 
+  const DEFAULT_OPTION              = 0x00000020;
+
   const OPTION_DISABLED             = 0x00000001;
   const OPTION_VERIFIED             = 0x00000002;
   const OPTION_ACL_DOCUMENT_CREATE  = 0x00000004;
