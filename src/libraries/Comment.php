@@ -153,7 +153,7 @@ class Comment implements JsonSerializable {
       return $this->content;
     }
     $md = new Markdown();
-    return $md->text($this->content);
+    return $md->text(filter_var($this->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
   }
 
   public function getCreatedDateTime() {
