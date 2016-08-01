@@ -132,6 +132,7 @@ class UserProfile {
   }
 
   public function getWebsite() {
+    if (!is_string($this->website)) return $this->website;
     $value = strtolower($this->website);
     if (substr($value, 0, 7) == "http://") {
       return substr($value, 7);
@@ -143,6 +144,7 @@ class UserProfile {
   }
 
   public function getWebsiteURI() {
+    if (!is_string($this->website)) return $this->website;
     $value = strtolower($this->website);
     if (substr($value, 0, 7) == "http://"
       || substr($value, 0, 8) == "https://") {
