@@ -12,6 +12,7 @@ $object       = $this->getContext()->news_post;
 $object_id    = $this->getContext()->news_post_id;
 $user_session = $this->getContext()->user_session;
 $logged_in    = ($user_session ? new User($user_session->user_id) : null);
+$logged_in_id = ($logged_in ? $logged_in->getId() : null);
 
 $title       = ($object ? $object->getTitle() : "News Post Not Found");
 $description = Common::stripUpTo(trim(filter_var(
@@ -92,13 +93,17 @@ require("./header.inc.phtml");
 <?php } else { ?>
           <table class="comments"><tbody>
 <?php foreach ($comments as $c) {
+        $c_id          = $c->getId();
         $c_user        = $c->getUser();
         $c_user_name   = $c_user->getName();
         $c_user_id     = $c->getUserId();
         $c_user_url    = $c_user->getURI();
         $c_user_avatar = $c_user->getAvatarURI(22);
+
+        $c_edit_visible = ($c_user_id == $logged_in_id);
+        $c_delete_visible = ($c_user_id == $logged_in_id);
 ?>
-            <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><?php echo $c->getContent(true); ?></td></tr>
+            <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time><?php if ($c_delete_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/delete?id=" . urlencode($c_id)); ?>">Delete</a><?php } if ($c_edit_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/edit?id=" . urlencode($c_id)); ?>">Edit</a><?php } ?></td><td><?php echo $c->getContent(true); ?></td></tr>
 <?php } ?>
           </tbody></table>
 <?php } ?>

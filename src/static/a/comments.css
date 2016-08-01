@@ -30,6 +30,15 @@ table.comments time.comment_timestamp {
   font-size: smaller;
 }
 
+table.comments a.comment_button {
+  float: right;
+  font-size: smaller;
+  margin-left: 2px;
+  min-height: 0px;
+  min-width: 0px;
+  padding: 0px 4px;
+}
+
 table.comments blockquote {
   margin: 10px 0px;
 }
