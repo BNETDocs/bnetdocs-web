@@ -374,3 +374,8 @@ table img.avatar {
   max-width: 22px;
   margin: 0px 8px 0px 0px;
 }
+hr {
+  background-color: rgba(255,255,255,0.05);
+  border: 0px;
+  height: 5px;
+}
