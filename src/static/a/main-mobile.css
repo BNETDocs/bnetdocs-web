@@ -43,21 +43,20 @@ header.main-page {
   -ms-user-select: none;
   user-select: none;
 }
+header.main-page #mobile-nav {
+  display: block;
+  float: right;
+}
 nav {
-  /* TODO
-   * JAVASCRIPT INTEGRATION
-   * AUTO-SHOW/HIDE
-   */
   background-color: rgba(64,64,64,1);
   cursor: default;
-  display: none; // FIXME
+  display: none;
   font: 16pt source sans pro, verdana, arial, sans-serif;
   line-height: 28px;
   overflow: auto;
   padding: 4px;
   position: fixed;
   right: 0px;
-  left: 0px;
   top: 48px;
   width: 80%;
   -webkit-touch-callout: none;

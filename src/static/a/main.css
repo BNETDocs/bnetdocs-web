@@ -43,6 +43,9 @@ header.main-page {
   -ms-user-select: none;
   user-select: none;
 }
+header.main-page #mobile-nav {
+  display: none;
+}
 nav {
   background-color: rgba(64,64,64,0.6);
   border-radius: 0px 0px 8px 8px;
