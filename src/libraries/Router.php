@@ -4,6 +4,7 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Controllers\Attachment\Download as AttachmentDownloadController;
 use \BNETDocs\Controllers\Comment\Create as CommentCreateController;
+use \BNETDocs\Controllers\Comment\Delete as CommentDeleteController;
 use \BNETDocs\Controllers\Credits as CreditsController;
 use \BNETDocs\Controllers\Document\Create as DocumentCreateController;
 use \BNETDocs\Controllers\Document\Delete as DocumentDeleteController;
@@ -274,6 +275,9 @@ class Router {
             switch ($subpath) {
               case "create":
                 $controller = new CommentCreateController();
+              break;
+              case "delete": case "delete.htm": case "delete.html":
+                $controller = new CommentDeleteController();
               break;
               default:
                 throw new ControllerNotFoundException(

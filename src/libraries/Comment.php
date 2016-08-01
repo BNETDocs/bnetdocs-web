@@ -91,6 +91,31 @@ class Comment implements JsonSerializable {
     }
   }
 
+  public static function delete($id, $parent_type, $parent_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare("
+        DELETE FROM `comments` WHERE `id` = :id LIMIT 1;
+      ");
+      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) {
+        Common::$cache->delete("bnetdocs-comment-" . (int) $id);
+        Common::$cache->delete(
+          "bnetdocs-comment-" . (int) $parent_type . "-" . (int) $parent_id
+        );
+      }
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot delete comment", $e);
+    } finally {
+      return $successful;
+    }
+  }
+
   public static function getAll($parent_type, $parent_id) {
     $ck = "bnetdocs-comment-" . $parent_type . "-" . $parent_id;
     $cv = Common::$cache->get($ck);
