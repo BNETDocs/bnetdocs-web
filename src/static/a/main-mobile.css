@@ -50,12 +50,15 @@ header.main-page #mobile-nav {
 }
 nav {
   background-color: rgba(64,64,64,1);
+  box-sizing: border-box;
   cursor: default;
   display: none;
   font: 16pt source sans pro, verdana, arial, sans-serif;
+  height: calc(100% - 48px);
   line-height: 28px;
+  max-width: 240px;
   overflow: auto;
-  padding: 4px;
+  padding: 12px;
   position: fixed;
   right: 0px;
   top: 48px;
@@ -78,13 +81,12 @@ nav > a:hover {
   text-decoration: none;
 }
 nav > a[href] {
-  border: 1px solid rgba(128,128,128,0.15);
   cursor: pointer;
-  display: inline-block;
+  display: block;
   font-family: source sans pro, verdana, arial, sans-serif;
   font-size: 13pt;
   font-weight: inherit;
-  padding-top: 0px;
+  padding: 0px 8px;
 }
 nav > a[href]:hover {
   background-color: rgba(128,128,128,0.15);
