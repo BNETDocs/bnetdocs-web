@@ -52,7 +52,7 @@ class View extends Controller {
       case "htm": case "html": case "":
         $view = new DocumentViewHtmlView();
       break;
-      case "txt":
+      case "md": case "txt":
         $view = new DocumentViewPlainView();
       break;
       default:
