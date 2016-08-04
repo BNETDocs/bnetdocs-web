@@ -5,6 +5,7 @@ namespace BNETDocs;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
+use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Cache;
 use \CarlBennett\MVC\Libraries\GlobalErrorHandler;
 
@@ -32,7 +33,7 @@ function main() {
 
   Common::$database = null;
 
-  Common::$version = Common::getVersionProperties();
+  VersionInfo::$version = VersionInfo::get();
 
   $router = new Router();
   $router->route();

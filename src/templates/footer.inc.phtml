@@ -2,13 +2,13 @@
 
 namespace BNETDocs\Templates;
 
-use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\VersionInfo;
 
 ?>
     </main>
     <footer class="main-page<?php if (isset($slim_ui) && $slim_ui) { ?> slim<?php } ?>">
-      <a href="https://github.com/BNETDocs/bnetdocs-web/tree/<?php echo Common::$version->bnetdocs[1]; ?>" rel="external" title="Contribute to the BNETDocs source code!">BNETDocs <?php echo Common::$version->bnetdocs[0]; ?></a> &copy; 2003-2016 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt" rel="external" title="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International">CC-BY-NC-SA 4.0</a><br/>
+      <a href="https://github.com/BNETDocs/bnetdocs-web/tree/<?php echo VersionInfo::$version->bnetdocs[1]; ?>" rel="external" title="Contribute to the BNETDocs source code!">BNETDocs <?php echo VersionInfo::$version->bnetdocs[0]; ?></a> &copy; 2003-2016 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt" rel="external" title="Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International">CC-BY-NC-SA 4.0</a><br/>
       BNETDocs is in no way affiliated with or endorsed by Blizzard Entertainment&trade; or its brands, and is not intended to compete with or undermine Blizzard Entertainment&trade; or Battle.net&trade;. Persons using this software understand that the information provided within is collected knowledge from years of observations and may be inaccurate. All aforementioned trademarks are the property of their respective owners.<br/>
     </footer>
 <?php echo Logger::getTimingFooter(); ?>
