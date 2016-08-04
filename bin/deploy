@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# Local variables
+PROJECT_NAME="bnetdocs-web"
+VERSION="$(git symbolic-ref HEAD | sed -e 's/^refs\/heads\/*//g')"
+SOURCE_DIRECTORY="$(git rev-parse --show-toplevel)"
+TARGET_FILE="${SOURCE_DIRECTORY}/etc/deploy-targets.csv"
+TARGET_ENV=""
+SKIP_COMPOSER=0
+SKIP_CONFIRM=0
+
+# Parameter handling
+OPTIND=1
+while getopts ":e:fy" opt; do
+    case "$opt" in
+    e)  TARGET_ENV=$OPTARG
+        ;;
+    f)  SKIP_COMPOSER=1
+        ;;
+    y)
+        SKIP_CONFIRM=1
+        ;;
+    \?) printf "Usage: $0 -e <environment>\n" >&2
+        exit 1
+        ;;
+    :)  printf "Option -$OPTARG requires an argument.\n" >&2
+        exit 1
+        ;;
+    esac
+done
+
+# Environment functions
+function environment_get () {
+    if [ "$1" == "" ]; then
+        printf "Usage: $0 -e <environment> -f\n" >&2
+        printf "    -e    Sets target environment\n" >&2
+        printf "    -f    Skips composer update\n" >&2
+        printf "    -y    Skips confirmation check\n" >&2
+        return 1
+    fi
+    HOST="$(grep "$1" $2 | cut -d, -f2-)"
+    if [ "${HOST}" == "" ]; then
+        printf "Invalid environment: $1\n" >&2
+        printf "Available environments:\n" >&2
+        while IFS=, read col1 col2; do
+            printf "    $col1\n" >&2
+        done < $2
+        return 1
+    fi
+    printf "${HOST}" >&1
+    return 0
+}
+
+# Get target hosts by environment
+TARGET_HOST=$(environment_get "${TARGET_ENV}" "${TARGET_FILE}" || exit $?) \
+    || exit $?
+
+# Confirmation check
+if [ "${SKIP_CONFIRM}" -ne 1 ]; then
+    printf "This will deploy ${PROJECT_NAME}:${VERSION} to ${TARGET_ENV}.\n"
+    read -p "Is this ok [y/N]: " PROMPT
+    if [ "${PROMPT}" != "Y" ] && [ "${PROMPT}" != "y" ]; then
+        printf "Operation aborted.\n" >&2
+        exit 1
+    fi
+fi
+
+# Break on non-success exit codes
+set -e
+
+printf "[1/4] Running composer update...\n"
+if [ "${SKIP_COMPOSER}" -ne 1 ]; then
+    if [ "${TARGET_ENV}" == "production" ]; then
+        composer update -o --no-dev
+    else
+        composer update
+    fi
+else
+    printf "skipping step as requested...\n"
+fi
+
+printf "[2/4] Generating version information...\n"
+printf "$(git describe --always --tags)\n" \
+  > ${SOURCE_DIRECTORY}/etc/.rsync-version
+printf "$(git rev-parse HEAD)" \
+  >> ${SOURCE_DIRECTORY}/etc/.rsync-version
+
+printf "[3/4] Syncing project to target...\n"
+pushd "${SOURCE_DIRECTORY}" >/dev/null
+OIFS=$IFS; IFS=,
+for host in ${TARGET_HOST}; do
+    rsync -avzc --delete --delete-excluded --delete-after --progress \
+        --exclude-from="./etc/deploy-ignore.txt" \
+        --chown=nginx:www-data --rsync-path="sudo rsync" \
+        "./" ${TARGET_HOST}:"/opt/carlbennett/nginx-www/${PROJECT_NAME}"
+done
+IFS=$OIFS
+popd >/dev/null
+
+printf "[4/4] Post-deploy clean up...\n"
+rm ${SOURCE_DIRECTORY}/etc/.rsync-version
+
+printf "Operation complete!\n"

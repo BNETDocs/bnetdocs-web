@@ -20,7 +20,6 @@
 .Spotlight-V100
 .Trashes
 ._*
-/etc/.rsync-target
 /etc/config.phoenix.json
 /etc/config.redux.json
 /tmp/
