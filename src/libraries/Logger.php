@@ -2,27 +2,18 @@
 
 namespace BNETDocs\Libraries;
 
+use \CarlBennett\MVC\Libraries\Logger as LoggerMVCLib;
 use \BNETDocs\Libraries\Common;
-use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\QueryException;
-use \Exception;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
 use \RuntimeException;
 
-class Logger {
+class Logger extends LoggerMVCLib {
 
   protected static $event_types        = null;
-  protected static $newrelic_available = false;
-
-  /**
-   * This constructor is private because Logger is entirely static.
-   *
-   * This will cause errors if instantiation is attempted.
-   */
-  private function __construct() {}
 
   public static function &getAllEvents() {
     $event_log = [];
@@ -65,45 +56,6 @@ class Logger {
     return self::$event_types;
   }
 
-  public static function getTimingHeader($tags = true) {
-    // If $tags is true, then <script> will be included
-    if (extension_loaded("newrelic")) {
-      return newrelic_get_browser_timing_header($tags);
-    } else {
-      return "";
-    }
-  }
-
-  public static function getTimingFooter($tags = true) {
-    // If $tags is true, then <script> will be included
-    if (extension_loaded("newrelic")) {
-      return newrelic_get_browser_timing_footer($tags);
-    } else {
-      return "";
-    }
-  }
-
-  public static function getTraceString() {
-    ob_start();
-    debug_print_backtrace();
-    return ob_get_clean();
-  }
-
-  public static function initialize() {
-    if (extension_loaded("newrelic")) {
-      newrelic_disable_autorum();
-      self::$newrelic_available = true;
-      self::setTransactionName("null");
-      self::logMetric("REMOTE_ADDR", getenv("REMOTE_ADDR"));
-    }
-  }
-
-  public static function logError($no, $str, $file, $line, $obj) {
-    if (self::$newrelic_available) {
-      newrelic_notice_error($no, $str, $file, $line, $obj);
-    }
-  }
-
   public static function logEvent(
     $event_type, $user_id = null, $ip_address = null, $meta_data = null
   ) {
@@ -139,24 +91,6 @@ class Logger {
       throw new QueryException("Cannot log event", $e);
     } finally {
       return $successful;
-    }
-  }
-
-  public static function logException(Exception $exception) {
-    if (self::$newrelic_available) {
-      newrelic_notice_error($exception->getMessage(), $exception);
-    }
-  }
-
-  public static function logMetric($key, $val) {
-    if (self::$newrelic_available) {
-      newrelic_add_custom_parameter($key, $val);
-    }
-  }
-
-  public static function setTransactionName($name) {
-    if (self::$newrelic_available) {
-      newrelic_name_transaction($name);
     }
   }
 
