@@ -14,7 +14,6 @@ class Delete extends Model {
   public $id;
   public $parent_id;
   public $parent_type;
-  public $title;
   public $user;
   public $user_session;
 
@@ -28,7 +27,6 @@ class Delete extends Model {
     $this->id           = null;
     $this->parent_id    = null;
     $this->parent_type  = null;
-    $this->title        = null;
     $this->user         = null;
     $this->user_session = null;
   }

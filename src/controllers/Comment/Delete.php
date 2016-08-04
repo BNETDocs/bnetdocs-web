@@ -37,7 +37,6 @@ class Delete extends Controller {
     $model->id           = (isset($data["id"]) ? $data["id"] : null);
     $model->parent_id    = null;
     $model->parent_type  = null;
-    $model->title        = null;
     $model->user_session = UserSession::load($router);
     $model->user         = (isset($model->user_session) ?
                             new User($model->user_session->user_id) : null);
@@ -65,7 +64,7 @@ class Delete extends Controller {
 
     ob_start();
     $view->render($model);
-    $router->setResponseCode(200);
+    $router->setResponseCode(($model->acl_allowed ? 200 : 403));
     $router->setResponseTTL(0);
     $router->setResponseHeader("Content-Type", $view->getMimeType());
     $router->setResponseContent(ob_get_contents());
@@ -75,6 +74,10 @@ class Delete extends Controller {
   protected function tryDelete(Router &$router, CommentDeleteModel &$model) {
     if (!isset($model->user_session)) {
       $model->error = "NOT_LOGGED_IN";
+      return;
+    }
+    if (!$model->acl_allowed) {
+      $model->error = "ACL_NOT_SET";
       return;
     }
 
