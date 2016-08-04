@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;

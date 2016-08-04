@@ -3,7 +3,7 @@
 namespace BNETDocs\Libraries;
 
 use \CarlBennett\MVC\Libraries\Logger as LoggerMVCLib;
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \InvalidArgumentException;

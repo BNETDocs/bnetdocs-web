@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;

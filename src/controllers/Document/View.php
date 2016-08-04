@@ -5,7 +5,7 @@ namespace BNETDocs\Controllers\Document;
 use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Libraries\Attachment;
 use \BNETDocs\Libraries\Comment;
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;

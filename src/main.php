@@ -2,7 +2,7 @@
 
 namespace BNETDocs;
 
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\VersionInfo;

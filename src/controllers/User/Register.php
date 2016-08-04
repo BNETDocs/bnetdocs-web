@@ -3,7 +3,7 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\CSRF;
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\RecaptchaException;

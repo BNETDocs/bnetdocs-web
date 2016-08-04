@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Views\Comment;
 
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
 use \BNETDocs\Libraries\Model;
 use \BNETDocs\Libraries\Template;

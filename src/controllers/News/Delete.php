@@ -3,7 +3,7 @@
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\CSRF;
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;

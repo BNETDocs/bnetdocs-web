@@ -36,7 +36,7 @@ use \BNETDocs\Controllers\User\Register as UserRegisterController;
 use \BNETDocs\Controllers\User\ResetPassword as UserResetPasswordController;
 use \BNETDocs\Controllers\User\View as UserViewController;
 use \BNETDocs\Libraries\BlizzardChecker;
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
 use \BNETDocs\Libraries\UserSession;
 use \DateTime;

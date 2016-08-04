@@ -4,7 +4,7 @@ namespace BNETDocs\Controllers\Comment;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Comment;
-use \BNETDocs\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
