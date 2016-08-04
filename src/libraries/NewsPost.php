@@ -3,8 +3,8 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Credits;
-use \BNETDocs\Libraries\Database;
-use \BNETDocs\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\NewsCategory;

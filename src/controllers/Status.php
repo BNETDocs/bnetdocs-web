@@ -4,8 +4,8 @@ namespace BNETDocs\Controllers;
 
 use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Database;
-use \BNETDocs\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\VersionInfo;

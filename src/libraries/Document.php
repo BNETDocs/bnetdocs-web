@@ -2,8 +2,8 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Database;
-use \BNETDocs\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;

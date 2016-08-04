@@ -5,7 +5,7 @@ namespace BNETDocs\Controllers\User;
 use \BNETDocs\Libraries\CSRF;
 use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;

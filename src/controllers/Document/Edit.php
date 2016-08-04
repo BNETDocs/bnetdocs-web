@@ -5,7 +5,7 @@ namespace BNETDocs\Controllers\Document;
 use \BNETDocs\Libraries\CSRF;
 use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;

@@ -3,6 +3,7 @@
 namespace BNETDocs;
 
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\VersionInfo;
@@ -32,6 +33,13 @@ function main() {
   );
 
   Common::$database = null;
+
+  DatabaseDriver::$character_set = Common::$config->mysql->character_set;
+  DatabaseDriver::$database_name = Common::$config->mysql->database;
+  DatabaseDriver::$password      = Common::$config->mysql->password;
+  DatabaseDriver::$servers       = Common::$config->mysql->servers;
+  DatabaseDriver::$timeout       = Common::$config->mysql->timeout;
+  DatabaseDriver::$username      = Common::$config->mysql->username;
 
   VersionInfo::$version = VersionInfo::get();
 

@@ -3,8 +3,8 @@
 namespace BNETDocs\Libraries;
 
 use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Database;
-use \BNETDocs\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\PacketTransportLayerNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \InvalidArgumentException;

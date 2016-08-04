@@ -2,8 +2,8 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Database;
-use \BNETDocs\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\PacketDirectionInvalidException;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
