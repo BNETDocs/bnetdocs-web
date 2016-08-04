@@ -4,9 +4,67 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3fda99fe58dc583744e5f88bd8676043",
-    "content-hash": "85dbe6875f02ffdfb0a36be6b580f3b1",
-    "packages": [],
+    "hash": "b5ad84c1a4547ba4c3250094d11873d6",
+    "content-hash": "092ad7d2b18e3df0db85fcca8bfb604d",
+    "packages": [
+        {
+            "name": "carlbennett/php-mvc",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/carlbennett/php-mvc.git",
+                "reference": "17c34f167556f37f891d9a923e18aa7633489b15"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/17c34f167556f37f891d9a923e18aa7633489b15",
+                "reference": "17c34f167556f37f891d9a923e18aa7633489b15",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-geoip": "*",
+                "ext-gmp": "*",
+                "ext-http": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-mcrypt": "*",
+                "ext-memcached": "*",
+                "ext-pdo": "*",
+                "php-64bit": ">=5.5.0"
+            },
+            "type": "library",
+            "license": [
+                "CC-BY-SA-4.0"
+            ],
+            "authors": [
+                {
+                    "name": "Carl Bennett",
+                    "email": "carl@carlbennett.me"
+                }
+            ],
+            "description": "A web content management system (CMS) compatible for use as a frontend and backend.",
+            "homepage": "https://github.com/carlbennett/php-mvc",
+            "keywords": [
+                "api",
+                "backend",
+                "cms",
+                "content",
+                "frontend",
+                "management",
+                "mvc",
+                "php",
+                "rest",
+                "restful",
+                "system"
+            ],
+            "support": {
+                "source": "https://github.com/carlbennett/php-mvc/tree/2.0.1",
+                "issues": "https://github.com/carlbennett/php-mvc/issues"
+            },
+            "time": "2016-07-28 04:33:53"
+        }
+    ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",

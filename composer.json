@@ -19,7 +19,7 @@
         "engineer"
     ],
     "homepage": "https://github.com/BNETDocs/bnetdocs-web",
-    "license": "CC-BY-NC-SA 4.0",
+    "license": "CC-BY-NC-SA-4.0",
     "authors": [
         {
             "name": "Carl Bennett",
@@ -27,6 +27,7 @@
         }
     ],
     "require": {
+        "carlbennett/php-mvc": "~2",
         "ext-curl": "*",
         "ext-geoip": "*",
         "ext-gmp": "*",
@@ -37,5 +38,11 @@
         "ext-memcached": "*",
         "ext-pdo": "*",
         "php-64bit": ">=5.5.0"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/carlbennett/php-mvc"
+        }
+    ]
 }
