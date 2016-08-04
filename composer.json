@@ -26,6 +26,19 @@
             "email": "carlbennett@users.noreply.github.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "BNETDocs\\Controllers\\": "src/controllers/",
+            "BNETDocs\\Libraries\\": "src/libraries/",
+            "BNETDocs\\Models\\": "src/models/",
+            "BNETDocs\\Templates\\": "src/templates/",
+            "BNETDocs\\Views\\": "src/views/",
+            "CarlBennett\\MVC\\Controllers\\": "vendor/carlbennett/php-mvc/controllers/",
+            "CarlBennett\\MVC\\Libraries\\": "vendor/carlbennett/php-mvc/libraries/",
+            "CarlBennett\\MVC\\Models\\": "vendor/carlbennett/php-mvc/models/",
+            "CarlBennett\\MVC\\Views\\": "vendor/carlbennett/php-mvc/views/"
+        }
+    },
     "require": {
         "carlbennett/php-mvc": "~2",
         "ext-curl": "*",

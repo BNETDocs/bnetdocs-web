@@ -2,17 +2,21 @@
 
 namespace BNETDocs;
 
-use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\BNETDocsException;
-use \BNETDocs\Libraries\GlobalErrorHandler;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
+use \CarlBennett\MVC\Libraries\Cache;
+use \CarlBennett\MVC\Libraries\GlobalErrorHandler;
 use \ReflectionClass;
 
 function main() {
 
-  require_once("../vendor/autoload.php");
+  if (!file_exists(__DIR__ . "/../vendor/autoload.php")) {
+    http_response_code(500);
+    exit("Server misconfigured. Please run `composer install`.");
+  }
+  require(__DIR__ . "/../vendor/autoload.php");
 
   spl_autoload_register(function($className){
     $path = $className;
@@ -39,7 +43,11 @@ function main() {
   Common::$config   = json_decode(file_get_contents(
                         "../etc/config.phoenix.json"
                       ));
-  Common::$cache    = new Cache();
+  Common::$cache    = new Cache(
+                        Common::$config->memcache->servers,
+                        Common::$config->memcache->connect_timeout,
+                        Common::$config->memcache->tcp_nodelay
+                      );
   Common::$database = null;
   Common::$version  = Common::getVersionProperties();
 

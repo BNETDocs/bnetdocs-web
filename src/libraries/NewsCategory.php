@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;

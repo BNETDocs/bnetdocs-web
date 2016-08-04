@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Attachment;
 
 use \BNETDocs\Libraries\Attachment;
-use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Database;

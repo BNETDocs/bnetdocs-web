@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\Cache;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Database;
@@ -12,6 +11,7 @@ use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Status as StatusModel;
 use \BNETDocs\Views\StatusJSON as StatusJSONView;
 use \BNETDocs\Views\StatusPlain as StatusPlainView;
+use \CarlBennett\MVC\Libraries\Cache;
 use \DateTime;
 use \DateTimeZone;
 use \StdClass;
