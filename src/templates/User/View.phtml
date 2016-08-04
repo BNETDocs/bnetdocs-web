@@ -78,7 +78,7 @@ require("./header.inc.phtml");
         <header>User Statistics</header>
         <section>
           <table class="stats"><tbody><tr>
-          <td><p><strong>Member Since:</strong><br/><time datetime="<?php echo $object->getCreatedDateTime()->format("c"); ?>"><?php echo $object->getCreatedDateTime()->format("D M n, Y"); ?></time> (<?php echo $this->getContext()->user_est; ?>)</p></td>
+          <td><p><strong>Member Since:</strong><br/><time datetime="<?php echo $object->getCreatedDateTime()->format("c"); ?>"><?php echo $object->getCreatedDateTime()->format("D M j, Y"); ?></time> (<?php echo $this->getContext()->user_est; ?>)</p></td>
           <td><p><strong>Owner/Author Of:</strong><br/><?php if ($this->getContext()->contributions == 0) { ?><em>(nothing)</em><?php } else {
             if ($this->getContext()->sum_documents) echo number_format($this->getContext()->sum_documents) . " document" . ($this->getContext()->sum_documents  != 1 ? "s" : "") . "<br/>";
             if ($this->getContext()->sum_news_posts) echo number_format($this->getContext()->sum_news_posts) . " news post" . ($this->getContext()->sum_news_posts  != 1 ? "s" : "") . "<br/>";
