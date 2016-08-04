@@ -2,15 +2,15 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Markdown;
 use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\User;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Markdown;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
