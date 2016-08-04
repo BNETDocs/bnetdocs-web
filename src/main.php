@@ -20,16 +20,19 @@ function main() {
 
   Logger::initialize();
 
-  Common::$config   = json_decode(file_get_contents(
-                        "../etc/config.phoenix.json"
-                      ));
-  Common::$cache    = new Cache(
-                        Common::$config->memcache->servers,
-                        Common::$config->memcache->connect_timeout,
-                        Common::$config->memcache->tcp_nodelay
-                      );
+  Common::$config = json_decode(file_get_contents(
+    __DIR__ . "/../etc/config.phoenix.json"
+  ));
+
+  Common::$cache = new Cache(
+    Common::$config->memcache->servers,
+    Common::$config->memcache->connect_timeout,
+    Common::$config->memcache->tcp_nodelay
+  );
+
   Common::$database = null;
-  Common::$version  = Common::getVersionProperties();
+
+  Common::$version = Common::getVersionProperties();
 
   $router = new Router();
   $router->route();

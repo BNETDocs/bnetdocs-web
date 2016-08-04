@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\IP;
 use \DateInterval;
 use \DateTime;
 use \DateTimeZone;
@@ -19,15 +18,6 @@ final class Common {
    * Block instantiation of this object.
    */
   private function __contruct() {}
-
-  public static function checkIfBlizzard() {
-    $IP    = getenv("REMOTE_ADDR");
-    $CIDRs = file_get_contents(getcwd() . "/static/a/Blizzard-CIDRs.txt");
-    $CIDRs = preg_replace("/^#.*?\n/sm", "", $CIDRs);
-    $CIDRs = self::stripLinesWith($CIDRs, "\n");
-    $CIDRs = explode("\n", $CIDRs);
-    return IP::checkCIDRArray($IP, $CIDRs);
-  }
 
   public static function curlRequest($url, $post_content = null,
       $content_type = "", $connect_timeout = 5, $max_redirects = 10) {

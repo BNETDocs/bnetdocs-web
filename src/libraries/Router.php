@@ -35,6 +35,7 @@ use \BNETDocs\Controllers\User\Logout as UserLogoutController;
 use \BNETDocs\Controllers\User\Register as UserRegisterController;
 use \BNETDocs\Controllers\User\ResetPassword as UserResetPasswordController;
 use \BNETDocs\Controllers\User\View as UserViewController;
+use \BNETDocs\Libraries\BlizzardChecker;
 use \BNETDocs\Libraries\Common;
 use \BNETDocs\Libraries\Exceptions\ControllerNotFoundException;
 use \BNETDocs\Libraries\UserSession;
@@ -191,7 +192,7 @@ class Router {
       $fullpath ? $fullpath : "main()"
     );
 
-    if (Common::checkIfBlizzard()) {
+    if (BlizzardChecker::checkIfBlizzard()) {
       $user_session = UserSession::load($this);
       Logger::logMetric("is_blizzard_visit", true);
       Logger::logEvent(
