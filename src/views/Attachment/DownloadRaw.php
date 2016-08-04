@@ -22,6 +22,7 @@ class DownloadRaw extends View {
     $model->extra_headers = [
       "Content-Disposition" => "attachment;filename=\""
         . $model->attachment->getFilename() . "\"",
+      "Content-Length" => (string) strlen($model->attachment->getContent()),
       "Last-Modified" => $model->attachment->getCreatedDateTime()->format(
         DateTime::RFC1123
       )
