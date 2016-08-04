@@ -6,6 +6,7 @@ use \BNETDocs\Libraries\Model;
 
 class View extends Model {
 
+  public $acl_allowed;
   public $attachments;
   public $comments;
   public $document;
@@ -14,6 +15,7 @@ class View extends Model {
 
   public function __construct() {
     parent::__construct();
+    $this->acl_allowed  = null;
     $this->attachments  = null;
     $this->comments     = null;
     $this->document     = null;
