@@ -91,7 +91,7 @@ OIFS=$IFS; IFS=,
 for host in ${TARGET_HOST}; do
     rsync -avzc --delete --delete-excluded --delete-after --progress \
         --exclude-from="./etc/deploy-ignore.txt" \
-        --chown=nginx:www-data --rsync-path="sudo rsync" \
+        --chown=jenkins:www-data --rsync-path="sudo rsync" \
         "./" ${TARGET_HOST}:"/opt/carlbennett/nginx-www/${PROJECT_NAME}"
 done
 IFS=$OIFS
