@@ -90,4 +90,5 @@ Try accessing this endpoint: [local.bnetdocs.org](https://local.bnetdocs.org)
    environment is not your `localhost`.
 
 ## Contributing
-Please read [CONTRIBUTING.md](https://github.com/BNETDocs/bnetdocs-web/blob/phoenix/CONTRIBUTING.md)
+Please read the [CONTRIBUTING.md]
+(https://github.com/BNETDocs/bnetdocs-web/blob/phoenix/CONTRIBUTING.md) file.
