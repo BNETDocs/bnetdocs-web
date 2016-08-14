@@ -22,6 +22,6 @@
 ._*
 /etc/config.phoenix.json
 /etc/config.redux.json
+/lib/
 /tmp/
-/vendor/
 Thumbs.db

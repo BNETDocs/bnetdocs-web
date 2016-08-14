@@ -12,11 +12,11 @@ use \CarlBennett\MVC\Libraries\GlobalErrorHandler;
 
 function main() {
 
-  if (!file_exists(__DIR__ . "/../vendor/autoload.php")) {
+  if (!file_exists(__DIR__ . "/../lib/autoload.php")) {
     http_response_code(500);
     exit("Server misconfigured. Please run `composer install`.");
   }
-  require(__DIR__ . "/../vendor/autoload.php");
+  require(__DIR__ . "/../lib/autoload.php");
 
   GlobalErrorHandler::createOverrides();
 

@@ -26,6 +26,9 @@
             "email": "carlbennett@users.noreply.github.com"
         }
     ],
+    "config": {
+      "vendor-dir": "lib"
+    },
     "autoload": {
         "psr-4": {
             "BNETDocs\\Controllers\\": "src/controllers",

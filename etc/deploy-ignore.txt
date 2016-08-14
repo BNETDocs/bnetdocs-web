@@ -34,10 +34,10 @@
 /etc/database.sample.sql
 /etc/deploy-ignore.txt
 /etc/deploy-targets.csv
+/lib/carlbennett/php-mvc/README.md
+/lib/carlbennett/php-mvc/libraries/Exceptions/Reference.md
 /src/libraries/Exceptions/Reference.md
 /tmp/
-/vendor/carlbennett/php-mvc/README.md
-/vendor/carlbennett/php-mvc/libraries/Exceptions/Reference.md
 Thumbs.db
 composer.json
 composer.lock
