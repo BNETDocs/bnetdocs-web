@@ -5,6 +5,7 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Libraries\HTTPHeader;
 use \BNETDocs\Libraries\Pair;
 use \SplObjectStorage;
+use \UnexpectedValueException;
 
 abstract class EmailMessage {
 
