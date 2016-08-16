@@ -6,7 +6,7 @@ use \BNETDocs\Libraries\HTTPHeader;
 use \BNETDocs\Libraries\Pair;
 use \SplObjectStorage;
 
-class EmailMessage {
+abstract class EmailMessage {
 
   protected $body;
   protected $headers;
@@ -20,11 +20,7 @@ class EmailMessage {
     $this->headers->attach(new HTTPHeader($name, $value));
   }
 
-  public function build() {
-    // This should be overridden by subclasses. It is only present here
-    // because it is called upon elsewhere in the code.
-    return false;
-  }
+  public abstract function build();
 
   public function getBody() {
     return $this->body;
@@ -40,6 +36,12 @@ class EmailMessage {
     return $objs;
   }
 
+  public function getHeaderFirst($name) {
+    $value = $this->getHeader($name);
+    $value->rewind(); // Set cursor to first item
+    return ($value->valid() ? $value->current()->getValue() : null);
+  }
+
   public function getHeaders() {
     $buffer = "";
     foreach ($this->headers as $obj) {
@@ -49,14 +51,16 @@ class EmailMessage {
   }
 
   protected function setMultiPartBody(array &$bodies) {
-    $boundary = "bnetdocs" . (mt_rand() * mt_rand());
+    $boundary = "bnetdocs" . hash("sha1", mt_rand());
     $this->setHeader(
       "Content-Type",
       "multipart/alternative;boundary=" . $boundary
     );
     $body = "\n";
     foreach ($bodies as $part) {
-      // $part should be a Pair class.
+      if (!$part instanceof Pair) {
+        throw new UnexpectedValueException();
+      }
       $body .= "--" . $boundary . "\n";
       $body .= "Content-Type: " . $part->getKey() . "\n\n";
       $body .= $part->getValue() . "\n";
