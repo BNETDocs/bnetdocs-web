@@ -20,8 +20,4 @@
 .Spotlight-V100
 .Trashes
 ._*
-/etc/config.phoenix.json
-/etc/config.redux.json
-/lib/
-/tmp/
 Thumbs.db
