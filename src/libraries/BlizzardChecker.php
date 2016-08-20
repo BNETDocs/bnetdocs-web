@@ -10,7 +10,7 @@ class BlizzardChecker {
   /**
    * Block instantiation of this object.
    */
-  private function __contruct() {}
+  private function __construct() {}
 
   public static function checkIfBlizzard() {
     $IP    = getenv("REMOTE_ADDR");
