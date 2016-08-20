@@ -11,7 +11,7 @@ class VersionInfo {
   /**
    * Block instantiation of this object.
    */
-  private function __contruct() {}
+  private function __construct() {}
 
   public static function get() {
     $versions           = new StdClass();
