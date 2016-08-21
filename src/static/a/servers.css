@@ -20,19 +20,26 @@
     display: block;
   }
 }
+table.serverview tr th:first-child {
+  width: 100px;
+}
 table.servers th.status {
   width: 50px;
 }
-table.servers td.address {
+table.servers td.address,
+table.serverview td.address {
   font-family: source code pro, courier new, monospace;
   font-size: smaller;
 }
-table.servers td.offline {
+table.servers td.offline,
+table.serverview span.offline {
   color: #d74747;
 }
-table.servers td.online {
+table.servers td.online,
+table.serverview span.online {
   color: #47d747;
 }
-table.servers td.disabled {
+table.servers td.disabled,
+table.serverview span.disabled {
   color: #d74747;
 }

@@ -27,6 +27,7 @@ use \BNETDocs\Controllers\Packet\Search as PacketSearchController;
 use \BNETDocs\Controllers\Packet\View as PacketViewController;
 use \BNETDocs\Controllers\PageNotFound as PageNotFoundController;
 use \BNETDocs\Controllers\Redirect as RedirectController;
+use \BNETDocs\Controllers\Server\View as ServerViewController;
 use \BNETDocs\Controllers\Servers as ServersController;
 use \BNETDocs\Controllers\Status as StatusController;
 use \BNETDocs\Controllers\User\ChangePassword as UserChangePasswordController;
@@ -404,9 +405,18 @@ class Router {
                 throw new ControllerNotFoundException($path . "/" . $subpath);
             }
           break;
-          case "servers": case "servers.htm": case "servers.html":
-          case "servers.json":
-            $controller = new ServersController();
+          case "server": case "server.htm": case "server.html":
+          case "server.json": case "servers": case "servers.htm":
+          case "servers.html": case "servers.json":
+            if (is_numeric($subpath)) {
+              $controller = new ServerViewController($subpath);
+            } else if (empty($subpath)) {
+              $controller = new ServersController();
+            } else {
+              throw new ControllerNotFoundException(
+                $path . "/" . $subpath
+              );
+            }
           break;
           case "status": case "status.json": case "status.txt":
             $controller = new StatusController();

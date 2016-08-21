@@ -128,6 +128,13 @@ class Server implements JsonSerializable {
     }
   }
 
+  public function getName() {
+    return (empty($this->label) ?
+      $this->address . ":" . $this->port :
+      $this->label
+    );
+  }
+
   public function getId() {
     return $this->id;
   }

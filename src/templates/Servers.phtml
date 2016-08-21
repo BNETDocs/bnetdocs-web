@@ -53,7 +53,7 @@ require("./header.inc.phtml");
 ?>
               <tr>
                 <td class="status center <?php echo $status_subclass; ?>"><?php echo $status; ?></td>
-                <td class="label"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
+                <td class="label"><?php echo ($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
                 <td class="address" onclick="bnetdocs.fSelectText(this);"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
                 <td class="details center"><a href="<?php echo $server->getURI(); ?>">View Details</a></td>
               </tr>
