@@ -148,6 +148,16 @@ class Server implements JsonSerializable {
     return $this->type_id;
   }
 
+  public function getURI() {
+    $value = $this->getLabel();
+    if (empty($value)) {
+      $value = $this->getAddress() . ":" . $this->getPort();
+    }
+    return Common::relativeUrlToAbsolute(
+      "/server/" . $this->getId() . "/" . Common::sanitizeForUrl($value, true)
+    );
+  }
+
   public function getUpdatedDateTime() {
     if (is_null($this->updated_datetime)) {
       return $this->updated_datetime;
