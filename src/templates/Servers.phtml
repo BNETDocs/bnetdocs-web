@@ -33,7 +33,7 @@ require("./header.inc.phtml");
                 <th class="status">Status</th>
                 <th class="label">Label</th>
                 <th class="address">Address</th>
-                <th></th>
+                <th class="details"></th>
               </tr>
             </thead>
             <tbody>
@@ -55,7 +55,7 @@ require("./header.inc.phtml");
                 <td class="status center <?php echo $status_subclass; ?>"><?php echo $status; ?></td>
                 <td class="label"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
                 <td class="address" onclick="bnetdocs.fSelectText(this);"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
-                <td class="center"><a href="<?php echo Common::relativeUrlToAbsolute("/server/" . $server->getId()); ?>">View Details</a></td>
+                <td class="details center"><a href="<?php echo Common::relativeUrlToAbsolute("/server/" . $server->getId()); ?>">View Details</a></td>
               </tr>
 <?php   } ?>
 <?php } ?>

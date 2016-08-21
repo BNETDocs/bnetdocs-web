@@ -6,6 +6,19 @@
   table.servers {
     font-size: 12pt;
   }
+  table.servers th.address,
+  table.servers th.details {
+    display: none;
+  }
+  table.servers th.label {
+    border-right: 0px;
+  }
+  table.servers td.label,
+  table.servers td.address,
+  table.servers td.details {
+    border-right: 0px;
+    display: block;
+  }
 }
 table.servers th.status {
   width: 50px;
