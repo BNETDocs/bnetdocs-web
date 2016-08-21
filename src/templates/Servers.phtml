@@ -26,14 +26,21 @@ require("./header.inc.phtml");
           <p>Below is a list of servers that our automated system checks the status of. The status represents if the port is opened or closed, not if the service is functioning correctly.</p>
           <p>We have a total of <strong><?php echo number_format(count($this->context->servers)); ?> servers</strong> that we monitor. <a href="<?php echo Common::relativeUrlToAbsolute("/servers.json"); ?>">Click here</a> to see this list in JSON format.</p>
         </section>
-      </article>
-      <article>
+        <section>
+          <table class="servers">
+            <thead>
+              <tr>
+                <th class="status">Status</th>
+                <th class="label">Label</th>
+                <th class="address">Address</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
 <?php foreach ($servers_by_type as $type_id => $servers) {
         $server_type = new ServerType($type_id);
 ?>
-        <header><?php echo $server_type->getLabel(); ?></header>
-        <section>
-          <table class="servers"><tbody>
+              <tr><th colspan="4"><?php echo $server_type->getLabel(); ?></th></tr>
 <?php   foreach ($servers as $server) {
           $status_bitmask = $server->getStatusBitmask();
           if ($status_bitmask & Server::STATUS_ONLINE) {
@@ -44,15 +51,16 @@ require("./header.inc.phtml");
             $status_subclass = "offline"; $status = "Offline";
           }
 ?>
-            <tr>
-              <td class="left status <?php echo $status_subclass; ?>"><?php echo $status; ?></td>
-              <td class="left label"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
-              <td class="left address" onclick="bnetdocs.fSelectText(this);"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
-              <td class="left updated">last updated <time datetime="<?php echo $server->getUpdatedDateTime()->format("c"); ?>"><?php echo Common::relativeDateTimeString($server->getUpdatedDateTime()); ?></time></td>
-            </tr>
+              <tr>
+                <td class="status center <?php echo $status_subclass; ?>"><?php echo $status; ?></td>
+                <td class="label"><?php echo ($server->getLabel() != $server->getAddress() && !is_null($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
+                <td class="address" onclick="bnetdocs.fSelectText(this);"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
+                <td class="center"><a href="<?php echo Common::relativeUrlToAbsolute("/server/" . $server->getId()); ?>">View Details</a></td>
+              </tr>
 <?php   } ?>
-          </tbody></table>
-        </section>
 <?php } ?>
+            </tbody>
+          </table>
+        </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
