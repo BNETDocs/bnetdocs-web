@@ -10,6 +10,7 @@ use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\ServerType;
+use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Server\View as ServerViewModel;
 use \BNETDocs\Views\Server\ViewHtml as ServerViewHtmlView;
 use \CarlBennett\MVC\Libraries\Common;
@@ -34,6 +35,7 @@ class View extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new ServerViewModel();
+    $model->user_session = UserSession::load($router);
 
     $model->server_id = $this->server_id;
 
