@@ -2,8 +2,8 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\HTTPHeader;
-use \BNETDocs\Libraries\Pair;
+use \CarlBennett\MVC\Libraries\HTTPHeader;
+use \CarlBennett\MVC\Libraries\Pair;
 use \SplObjectStorage;
 use \UnexpectedValueException;
 

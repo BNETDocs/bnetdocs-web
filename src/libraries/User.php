@@ -2,13 +2,13 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Credits;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\Gravatar;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\Gravatar;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;

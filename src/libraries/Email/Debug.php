@@ -3,9 +3,9 @@
 namespace BNETDocs\Libraries\Email;
 
 use \BNETDocs\Libraries\EmailMessage;
-use \BNETDocs\Libraries\Pair;
-use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\User;
+use \CarlBennett\MVC\Libraries\Pair;
+use \CarlBennett\MVC\Libraries\Template;
 use \StdClass;
 
 class Debug extends EmailMessage {

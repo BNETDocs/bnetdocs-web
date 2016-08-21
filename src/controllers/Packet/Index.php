@@ -2,12 +2,9 @@
 
 namespace BNETDocs\Controllers\Packet;
 
-use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\Pair;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\Index as PacketIndexModel;
@@ -17,6 +14,9 @@ use \BNETDocs\Views\Packet\IndexJSON as PacketIndexJSONView;
 use \BNETDocs\Views\Packet\IndexJava as PacketIndexJavaView;
 use \BNETDocs\Views\Packet\IndexPHP as PacketIndexPHPView;
 use \BNETDocs\Views\Packet\IndexVB as PacketIndexVBView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Gravatar;
+use \CarlBennett\MVC\Libraries\Pair;
 use \DateTime;
 use \DateTimeZone;
 

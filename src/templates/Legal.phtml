@@ -3,10 +3,13 @@
 namespace BNETDocs\Templates;
 
 use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Pair;
+use \CarlBennett\MVC\Libraries\Pair;
 
 $title       = "Legal Policies";
 $description = "BNETDocs Disclaimer, Terms of Service, Privacy Policy, & License Agreement";
+
+$this->opengraph->attach(new Pair("url", "/legal"));
+$this->opengraph->attach(new Pair("type", "article"));
 
 require("./header.inc.phtml");
 ?>

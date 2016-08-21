@@ -2,16 +2,16 @@
 
 namespace BNETDocs\Controllers\Document;
 
-use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use \BNETDocs\Libraries\Gravatar;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Index as DocumentIndexModel;
 use \BNETDocs\Views\Document\IndexHtml as DocumentIndexHtmlView;
 use \BNETDocs\Views\Document\IndexJSON as DocumentIndexJSONView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Gravatar;
 use \DateTime;
 use \DateTimeZone;
 
@@ -29,7 +29,7 @@ class Index extends Controller {
         throw new UnspecifiedViewException();
     }
     $model = new DocumentIndexModel();
-    
+
     $model->documents     = Document::getAllDocuments();
     $model->user_session  = UserSession::load($router);
 
@@ -98,7 +98,7 @@ class Index extends Controller {
     $router->setResponseContent(ob_get_contents());
     ob_end_clean();
   }
-  
+
   protected static function renderDateTime($obj) {
     if (!$obj instanceof DateTime) return $obj;
     return $obj->format("r");

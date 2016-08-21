@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "carlbennett/php-mvc",
-            "version": "2.0.9",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carlbennett/php-mvc.git",
-                "reference": "8df79897b4647d524cabc08ea8dd84bc0182f041"
+                "reference": "8b7dd8251c732ef5b0cdb55a95571676b58cbe47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/8df79897b4647d524cabc08ea8dd84bc0182f041",
-                "reference": "8df79897b4647d524cabc08ea8dd84bc0182f041",
+                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/8b7dd8251c732ef5b0cdb55a95571676b58cbe47",
+                "reference": "8b7dd8251c732ef5b0cdb55a95571676b58cbe47",
                 "shasum": ""
             },
             "require": {
@@ -64,10 +64,10 @@
                 "system"
             ],
             "support": {
-                "source": "https://github.com/carlbennett/php-mvc/tree/2.0.9",
+                "source": "https://github.com/carlbennett/php-mvc/tree/2.1.0",
                 "issues": "https://github.com/carlbennett/php-mvc/issues"
             },
-            "time": "2016-08-20 03:51:49"
+            "time": "2016-08-21 11:29:15"
         }
     ],
     "packages-dev": [],
