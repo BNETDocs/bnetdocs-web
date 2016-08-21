@@ -51,9 +51,6 @@ require("./header.inc.phtml");
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
         <header>Server Status</header>
         <section>
-          <?php require("./NYI.inc.phtml"); ?>
-        </section>
-        <section>
           <table class="serverview"><tbody>
             <tr><th>Label</th><td><?php echo filter_var($object->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></td></tr>
             <tr><th>Address</th><td class="address" onclick="bnetdocs.fSelectText(this);"><?php echo filter_var($object->getAddress() . ":" . $object->getPort(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></td></tr>
@@ -61,6 +58,12 @@ require("./header.inc.phtml");
             <tr><th>Type</th><td><?php echo filter_var($object_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></td></tr>
             <tr><th>Current Status:</th><td><?php echo $object_status; ?></td></tr>
           </tbody></table>
+        </section>
+      </article>
+      <article>
+        <header>History</header>
+        <section>
+          <?php require("./NYI.inc.phtml"); ?>
         </section>
 <?php } else { ?>
         <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></header>
