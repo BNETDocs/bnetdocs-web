@@ -15,7 +15,7 @@ class ServerMetric {
 
   const CACHE_UPTIME_TTL = 300;
 
-  public static function &getLatestResponseTime($server_id) {
+  public static function getLatestResponseTime($server_id) {
     $cache_key = "bnetdocs-servermetric-lastms-" . (int) $server_id;
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) return $cache_val;
@@ -40,7 +40,7 @@ class ServerMetric {
     return $obj->response_time;
   }
 
-  public static function &getUptime($server_id) {
+  public static function getUptime($server_id) {
     $cache_key = "bnetdocs-servermetric-uptime-" . (int) $server_id;
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) return unserialize($cache_val);
