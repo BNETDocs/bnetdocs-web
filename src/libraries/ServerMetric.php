@@ -13,10 +13,11 @@ use \PDOException;
 
 class ServerMetric {
 
-  const CACHE_UPTIME_TTL = 300;
+  const CACHE_RESPONSE_TIME_TTL = 300;
+  const CACHE_UPTIME_TTL        = 300;
 
   public static function getLatestResponseTime($server_id) {
-    $cache_key = "bnetdocs-servermetric-lastms-" . (int) $server_id;
+    $cache_key = "bnetdocs-servermetric-responsetime-" . (int) $server_id;
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) return $cache_val;
     if (!isset(Common::$database)) {
@@ -35,7 +36,7 @@ class ServerMetric {
     Common::$cache->set(
       $cache_key,
       $obj->response_time,
-      self::CACHE_UPTIME_TTL
+      self::CACHE_RESPONSE_TIME_TTL
     );
     return $obj->response_time;
   }
