@@ -43,7 +43,7 @@ require("./header.inc.phtml");
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
         <header>User Profile</header>
         <section class="accountinfo">
-          <img class="avatar" src="<?php echo $object->getAvatarURI(75); ?>" />
+          <img class="avatar" src="<?php echo $object->getAvatarURI(80); ?>" />
           <strong><?php echo $safe_name; ?></strong><br />
 <?php if (!$this->getContext()->biography) { ?>
           <p class="biography"><em>(no biography information.)</em></p>

@@ -3,7 +3,7 @@
  */
 
 article > section.accountinfo {
-  min-height: 75px;
+  min-height: 80px;
 }
 article > section > img.avatar {
   background-color: rgba(0, 0, 0, 0.2);
@@ -12,7 +12,7 @@ article > section > img.avatar {
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
   float: left;
   margin: 0px 8px 8px 0px;
-  max-height: 75px;
+  max-height: 80px;
   max-width: 100px;
   padding: 0px;
   vertical-align: top;
