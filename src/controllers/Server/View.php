@@ -9,6 +9,7 @@ use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\Server;
+use \BNETDocs\Libraries\ServerMetric;
 use \BNETDocs\Libraries\ServerType;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Server\View as ServerViewModel;
@@ -46,6 +47,10 @@ class View extends Controller {
       $model->server = null;
     } catch (ServerTypeNotFoundException $e) {
       $model->server_type = null;
+    }
+
+    if ($model->server) {
+      $model->server_uptime = ServerMetric::getUptime($this->server_id);
     }
 
     ob_start();
