@@ -20,12 +20,12 @@ article > section > img.avatar {
 p.biography {
   font-size: 90%;
 }
-table.profiledata {
-  clear: left;
-  width: initial;
+section.profiledata {
+  text-align: center;
 }
-table.profiledata th {
-  width: 100px;
+section.profiledata span {
+  display: inline-block;
+  padding: 4px 6px;
 }
 table.stats td {
   text-align: center;

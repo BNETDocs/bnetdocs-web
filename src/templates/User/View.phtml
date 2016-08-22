@@ -50,35 +50,35 @@ require("./header.inc.phtml");
 <?php } else { ?>
           <p class="biography"><?php echo $safe_biography; ?></p>
 <?php } ?>
+        </section>
 <?php if ($this->getContext()->profiledata) { ?>
-          <table class="profiledata"><tbody>
+        <section class="profiledata">
 <?php if ($this->getContext()->github) { ?>
-            <tr><th class="right">GitHub:</th><td class="left"><a href="<?php echo $this->getContext()->github_uri; ?>"><?php echo htmlspecialchars($this->getContext()->github, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+          <span><strong>GitHub:</strong> <a href="<?php echo $this->getContext()->github_uri; ?>"><?php echo htmlspecialchars($this->getContext()->github, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->reddit) { ?>
-            <tr><th class="right">Reddit:</th><td class="left"><a href="<?php echo $this->getContext()->reddit_uri; ?>"><?php echo htmlspecialchars($this->getContext()->reddit, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+          <span><strong>Reddit:</strong> <a href="<?php echo $this->getContext()->reddit_uri; ?>"><?php echo htmlspecialchars($this->getContext()->reddit, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->steam_id) { ?>
-            <tr><th class="right">Steam:</th><td class="left"><a href="<?php echo $this->getContext()->steam_uri; ?>"><?php echo htmlspecialchars($this->getContext()->steam_id, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+          <span><strong>Steam:</strong> <a href="<?php echo $this->getContext()->steam_uri; ?>"><?php echo htmlspecialchars($this->getContext()->steam_id, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->facebook) { ?>
-            <tr><th class="right">Facebook:</th><td class="left"><a href="<?php echo $this->getContext()->facebook_uri; ?>"><?php echo htmlspecialchars($this->getContext()->facebook, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+          <span><strong>Facebook:</strong> <a href="<?php echo $this->getContext()->facebook_uri; ?>"><?php echo htmlspecialchars($this->getContext()->facebook, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->twitter) { ?>
-            <tr><th class="right">Twitter:</th><td class="left"><a href="<?php echo $this->getContext()->twitter_uri; ?>"><?php echo htmlspecialchars($this->getContext()->twitter, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+          <span><strong>Twitter:</strong> <a href="<?php echo $this->getContext()->twitter_uri; ?>"><?php echo htmlspecialchars($this->getContext()->twitter, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->instagram) { ?>
-            <tr><th class="right">Instagram:</th><td class="left"><a href="<?php echo $this->getContext()->instagram_uri; ?>"><?php echo htmlspecialchars($this->getContext()->instagram, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+          <span><strong>Instagram:</strong> <a href="<?php echo $this->getContext()->instagram_uri; ?>"><?php echo htmlspecialchars($this->getContext()->instagram, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->skype) { ?>
-            <tr><th class="right">Skype:</th><td class="left"><a href="<?php echo $this->getContext()->skype_uri; ?>"><?php echo htmlspecialchars($this->getContext()->skype, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+          <span><strong>Skype:</strong> <a href="<?php echo $this->getContext()->skype_uri; ?>"><?php echo htmlspecialchars($this->getContext()->skype, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->website) { ?>
-            <tr><th class="right">Website:</th><td class="left"><a href="<?php echo $this->getContext()->website_uri; ?>"><?php echo htmlspecialchars($this->getContext()->website, ENT_HTML5, "UTF-8"); ?></a></td></tr>
-<?php } ?>
-          </tbody></table>
+          <span><strong>Website:</strong> <a href="<?php echo $this->getContext()->website_uri; ?>"><?php echo htmlspecialchars($this->getContext()->website, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
         </section>
+<?php } ?>
         <header>User Statistics</header>
         <section>
           <table class="stats"><tbody><tr>
