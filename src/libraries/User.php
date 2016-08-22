@@ -52,6 +52,7 @@ class User implements JsonSerializable {
   protected $options_bitmask;
   protected $password_hash;
   protected $password_salt;
+  protected $timezone;
   protected $username;
   protected $verified_datetime;
 
@@ -64,6 +65,7 @@ class User implements JsonSerializable {
       $this->options_bitmask   = null;
       $this->password_hash     = null;
       $this->password_salt     = null;
+      $this->timezone          = null;
       $this->username          = null;
       $this->verified_datetime = null;
       $this->refresh();
@@ -76,6 +78,7 @@ class User implements JsonSerializable {
       $this->options_bitmask   = $data->options_bitmask;
       $this->password_hash     = $data->password_hash;
       $this->password_salt     = $data->password_salt;
+      $this->timezone          = $data->timezone;
       $this->username          = $data->username;
       $this->verified_datetime = $data->verified_datetime;
     } else {
@@ -146,11 +149,11 @@ class User implements JsonSerializable {
         INSERT INTO `users` (
           `id`, `email`, `username`, `display_name`, `created_datetime`,
           `verified_datetime`, `password_hash`, `password_salt`,
-          `options_bitmask`
+          `options_bitmask`, `timezone`
         ) VALUES (
           NULL, :email, :username, :display_name, NOW(),
           NULL, :password_hash, :password_salt,
-          :options_bitmask
+          :options_bitmask, NULL
         );
       ");
       $stmt->bindParam(":email", $email, PDO::PARAM_STR);
@@ -286,6 +289,10 @@ class User implements JsonSerializable {
     );
   }
 
+  public function getTimezone() {
+    return $this->timezone;
+  }
+
   public function getUsername() {
     return $this->username;
   }
@@ -344,6 +351,7 @@ class User implements JsonSerializable {
       "created_datetime"  => $created_datetime,
       "id"                => $this->getId(),
       "name"              => $this->getName(),
+      "timezone"          => $this->getTimezone(),
       "verified_datetime" => $verified_datetime,
     ];
   }
@@ -364,6 +372,9 @@ class User implements JsonSerializable {
     if (!is_null($data->password_salt))
       $data->password_salt = (string) $data->password_salt;
 
+    if (!is_null($data->timezone))
+      $data->timezone = (string) $data->timezone;
+
     if (!is_null($data->verified_datetime))
       $data->verified_datetime = (string) $data->verified_datetime;
 
@@ -381,6 +392,7 @@ class User implements JsonSerializable {
       $this->options_bitmask   = $cache_val->options_bitmask;
       $this->password_hash     = $cache_val->password_hash;
       $this->password_salt     = $cache_val->password_salt;
+      $this->timezone          = $cache_val->timezone;
       $this->username          = $cache_val->username;
       $this->verified_datetime = $cache_val->verified_datetime;
       return true;
@@ -398,6 +410,7 @@ class User implements JsonSerializable {
           `options_bitmask`,
           `password_hash`,
           `password_salt`,
+          `timezone`,
           `username`,
           `verified_datetime`
         FROM `users`
@@ -419,6 +432,7 @@ class User implements JsonSerializable {
       $this->options_bitmask   = $row->options_bitmask;
       $this->password_hash     = $row->password_hash;
       $this->password_salt     = $row->password_salt;
+      $this->timezone          = $row->timezone;
       $this->username          = $row->username;
       $this->verified_datetime = $row->verified_datetime;
       Common::$cache->set($cache_key, serialize($row), 300);
