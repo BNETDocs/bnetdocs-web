@@ -64,8 +64,8 @@ require("./header.inc.phtml");
             <tr><th>Address</th><td class="address" onclick="bnetdocs.fSelectText(this);"><?php echo filter_var($object->getAddress() . ":" . $object->getPort(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></td></tr>
             <tr><th>Owner</th><td><?php if ($object_user) { ?><a href="<?php echo $object_user_url; ?>"><img class="avatar" src="<?php echo $object_user_avatar; ?>"/> <?php echo filter_var($object_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a><?php } else { echo "Anonymous"; } ?></td></tr>
             <tr><th>Type</th><td><?php echo filter_var($object_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></td></tr>
-            <tr><th>Current Status:</th><td><?php echo $object_status; ?> (<?php echo $object_response_time; ?>)</td></tr>
-            <tr><th>Uptime:</th><td><?php echo $object_uptime; ?></td></tr>
+            <tr><th>Current Status</th><td><?php echo $object_status; ?> (<?php echo $object_response_time; ?>)</td></tr>
+            <tr><th>Uptime</th><td><?php echo $object_uptime; ?></td></tr>
           </tbody></table>
         </section>
       </article>
