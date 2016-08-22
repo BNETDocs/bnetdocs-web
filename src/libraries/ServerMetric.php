@@ -15,10 +15,35 @@ class ServerMetric {
 
   const CACHE_UPTIME_TTL = 300;
 
+  public static function &getLatestResponseTime($server_id) {
+    $cache_key = "bnetdocs-servermetric-lastms-" . (int) $server_id;
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false) return $cache_val;
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $stmt = Common::$database->prepare("
+      SELECT `response_time`
+      FROM `server_metrics`
+      WHERE `server_id` = :server_id
+      ORDER BY `metric_datetime` DESC LIMIT 1;
+    ");
+    $stmt->bindParam(":server_id", $server_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $obj = $stmt->fetch(PDO::FETCH_OBJ);
+    $stmt->closeCursor();
+    Common::$cache->set(
+      $cache_key,
+      $obj->response_time,
+      self::CACHE_UPTIME_TTL
+    );
+    return $obj->response_time;
+  }
+
   public static function &getUptime($server_id) {
     $cache_key = "bnetdocs-servermetric-uptime-" . (int) $server_id;
     $cache_val = Common::$cache->get($cache_key);
-    //if ($cache_val !== false) return unserialize($cache_val);
+    if ($cache_val !== false) return unserialize($cache_val);
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }

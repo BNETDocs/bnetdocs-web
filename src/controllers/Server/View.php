@@ -50,7 +50,12 @@ class View extends Controller {
     }
 
     if ($model->server) {
-      $model->server_uptime = ServerMetric::getUptime($this->server_id);
+      $model->server_uptime = ServerMetric::getUptime(
+        $this->server_id
+      );
+      $model->server_response_time = ServerMetric::getLatestResponseTime(
+        $this->server_id
+      );
     }
 
     ob_start();
