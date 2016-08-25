@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "cc382b32084bea743d5b8b95b14f2692",
-    "content-hash": "092ad7d2b18e3df0db85fcca8bfb604d",
+    "hash": "697dd628ec4bafcae35a24eed5fc24a3",
+    "content-hash": "1fdd3319df32eaa77dfeb509dcb36674",
     "packages": [
         {
             "name": "carlbennett/php-mvc",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carlbennett/php-mvc.git",
-                "reference": "3216d5f2ee681b4712ff828070d36042dae4e616"
+                "reference": "d867a436be1e304ded9a0d09fd6d034358894b89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/3216d5f2ee681b4712ff828070d36042dae4e616",
-                "reference": "3216d5f2ee681b4712ff828070d36042dae4e616",
+                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/d867a436be1e304ded9a0d09fd6d034358894b89",
+                "reference": "d867a436be1e304ded9a0d09fd6d034358894b89",
                 "shasum": ""
             },
             "require": {
@@ -39,6 +39,7 @@
                     "CarlBennett\\MVC\\Libraries\\": "src/libraries"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "AGPLv3"
             ],
@@ -63,11 +64,7 @@
                 "restful",
                 "system"
             ],
-            "support": {
-                "source": "https://github.com/carlbennett/php-mvc/tree/2.1.1",
-                "issues": "https://github.com/carlbennett/php-mvc/issues"
-            },
-            "time": "2016-08-24 07:13:41"
+            "time": "2016-08-25 01:52:21"
         }
     ],
     "packages-dev": [],

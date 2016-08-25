@@ -50,11 +50,5 @@
         "ext-memcached": "*",
         "ext-pdo": "*",
         "php-64bit": ">=5.5.0"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/carlbennett/php-mvc"
-        }
-    ]
+    }
 }
