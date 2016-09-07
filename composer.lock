@@ -4,27 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "697dd628ec4bafcae35a24eed5fc24a3",
+    "hash": "f724636c462e6854db5b1e1330ba5986",
     "content-hash": "1fdd3319df32eaa77dfeb509dcb36674",
     "packages": [
         {
             "name": "carlbennett/php-mvc",
-            "version": "2.1.2",
+            "version": "2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carlbennett/php-mvc.git",
-                "reference": "d867a436be1e304ded9a0d09fd6d034358894b89"
+                "reference": "3906dc2cbdd384915107c6960988da792c2d3087"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/d867a436be1e304ded9a0d09fd6d034358894b89",
-                "reference": "d867a436be1e304ded9a0d09fd6d034358894b89",
+                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/3906dc2cbdd384915107c6960988da792c2d3087",
+                "reference": "3906dc2cbdd384915107c6960988da792c2d3087",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
-                "ext-geoip": "*",
-                "ext-gmp": "*",
                 "ext-http": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
@@ -32,6 +30,10 @@
                 "ext-memcached": "*",
                 "ext-pdo": "*",
                 "php-64bit": ">=5.5.0"
+            },
+            "suggest": {
+                "ext-geoip": "*",
+                "ext-gmp": "*"
             },
             "type": "library",
             "autoload": {
@@ -41,7 +43,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "AGPLv3"
+                "AGPL-3.0"
             ],
             "authors": [
                 {
@@ -49,7 +51,7 @@
                     "email": "carl@carlbennett.me"
                 }
             ],
-            "description": "A web content management system (CMS) compatible for use as a frontend and backend.",
+            "description": "A PHP micro-framework for use as a frontend and/or backend",
             "homepage": "https://github.com/carlbennett/php-mvc",
             "keywords": [
                 "api",
@@ -64,7 +66,7 @@
                 "restful",
                 "system"
             ],
-            "time": "2016-08-25 01:52:21"
+            "time": "2016-08-25 03:03:24"
         }
     ],
     "packages-dev": [],
