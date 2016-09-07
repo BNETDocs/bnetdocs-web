@@ -4,6 +4,7 @@
 PROJECT_NAME="bnetdocs-web"
 VERSION="$(git symbolic-ref HEAD | sed -e 's/^refs\/heads\/*//g')"
 SOURCE_DIRECTORY="$(git rev-parse --show-toplevel)"
+TARGET_DIRECTORY="/opt/carlbennett/nginx-www/www.bnetdocs.org"
 TARGET_FILE="${SOURCE_DIRECTORY}/etc/deploy-targets.csv"
 TARGET_ENV=""
 SKIP_COMPOSER=0
@@ -92,7 +93,7 @@ for host in ${TARGET_HOST}; do
     rsync -avzc --delete --delete-excluded --delete-after --progress \
         --exclude-from="./etc/deploy-ignore.txt" \
         --chown=jenkins:www-data \
-        "./" ${TARGET_HOST}:"/opt/carlbennett/nginx-www/${PROJECT_NAME}"
+        "./" ${TARGET_HOST}:"${TARGET_DIRECTORY}"
 done
 IFS=$OIFS
 popd >/dev/null
