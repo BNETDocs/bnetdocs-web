@@ -21,6 +21,7 @@
 .Trashes
 ._*
 .git/
+.gitattributes
 .gitignore
 .gitkeep
 /.travis.yml
@@ -35,7 +36,7 @@
 /etc/deploy-ignore.txt
 /etc/deploy-targets.csv
 /lib/carlbennett/php-mvc/README.md
-/lib/carlbennett/php-mvc/libraries/Exceptions/Reference.md
+/lib/carlbennett/php-mvc/src/libraries/Exceptions/Reference.md
 /src/libraries/Exceptions/Reference.md
 /tmp/
 Thumbs.db
