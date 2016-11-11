@@ -146,7 +146,7 @@ class NewsPost {
           `user_id`
         FROM `news_posts`
         ORDER BY
-          IFNULL(`edited_datetime`, `created_datetime`)
+          `created_datetime`
           " . ($reverse ? "DESC" : "ASC") . ",
           `id`
           " . ($reverse ? "DESC" : "ASC") . "
