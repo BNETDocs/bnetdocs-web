@@ -2,10 +2,7 @@
 
 namespace BNETDocs\Controllers;
 
-use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\VersionInfo;
@@ -13,6 +10,10 @@ use \BNETDocs\Models\Status as StatusModel;
 use \BNETDocs\Views\StatusJSON as StatusJSONView;
 use \BNETDocs\Views\StatusPlain as StatusPlainView;
 use \CarlBennett\MVC\Libraries\Cache;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\GeoIP;
 use \DateTime;
 use \DateTimeZone;
 use \StdClass;
@@ -52,17 +53,9 @@ class Status extends Controller {
 
     $model->healthcheck    = $healthcheck;
     $model->remote_address = getenv("REMOTE_ADDR");
+    $model->remote_geoinfo = GeoIP::get($model->remote_address);
     $model->timestamp      = new DateTime("now", new DateTimeZone("UTC"));
     $model->version_info   = VersionInfo::$version;
-
-    // geoip_record_by_name() triggers E_NOTICE if the IP cannot be found in
-    // the local GeoIP database, and it also returns false. Since we don't give
-    // two shits if it can't find the IP, especially since it returns false
-    // instead of an array, we mute E_NOTICE temporarily below.
-
-    $er = error_reporting(error_reporting() & ~E_NOTICE); // Disable E_NOTICE
-    $model->remote_geoinfo = geoip_record_by_name($model->remote_address);
-    error_reporting($er); // Re-enable E_NOTICE if it was previously enabled
 
     foreach ($healthcheck as $key => $val) {
       if (is_bool($val) && !$val) return false;
