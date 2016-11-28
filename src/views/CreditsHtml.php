@@ -3,7 +3,6 @@
 namespace BNETDocs\Views;
 
 use \BNETDocs\Models\Credits as CreditsModel;
-use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\Template;

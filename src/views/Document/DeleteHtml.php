@@ -2,12 +2,11 @@
 
 namespace BNETDocs\Views\Document;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
-use \BNETDocs\Libraries\Model;
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Libraries\View;
 use \BNETDocs\Models\Document\Delete as DocumentDeleteModel;
+use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
+use \CarlBennett\MVC\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Template;
+use \CarlBennett\MVC\Libraries\View;
 
 class DeleteHtml extends View {
 
