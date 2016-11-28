@@ -93,6 +93,12 @@ function main() {
     $router->addRoute( // URL: /news
       "#^/news/?$#", "News", "NewsHtml"
     );
+    $router->addRoute( // URL: /news/:id.txt
+      "#^/news/(\d+)\.txt#", "News\\View", "News\\ViewPlain"
+    );
+    $router->addRoute( // URL: /news/:id
+      "#^/news/(\d+)/?#", "News\\View", "News\\ViewHtml"
+    );
     $router->addRoute( // URL: /news.rss
       "#^/news\.rss$#", "News", "NewsRSS"
     );
@@ -104,6 +110,18 @@ function main() {
     );
     $router->addRoute( // URL: /servers.json
       "#^/servers\.json$#", "Servers", "ServersJSON"
+    );
+    $router->addRoute( // URL: /status
+      "#^/status/?$#", "RedirectSoft", "RedirectSoftHtml", "/status.json"
+    );
+    $router->addRoute( // URL: /status.json
+      "#^/status\.json/?$#", "Status", "StatusJSON"
+    );
+    $router->addRoute( // URL: /status.txt
+      "#^/status\.txt/?$#", "Status", "StatusPlain"
+    );
+    $router->addRoute( // URL: /user/:id
+      "#^/user/(\d+)/?#", "User\\View", "User\\ViewHtml"
     );
     $router->addRoute( // URL: /user/login
       "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"

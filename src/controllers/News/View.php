@@ -12,20 +12,14 @@ use \BNETDocs\Models\News\View as NewsViewModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
+use \CarlBennett\MVC\Libraries\View as ViewLib;
 
 class View extends Controller {
 
-  protected $news_post_id;
-
-  public function __construct($news_post_id) {
-    parent::__construct();
-    $this->news_post_id = $news_post_id;
-  }
-
-  public function &run(Router &$router, View &$view, array &$args) {
+  public function &run(Router &$router, ViewLib &$view, array &$args) {
 
     $model = new NewsViewModel();
+    $model->news_post_id = array_shift($args);
     $model->user_session = UserSession::load($router);
     $model->user         = (isset($model->user_session) ?
                             new User($model->user_session->user_id) :
@@ -53,9 +47,9 @@ class View extends Controller {
   }
 
   protected function getNewsPost(NewsViewModel &$model) {
-    $model->news_post_id = (int) $this->news_post_id;
+    $model->news_post_id = (int) $model->news_post_id;
     try {
-      $model->news_post = new NewsPost($this->news_post_id);
+      $model->news_post = new NewsPost($model->news_post_id);
     } catch (NewsPostNotFoundException $e) {
       $model->news_post = null;
     }

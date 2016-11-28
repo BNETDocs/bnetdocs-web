@@ -15,22 +15,16 @@ use \BNETDocs\Models\User\View as UserViewModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
+use \CarlBennett\MVC\Libraries\View as ViewLib;
 use \DateTime;
 use \DateTimeZone;
 
 class View extends Controller {
 
-  protected $user_id;
+  public function &run(Router &$router, ViewLib &$view, array &$args) {
 
-  public function __construct($user_id) {
-    parent::__construct();
-    $this->user_id = $user_id;
-  }
-
-  public function &run(Router &$router, View &$view, array &$args) {
-
-    $model = new UserViewModel();
+    $model               = new UserViewModel();
+    $model->user_id      = array_shift($args);
     $model->user_session = UserSession::load($router);
 
     $this->getUserInfo($model);
@@ -46,11 +40,10 @@ class View extends Controller {
   }
 
   protected function getUserInfo(UserViewModel &$model) {
-    $model->user_id = $this->user_id;
 
     // Try to get the user
     try {
-      $model->user = new UserLib($this->user_id);
+      $model->user = new UserLib($model->user_id);
     } catch (UserNotFoundException $e) {
       $model->user = null;
       return;
@@ -59,7 +52,7 @@ class View extends Controller {
     // Try to get their user profile
     try {
 
-      $model->user_profile  = new UserProfile($this->user_id);
+      $model->user_profile  = new UserProfile($model->user_id);
 
       $model->biography     = $model->user_profile->getBiography();
 
@@ -113,16 +106,16 @@ class View extends Controller {
 
     // Summary of contributions
     $model->sum_documents = Credits::getTotalDocumentsByUserId(
-      $this->user_id
+      $model->user_id
     );
     $model->sum_news_posts = Credits::getTotalNewsPostsByUserId(
-      $this->user_id
+      $model->user_id
     );
     $model->sum_packets = Credits::getTotalPacketsByUserId(
-      $this->user_id
+      $model->user_id
     );
     $model->sum_servers = Credits::getTotalServersByUserId(
-      $this->user_id
+      $model->user_id
     );
 
     // Total number of contributions
@@ -134,13 +127,13 @@ class View extends Controller {
 
     // References to the contributions
     $model->documents  = ($model->sum_documents  ?
-      Document::getDocumentsByUserId($this->user_id) : null
+      Document::getDocumentsByUserId($model->user_id) : null
     );
     $model->news_posts = ($model->sum_news_posts ?
-      NewsPost::getNewsPostsByUserId($this->user_id): null
+      NewsPost::getNewsPostsByUserId($model->user_id): null
     );
     $model->packets    = ($model->sum_packets    ?
-      Packet::getPacketsByUserId($this->user_id) : null
+      Packet::getPacketsByUserId($model->user_id) : null
     );
     $model->servers    = ($model->sum_servers    ? true : null);
 
@@ -206,6 +199,7 @@ class View extends Controller {
         --$i;
       }
     }
+
   }
 
 }

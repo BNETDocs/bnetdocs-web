@@ -2,11 +2,11 @@
 
 namespace BNETDocs\Views;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
-use \BNETDocs\Libraries\Model;
-use \BNETDocs\Libraries\View;
 use \BNETDocs\Models\Status as StatusModel;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
+use \CarlBennett\MVC\Libraries\Model;
+use \CarlBennett\MVC\Libraries\View;
 
 class StatusJSON extends View {
 
@@ -18,13 +18,7 @@ class StatusJSON extends View {
     if (!$model instanceof StatusModel) {
       throw new IncorrectModelException();
     }
-    echo json_encode([
-      "healthcheck"    => $model->healthcheck,
-      "remote_address" => $model->remote_address,
-      "remote_geoinfo" => $model->remote_geoinfo,
-      "timestamp"      => $model->timestamp->format("r"),
-      "version_info"   => $model->version_info,
-    ], Common::prettyJSONIfBrowser());
+    echo json_encode($model, Common::prettyJSONIfBrowser());
   }
 
 }
