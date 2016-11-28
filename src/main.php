@@ -84,20 +84,26 @@ function main() {
     $router->addRoute( // URL: /credits
       "#^/credits/?$#", "Credits", "CreditsHtml"
     );
-    $router->addRoute( // URL: /servers
-      "#^/servers/?$#", "Servers", "ServersHtml"
-    );
-    $router->addRoute( // URL: /servers.json
-      "#^/servers\.json$#", "Servers", "ServersJSON"
-    );
-    $router->addRoute( // URL: /server/:id
-      "#^/server/(\d+)/?#", "Server\\View", "Server\\ViewHtml"
-    );
     $router->addRoute( // URL: /legal
       "#^/legal/?$#", "Legal", "LegalHtml"
     );
     $router->addRoute( // URL: /legal.txt
       "#^/legal.txt?$#", "Legal", "LegalPlain"
+    );
+    $router->addRoute( // URL: /news
+      "#^/news/?$#", "News", "NewsHtml"
+    );
+    $router->addRoute( // URL: /news.rss
+      "#^/news\.rss$#", "News", "NewsRSS"
+    );
+    $router->addRoute( // URL: /server/:id
+      "#^/server/(\d+)/?#", "Server\\View", "Server\\ViewHtml"
+    );
+    $router->addRoute( // URL: /servers
+      "#^/servers/?$#", "Servers", "ServersHtml"
+    );
+    $router->addRoute( // URL: /servers.json
+      "#^/servers\.json$#", "Servers", "ServersJSON"
     );
     $router->addRoute( // URL: /user/login
       "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"
