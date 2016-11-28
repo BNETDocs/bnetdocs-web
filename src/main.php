@@ -68,7 +68,8 @@ function main() {
     $router->addRoute(
       "#.*#",
       "BNETDocs\\Controllers\\Maintenance",
-      "BNETDocs\\Views\\MaintenanceHtml"
+      "BNETDocs\\Views\\MaintenanceHtml",
+      Common::$config->bnetdocs->maintenance[1]
     );
   } else {
     // URL: /

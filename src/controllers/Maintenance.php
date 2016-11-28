@@ -12,6 +12,7 @@ class Maintenance extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
 
     $model = new MaintenanceModel();
+    $model->message = array_shift($args);
 
     $view->render($model);
 
