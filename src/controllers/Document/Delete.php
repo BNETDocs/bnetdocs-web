@@ -3,29 +3,21 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\CSRF;
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Delete as DocumentDeleteModel;
-use \BNETDocs\Views\Document\DeleteHtml as DocumentDeleteHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 use \InvalidArgumentException;
 
 class Delete extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new DocumentDeleteHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
 
     $data                = $router->getRequestQueryArray();
     $model               = new DocumentDeleteModel();
@@ -57,13 +49,14 @@ class Delete extends Controller {
       }
     }
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode(200);
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function tryDelete(Router &$router, DocumentDeleteModel &$model) {

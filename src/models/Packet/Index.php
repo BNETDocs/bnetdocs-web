@@ -2,17 +2,12 @@
 
 namespace BNETDocs\Models\Packet;
 
-use \BNETDocs\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Model;
 
 class Index extends Model {
 
+  public $packets;
+  public $sum_packets;
   public $user_session;
-
-  public function __construct() {
-    parent::__construct();
-    $this->packets      = null;
-    $this->sum_packets  = null;
-    $this->user_session = null;
-  }
 
 }

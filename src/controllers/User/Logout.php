@@ -3,40 +3,36 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\CSRF;
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\Logout as UserLogoutModel;
-use \BNETDocs\Views\User\LogoutHtml as UserLogoutHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 class Logout extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new UserLogoutHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
-    $model = new UserLogoutModel();
+  public function &run(Router &$router, View &$view, array &$args) {
+
+    $model               = new UserLogoutModel();
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->error        = null;
     $model->user_session = UserSession::load($router);
+
     if ($router->getRequestMethod() == "POST") {
       $this->tryLogout($router, $model);
     }
-    ob_start();
+
     $view->render($model);
-    $router->setResponseCode(200);
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = 200;
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function tryLogout(Router &$router, UserLogoutModel &$model) {

@@ -2,40 +2,32 @@
 
 namespace BNETDocs\Controllers;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Server as ServerLib;
 use \BNETDocs\Libraries\ServerType as ServerTypeLib;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Servers as ServersModel;
-use \BNETDocs\Views\ServersHtml as ServersHtmlView;
-use \BNETDocs\Views\ServersJSON as ServersJSONView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 class Servers extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new ServersHtmlView();
-      break;
-      case "json":
-        $view = new ServersJSONView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
+
     $model = new ServersModel();
     $model->user_session = UserSession::load($router);
+
     $this->getServers($model);
-    ob_start();
+
     $view->render($model);
-    $router->setResponseCode(200);
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = 200;
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function getServers(ServersModel &$model) {

@@ -2,35 +2,31 @@
 
 namespace BNETDocs\Controllers;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Credits as CreditsLib;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Credits as CreditsModel;
-use \BNETDocs\Views\CreditsHtml as CreditsHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 class Credits extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new CreditsHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
+
     $model = new CreditsModel();
     $model->user_session = UserSession::load($router);
+
     $this->getCredits($model);
-    ob_start();
+
     $view->render($model);
-    $router->setResponseCode(200);
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = 200;
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function getCredits(CreditsModel &$model) {

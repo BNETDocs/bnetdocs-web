@@ -4,17 +4,15 @@ namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\Attachment;
 use \BNETDocs\Libraries\Comment;
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\NewsPost;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\View as NewsViewModel;
-use \BNETDocs\Views\News\ViewHtml as NewsViewHtmlView;
-use \BNETDocs\Views\News\ViewPlain as NewsViewPlainView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 class View extends Controller {
 
@@ -25,37 +23,33 @@ class View extends Controller {
     $this->news_post_id = $news_post_id;
   }
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new NewsViewHtmlView();
-      break;
-      case "txt":
-        $view = new NewsViewPlainView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
+
     $model = new NewsViewModel();
     $model->user_session = UserSession::load($router);
     $model->user         = (isset($model->user_session) ?
                             new User($model->user_session->user_id) :
-                            null);
-    $model->acl_allowed  = ($model->user &&
+                            null
+                           );
+
+    $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & (
         User::OPTION_ACL_NEWS_CREATE |
         User::OPTION_ACL_NEWS_MODIFY |
         User::OPTION_ACL_NEWS_DELETE
       )
     );
+
     $this->getNewsPost($model);
-    ob_start();
+
     $view->render($model);
-    $router->setResponseCode(($model->news_post ? 200 : 404));
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = ($model->news_post ? 200 : 404);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function getNewsPost(NewsViewModel &$model) {

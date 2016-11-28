@@ -3,34 +3,28 @@
 namespace BNETDocs\Controllers\Comment;
 
 use \BNETDocs\Libraries\Comment as CommentLib;
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Comment\Create as CreateModel;
-use \BNETDocs\Views\Comment\CreateJSON as CreateJSONView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 use \UnexpectedValueException;
 
 class Create extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "json": case "":
-        $view = new CreateJSONView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
+
     $model = new CreateModel();
+
     $model->user_session = UserSession::load($router);
     $model->user         = (isset($model->user_session) ?
                             new User($model->user_session->user_id) : null);
 
-    $model->acl_allowed  = ($model->user &&
+    $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_CREATE
     );
 
@@ -46,16 +40,18 @@ class Create extends Controller {
       $code = $this->createComment($router, $model);
     }
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode($code);
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
+
+    $model->_responseCode = $code;
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
     if (!empty($model->origin) && $code >= 300 && $code <= 399) {
-      $router->setResponseHeader("Location", $model->origin);
+      $model->_responseHeaders['Location'] = $model->origin;
     }
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    return $model;
+
   }
 
   protected function createComment(Router &$router, CreateModel &$model) {

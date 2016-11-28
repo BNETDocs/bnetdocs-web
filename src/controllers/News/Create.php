@@ -3,29 +3,23 @@
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\CSRF;
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\NewsPost;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\Create as NewsCreateModel;
-use \BNETDocs\Views\News\CreateHtml as NewsCreateHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 class Create extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new NewsCreateHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
+
     $model                  = new NewsCreateModel();
     $model->csrf_id         = mt_rand();
     $model->csrf_token      = CSRF::generate($model->csrf_id, 900); // 15 mins
@@ -53,13 +47,14 @@ class Create extends Controller {
       $model->markdown = true;
     }
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode(($model->acl_allowed ? 200 : 403));
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function handlePost(Router &$router, NewsCreateModel &$model) {

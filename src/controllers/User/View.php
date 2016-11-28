@@ -2,21 +2,20 @@
 
 namespace BNETDocs\Controllers\User;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User as UserLib;
 use \BNETDocs\Libraries\UserProfile;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\View as UserViewModel;
-use \BNETDocs\Views\User\ViewHtml as UserViewHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 use \DateTime;
 use \DateTimeZone;
 
@@ -29,24 +28,21 @@ class View extends Controller {
     $this->user_id = $user_id;
   }
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new UserViewHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
+
     $model = new UserViewModel();
     $model->user_session = UserSession::load($router);
+
     $this->getUserInfo($model);
-    ob_start();
+
     $view->render($model);
-    $router->setResponseCode(($model->user ? 200 : 404));
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = ($model->user ? 200 : 404);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function getUserInfo(UserViewModel &$model) {

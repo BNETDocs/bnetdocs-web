@@ -2,19 +2,17 @@
 
 namespace BNETDocs\Controllers\Document;
 
-use \BNETDocs\Controllers\Redirect as RedirectController;
+use \BNETDocs\Controllers\RedirectSoft as RedirectSoftController;
 use \BNETDocs\Libraries\Attachment;
 use \BNETDocs\Libraries\Comment;
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\View as DocumentViewModel;
-use \BNETDocs\Views\Document\ViewHtml as DocumentViewHtmlView;
-use \BNETDocs\Views\Document\ViewPlain as DocumentViewPlainView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 use \DateTime;
 use \DateTimeZone;
 
@@ -27,18 +25,22 @@ class View extends Controller {
     $this->document_id = $document_id;
   }
 
-  public function run(Router &$router) {
+  public function &run(Router &$router, View &$view, array &$args) {
+
     $model              = new DocumentViewModel();
     $model->document_id = (int) $this->document_id;
+
     try {
       $model->document  = new Document($this->document_id);
     } catch (DocumentNotFoundException $e) {
       $model->document  = null;
     }
+
     $pathArray = $router->getRequestPathArray();
+
     if ($model->document && (
       !isset($pathArray[3]) || empty($pathArray[3]))) {
-      $redirect = new RedirectController(
+      $redirect = new RedirectSoftController(
         Common::relativeUrlToAbsolute(
           "/document/" . $model->document->getId() . "/"
           . Common::sanitizeForUrl(
@@ -48,16 +50,7 @@ class View extends Controller {
       );
       return $redirect->run($router);
     }
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new DocumentViewHtmlView();
-      break;
-      case "md": case "txt":
-        $view = new DocumentViewPlainView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+
     if ($model->document) {
       $model->attachments = Attachment::getAll(
         Comment::PARENT_TYPE_DOCUMENT,
@@ -68,14 +61,17 @@ class View extends Controller {
         $model->document_id
       );
     }
+
     $model->user_session = UserSession::load($router);
-    ob_start();
+
     $view->render($model);
-    $router->setResponseCode(($model->document ? 200 : 404));
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = ($model->document ? 200 : 404);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
 }

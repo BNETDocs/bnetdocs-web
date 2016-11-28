@@ -79,15 +79,15 @@ function main() {
     );
   } else {
     $router->addRoute( // URL: /
-      "#^/$#", "RedirectSoft", "RedirectSoftHtml",
-      "/news"
+      "#^/$#", "RedirectSoft", "RedirectSoftHtml", "/news"
+    );
+    $router->addRoute(
+      "#^/credits/?$#", "Credits", "CreditsHtml"
     );
     $router->addRoute( // URL: /user/login
       "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"
     );
-    $router->addRoute( // URL: *
-      "#.*#", "PageNotFound", "PageNotFoundHtml"
-    );
+    $router->addRoute("#.*#", "PageNotFound", "PageNotFoundHtml"); // URL: *
   }
 
   $router->route();
