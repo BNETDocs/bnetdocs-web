@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "carlbennett/php-mvc",
-            "version": "2.2.2",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carlbennett/php-mvc.git",
-                "reference": "7d4f26149c990268c9c349efee4c341b05deb68e"
+                "reference": "2272f87ae61a37e6791def614f57dc82a527e1cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/7d4f26149c990268c9c349efee4c341b05deb68e",
-                "reference": "7d4f26149c990268c9c349efee4c341b05deb68e",
+                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/2272f87ae61a37e6791def614f57dc82a527e1cf",
+                "reference": "2272f87ae61a37e6791def614f57dc82a527e1cf",
                 "shasum": ""
             },
             "require": {
@@ -66,7 +66,7 @@
                 "restful",
                 "system"
             ],
-            "time": "2016-11-27 22:47:53"
+            "time": "2016-11-28 02:51:45"
         }
     ],
     "packages-dev": [],

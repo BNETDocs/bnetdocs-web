@@ -27,6 +27,7 @@ use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\GlobalErrorHandler;
 use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\Session;
 
 function main() {
 
@@ -43,6 +44,11 @@ function main() {
   Common::$config = json_decode(file_get_contents(
     __DIR__ . "/../etc/config.phoenix.json"
   ));
+
+  Session::initialize(
+    Common::$config->memcache->session_server_string,
+    "sid"
+  );
 
   Common::$cache = new Cache(
     Common::$config->memcache->servers,

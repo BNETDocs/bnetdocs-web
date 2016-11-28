@@ -22,6 +22,7 @@
   "memcache": {
     "connect_timeout": 1.0,
     "tcp_nodelay": true,
+    "session_server_string": "localhost:11211",
     "servers": [
       {
         "hostname": "localhost",
