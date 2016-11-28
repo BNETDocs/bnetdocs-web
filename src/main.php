@@ -90,8 +90,8 @@ function main() {
     $router->addRoute( // URL: /servers.json
       "#^/servers\.json$#", "Servers", "ServersJSON"
     );
-    $router->addRoute( // URL: /servers/:id
-      "#^/server/\d+#", "Server\\View", "Server\\ViewHtml"
+    $router->addRoute( // URL: /server/:id
+      "#^/server/(\d+)/?#", "Server\\View", "Server\\ViewHtml"
     );
     $router->addRoute( // URL: /user/login
       "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"

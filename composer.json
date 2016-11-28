@@ -39,7 +39,7 @@
         }
     },
     "require": {
-        "carlbennett/php-mvc": "~2",
+        "carlbennett/php-mvc": "dev-master",
         "ext-curl": "*",
         "ext-geoip": "*",
         "ext-gmp": "*",

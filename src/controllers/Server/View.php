@@ -19,21 +19,14 @@ use \DateTimeZone;
 
 class View extends Controller {
 
-  protected $server_id;
-
-  public function __construct($server_id) {
-    parent::__construct();
-    $this->server_id = $server_id;
-  }
-
   public function &run(Router &$router, ViewLib &$view, array &$args) {
 
     $model               = new ServerViewModel();
-    $model->server_id    = $this->server_id;
+    $model->server_id    = array_shift($args);
     $model->user_session = UserSession::load($router);
 
     try {
-      $model->server      = new Server($this->server_id);
+      $model->server      = new Server($model->server_id);
       $model->server_type = new ServerType($model->server->getTypeId());
     } catch (ServerNotFoundException $e) {
       $model->server = null;
@@ -43,10 +36,10 @@ class View extends Controller {
 
     if ($model->server) {
       $model->server_uptime = ServerMetric::getUptime(
-        $this->server_id
+        $model->server_id
       );
       $model->server_response_time = ServerMetric::getLatestResponseTime(
-        $this->server_id
+        $model->server_id
       );
     }
 
