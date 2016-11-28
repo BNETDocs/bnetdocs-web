@@ -81,8 +81,17 @@ function main() {
     $router->addRoute( // URL: /
       "#^/$#", "RedirectSoft", "RedirectSoftHtml", "/news"
     );
-    $router->addRoute(
+    $router->addRoute( // URL: /credits
       "#^/credits/?$#", "Credits", "CreditsHtml"
+    );
+    $router->addRoute( // URL: /servers
+      "#^/servers/?$#", "Servers", "ServersHtml"
+    );
+    $router->addRoute( // URL: /servers.json
+      "#^/servers\.json$#", "Servers", "ServersJSON"
+    );
+    $router->addRoute( // URL: /servers/:id
+      "#^/server/\d+#", "Server\\View", "Server\\ViewHtml"
     );
     $router->addRoute( // URL: /user/login
       "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"
