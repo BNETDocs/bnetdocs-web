@@ -1,24 +1,24 @@
 <?php
 
-namespace BNETDocs\Views\User;
+namespace BNETDocs\Views;
 
-use \BNETDocs\Models\User\Register as UserRegisterModel;
+use \BNETDocs\Models\Legacy as LegacyModel;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
 
-class RegisterHtml extends View {
+class LegacyHtml extends View {
 
   public function getMimeType() {
-    return "text/html;charset=utf-8";
+    return 'text/html;charset=utf-8';
   }
 
   public function render(Model &$model) {
-    if (!$model instanceof UserRegisterModel) {
+    if (!$model instanceof LegacyModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "User/Register"))->render();
+    (new Template($model, 'Legacy'))->render();
   }
 
 }
