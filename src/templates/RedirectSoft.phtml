@@ -1,5 +1,11 @@
 <?php namespace BNETDocs\Templates; $title = "Soft Redirect"; ?>
 <?php require("./header.inc.phtml"); ?>
-<h1><?=$title?></h1>
-<p>This page has moved to: <?=$this->getContext()->location?></p>
+      <article>
+        <header><?=$title?></header>
+        <section>
+          Location has moved, please follow this link:<br/>
+          <br/>
+          <a href="<?=$this->getContext()->location?>"><?=$this->getContext()->location?></a><br/>
+        </section>
+      </article>
 <?php require("./footer.inc.phtml"); ?>
