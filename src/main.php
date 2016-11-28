@@ -93,6 +93,12 @@ function main() {
     $router->addRoute( // URL: /server/:id
       "#^/server/(\d+)/?#", "Server\\View", "Server\\ViewHtml"
     );
+    $router->addRoute( // URL: /legal
+      "#^/legal/?$#", "Legal", "LegalHtml"
+    );
+    $router->addRoute( // URL: /legal.txt
+      "#^/legal.txt?$#", "Legal", "LegalPlain"
+    );
     $router->addRoute( // URL: /user/login
       "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"
     );
