@@ -1,17 +1,6 @@
-<?php
-
-namespace BNETDocs\Templates;
-
-$title       = "Maintenance";
-$description = $this->context->message;
-$slim_ui     = true;
-
-require("./header.inc.phtml");
-?>
-      <article>
-        <header>Maintenance</header>
-        <section>
-          <p><?php echo nl2br(htmlspecialchars($this->context->message, ENT_HTML5, "UTF-8")); ?></p>
-        </section>
-      </article>
+<?php namespace BNETDocs\Templates; $title = "Maintenance"; ?>
+<?php require("./header.inc.phtml"); ?>
+<h1><?=$title?></h1>
+<p>This website is currently undergoing routine maintenance and will be back in
+a little while. Stay tuned for updates.</p>
 <?php require("./footer.inc.phtml"); ?>

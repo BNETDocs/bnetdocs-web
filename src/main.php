@@ -21,12 +21,12 @@
 namespace BNETDocs;
 
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Cache;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\GlobalErrorHandler;
+use \CarlBennett\MVC\Libraries\Router;
 
 function main() {
 
@@ -62,6 +62,36 @@ function main() {
   VersionInfo::$version = VersionInfo::get();
 
   $router = new Router();
+
+  if (Common::$config->bnetdocs->maintenance[0]) {
+    // URL: *
+    $router->addRoute(
+      "#.*#",
+      "BNETDocs\\Controllers\\Maintenance",
+      "BNETDocs\\Views\\MaintenanceHtml"
+    );
+  } else {
+    // URL: /
+    $router->addRoute(
+      "#^/$#",
+      "BNETDocs\\Controllers\\RedirectSoft",
+      "BNETDocs\\Views\\RedirectSoftHtml",
+      "/news"
+    );
+    // URL: /user/login
+    $router->addRoute(
+      "#^/user/login/?$#",
+      "BNETDocs\\Controllers\\User\\Login",
+      "BNETDocs\\Views\\User\\LoginHtml"
+    );
+    // URL: *
+    $router->addRoute(
+      "#.*#",
+      "BNETDocs\\Controllers\\PageNotFound",
+      "BNETDocs\\Views\\PageNotFoundHtml"
+    );
+  }
+
   $router->route();
   $router->send();
 

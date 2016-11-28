@@ -2,23 +2,23 @@
 
 namespace BNETDocs\Views;
 
-use \BNETDocs\Models\PageNotFound as PageNotFoundModel;
+use \BNETDocs\Models\RedirectSoft as RedirectSoftModel;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
 
-class PageNotFoundHtml extends View {
+class RedirectSoftHtml extends View {
 
   public function getMimeType() {
     return "text/html;charset=utf-8";
   }
 
   public function render(Model &$model) {
-    if (!$model instanceof PageNotFoundModel) {
+    if (!$model instanceof RedirectSoftModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "PageNotFound"))->render();
+    (new Template($model, "RedirectSoft"))->render();
   }
 
 }

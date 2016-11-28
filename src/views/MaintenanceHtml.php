@@ -2,12 +2,11 @@
 
 namespace BNETDocs\Views;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
-use \BNETDocs\Libraries\Model;
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Libraries\View;
 use \BNETDocs\Models\Maintenance as MaintenanceModel;
+use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
+use \CarlBennett\MVC\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Template;
+use \CarlBennett\MVC\Libraries\View;
 
 class MaintenanceHtml extends View {
 
