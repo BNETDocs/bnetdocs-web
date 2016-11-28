@@ -67,35 +67,26 @@ function main() {
 
   VersionInfo::$version = VersionInfo::get();
 
-  $router = new Router();
+  $router = new Router(
+    "BNETDocs\\Controllers\\",
+    "BNETDocs\\Views\\"
+  );
 
   if (Common::$config->bnetdocs->maintenance[0]) {
-    // URL: *
-    $router->addRoute(
-      "#.*#",
-      "BNETDocs\\Controllers\\Maintenance",
-      "BNETDocs\\Views\\MaintenanceHtml",
+    $router->addRoute( // URL: *
+      "#.*#", "Maintenance", "MaintenanceHtml",
       Common::$config->bnetdocs->maintenance[1]
     );
   } else {
-    // URL: /
-    $router->addRoute(
-      "#^/$#",
-      "BNETDocs\\Controllers\\RedirectSoft",
-      "BNETDocs\\Views\\RedirectSoftHtml",
+    $router->addRoute( // URL: /
+      "#^/$#", "RedirectSoft", "RedirectSoftHtml",
       "/news"
     );
-    // URL: /user/login
-    $router->addRoute(
-      "#^/user/login/?$#",
-      "BNETDocs\\Controllers\\User\\Login",
-      "BNETDocs\\Views\\User\\LoginHtml"
+    $router->addRoute( // URL: /user/login
+      "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"
     );
-    // URL: *
-    $router->addRoute(
-      "#.*#",
-      "BNETDocs\\Controllers\\PageNotFound",
-      "BNETDocs\\Views\\PageNotFoundHtml"
+    $router->addRoute( // URL: *
+      "#.*#", "PageNotFound", "PageNotFoundHtml"
     );
   }
 
