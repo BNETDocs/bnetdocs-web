@@ -12,7 +12,7 @@ use \BNETDocs\Models\Packet\View as PacketViewModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
+use \CarlBennett\MVC\Libraries\View as ViewLib;
 use \DateTime;
 use \DateTimeZone;
 
@@ -25,7 +25,7 @@ class View extends Controller {
     $this->packet_id = $packet_id;
   }
 
-  public function &run(Router &$router, View &$view, array &$args) {
+  public function &run(Router &$router, ViewLib &$view, array &$args) {
 
     $model            = new PacketViewModel();
     $model->packet_id = (int) $this->packet_id;
