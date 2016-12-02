@@ -4,12 +4,12 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "30717b4b161c6223dc864d671d97b4a9",
-    "content-hash": "5041aee9aa73b6a246da7c9f48692a32",
+    "hash": "f724636c462e6854db5b1e1330ba5986",
+    "content-hash": "1fdd3319df32eaa77dfeb509dcb36674",
     "packages": [
         {
             "name": "carlbennett/php-mvc",
-            "version": "dev-master",
+            "version": "2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carlbennett/php-mvc.git",
@@ -72,9 +72,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "carlbennett/php-mvc": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
