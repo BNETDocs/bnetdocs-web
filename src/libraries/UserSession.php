@@ -62,7 +62,7 @@ class UserSession implements Serializable {
       throw new LogicException("Cannot invalidate session on a null user id");
     }
     Common::$cache->set("bnetdocs-usersession-" . $this->user_id, "", 1);
-    $router->setResponseCookie(self::COOKIE_NAME, "", 0, true, true);
+    $router->setResponseCookie(self::COOKIE_NAME, '', 0, true, true, '', '');
   }
 
   public function save(Router &$router) {
@@ -84,7 +84,9 @@ class UserSession implements Serializable {
       $this->user_id . "-" . $this->user_auth_token, // value
       self::SESSION_TTL,                             // ttl
       true,                                          // httpOnly
-      true                                           // secure
+      true,                                          // secure
+      '',                                            // domain
+      ''                                             // path
     );
   }
 
