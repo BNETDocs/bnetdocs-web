@@ -84,11 +84,29 @@ function main() {
     $router->addRoute( // URL: /credits
       "#^/credits/?$#", "Credits", "CreditsHtml"
     );
+    $router->addRoute( // URL: /document/:id.txt
+      "#^/document/(\d+)\.txt#", "Document\\View", "Document\\ViewPlain"
+    );
+    $router->addRoute( // URL: /document/:id
+      "#^/document/(\d+)/?#", "Document\\View", "Document\\ViewHtml"
+    );
+    $router->addRoute( // URL: /document/index
+      "#^/document/index/?$#", "Document\\Index", "Document\\IndexHtml"
+    );
+    $router->addRoute( // URL: /document/popular
+      "#^/document/popular/?$#", "Document\\Popular", "Document\\PopularHtml"
+    );
+    $router->addRoute( // URL: /document/search
+      "#^/document/search/?$#", "Document\\Search", "Document\\SearchHtml"
+    );
+    $router->addRoute( // URL: /event-log/index
+      "#^/event-log/index/?$#", "EventLog\\Index", "EventLog\\IndexHtml"
+    );
     $router->addRoute( // URL: /legal
       "#^/legal/?$#", "Legal", "LegalHtml"
     );
     $router->addRoute( // URL: /legal.txt
-      "#^/legal.txt?$#", "Legal", "LegalPlain"
+      "#^/legal.txt$#", "Legal", "LegalPlain"
     );
     $router->addRoute( // URL: /news
       "#^/news/?$#", "News", "NewsHtml"
@@ -101,6 +119,21 @@ function main() {
     );
     $router->addRoute( // URL: /news.rss
       "#^/news\.rss$#", "News", "NewsRSS"
+    );
+    $router->addRoute( // URL: /packet/:id.txt
+      "#^/packet/(\d+)\.txt#", "Packet\\View", "Packet\\ViewPlain"
+    );
+    $router->addRoute( // URL: /packet/:id
+      "#^/packet/(\d+)/?#", "Packet\\View", "Packet\\ViewHtml"
+    );
+    $router->addRoute( // URL: /packet/index
+      "#^/packet/index/?$#", "Packet\\Index", "Packet\\IndexHtml"
+    );
+    $router->addRoute( // URL: /packet/popular
+      "#^/packet/popular/?$#", "Packet\\Popular", "Packet\\PopularHtml"
+    );
+    $router->addRoute( // URL: /packet/search
+      "#^/packet/search/?$#", "Packet\\Search", "Packet\\SearchHtml"
     );
     $router->addRoute( // URL: /server/:id
       "#^/server/(\d+)/?#", "Server\\View", "Server\\ViewHtml"
@@ -123,11 +156,22 @@ function main() {
     $router->addRoute( // URL: /user/:id
       "#^/user/(\d+)/?#", "User\\View", "User\\ViewHtml"
     );
+    $router->addRoute( // URL: /user/changepassword
+      "#^/user/changepassword/?$#",
+      "User\\ChangePassword", "User\\ChangePasswordHtml"
+    );
     $router->addRoute( // URL: /user/login
       "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"
     );
+    $router->addRoute( // URL: /user/logout
+      "#^/user/logout/?$#", "User\\Logout", "User\\LogoutHtml"
+    );
     $router->addRoute( // URL: /user/register
       "#^/user/register/?$#", "User\\Register", "User\\RegisterHtml"
+    );
+    $router->addRoute( // URL: /user/resetpassword
+      "#^/user/resetpassword/?$#",
+      "User\\ResetPassword", "User\\ResetPasswordHtml"
     );
     $router->addRoute("#.*#", "PageNotFound", "PageNotFoundHtml"); // URL: *
   }

@@ -18,37 +18,15 @@ use \DateTimeZone;
 
 class View extends Controller {
 
-  protected $document_id;
-
-  public function __construct($document_id) {
-    parent::__construct();
-    $this->document_id = $document_id;
-  }
-
   public function &run(Router &$router, ViewLib &$view, array &$args) {
 
     $model              = new DocumentViewModel();
-    $model->document_id = (int) $this->document_id;
+    $model->document_id = array_shift($args);
 
     try {
-      $model->document  = new Document($this->document_id);
+      $model->document  = new Document($model->document_id);
     } catch (DocumentNotFoundException $e) {
       $model->document  = null;
-    }
-
-    $pathArray = $router->getRequestPathArray();
-
-    if ($model->document && (
-      !isset($pathArray[3]) || empty($pathArray[3]))) {
-      $redirect = new RedirectSoftController(
-        Common::relativeUrlToAbsolute(
-          "/document/" . $model->document->getId() . "/"
-          . Common::sanitizeForUrl(
-            $model->document->getTitle(), true
-          )
-        ), 302
-      );
-      return $redirect->run($router);
     }
 
     if ($model->document) {

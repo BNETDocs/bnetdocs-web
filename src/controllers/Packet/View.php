@@ -18,37 +18,15 @@ use \DateTimeZone;
 
 class View extends Controller {
 
-  protected $packet_id;
-
-  public function __construct($packet_id) {
-    parent::__construct();
-    $this->packet_id = $packet_id;
-  }
-
   public function &run(Router &$router, ViewLib &$view, array &$args) {
 
     $model            = new PacketViewModel();
-    $model->packet_id = (int) $this->packet_id;
+    $model->packet_id = array_shift($args);
 
     try {
-      $model->packet  = new Packet($this->packet_id);
+      $model->packet  = new Packet($model->packet_id);
     } catch (PacketNotFoundException $e) {
       $model->packet  = null;
-    }
-
-    $pathArray = $router->getRequestPathArray();
-
-    if ($model->packet && (
-      !isset($pathArray[3]) || empty($pathArray[3]))) {
-      $redirect = new RedirectController(
-        Common::relativeUrlToAbsolute(
-          "/packet/" . $model->packet->getId() . "/"
-          . Common::sanitizeForUrl(
-            $model->packet->getPacketName(), true
-          )
-        ), 302
-      );
-      return $redirect->run($router);
     }
 
     if ($model->packet) {
