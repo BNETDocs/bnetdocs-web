@@ -2,23 +2,23 @@
 
 namespace BNETDocs\Views;
 
-use \BNETDocs\Models\Servers as ServersModel;
+use \BNETDocs\Models\Legacy as LegacyModel;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
 
-class ServersHtml extends View {
+class LegacyHtml extends View {
 
   public function getMimeType() {
-    return "text/html;charset=utf-8";
+    return 'text/html;charset=utf-8';
   }
 
   public function render(Model &$model) {
-    if (!$model instanceof ServersModel) {
+    if (!$model instanceof LegacyModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Servers"))->render();
+    (new Template($model, 'Legacy'))->render();
   }
 
 }

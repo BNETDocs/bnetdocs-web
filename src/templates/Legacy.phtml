@@ -1,0 +1,16 @@
+<?php namespace BNETDocs\Templates; $title = 'Legacy'; ?>
+<?php require('./header.inc.phtml'); ?>
+<article>
+  <header><?=$title?></header>
+  <section>
+<?php if ($this->getContext()->is_legacy) { ?>
+    <p>The URL you followed is for BNETDocs Redux, we are now redirecting you
+    to the BNETDocs Phoenix version...<br/>
+<?php } else { ?>
+    <p>Welcome to BNETDocs, we are now redirecting you to...<br/>
+<?php } ?>
+    <br/>
+    <a href="<?=$this->getContext()->url?>"><?=$this->getContext()->url?></a><br/></p>
+  </section>
+</article>
+<?php require('./footer.inc.phtml'); ?>

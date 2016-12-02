@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Models\Document;
 
-use \BNETDocs\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Model;
 
 class View extends Model {
 
@@ -12,15 +12,5 @@ class View extends Model {
   public $document;
   public $document_id;
   public $user_session;
-
-  public function __construct() {
-    parent::__construct();
-    $this->acl_allowed  = null;
-    $this->attachments  = null;
-    $this->comments     = null;
-    $this->document     = null;
-    $this->document_id  = null;
-    $this->user_session = null;
-  }
 
 }

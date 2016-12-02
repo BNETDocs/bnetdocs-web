@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Models\EventLog;
 
-use \BNETDocs\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Model;
 
 class Index extends Model {
 
@@ -11,14 +11,5 @@ class Index extends Model {
   public $sum_event_log;
   public $user;
   public $user_session;
-
-  public function __construct() {
-    parent::__construct();
-    $this->acl_allowed   = null;
-    $this->event_log     = null;
-    $this->sum_event_log = null;
-    $this->user          = null;
-    $this->user_session  = null;
-  }
 
 }

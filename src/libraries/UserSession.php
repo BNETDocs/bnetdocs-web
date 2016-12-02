@@ -3,7 +3,7 @@
 namespace BNETDocs\Libraries;
 
 use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Router;
+use \CarlBennett\MVC\Libraries\Router;
 use \InvalidArgumentException;
 use \LogicException;
 use \Serializable;

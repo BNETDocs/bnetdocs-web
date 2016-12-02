@@ -4,8 +4,8 @@ namespace BNETDocs\Models;
 
 use \CarlBennett\MVC\Libraries\Model;
 
-class Maintenance extends Model {
+class RedirectSoft extends Model {
 
-  public $message;
+  public $location;
 
 }

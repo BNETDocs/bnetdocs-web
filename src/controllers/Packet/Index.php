@@ -2,53 +2,27 @@
 
 namespace BNETDocs\Controllers\Packet;
 
-use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\Index as PacketIndexModel;
-use \BNETDocs\Views\Packet\IndexCpp as PacketIndexCppView;
 use \BNETDocs\Views\Packet\IndexHtml as PacketIndexHtmlView;
 use \BNETDocs\Views\Packet\IndexJSON as PacketIndexJSONView;
-use \BNETDocs\Views\Packet\IndexJava as PacketIndexJavaView;
-use \BNETDocs\Views\Packet\IndexPHP as PacketIndexPHPView;
-use \BNETDocs\Views\Packet\IndexVB as PacketIndexVBView;
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Gravatar;
 use \CarlBennett\MVC\Libraries\Pair;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 use \DateTime;
 use \DateTimeZone;
 
 class Index extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "cpp":
-        $view = new PacketIndexCppView();
-      break;
-      case "htm": case "html": case "":
-        $view = new PacketIndexHtmlView();
-      break;
-      case "java":
-        $view = new PacketIndexJavaView();
-      break;
-      case "json":
-        $view = new PacketIndexJSONView();
-      break;
-      case "php":
-        $view = new PacketIndexPHPView();
-      break;
-      case "vb":
-        $view = new PacketIndexVBView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
-    $model = new PacketIndexModel();
-    
-    $model->packets       = Packet::getAllPackets();
-    $model->user_session  = UserSession::load($router);
+  public function &run(Router &$router, View &$view, array &$args) {
+
+    $model               = new PacketIndexModel();
+    $model->packets      = Packet::getAllPackets();
+    $model->user_session = UserSession::load($router);
 
     // Alphabetically sort the packets for non-json
     if (!$view instanceof PacketIndexJSONView && $model->packets) {
@@ -105,9 +79,13 @@ class Index extends Controller {
           ];
         }
         $packets[] = [
-          "created_datetime" => self::renderDateTime($packet->getCreatedDateTime()),
+          "created_datetime" => self::renderDateTime(
+                                  $packet->getCreatedDateTime()
+                                ),
           "edited_count"     => $packet->getEditedCount(),
-          "edited_datetime"  => self::renderDateTime($packet->getEditedDateTime()),
+          "edited_datetime"  => self::renderDateTime(
+                                  $packet->getEditedDateTime()
+                                ),
           "id"               => $packet->getId(),
           "options_bitmask"  => $packet->getOptionsBitmask(),
           "packet_transport_layer_id"   => $packet->getPacketTransportLayerId(),
@@ -141,15 +119,16 @@ class Index extends Controller {
     // Post-filter summary of packets
     $model->sum_packets = count($model->packets);
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode(200);
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = 200;
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
-  
+
   protected static function renderDateTime($obj) {
     if (!$obj instanceof DateTime) return $obj;
     return $obj->format("r");

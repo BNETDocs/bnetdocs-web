@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Models\User;
 
-use \BNETDocs\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Model;
 
 class Register extends Model {
 
@@ -10,13 +10,5 @@ class Register extends Model {
   public $recaptcha;
   public $user_session;
   public $username;
-
-  public function __construct() {
-    parent::__construct();
-    $this->email        = null;
-    $this->recaptcha    = null;
-    $this->user_session = null;
-    $this->username     = null;
-  }
 
 }

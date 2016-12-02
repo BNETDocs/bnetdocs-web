@@ -3,37 +3,30 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\CSRF;
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Create as DocumentCreateModel;
-use \BNETDocs\Views\Document\CreateHtml as DocumentCreateHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 class Create extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new DocumentCreateHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
-    $model                  = new DocumentCreateModel();
-    $model->csrf_id         = mt_rand();
-    $model->csrf_token      = CSRF::generate($model->csrf_id, 900); // 15 mins
-    $model->error           = null;
-    $model->user_session    = UserSession::load($router);
-    $model->user            = (isset($model->user_session) ?
-                               new User($model->user_session->user_id) : null);
+  public function &run(Router &$router, View &$view, array &$args) {
 
-    $model->acl_allowed  = ($model->user &&
+    $model               = new DocumentCreateModel();
+    $model->csrf_id      = mt_rand();
+    $model->csrf_token   = CSRF::generate($model->csrf_id, 900); // 15 mins
+    $model->error        = null;
+    $model->user_session = UserSession::load($router);
+    $model->user         = (isset($model->user_session) ?
+                            new User($model->user_session->user_id) : null);
+
+    $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_CREATE
     );
 
@@ -43,13 +36,14 @@ class Create extends Controller {
       $model->markdown = true;
     }
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode(($model->acl_allowed ? 200 : 403));
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function handlePost(Router &$router, DocumentCreateModel &$model) {

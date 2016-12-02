@@ -2,30 +2,20 @@
 
 namespace BNETDocs\Controllers\Packet;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\Search as PacketSearchModel;
-use \BNETDocs\Views\Packet\SearchHtml as PacketSearchHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 class Search extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new PacketSearchHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
 
-    $model = new PacketSearchModel();
-
-    $data = $router->getRequestQueryArray();
-
+    $data         = $router->getRequestQueryArray();
+    $model        = new PacketSearchModel();
     $model->query = (isset($data["q"]) ? (string) $data["q"] : null);
 
     if (!empty($model->query)) {
@@ -50,13 +40,14 @@ class Search extends Controller {
       $model->sum_packets = count($model->packets);
     }
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode(200);
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = 200;
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
 }

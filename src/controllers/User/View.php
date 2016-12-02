@@ -2,59 +2,48 @@
 
 namespace BNETDocs\Controllers\User;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User as UserLib;
 use \BNETDocs\Libraries\UserProfile;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\View as UserViewModel;
-use \BNETDocs\Views\User\ViewHtml as UserViewHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View as ViewLib;
 use \DateTime;
 use \DateTimeZone;
 
 class View extends Controller {
 
-  protected $user_id;
+  public function &run(Router &$router, ViewLib &$view, array &$args) {
 
-  public function __construct($user_id) {
-    parent::__construct();
-    $this->user_id = $user_id;
-  }
-
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new UserViewHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
-    $model = new UserViewModel();
+    $model               = new UserViewModel();
+    $model->user_id      = array_shift($args);
     $model->user_session = UserSession::load($router);
+
     $this->getUserInfo($model);
-    ob_start();
+
     $view->render($model);
-    $router->setResponseCode(($model->user ? 200 : 404));
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = ($model->user ? 200 : 404);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected function getUserInfo(UserViewModel &$model) {
-    $model->user_id = $this->user_id;
 
     // Try to get the user
     try {
-      $model->user = new UserLib($this->user_id);
+      $model->user = new UserLib($model->user_id);
     } catch (UserNotFoundException $e) {
       $model->user = null;
       return;
@@ -63,7 +52,7 @@ class View extends Controller {
     // Try to get their user profile
     try {
 
-      $model->user_profile  = new UserProfile($this->user_id);
+      $model->user_profile  = new UserProfile($model->user_id);
 
       $model->biography     = $model->user_profile->getBiography();
 
@@ -117,16 +106,16 @@ class View extends Controller {
 
     // Summary of contributions
     $model->sum_documents = Credits::getTotalDocumentsByUserId(
-      $this->user_id
+      $model->user_id
     );
     $model->sum_news_posts = Credits::getTotalNewsPostsByUserId(
-      $this->user_id
+      $model->user_id
     );
     $model->sum_packets = Credits::getTotalPacketsByUserId(
-      $this->user_id
+      $model->user_id
     );
     $model->sum_servers = Credits::getTotalServersByUserId(
-      $this->user_id
+      $model->user_id
     );
 
     // Total number of contributions
@@ -138,13 +127,13 @@ class View extends Controller {
 
     // References to the contributions
     $model->documents  = ($model->sum_documents  ?
-      Document::getDocumentsByUserId($this->user_id) : null
+      Document::getDocumentsByUserId($model->user_id) : null
     );
     $model->news_posts = ($model->sum_news_posts ?
-      NewsPost::getNewsPostsByUserId($this->user_id): null
+      NewsPost::getNewsPostsByUserId($model->user_id): null
     );
     $model->packets    = ($model->sum_packets    ?
-      Packet::getPacketsByUserId($this->user_id) : null
+      Packet::getPacketsByUserId($model->user_id) : null
     );
     $model->servers    = ($model->sum_servers    ? true : null);
 
@@ -210,6 +199,7 @@ class View extends Controller {
         --$i;
       }
     }
+
   }
 
 }

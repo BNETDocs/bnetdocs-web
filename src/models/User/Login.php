@@ -2,8 +2,7 @@
 
 namespace BNETDocs\Models\User;
 
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Model;
 
 class Login extends Model {
 
@@ -12,14 +11,5 @@ class Login extends Model {
   public $email;
   public $password;
   public $user_session;
-
-  public function __construct() {
-    parent::__construct();
-    $this->bad_email    = null;
-    $this->bad_password = null;
-    $this->email        = null;
-    $this->password     = null;
-    $this->user_session = null;
-  }
 
 }

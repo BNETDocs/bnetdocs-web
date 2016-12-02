@@ -4,29 +4,21 @@ namespace BNETDocs\Controllers\Comment;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Comment;
-use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Comment\Delete as CommentDeleteModel;
-use \BNETDocs\Views\Comment\DeleteHtml as CommentDeleteHtmlView;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 use \InvalidArgumentException;
 use \UnexpectedValueException;
 
 class Delete extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new CommentDeleteHtmlView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
 
     $data                = $router->getRequestQueryArray();
     $model               = new CommentDeleteModel();
@@ -62,13 +54,13 @@ class Delete extends Controller {
       }
     }
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode(($model->acl_allowed ? 200 : 403));
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
   }
 
   protected function tryDelete(Router &$router, CommentDeleteModel &$model) {

@@ -2,10 +2,10 @@
 
 namespace BNETDocs\Views\Packet;
 
-use \BNETDocs\Libraries\Exceptions\IncorrectModelException;
-use \BNETDocs\Libraries\Model;
-use \BNETDocs\Libraries\View;
 use \BNETDocs\Models\Packet\View as PacketViewModel;
+use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
+use \CarlBennett\MVC\Libraries\Model;
+use \CarlBennett\MVC\Libraries\View;
 
 class ViewPlain extends View {
 

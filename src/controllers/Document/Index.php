@@ -2,36 +2,26 @@
 
 namespace BNETDocs\Controllers\Document;
 
-use \BNETDocs\Libraries\Controller;
 use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Index as DocumentIndexModel;
 use \BNETDocs\Views\Document\IndexHtml as DocumentIndexHtmlView;
 use \BNETDocs\Views\Document\IndexJSON as DocumentIndexJSONView;
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Gravatar;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 use \DateTime;
 use \DateTimeZone;
 
 class Index extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "htm": case "html": case "":
-        $view = new DocumentIndexHtmlView();
-      break;
-      case "json":
-        $view = new DocumentIndexJSONView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
-    $model = new DocumentIndexModel();
+  public function &run(Router &$router, View &$view, array &$args) {
 
-    $model->documents     = Document::getAllDocuments();
-    $model->user_session  = UserSession::load($router);
+    $model               = new DocumentIndexModel();
+    $model->documents    = Document::getAllDocuments();
+    $model->user_session = UserSession::load($router);
 
     // Alphabetically sort the documents for HTML
     if ($view instanceof DocumentIndexHtmlView && $model->documents) {
@@ -75,9 +65,13 @@ class Index extends Controller {
         }
         $documents[] = [
           "content"          => $document->getContent(false),
-          "created_datetime" => self::renderDateTime($document->getCreatedDateTime()),
+          "created_datetime" => self::renderDateTime(
+                                  $document->getCreatedDateTime()
+                                ),
           "edited_count"     => $document->getEditedCount(),
-          "edited_datetime"  => self::renderDateTime($document->getEditedDateTime()),
+          "edited_datetime"  => self::renderDateTime(
+                                  $document->getEditedDateTime()
+                                ),
           "id"               => $document->getId(),
           "options_bitmask"  => $document->getOptionsBitmask(),
           "title"            => $document->getTitle(),
@@ -90,13 +84,14 @@ class Index extends Controller {
     // Post-filter summary of documents
     $model->sum_documents = count($model->documents);
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode(200);
-    $router->setResponseTTL(0);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = 200;
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 0;
+
+    return $model;
+
   }
 
   protected static function renderDateTime($obj) {

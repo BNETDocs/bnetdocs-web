@@ -2,44 +2,35 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\Controller;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Status as StatusModel;
-use \BNETDocs\Views\StatusJSON as StatusJSONView;
-use \BNETDocs\Views\StatusPlain as StatusPlainView;
 use \CarlBennett\MVC\Libraries\Cache;
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\GeoIP;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 use \DateTime;
 use \DateTimeZone;
 use \StdClass;
 
 class Status extends Controller {
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "txt":
-        $view = new StatusPlainView();
-      break;
-      case "json": case "":
-        $view = new StatusJSONView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
+
     $model = new StatusModel();
     $code  = (!$this->getStatus($model) ? 500 : 200);
-    ob_start();
+
     $view->render($model);
-    $router->setResponseCode($code);
-    $router->setResponseTTL(300);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    $model->_responseCode = $code;
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = 300;
+
+    return $model;
+
   }
 
   protected function getStatus(StatusModel &$model) {

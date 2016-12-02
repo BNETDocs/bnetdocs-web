@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Models\Comment;
 
-use \BNETDocs\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Model;
 
 class Create extends Model {
 
@@ -11,14 +11,5 @@ class Create extends Model {
   public $response;
   public $user;
   public $user_session;
-
-  public function __construct() {
-    parent::__construct();
-    $this->acl_allowed  = null;
-    $this->origin       = null;
-    $this->response     = null;
-    $this->user         = null;
-    $this->user_session = null;
-  }
 
 }

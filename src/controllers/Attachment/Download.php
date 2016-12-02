@@ -3,34 +3,25 @@
 namespace BNETDocs\Controllers\Attachment;
 
 use \BNETDocs\Libraries\Attachment;
+use \BNETDocs\Libraries\Exceptions\AttachmentNotFoundException;
+use \BNETDocs\Models\Attachment\Download as DownloadModel;
 use \CarlBennett\MVC\Libraries\Common;
-use \BNETDocs\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \BNETDocs\Libraries\Exceptions\AttachmentNotFoundException;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
-use \BNETDocs\Libraries\Router;
-use \BNETDocs\Models\Attachment\Download as DownloadModel;
-use \BNETDocs\Views\Attachment\DownloadRaw as DownloadRawView;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 class Download extends Controller {
 
   const TTL_ONE_YEAR = 31536000;
 
-  public function run(Router &$router) {
-    switch ($router->getRequestPathExtension()) {
-      case "":
-        $view = new DownloadRawView();
-      break;
-      default:
-        throw new UnspecifiedViewException();
-    }
+  public function &run(Router &$router, View &$view, array &$args) {
 
     $data = $router->getRequestQueryArray();
-    $id   = (isset($data["id"]) ? (int) $data["id"] : null);
 
-    $model                = new DownloadModel();
-    $model->attachment_id = $id;
+    $model = new DownloadModel();
+    $model->attachment_id = (isset($data['id']) ? (int) $data['id'] : null);
 
     try {
       $model->attachment = new Attachment($id);
@@ -38,18 +29,20 @@ class Download extends Controller {
       $model->attachment = null;
     }
 
-    ob_start();
     $view->render($model);
-    $router->setResponseCode(($model->attachment ? 200 : 404));
-    $router->setResponseTTL(self::TTL_ONE_YEAR);
-    $router->setResponseHeader("Content-Type", $view->getMimeType());
+
+    $model->_responseCode = ($model->attachment ? 200 : 404);
+    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseTTL = self::TTL_ONE_YEAR;
+
     if ($model->extra_headers) {
       foreach ($model->extra_headers as $name => $value) {
-        $router->setResponseHeader($name, $value);
+        $model->_responseHeaders[$name] = $value;
       }
     }
-    $router->setResponseContent(ob_get_contents());
-    ob_end_clean();
+
+    return $model;
+
   }
 
 }

@@ -2,16 +2,11 @@
 
 namespace BNETDocs\Models;
 
-use \BNETDocs\Libraries\Model;
+use \CarlBennett\MVC\Libraries\Model;
 
 class Legal extends Model {
 
+  public $license;
   public $user_session;
-
-  public function __construct() {
-    parent::__construct();
-    $this->license      = null;
-    $this->user_session = null;
-  }
 
 }
