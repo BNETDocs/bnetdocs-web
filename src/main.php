@@ -90,6 +90,9 @@ function main() {
     $router->addRoute( // URL: /document/:id
       "#^/document/(\d+)/?#", "Document\\View", "Document\\ViewHtml"
     );
+    $router->addRoute( // URL: /document/create
+      "#^/document/create/?$#", "Document\\Create", "Document\\CreateHtml"
+    );
     $router->addRoute( // URL: /document/index
       "#^/document/index/?$#", "Document\\Index", "Document\\IndexHtml"
     );
@@ -120,12 +123,24 @@ function main() {
     $router->addRoute( // URL: /news.rss
       "#^/news\.rss$#", "News", "NewsRSS"
     );
+    $router->addRoute( // URL: /news/create
+      "#^/news/create/?$#", "News\\Create", "News\\CreateHtml"
+    );
+    $router->addRoute( // URL: /news/edit
+      "#^/news/edit/?$#", "News\\Edit", "News\\EditHtml"
+    );
+    $router->addRoute( // URL: /news/delete
+      "#^/news/delete/?$#", "News\\Delete", "News\\DeleteHtml"
+    );
     $router->addRoute( // URL: /packet/:id.txt
       "#^/packet/(\d+)\.txt#", "Packet\\View", "Packet\\ViewPlain"
     );
     $router->addRoute( // URL: /packet/:id
       "#^/packet/(\d+)/?#", "Packet\\View", "Packet\\ViewHtml"
     );
+    //$router->addRoute( // URL: /packet/create
+    //  "#^/packet/create/?$#", "Packet\\Create", "Packet\\CreateHtml"
+    //);
     $router->addRoute( // URL: /packet/index
       "#^/packet/index/?$#", "Packet\\Index", "Packet\\IndexHtml"
     );
@@ -138,6 +153,9 @@ function main() {
     $router->addRoute( // URL: /server/:id
       "#^/server/(\d+)/?#", "Server\\View", "Server\\ViewHtml"
     );
+    //$router->addRoute( // URL: /server/create
+    //  "#^/server/create/?$#", "Server\\Create", "Server\\CreateHtml"
+    //);
     $router->addRoute( // URL: /servers
       "#^/servers/?$#", "Servers", "ServersHtml"
     );
@@ -173,6 +191,9 @@ function main() {
       "#^/user/resetpassword/?$#",
       "User\\ResetPassword", "User\\ResetPasswordHtml"
     );
+    //$router->addRoute( // URL: /user/update
+    //  "#^/user/update/?$#", "User\\Update", "User\\UpdateHtml"
+    //);
     $router->addRoute("#.*#", "PageNotFound", "PageNotFoundHtml"); // URL: *
   }
 
