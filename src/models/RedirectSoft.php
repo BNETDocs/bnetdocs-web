@@ -7,5 +7,6 @@ use \CarlBennett\MVC\Libraries\Model;
 class RedirectSoft extends Model {
 
   public $location;
+  public $user_session;
 
 }
