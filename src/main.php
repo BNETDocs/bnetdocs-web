@@ -39,6 +39,8 @@ function main() {
 
   GlobalErrorHandler::createOverrides();
 
+  date_default_timezone_set('UTC');
+
   Logger::initialize();
 
   Common::$config = json_decode(file_get_contents(
