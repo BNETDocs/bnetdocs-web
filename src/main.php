@@ -96,6 +96,12 @@ function main() {
     $router->addRoute( // URL: /document/create
       "#^/document/create/?$#", "Document\\Create", "Document\\CreateHtml"
     );
+    $router->addRoute( // URL: /document/delete
+      "#^/document/delete/?$#", "Document\\Delete", "Document\\DeleteHtml"
+    );
+    $router->addRoute( // URL: /document/edit
+      "#^/document/edit/?$#", "Document\\Edit", "Document\\EditHtml"
+    );
     $router->addRoute( // URL: /document/index
       "#^/document/index/?$#", "Document\\Index", "Document\\IndexHtml"
     );
