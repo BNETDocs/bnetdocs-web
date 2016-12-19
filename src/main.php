@@ -150,6 +150,21 @@ function main() {
     //$router->addRoute( // URL: /packet/create
     //  "#^/packet/create/?$#", "Packet\\Create", "Packet\\CreateHtml"
     //);
+    $router->addRoute( // URL: /packet/index.cpp
+      "#^/packet/index\.cpp/?$#", "Packet\\Index", "Packet\\IndexCpp"
+    );
+    $router->addRoute( // URL: /packet/index.json
+      "#^/packet/index\.json/?$#", "Packet\\Index", "Packet\\IndexJSON"
+    );
+    $router->addRoute( // URL: /packet/index.java
+      "#^/packet/index\.java/?$#", "Packet\\Index", "Packet\\IndexJava"
+    );
+    $router->addRoute( // URL: /packet/index.php
+      "#^/packet/index\.php/?$#", "Packet\\Index", "Packet\\IndexPHP"
+    );
+    $router->addRoute( // URL: /packet/index.vb
+      "#^/packet/index\.vb/?$#", "Packet\\Index", "Packet\\IndexVB"
+    );
     $router->addRoute( // URL: /packet/index
       "#^/packet/index/?$#", "Packet\\Index", "Packet\\IndexHtml"
     );
