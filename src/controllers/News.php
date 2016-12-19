@@ -6,6 +6,7 @@ use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Pagination;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\News as NewsModel;
+use \BNETDocs\Views\NewsRSS as NewsRSSView;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
@@ -26,7 +27,7 @@ class News extends Controller {
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
     );
 
-    $model->acl_allowed  = ($model->user &&
+    $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & (
         User::OPTION_ACL_NEWS_CREATE |
         User::OPTION_ACL_NEWS_MODIFY |
@@ -37,7 +38,10 @@ class News extends Controller {
     $query = $router->getRequestQueryArray();
     $page  = (isset($query["page"]) ? ((int) $query["page"]) - 1 : null);
 
-    $this->getNews($model, (!$view instanceof NewsRSSView), $page);
+    $this->getNews(
+      $model, ($view instanceof NewsRSSView),
+      (!$view instanceof NewsRSSView), $page
+    );
 
     $view->render($model);
 
@@ -49,15 +53,15 @@ class News extends Controller {
 
   }
 
-  protected function getNews(NewsModel &$model, $paginate, $page) {
+  protected function getNews(NewsModel &$model, $rss, $paginate, $page) {
     $model->news_posts = NewsPost::getAllNews(true);
 
-    // Remove news posts that are not published
-    if (!$model->acl_allowed && $model->news_posts) {
+    // Remove news posts that are not published or are RSS exempt
+    if ($model->news_posts) {
       $i = count($model->news_posts) - 1;
       while ($i >= 0) {
-        if (!($model->news_posts[$i]->getOptionsBitmask()
-          & NewsPost::OPTION_PUBLISHED)) {
+        if ((!$model->acl_allowed && !$model->news_posts[$i]->getPublished())
+          || ($rss && $model->news_posts[$i]->getRSSExempt())) {
           unset($model->news_posts[$i]);
         }
         --$i;

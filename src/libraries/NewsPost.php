@@ -20,8 +20,9 @@ use \StdClass;
 
 class NewsPost {
 
-  const OPTION_MARKDOWN  = 0x00000001;
-  const OPTION_PUBLISHED = 0x00000002;
+  const OPTION_MARKDOWN   = 0x00000001;
+  const OPTION_PUBLISHED  = 0x00000002;
+  const OPTION_RSS_EXEMPT = 0x00000004;
 
   protected $category_id;
   protected $content;
@@ -272,6 +273,10 @@ class NewsPost {
     return $this->options_bitmask & self::OPTION_PUBLISHED;
   }
 
+  public function getRSSExempt() {
+    return $this->options_bitmask & self::OPTION_RSS_EXEMPT;
+  }
+
   public function getOptionsBitmask() {
     return $this->options_bitmask;
   }
@@ -468,6 +473,14 @@ class NewsPost {
       $this->options_bitmask |= self::OPTION_PUBLISHED;
     } else {
       $this->options_bitmask &= ~self::OPTION_PUBLISHED;
+    }
+  }
+
+  public function setRSSExempt($value) {
+    if ($value) {
+      $this->options_bitmask |= self::OPTION_RSS_EXEMPT;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_RSS_EXEMPT;
     }
   }
 
