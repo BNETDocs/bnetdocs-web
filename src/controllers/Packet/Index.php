@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\Index as PacketIndexModel;
 use \BNETDocs\Views\Packet\IndexHtml as PacketIndexHtmlView;
 use \BNETDocs\Views\Packet\IndexJSON as PacketIndexJSONView;
@@ -22,7 +21,6 @@ class Index extends Controller {
 
     $model               = new PacketIndexModel();
     $model->packets      = Packet::getAllPackets();
-    $model->user_session = UserSession::load($router);
 
     // Alphabetically sort the packets for non-json
     if (!$view instanceof PacketIndexJSONView && $model->packets) {

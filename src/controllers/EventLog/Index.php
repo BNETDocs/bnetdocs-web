@@ -4,7 +4,6 @@ namespace BNETDocs\Controllers\EventLog;
 
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\EventLog\Index as EventLogIndexModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -17,9 +16,9 @@ class Index extends Controller {
 
     $model = new EventLogIndexModel();
 
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) : null);
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_EVENT_LOG_VIEW

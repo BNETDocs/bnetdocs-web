@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Legal as LegalModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -14,9 +13,7 @@ class Legal extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
 
     $model = new LegalModel();
-
-    $model->license      = file_get_contents("../LICENSE.txt");
-    $model->user_session = UserSession::load($router);
+    $model->license = file_get_contents("../LICENSE.txt");
 
     $view->render($model);
 

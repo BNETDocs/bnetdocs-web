@@ -10,6 +10,5 @@ class View extends Model {
   public $packet;
   public $packet_id;
   public $used_by;
-  public $user_session;
 
 }

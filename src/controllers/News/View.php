@@ -7,7 +7,6 @@ use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\View as NewsViewModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -20,11 +19,9 @@ class View extends Controller {
 
     $model = new NewsViewModel();
     $model->news_post_id = array_shift($args);
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) :
-                            null
-                           );
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & (

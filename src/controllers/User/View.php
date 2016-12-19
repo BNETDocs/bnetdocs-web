@@ -10,7 +10,6 @@ use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\User as UserLib;
 use \BNETDocs\Libraries\UserProfile;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\View as UserViewModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -23,9 +22,8 @@ class View extends Controller {
 
   public function &run(Router &$router, ViewLib &$view, array &$args) {
 
-    $model               = new UserViewModel();
-    $model->user_id      = array_shift($args);
-    $model->user_session = UserSession::load($router);
+    $model          = new UserViewModel();
+    $model->user_id = array_shift($args);
 
     $this->getUserInfo($model);
 

@@ -35,7 +35,6 @@ class View extends Model {
   public $user_est;
   public $user_id;
   public $user_profile;
-  public $user_session;
   public $website;
   public $website_uri;
 

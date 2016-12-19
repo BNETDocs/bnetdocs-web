@@ -9,7 +9,6 @@ use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Recaptcha;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\Register as UserRegisterModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -29,7 +28,6 @@ class Register extends Controller {
       Common::$config->recaptcha->sitekey,
       Common::$config->recaptcha->url
     );
-    $model->user_session = UserSession::load($router);
 
     if ($router->getRequestMethod() == "POST") {
       $this->tryRegister($router, $model);
@@ -49,7 +47,7 @@ class Register extends Controller {
     $data = $router->getRequestBodyArray();
     $model->email    = (isset($data["email"   ]) ? $data["email"   ] : null);
     $model->username = (isset($data["username"]) ? $data["username"] : null);
-    if (isset($model->user_session)) {
+    if (isset($_SESSION['user_id'])) {
       $model->error = "ALREADY_LOGGED_IN";
       return;
     }

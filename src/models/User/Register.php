@@ -8,7 +8,6 @@ class Register extends Model {
 
   public $email;
   public $recaptcha;
-  public $user_session;
   public $username;
 
 }

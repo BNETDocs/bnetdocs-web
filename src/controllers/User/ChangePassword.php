@@ -5,7 +5,6 @@ namespace BNETDocs\Controllers\User;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\ChangePassword as UserChangePasswordModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -20,7 +19,6 @@ class ChangePassword extends Controller {
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->error        = null;
-    $model->user_session = UserSession::load($router);
 
     if ($router->getRequestMethod() == "POST") {
       $this->tryChangePassword($router, $model);
@@ -39,7 +37,7 @@ class ChangePassword extends Controller {
   protected function tryChangePassword(
     Router &$router, UserChangePasswordModel &$model
   ) {
-    if (!isset($model->user_session)) {
+    if (!isset($_SESSION['user_id'])) {
       $model->error = "NOT_LOGGED_IN";
       return;
     }
@@ -59,7 +57,7 @@ class ChangePassword extends Controller {
       $model->error = "NONMATCHING_PASSWORD";
       return;
     }
-    $user = new User($model->user_session->user_id);
+    $user = new User($_SESSION['user_id']);
     if (!$user->checkPassword($pw1)) {
       $model->error = "PASSWORD_INCORRECT";
       return;
@@ -82,7 +80,7 @@ class ChangePassword extends Controller {
     }
     Logger::logEvent(
       "user_pw_change",
-      $model->user_session->user_id,
+      $_SESSION['user_id'],
       getenv("REMOTE_ADDR"),
       json_encode([
         "error"             => $model->error,

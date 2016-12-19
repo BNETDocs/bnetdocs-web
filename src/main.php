@@ -21,13 +21,13 @@
 namespace BNETDocs;
 
 use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\Session;
 use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Cache;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\GlobalErrorHandler;
 use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\Session;
 
 function main() {
 
@@ -48,8 +48,7 @@ function main() {
   ));
 
   Session::initialize(
-    Common::$config->memcache->session_server_string,
-    "sid"
+    Common::$config->memcache->session_server_string, 'sid'
   );
 
   Common::$cache = new Cache(
@@ -73,6 +72,8 @@ function main() {
     "BNETDocs\\Controllers\\",
     "BNETDocs\\Views\\"
   );
+
+  Session::checkLogin($router);
 
   if (Common::$config->bnetdocs->maintenance[0]) {
     $router->addRoute( // URL: *

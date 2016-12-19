@@ -10,6 +10,5 @@ class Create extends Model {
   public $origin;
   public $response;
   public $user;
-  public $user_session;
 
 }

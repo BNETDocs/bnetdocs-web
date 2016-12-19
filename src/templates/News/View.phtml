@@ -12,8 +12,7 @@ $attachments  = $this->getContext()->attachments;
 $comments     = $this->getContext()->comments;
 $object       = $this->getContext()->news_post;
 $object_id    = $this->getContext()->news_post_id;
-$user_session = $this->getContext()->user_session;
-$logged_in    = ($user_session ? new User($user_session->user_id) : null);
+$logged_in    = $this->getContext()->user;
 $logged_in_id = ($logged_in ? $logged_in->getId() : null);
 
 $title       = ($object ? $object->getTitle() : "News Post Not Found");

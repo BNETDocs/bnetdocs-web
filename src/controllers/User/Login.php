@@ -6,7 +6,6 @@ use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\Login as UserLoginModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -23,7 +22,6 @@ class Login extends Controller {
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->error        = null;
-    $model->user_session = UserSession::load($router);
 
     if ($router->getRequestMethod() == "POST") {
       $this->tryLogin($router, $model);
@@ -54,7 +52,7 @@ class Login extends Controller {
       return;
     }
     CSRF::invalidate($csrf_id);
-    if (isset($model->user_session)) {
+    if (isset($_SESSION['user_id'])) {
       $model->error = "ALREADY_LOGGED_IN";
     } else if (empty($email)) {
       $model->error = "EMPTY_EMAIL";
@@ -78,9 +76,8 @@ class Login extends Controller {
     }
     if ($model->error) return;
     $model->error        = false;
-    $model->password     = "";
-    $model->user_session = new UserSession($user->getId());
-    $model->user_session->save($router);
+    $model->password     = '';
+    $_SESSION['user_id'] = $user->getId();
     Logger::logEvent(
       "user_login",
       ($user ? $user->getId() : null),

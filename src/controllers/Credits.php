@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\Credits as CreditsLib;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Credits as CreditsModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -15,7 +14,6 @@ class Credits extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
 
     $model = new CreditsModel();
-    $model->user_session = UserSession::load($router);
 
     $this->getCredits($model);
 

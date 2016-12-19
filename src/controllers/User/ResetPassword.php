@@ -14,7 +14,6 @@ class ResetPassword extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
 
     $model = new UserResetPasswordModel();
-    $model->user_session = UserSession::load($router);
 
     $view->render($model);
 

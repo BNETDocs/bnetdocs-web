@@ -14,6 +14,5 @@ class Delete extends Model {
   public $id;
   public $title;
   public $user;
-  public $user_session;
 
 }

@@ -5,7 +5,6 @@ namespace BNETDocs\Controllers;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Pagination;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News as NewsModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -22,11 +21,10 @@ class News extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
 
     $model = new NewsModel();
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) :
-                            null
-                           );
+
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed  = ($model->user &&
       $model->user->getOptionsBitmask() & (

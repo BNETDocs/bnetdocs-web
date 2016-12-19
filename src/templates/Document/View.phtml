@@ -12,8 +12,10 @@ $attachments = $this->getContext()->attachments;
 $comments    = $this->getContext()->comments;
 $object_id   = $this->getContext()->document_id;
 $object      = $this->getContext()->document;
-$user_session = $this->getContext()->user_session;
-$logged_in    = ($user_session ? new User($user_session->user_id) : null);
+
+$logged_in = (
+  isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+);
 
 $title       = "Document Not Found";
 $description = "The requested document does not exist or could not be found.";

@@ -10,6 +10,5 @@ class Index extends Model {
   public $event_log;
   public $sum_event_log;
   public $user;
-  public $user_session;
 
 }

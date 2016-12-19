@@ -11,6 +11,5 @@ class View extends Model {
   public $comments;
   public $document;
   public $document_id;
-  public $user_session;
 
 }

@@ -8,7 +8,6 @@ use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\Create as NewsCreateModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -25,9 +24,9 @@ class Create extends Controller {
     $model->csrf_token      = CSRF::generate($model->csrf_id, 900); // 15 mins
     $model->error           = null;
     $model->news_categories = null;
-    $model->user_session    = UserSession::load($router);
-    $model->user            = (isset($model->user_session) ?
-                               new User($model->user_session->user_id) : null);
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed  = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_CREATE
@@ -97,7 +96,7 @@ class Create extends Controller {
     if ($markdown) $options_bitmask |= NewsPost::OPTION_MARKDOWN;
     if ($publish ) $options_bitmask |= NewsPost::OPTION_PUBLISHED;
 
-    $user_id = $model->user_session->user_id;
+    $user_id = $_SESSION['user_id'];
 
     try {
 

@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers\Packet;
 
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\Popular as PacketPopularModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -14,7 +13,6 @@ class Popular extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
 
     $model = new PacketPopularModel();
-    $model->user_session = UserSession::load($router);
 
     $view->render($model);
 

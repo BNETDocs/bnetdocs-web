@@ -8,7 +8,6 @@ use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\ServerMetric;
 use \BNETDocs\Libraries\ServerType;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Server\View as ServerViewModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -23,7 +22,6 @@ class View extends Controller {
 
     $model               = new ServerViewModel();
     $model->server_id    = array_shift($args);
-    $model->user_session = UserSession::load($router);
 
     try {
       $model->server      = new Server($model->server_id);

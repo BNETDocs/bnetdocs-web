@@ -6,8 +6,8 @@ use \CarlBennett\MVC\Libraries\Common;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 
-if (isset($this->getContext()->user_session)) {
-  $_header_user     = new User($this->getContext()->user_session->user_id);
+if (isset($_SESSION['user_id'])) {
+  $_header_user     = new User($_SESSION['user_id']);
   $_header_user_url = $_header_user->getURI();
   $_header_staff    = ($_header_user && $_header_user->isStaff());
 } else {

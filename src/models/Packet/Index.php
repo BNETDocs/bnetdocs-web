@@ -8,6 +8,5 @@ class Index extends Model {
 
   public $packets;
   public $sum_packets;
-  public $user_session;
 
 }

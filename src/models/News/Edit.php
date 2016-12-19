@@ -19,6 +19,5 @@ class Edit extends Model {
   public $published;
   public $title;
   public $user;
-  public $user_session;
 
 }

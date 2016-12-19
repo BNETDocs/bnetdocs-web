@@ -7,7 +7,6 @@ use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Product;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\View as PacketViewModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -38,8 +37,6 @@ class View extends Controller {
     } else {
       $model->used_by = null;
     }
-
-    $model->user_session = UserSession::load($router);
 
     $view->render($model);
 

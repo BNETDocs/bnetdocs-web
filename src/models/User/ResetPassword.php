@@ -10,6 +10,5 @@ class ResetPassword extends Model {
   public $csrf_token;
   public $email;
   public $error;
-  public $user_session;
 
 }

@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Index as DocumentIndexModel;
 use \BNETDocs\Views\Document\IndexHtml as DocumentIndexHtmlView;
 use \BNETDocs\Views\Document\IndexJSON as DocumentIndexJSONView;
@@ -21,7 +20,6 @@ class Index extends Controller {
 
     $model               = new DocumentIndexModel();
     $model->documents    = Document::getAllDocuments();
-    $model->user_session = UserSession::load($router);
 
     // Alphabetically sort the documents for HTML
     if ($view instanceof DocumentIndexHtmlView && $model->documents) {

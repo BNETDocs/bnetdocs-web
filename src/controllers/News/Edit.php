@@ -8,7 +8,6 @@ use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\Edit as NewsEditModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -36,9 +35,9 @@ class Edit extends Controller {
     $model->news_post       = null;
     $model->published       = null;
     $model->title           = null;
-    $model->user_session    = UserSession::load($router);
-    $model->user            = (isset($model->user_session) ?
-                               new User($model->user_session->user_id) : null);
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_MODIFY
@@ -119,7 +118,7 @@ class Edit extends Controller {
       $model->error = "EMPTY_CONTENT";
     }
 
-    $user_id = $model->user_session->user_id;
+    $user_id = $model->user->getId();
 
     try {
 

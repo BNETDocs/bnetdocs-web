@@ -10,6 +10,5 @@ class News extends Model {
   public $news_posts;
   public $pagination;
   public $user;
-  public $user_session;
 
 }

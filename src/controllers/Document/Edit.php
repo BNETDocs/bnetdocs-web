@@ -7,7 +7,6 @@ use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Edit as DocumentEditModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -33,9 +32,9 @@ class Edit extends Controller {
     $model->markdown     = null;
     $model->published    = null;
     $model->title        = null;
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) : null);
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY
@@ -107,7 +106,7 @@ class Edit extends Controller {
       $model->error = "EMPTY_CONTENT";
     }
 
-    $user_id = $model->user_session->user_id;
+    $user_id = $model->user->getId();
 
     try {
 

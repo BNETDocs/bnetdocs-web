@@ -14,6 +14,5 @@ class Create extends Model {
   public $markdown;
   public $title;
   public $user;
-  public $user_session;
 
 }

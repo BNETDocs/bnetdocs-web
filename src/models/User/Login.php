@@ -10,6 +10,5 @@ class Login extends Model {
   public $bad_password;
   public $email;
   public $password;
-  public $user_session;
 
 }

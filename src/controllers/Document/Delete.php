@@ -7,7 +7,6 @@ use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Delete as DocumentDeleteModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -27,9 +26,9 @@ class Delete extends Controller {
     $model->error        = null;
     $model->id           = (isset($data["id"]) ? $data["id"] : null);
     $model->title        = null;
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) : null);
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE
@@ -60,7 +59,7 @@ class Delete extends Controller {
   }
 
   protected function tryDelete(Router &$router, DocumentDeleteModel &$model) {
-    if (!isset($model->user_session)) {
+    if (!isset($model->user)) {
       $model->error = "NOT_LOGGED_IN";
       return;
     }
@@ -83,8 +82,8 @@ class Delete extends Controller {
 
     $model->error = false;
 
-    $id           = (int) $model->id;
-    $user_id      = $model->user_session->user_id;
+    $id      = (int) $model->id;
+    $user_id = $model->user->getId();
 
     try {
 

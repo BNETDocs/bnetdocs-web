@@ -4,7 +4,6 @@ namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\Server as ServerLib;
 use \BNETDocs\Libraries\ServerType as ServerTypeLib;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Servers as ServersModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -16,7 +15,6 @@ class Servers extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
 
     $model = new ServersModel();
-    $model->user_session = UserSession::load($router);
 
     $this->getServers($model);
 

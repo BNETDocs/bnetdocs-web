@@ -6,6 +6,4 @@ use \CarlBennett\MVC\Libraries\Model;
 
 class Logout extends Model {
 
-  public $user_session;
-
 }

@@ -6,7 +6,6 @@ use \BNETDocs\Libraries\Comment as CommentLib;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Comment\Create as CreateModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -20,16 +19,16 @@ class Create extends Controller {
 
     $model = new CreateModel();
 
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) : null);
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_CREATE
     );
 
     $code = 500;
-    if (!$model->user_session) {
+    if (!$model->user) {
       $model->response = ["error" => "Unauthorized"];
       $code = 403;
     } else if ($router->getRequestMethod() !== "POST") {
@@ -83,7 +82,7 @@ class Create extends Controller {
         $success = false;
       } else {
         $success = CommentLib::create(
-          $p_type, $p_id, $model->user_session->user_id, $content
+          $p_type, $p_id, $model->user->getId(), $content
         );
       }
 
@@ -98,7 +97,7 @@ class Create extends Controller {
     ];
 
     Logger::logEvent(
-      "comment_created_news", $model->user_session->user_id,
+      "comment_created_news", $model->user->getId(),
       getenv("REMOTE_ADDR"), json_encode($model->response)
     );
 

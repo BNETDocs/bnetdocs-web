@@ -12,6 +12,5 @@ class View extends Model {
   public $news_post;
   public $news_post_id;
   public $user;
-  public $user_session;
 
 }

@@ -6,7 +6,6 @@ use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\Create as DocumentCreateModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -22,9 +21,9 @@ class Create extends Controller {
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id, 900); // 15 mins
     $model->error        = null;
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) : null);
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_CREATE
@@ -84,7 +83,7 @@ class Create extends Controller {
     if ($markdown) $options_bitmask |= Document::OPTION_MARKDOWN;
     if ($publish ) $options_bitmask |= Document::OPTION_PUBLISHED;
 
-    $user_id = $model->user_session->user_id;
+    $user_id = $model->user->getId();
 
     try {
 

@@ -9,6 +9,5 @@ class Search extends Model {
   public $packets;
   public $query;
   public $sum_packets;
-  public $user_session;
 
 }

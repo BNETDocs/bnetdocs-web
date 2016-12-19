@@ -16,6 +16,5 @@ class Create extends Model {
   public $news_categories;
   public $title;
   public $user;
-  public $user_session;
 
 }

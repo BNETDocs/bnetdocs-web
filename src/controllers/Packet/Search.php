@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Packet\Search as PacketSearchModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -21,8 +20,6 @@ class Search extends Controller {
     if (!empty($model->query)) {
       $model->packets = Packet::getAllPacketsBySearch($model->query);
     }
-
-    $model->user_session = UserSession::load($router);
 
     // Remove packets that are not published
     if ($model->packets) {

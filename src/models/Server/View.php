@@ -11,6 +11,5 @@ class View extends Model {
   public $server_response_time;
   public $server_type;
   public $server_uptime;
-  public $user_session;
 
 }

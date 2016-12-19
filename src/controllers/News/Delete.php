@@ -7,7 +7,6 @@ use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\News\Delete as NewsDeleteModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -27,9 +26,9 @@ class Delete extends Controller {
     $model->id           = (isset($data["id"]) ? $data["id"] : null);
     $model->news_post    = null;
     $model->title        = null;
-    $model->user_session = UserSession::load($router);
-    $model->user         = (isset($model->user_session) ?
-                            new User($model->user_session->user_id) : null);
+    $model->user = (
+      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+    );
 
     $model->acl_allowed = ($model->user &&
       $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_DELETE
@@ -60,7 +59,7 @@ class Delete extends Controller {
   }
 
   protected function tryDelete(Router &$router, NewsDeleteModel &$model) {
-    if (!isset($model->user_session)) {
+    if (!isset($model->user)) {
       $model->error = "NOT_LOGGED_IN";
       return;
     }
@@ -83,8 +82,8 @@ class Delete extends Controller {
 
     $model->error = false;
 
-    $id           = (int) $model->id;
-    $user_id      = $model->user_session->user_id;
+    $id      = (int) $model->id;
+    $user_id = $model->user->getId();
 
     try {
 

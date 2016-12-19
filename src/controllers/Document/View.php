@@ -7,7 +7,6 @@ use \BNETDocs\Libraries\Attachment;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\Document\View as DocumentViewModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -39,8 +38,6 @@ class View extends Controller {
         $model->document_id
       );
     }
-
-    $model->user_session = UserSession::load($router);
 
     $view->render($model);
 

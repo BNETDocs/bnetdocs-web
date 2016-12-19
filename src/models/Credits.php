@@ -11,6 +11,5 @@ class Credits extends Model {
   public $top_contributors_by_news_posts;
   public $top_contributors_by_packets;
   public $top_contributors_by_servers;
-  public $user_session;
 
 }
