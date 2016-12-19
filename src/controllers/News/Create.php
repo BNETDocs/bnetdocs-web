@@ -43,7 +43,8 @@ class Create extends Controller {
     if ($router->getRequestMethod() == "POST") {
       $this->handlePost($router, $model);
     } else if ($router->getRequestMethod() == "GET") {
-      $model->markdown = true;
+      $model->markdown   = true;
+      $model->rss_exempt = false;
     }
 
     $view->render($model);
@@ -72,13 +73,15 @@ class Create extends Controller {
     $title      = (isset($data["title"     ]) ? $data["title"     ] : null);
     $markdown   = (isset($data["markdown"  ]) ? $data["markdown"  ] : null);
     $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
+    $rss_exempt = (isset($data["rss_exempt"]) ? $data["rss_exempt"] : null);
     $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
     $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
 
-    $model->category = $category;
-    $model->title    = $title;
-    $model->markdown = $markdown;
-    $model->content  = $content;
+    $model->category   = $category;
+    $model->title      = $title;
+    $model->markdown   = $markdown;
+    $model->content    = $content;
+    $model->rss_exempt = $rss_exempt;
 
     if (!$csrf_valid) {
       $model->error = "INVALID_CSRF";
@@ -93,8 +96,9 @@ class Create extends Controller {
     }
 
     $options_bitmask = 0;
-    if ($markdown) $options_bitmask |= NewsPost::OPTION_MARKDOWN;
-    if ($publish ) $options_bitmask |= NewsPost::OPTION_PUBLISHED;
+    if ($markdown  ) $options_bitmask |= NewsPost::OPTION_MARKDOWN;
+    if ($rss_exempt) $options_bitmask |= NewsPost::OPTION_RSS_EXEMPT;
+    if ($publish   ) $options_bitmask |= NewsPost::OPTION_PUBLISHED;
 
     $user_id = $_SESSION['user_id'];
 

@@ -83,11 +83,17 @@ require("./header.inc.phtml");
               ?></textarea>
           </section>
           <section>
-            <p>* Some RSS feed readers such as Feedly do not watch for updates, be sure this is your final draft before publishing.</p>
+            <input type="checkbox" name="rss_exempt" id="rss_exempt"
+              tabindex="5" value="1"<?php
+                if ($this->getContext()->rss_exempt)
+                  echo " checked=\"checked\"";
+              ?>/>
+            <label for="rss_exempt">Hide this news post from RSS feeds*</label>
+            <p style="font-size:small;padding-left:4px;">* Some RSS feed readers such as Feedly do not watch for updates, be sure this is your final draft before publishing.</p>
           </section>
           <section>
-            <input type="submit" name="publish" value="Publish" tabindex="5"/>
-            <input type="submit" name="save" value="Save as Draft" tabindex="6"/>
+            <input type="submit" name="publish" value="Publish" tabindex="6"/>
+            <input type="submit" name="save" value="Save as Draft" tabindex="7"/>
           </section>
         </form>
 <?php } else { ?>

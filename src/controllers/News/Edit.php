@@ -34,6 +34,7 @@ class Edit extends Controller {
     $model->news_post_id    = (isset($data["id"]) ? $data["id"] : null);
     $model->news_post       = null;
     $model->published       = null;
+    $model->rss_exempt      = null;
     $model->title           = null;
     $model->user = (
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
@@ -60,11 +61,12 @@ class Edit extends Controller {
         return ($oA < $oB) ? -1 : 1;
       });
 
-      $model->category  = $model->news_post->getCategoryId();
-      $model->content   = $model->news_post->getContent(false);
-      $model->markdown  = ($flags & NewsPost::OPTION_MARKDOWN);
-      $model->published = ($flags & NewsPost::OPTION_PUBLISHED);
-      $model->title     = $model->news_post->getTitle();
+      $model->category   = $model->news_post->getCategoryId();
+      $model->content    = $model->news_post->getContent(false);
+      $model->markdown   = ($flags & NewsPost::OPTION_MARKDOWN);
+      $model->published  = ($flags & NewsPost::OPTION_PUBLISHED);
+      $model->rss_exempt = ($flags & NewsPost::OPTION_RSS_EXEMPT);
+      $model->title      = $model->news_post->getTitle();
 
       if ($router->getRequestMethod() == "POST") {
         $this->handlePost($router, $model);
@@ -98,13 +100,15 @@ class Edit extends Controller {
     $title      = (isset($data["title"     ]) ? $data["title"     ] : null);
     $markdown   = (isset($data["markdown"  ]) ? $data["markdown"  ] : null);
     $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
+    $rss_exempt = (isset($data["rss_exempt"]) ? $data["rss_exempt"] : null);
     $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
     $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
 
-    $model->category = $category;
-    $model->title    = $title;
-    $model->markdown = $markdown;
-    $model->content  = $content;
+    $model->category   = $category;
+    $model->title      = $title;
+    $model->markdown   = $markdown;
+    $model->content    = $content;
+    $model->rss_exempt = $rss_exempt;
 
     if (!$csrf_valid) {
       $model->error = "INVALID_CSRF";
@@ -126,6 +130,7 @@ class Edit extends Controller {
       $model->news_post->setTitle($model->title);
       $model->news_post->setMarkdown($model->markdown);
       $model->news_post->setContent($model->content);
+      $model->news_post->setRSSExempt($model->rss_exempt);
       $model->news_post->setPublished($publish);
 
       $model->news_post->setEditedCount(

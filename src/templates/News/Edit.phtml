@@ -88,11 +88,17 @@ require("./header.inc.phtml");
               ?></textarea>
           </section>
           <section>
-            <p>* Some RSS feed readers such as Feedly do not automatically update, your updated content may not be reflected everywhere.</p>
+            <input type="checkbox" name="rss_exempt" id="rss_exempt"
+              tabindex="5" value="1"<?php
+                if ($this->getContext()->rss_exempt)
+                  echo " checked=\"checked\"";
+              ?>/>
+            <label for="rss_exempt">Hide this news post from RSS feeds*</label>
+            <p style="font-size:small;padding-left:4px;">* Some RSS feed readers such as Feedly do not automatically update, your updated content may not be reflected everywhere.</p>
           </section>
           <section>
-            <input type="submit" name="publish" value="Publish" tabindex="5"/>
-            <input type="submit" name="save" value="Unpublish" tabindex="6"/>
+            <input type="submit" name="publish" value="Publish" tabindex="6"/>
+            <input type="submit" name="save" value="Unpublish" tabindex="7"/>
           </section>
         </form>
 <?php } ?>

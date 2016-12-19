@@ -17,6 +17,7 @@ class Edit extends Model {
   public $news_post;
   public $news_post_id;
   public $published;
+  public $rss_exempt;
   public $title;
   public $user;
 

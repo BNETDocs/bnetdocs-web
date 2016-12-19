@@ -14,6 +14,7 @@ class Create extends Model {
   public $error;
   public $markdown;
   public $news_categories;
+  public $rss_exempt;
   public $title;
   public $user;
 
