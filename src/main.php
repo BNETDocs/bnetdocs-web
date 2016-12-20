@@ -111,8 +111,8 @@ function main() {
     $router->addRoute( // URL: /document/search
       "#^/document/search/?$#", "Document\\Search", "Document\\SearchHtml"
     );
-    $router->addRoute( // URL: /event-log/index
-      "#^/event-log/index/?$#", "EventLog\\Index", "EventLog\\IndexHtml"
+    $router->addRoute( // URL: /eventlog/index
+      "#^/eventlog/index/?$#", "EventLog\\Index", "EventLog\\IndexHtml"
     );
     $router->addRoute( // URL: /legal
       "#^/legal/?$#", "Legal", "LegalHtml"
