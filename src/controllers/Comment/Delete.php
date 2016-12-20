@@ -36,10 +36,10 @@ class Delete extends Controller {
     catch (CommentNotFoundException $e) { $model->comment = null; }
     catch (InvalidArgumentException $e) { $model->comment = null; }
 
-    $model->acl_allowed = ($model->user &&
-      ($model->user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE)
-      || ($model->user->getId() == $model->comment->getUserId())
-    );
+    $model->acl_allowed = ($model->user && (
+      $model->user->getAcl(User::OPTION_ACL_COMMENT_DELETE) ||
+      $model->user->getId() == $model->comment->getUserId()
+    ));
 
     if ($model->comment === null) {
       $model->error = "NOT_FOUND";

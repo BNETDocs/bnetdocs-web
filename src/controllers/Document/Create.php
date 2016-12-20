@@ -25,9 +25,9 @@ class Create extends Controller {
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
     );
 
-    $model->acl_allowed = ($model->user &&
-      $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_CREATE
-    );
+    $model->acl_allowed = ($model->user && $model->user->getAcl(
+      User::OPTION_ACL_DOCUMENT_CREATE
+    ));
 
     if ($router->getRequestMethod() == "POST") {
       $this->handlePost($router, $model);

@@ -27,13 +27,11 @@ class News extends Controller {
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
     );
 
-    $model->acl_allowed = ($model->user &&
-      $model->user->getOptionsBitmask() & (
-        User::OPTION_ACL_NEWS_CREATE |
-        User::OPTION_ACL_NEWS_MODIFY |
-        User::OPTION_ACL_NEWS_DELETE
-      )
-    );
+    $model->acl_allowed = ($model->user && $model->user->getAcl(
+      User::OPTION_ACL_NEWS_CREATE |
+      User::OPTION_ACL_NEWS_MODIFY |
+      User::OPTION_ACL_NEWS_DELETE
+    ));
 
     $query = $router->getRequestQueryArray();
     $page  = (isset($query["page"]) ? ((int) $query["page"]) - 1 : null);

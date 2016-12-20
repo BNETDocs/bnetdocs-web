@@ -20,9 +20,9 @@ class Index extends Controller {
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
     );
 
-    $model->acl_allowed = ($model->user &&
-      $model->user->getOptionsBitmask() & User::OPTION_ACL_EVENT_LOG_VIEW
-    );
+    $model->acl_allowed = ($model->user && $model->user->getAcl(
+      User::OPTION_ACL_EVENT_LOG_VIEW
+    ));
 
     if ($model->acl_allowed) {
       $model->event_log     = Logger::getAllEvents();

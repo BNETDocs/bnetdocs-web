@@ -30,9 +30,9 @@ class Delete extends Controller {
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
     );
 
-    $model->acl_allowed = ($model->user &&
-      $model->user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE
-    );
+    $model->acl_allowed = ($model->user && $model->user->getAcl(
+      User::OPTION_ACL_DOCUMENT_DELETE
+    ));
 
     try { $model->document = new Document($model->id); }
     catch (DocumentNotFoundException $e) { $model->document = null; }

@@ -23,9 +23,9 @@ class Create extends Controller {
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
     );
 
-    $model->acl_allowed = ($model->user &&
-      $model->user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_CREATE
-    );
+    $model->acl_allowed = ($model->user && $model->user->getAcl(
+      User::OPTION_ACL_COMMENT_CREATE
+    ));
 
     $code = 500;
     if (!$model->user) {

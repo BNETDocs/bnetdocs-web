@@ -28,9 +28,9 @@ class Create extends Controller {
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
     );
 
-    $model->acl_allowed  = ($model->user &&
-      $model->user->getOptionsBitmask() & User::OPTION_ACL_NEWS_CREATE
-    );
+    $model->acl_allowed = ($model->user && $model->user->getAcl(
+      User::OPTION_ACL_NEWS_CREATE
+    ));
 
     $model->news_categories = NewsCategory::getAll();
     usort($model->news_categories, function($a, $b){

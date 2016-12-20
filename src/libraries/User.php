@@ -235,6 +235,10 @@ class User implements JsonSerializable {
     return null;
   }
 
+  public function getAcl($acl) {
+    return ($this->options_bitmask & $acl);
+  }
+
   public function getAvatarURI($size) {
     return Common::relativeUrlToAbsolute(
       (new Gravatar($this->getEmail()))->getUrl($size, "identicon")
@@ -441,6 +445,14 @@ class User implements JsonSerializable {
       throw new QueryException("Cannot refresh user", $e);
     }
     return false;
+  }
+
+  public function setAcl($acl, $value) {
+    if ($value) {
+      $this->options_bitmask |= $acl;
+    } else {
+      $this->options_bitmask &= ~$acl;
+    }
   }
 
 }
