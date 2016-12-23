@@ -67,5 +67,9 @@ require("./header.inc.phtml");
             echo htmlentities($this->getContext()->license, ENT_HTML5, "UTF-8");
             ?></code></pre></p>
         </section>
+        <footer>
+          <!-- License Version: <?php echo $this->getContext()->license_version[0]; ?> -->
+          <time datetime="<?php echo $this->getContext()->license_version[1]->format('c'); ?>"><?php echo $this->getContext()->license_version[1]->format("l, F j, Y"); ?></time>
+        </footer>
       </article>
 <?php require("./footer.inc.phtml"); ?>
