@@ -86,13 +86,13 @@ require("./header.inc.phtml");
 <?php echo $object->getPacketRemarks(true); ?>
         </section>
         <footer>
+<?php if ($object->getEditedDateTime() !== null) { ?>
+          <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<?php echo $object->getEditedDateTime()->format('c'); ?>"><?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>
+<?php } else { ?>
+          <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
+<?php } ?>
 <?php if ($user_id !== null) { ?>
           <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
-<?php } ?>
-<?php if ($object->getEditedDateTime() !== null) { ?>
-          <span class="float-right"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?> | Edited: <?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></span>
-<?php } else { ?>
-          <span class="float-right"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></span>
 <?php } ?>
         </footer>
       </article>
