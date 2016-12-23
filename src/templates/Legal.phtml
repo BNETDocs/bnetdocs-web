@@ -68,8 +68,7 @@ require("./header.inc.phtml");
             ?></code></pre></p>
         </section>
         <footer>
-          <!-- License Version: <?php echo $this->getContext()->license_version[0]; ?> -->
-          <time datetime="<?php echo $this->getContext()->license_version[1]->format('c'); ?>"><?php echo $this->getContext()->license_version[1]->format("l, F j, Y"); ?></time>
+          <time datetime="<?php echo $this->getContext()->license_version[1]->format('c'); ?>"><?php echo $this->getContext()->license_version[1]->format("l, F j, Y"); ?></time> (<a href="https://github.com/BNETDocs/bnetdocs-web/commit/<?php echo $this->getContext()->license_version[0]; ?>">version</a>)
         </footer>
       </article>
 <?php require("./footer.inc.phtml"); ?>
