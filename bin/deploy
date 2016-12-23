@@ -85,10 +85,10 @@ printf "[2/4] Generating version information...\n"
 printf "$(git describe --always --tags)\n" \
   > ${SOURCE_DIRECTORY}/etc/.rsync-version
 # Version hash
-printf "$(git rev-parse HEAD)" \
+printf "$(git rev-parse HEAD)\n" \
   >> ${SOURCE_DIRECTORY}/etc/.rsync-version
 # Version ISO8601 timestamp
-printf "$(git log -n 1 --pretty='%aI' HEAD)" \
+printf "$(git log -n 1 --pretty='%aI' HEAD)\n" \
   >> ${SOURCE_DIRECTORY}/etc/.rsync-version
 # LICENSE version and ISO8601 timestamp
 printf "$(git log -n 1 --pretty='%h %aI' ./LICENSE.txt)" \
