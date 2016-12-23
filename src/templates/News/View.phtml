@@ -78,12 +78,12 @@ require("./header.inc.phtml");
 <?php } ?>
         <section class="news"><img class="category" alt="<?php echo $object->getCategory()->getLabel(); ?>" title="<?php echo $object->getCategory()->getLabel(); ?>" src="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/" . $object->getCategory()->getFilename()); ?>"/><?php echo $object->getContent(true); ?></section>
         <footer>
-          <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
 <?php if ($object->getEditedDateTime() !== null) { ?>
           <span class="float-right"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?> | Edited: <?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></span>
 <?php } else { ?>
           <span class="float-right"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></span>
 <?php } ?>
+          <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
         </footer>
       </article>
 <?php if ($attachments) { ?>
