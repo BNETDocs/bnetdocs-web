@@ -41,6 +41,9 @@ function main() {
 
   date_default_timezone_set('UTC');
 
+  // This must come after GlobalErrorHandler::createOverrides() because this
+  // will call Rollbar::init() which will create its own error handlers for
+  // Application Performance Monitoring (APM) purposes.
   Logger::initialize();
 
   Common::$config = json_decode(file_get_contents(

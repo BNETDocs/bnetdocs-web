@@ -2,21 +2,52 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Logger as LoggerMVCLib;
+use \BNETDocs\Libraries\Exceptions\QueryException;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \BNETDocs\Libraries\Exceptions\QueryException;
+use \CarlBennett\MVC\Libraries\Logger as LoggerMVCLib;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
+use \Rollbar;
 use \RuntimeException;
 
 class Logger extends LoggerMVCLib {
 
-  protected static $event_types        = null;
+  protected static $event_types       = null;
+  protected static $rollbar_available = false;
+
+  public static function initialize() {
+    parent::initialize();
+    if (Common::$config->rollbar->access_token) {
+      self::$rollbar_available = true;
+
+      $rollbar_handle_exceptions = false;
+      $rollbar_handle_errors     = true;
+      $rollbar_handle_fatal      = true;
+
+      Rollbar::init(
+        [
+          'access_token' => Common::$config->rollbar->access_token,
+          'environment'  => Common::$config->rollbar->environment,
+        ],
+        $rollbar_handle_exceptions,
+        $rollbar_handle_errors,
+        $rollbar_handle_fatal
+      );
+    }
+  }
+
+  public static function logException(Exception $exception) {
+    parent::logException($exception);
+    if (self::$rollbar_available) {
+      Rollbar::report_exception($exception);
+    }
+  }
 
   public static function &getAllEvents() {
     $event_log = [];
+    // TODO
     return $event_log;
   }
 
