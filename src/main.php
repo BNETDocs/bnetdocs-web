@@ -45,6 +45,8 @@ function main() {
     __DIR__ . "/../etc/config.phoenix.json"
   ));
 
+  VersionInfo::$version = VersionInfo::get();
+
   // This must come after GlobalErrorHandler::createOverrides() because this
   // will call Rollbar::init() which will create its own error handlers for
   // Application Performance Monitoring (APM) purposes. This must also come
@@ -70,8 +72,6 @@ function main() {
   DatabaseDriver::$servers       = Common::$config->mysql->servers;
   DatabaseDriver::$timeout       = Common::$config->mysql->timeout;
   DatabaseDriver::$username      = Common::$config->mysql->username;
-
-  VersionInfo::$version = VersionInfo::get();
 
   $router = new Router(
     "BNETDocs\\Controllers\\",
