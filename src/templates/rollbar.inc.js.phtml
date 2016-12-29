@@ -1,7 +1,7 @@
 <?php namespace BNETDocs\Templates; use CarlBennett\MVC\Libraries\Common; ?>
 <script>
 var _rollbarConfig = {
-    accessToken: "<?php echo Common::$config->rollbar->access_token; ?>",
+    accessToken: "<?php echo Common::$config->rollbar->access_token_client; ?>",
     captureUncaught: true,
     captureUnhandledRejections: true,
     payload: {

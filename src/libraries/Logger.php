@@ -29,7 +29,7 @@ class Logger extends LoggerMVCLib {
 
   public static function initialize() {
     parent::initialize();
-    if (Common::$config->rollbar->access_token) {
+    if (Common::$config->rollbar->access_token_server) {
       self::$rollbar_available = true;
 
       $rollbar_handle_exceptions = false;
@@ -38,7 +38,7 @@ class Logger extends LoggerMVCLib {
 
       Rollbar::init(
         [
-          'access_token' => Common::$config->rollbar->access_token,
+          'access_token' => Common::$config->rollbar->access_token_server,
           'environment'  => Common::$config->rollbar->environment,
         ],
         $rollbar_handle_exceptions,
