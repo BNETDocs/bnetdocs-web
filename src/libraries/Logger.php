@@ -60,7 +60,7 @@ class Logger extends LoggerMVCLib {
       Rollbar::init(
         [
           'access_token' => Common::$config->rollbar->access_token_server,
-          'code_version'        => VersionInfo::$version->bnetdocs[0];
+          'code_version'        => VersionInfo::$version->bnetdocs[0],
           'environment'         => Common::$config->rollbar->environment,
           'person_fn'           => 'Logger::getIdentityAsRollbar',
           'use_error_reporting' => true,
