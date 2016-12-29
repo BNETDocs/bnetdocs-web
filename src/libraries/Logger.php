@@ -17,6 +17,16 @@ class Logger extends LoggerMVCLib {
   protected static $event_types       = null;
   protected static $rollbar_available = false;
 
+  public static function getTimingHeader($tags = true) {
+    $buffer = parent::getTimingHeader($tags);
+    if (self::$rollbar_available) {
+      ob_start();
+      require('./templates/rollbar.inc.js.phtml');
+      $buffer .= ob_get_clean();
+    }
+    return $buffer;
+  }
+
   public static function initialize() {
     parent::initialize();
     if (Common::$config->rollbar->access_token) {

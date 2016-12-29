@@ -1,2 +1,3 @@
+/.rollbar-token
 /config.phoenix.json
 /config.redux.json

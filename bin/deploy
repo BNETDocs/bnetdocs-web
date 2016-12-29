@@ -9,6 +9,7 @@ TARGET_FILE="${SOURCE_DIRECTORY}/etc/deploy-targets.csv"
 TARGET_ENV=""
 SKIP_COMPOSER=0
 SKIP_CONFIRM=0
+ROLLBAR_ACCESS_TOKEN="$(cat ${SOURCE_DIRECTORY}/etc/.rollbar-token)"
 
 # Parameter handling
 OPTIND=1
@@ -69,7 +70,7 @@ fi
 # Break on non-success exit codes
 set -e
 
-printf "[1/4] Running composer update...\n"
+printf "[1/5] Running composer update...\n"
 if [ "${SKIP_COMPOSER}" -ne 1 ]; then
     if [ "${TARGET_ENV}" == "production" ]; then
         composer update -o --no-dev
@@ -80,7 +81,7 @@ else
     printf "skipping step as requested...\n"
 fi
 
-printf "[2/4] Generating version information...\n"
+printf "[2/5] Generating version information...\n"
 # Version identifier
 printf "$(git describe --always --tags)\n" \
   > ${SOURCE_DIRECTORY}/etc/.rsync-version
@@ -94,7 +95,14 @@ printf "$(git log -n 1 --pretty='%aI' HEAD)\n" \
 printf "$(git log -n 1 --pretty='%h %aI' ./LICENSE.txt)" \
   >> ${SOURCE_DIRECTORY}/etc/.rsync-version
 
-printf "[3/4] Syncing project to target...\n"
+printf "[3/5] Notifying application monitors...\n"
+/usr/bin/env curl https://api.rollbar.com/api/1/deploy/ \
+  -F access_token="${ROLLBAR_ACCESS_TOKEN}" \
+  -F environment="${TARGET_ENV}" \
+  -F revision="$(git describe --always --tags)" \
+  -F local_username="$(id -nu ${UID})"
+
+printf "[4/5] Syncing project to target...\n"
 pushd "${SOURCE_DIRECTORY}" >/dev/null
 OIFS=$IFS; IFS=,
 for host in ${TARGET_HOST}; do
@@ -106,7 +114,7 @@ done
 IFS=$OIFS
 popd >/dev/null
 
-printf "[4/4] Post-deploy clean up...\n"
+printf "[5/5] Post-deploy clean up...\n"
 rm ${SOURCE_DIRECTORY}/etc/.rsync-version
 
 printf "Operation complete!\n"
