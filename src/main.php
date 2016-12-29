@@ -41,14 +41,16 @@ function main() {
 
   date_default_timezone_set('UTC');
 
-  // This must come after GlobalErrorHandler::createOverrides() because this
-  // will call Rollbar::init() which will create its own error handlers for
-  // Application Performance Monitoring (APM) purposes.
-  Logger::initialize();
-
   Common::$config = json_decode(file_get_contents(
     __DIR__ . "/../etc/config.phoenix.json"
   ));
+
+  // This must come after GlobalErrorHandler::createOverrides() because this
+  // will call Rollbar::init() which will create its own error handlers for
+  // Application Performance Monitoring (APM) purposes. This must also come
+  // after assignment of Common::$config because we need the access token for
+  // Rollbar which is present in the config file only.
+  Logger::initialize();
 
   Session::initialize(
     Common::$config->memcache->session_server_string, 'sid'
