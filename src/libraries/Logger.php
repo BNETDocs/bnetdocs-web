@@ -4,6 +4,7 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;
+use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Logger as LoggerMVCLib;
@@ -59,8 +60,10 @@ class Logger extends LoggerMVCLib {
       Rollbar::init(
         [
           'access_token' => Common::$config->rollbar->access_token_server,
-          'environment'  => Common::$config->rollbar->environment,
-          'person_fn'    => 'Logger::getIdentityAsRollbar',
+          'code_version'        => VersionInfo::$version->bnetdocs[0];
+          'environment'         => Common::$config->rollbar->environment,
+          'person_fn'           => 'Logger::getIdentityAsRollbar',
+          'use_error_reporting' => true,
         ],
         $rollbar_handle_exceptions,
         $rollbar_handle_errors,
