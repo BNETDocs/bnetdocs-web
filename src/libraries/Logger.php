@@ -3,9 +3,11 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Logger as LoggerMVCLib;
+use \Exception;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
@@ -15,7 +17,21 @@ use \RuntimeException;
 class Logger extends LoggerMVCLib {
 
   protected static $event_types       = null;
+  protected static $identified_as     = null;
   protected static $rollbar_available = false;
+
+  public static function getIdentity() {
+    return self::$identified_as;
+  }
+
+  public static function getIdentityAsRollbar() {
+    $user = self::getIdentity();
+    return [
+      'email'    => $user->getEmail(),
+      'id'       => $user->getId(),
+      'username' => $user->getUsername(),
+    ];
+  }
 
   public static function getTimingHeader($tags = true) {
     $buffer = parent::getTimingHeader($tags);
@@ -25,6 +41,10 @@ class Logger extends LoggerMVCLib {
       $buffer .= ob_get_clean();
     }
     return $buffer;
+  }
+
+  public static function identifyAs(User $user) {
+    self::$identified_as = $user;
   }
 
   public static function initialize() {
@@ -40,6 +60,7 @@ class Logger extends LoggerMVCLib {
         [
           'access_token' => Common::$config->rollbar->access_token_server,
           'environment'  => Common::$config->rollbar->environment,
+          'person_fn'    => 'Logger::getIdentityAsRollbar',
         ],
         $rollbar_handle_exceptions,
         $rollbar_handle_errors,

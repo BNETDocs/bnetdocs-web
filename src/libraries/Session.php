@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Libraries;
 
+use BNETDocs\Libraries\Logger;
 use CarlBennett\MVC\Libraries\Router;
 use CarlBennett\MVC\Libraries\Session as BaseSession;
 
@@ -31,6 +32,10 @@ class Session extends BaseSession  {
         self::COOKIE_NAME, '', 0, true, true, // delete it
         getenv('HTTP_HOST'), '/'
       );
+    }
+    // Notify Logger
+    if (isset($_SESSION['user_id'])) {
+      Logger::identifyAs(new User((int) $_SESSION['user_id']));
     }
   }
 
