@@ -21,7 +21,7 @@ class Logger extends LoggerMVCLib {
     $buffer = parent::getTimingHeader($tags);
     if (self::$rollbar_available) {
       ob_start();
-      require('./templates/rollbar.inc.js.phtml');
+      require('../templates/rollbar.inc.js.phtml');
       $buffer .= ob_get_clean();
     }
     return $buffer;
