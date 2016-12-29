@@ -89,6 +89,12 @@ function main() {
     $router->addRoute( // URL: /
       "#^/$#", "Legacy", "LegacyHtml"
     );
+    $router->addRoute( // URL: /comment/create
+      "#^/comment/create/?$#", "CommentCreate", "CommentCreateHtml"
+    );
+    $router->addRoute( // URL: /comment/delete
+      "#^/comment/delete/?$#", "CommetDelete", "CommentDeleteHtml"
+    );
     $router->addRoute( // URL: /credits
       "#^/credits/?$#", "Credits", "CreditsHtml"
     );
