@@ -1,11 +1,15 @@
-<?php namespace BNETDocs\Templates; use CarlBennett\MVC\Libraries\Common; ?>
+<?php namespace BNETDocs\Templates;
+use BNETDocs\Libraries\Logger;
+use CarlBennett\MVC\Libraries\Common;
+?>
 <script>
 var _rollbarConfig = {
     accessToken: "<?php echo Common::$config->rollbar->access_token_client; ?>",
     captureUncaught: true,
     captureUnhandledRejections: true,
     payload: {
-        environment: "<?php echo Common::$config->rollbar->environment; ?>"
+        environment: "<?php echo Common::$config->rollbar->environment; ?>",
+        person: <?php echo json_encode(Logger::getIdentityAsRollbar()); ?>
     }
 };
 // Rollbar Snippet

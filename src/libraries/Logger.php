@@ -27,6 +27,7 @@ class Logger extends LoggerMVCLib {
 
   public static function getIdentityAsRollbar() {
     $user = self::getIdentity();
+    if (!$user) { return null; }
     return [
       'email'    => $user->getEmail(),
       'id'       => $user->getId(),
