@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "carlbennett/php-mvc",
-            "version": "2.3.5",
+            "version": "2.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carlbennett/php-mvc.git",
-                "reference": "f84e13267f3feafa18fbcfc3026fb1dfdae9f398"
+                "reference": "e5003f1715ecacc99216f4c3ae1baf6fefb37781"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/f84e13267f3feafa18fbcfc3026fb1dfdae9f398",
-                "reference": "f84e13267f3feafa18fbcfc3026fb1dfdae9f398",
+                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/e5003f1715ecacc99216f4c3ae1baf6fefb37781",
+                "reference": "e5003f1715ecacc99216f4c3ae1baf6fefb37781",
                 "shasum": ""
             },
             "require": {
@@ -66,7 +66,7 @@
                 "restful",
                 "system"
             ],
-            "time": "2016-12-03 23:07:45"
+            "time": "2016-12-29 02:24:19"
         },
         {
             "name": "rollbar/rollbar",

@@ -49,8 +49,8 @@ class Logger extends LoggerMVCLib {
     self::$identified_as = $user;
   }
 
-  public static function initialize() {
-    parent::initialize();
+  public static function initialize($override = false) {
+    parent::initialize($override);
     if (Common::$config->rollbar->access_token_server) {
       self::$rollbar_available = true;
 
