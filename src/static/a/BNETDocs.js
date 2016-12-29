@@ -108,7 +108,7 @@ function BNETDocs() {
   this.fTimeToLocale = function() {
     var timestamps = document.getElementsByTagName('time');
     for (var id in timestamps) {
-      if (self.isNumeric(id) &&
+      if (timestamps[id].attributes === undefined ||
         timestamps[id].attributes.datetime === undefined
       ) continue;
       var d = new Date(timestamps[id].attributes.datetime.value);
