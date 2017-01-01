@@ -345,11 +345,19 @@ ol.lower-latin {
   list-style-type: lower-latin;
 }
 blockquote {
+  background-color: rgba(128,128,128,0.15);
   background-image: url("/a/quote-symbol.png");
-  background-position: 0px -12px;
+  background-position: 4px -4px;
   background-repeat: no-repeat;
+  border-radius: 6px;
+  clear: both;
   margin: 0px;
-  padding: 0px 0px 0px 48px;
+  min-height: 38px;
+  padding: 1px 8px 1px 54px;
+}
+blockquote > ol,
+blockquote > ul {
+  padding-left: 22px;
 }
 table {
   border-collapse: collapse;
