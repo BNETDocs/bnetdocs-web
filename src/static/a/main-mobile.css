@@ -347,7 +347,7 @@ ol.lower-latin {
 blockquote {
   background-color: rgba(128,128,128,0.15);
   background-image: url("/a/quote-symbol.png");
-  background-position: 4px -4px;
+  background-position: 4px 0px;
   background-repeat: no-repeat;
   border-radius: 6px;
   clear: both;
