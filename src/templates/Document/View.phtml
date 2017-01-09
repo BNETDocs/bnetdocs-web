@@ -12,12 +12,11 @@ $attachments  = $this->getContext()->attachments;
 $comments     = $this->getContext()->comments;
 $object       = $this->getContext()->document;
 $object_id    = $this->getContext()->document_id;
-$logged_in    = $this->getContext()->user;
-$logged_in_id = ($logged_in ? $logged_in->getId() : null);
 
 $logged_in = (
   isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
 );
+$logged_in_id = ($logged_in ? $logged_in->getId() : null);
 
 $title       = "Document Not Found";
 $description = "The requested document does not exist or could not be found.";
