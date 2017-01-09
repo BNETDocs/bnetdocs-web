@@ -3,13 +3,13 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Credits;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Markdown;
 use \DateTime;
 use \DateTimeZone;
