@@ -90,10 +90,10 @@ function main() {
       "#^/$#", "Legacy", "LegacyHtml"
     );
     $router->addRoute( // URL: /comment/create
-      "#^/comment/create/?$#", "CommentCreate", "CommentCreateJSON"
+      "#^/comment/create/?$#", "Comment\\Create", "Comment\\CreateJSON"
     );
     $router->addRoute( // URL: /comment/delete
-      "#^/comment/delete/?$#", "CommentDelete", "CommentDeleteHtml"
+      "#^/comment/delete/?$#", "Comment\\Delete", "Comment\\DeleteHtml"
     );
     $router->addRoute( // URL: /credits
       "#^/credits/?$#", "Credits", "CreditsHtml"
