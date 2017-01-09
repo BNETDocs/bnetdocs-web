@@ -115,6 +115,7 @@ $c_delete_visible_master = ($logged_in && ($logged_in->getOptionsBitmask() & Use
 ?>
           <table class="comments"><tbody>
 <?php foreach ($comments as $c) {
+        $c_id          = $c->getId();
         $c_user        = $c->getUser();
         $c_user_name   = $c_user->getName();
         $c_user_id     = $c->getUserId();
