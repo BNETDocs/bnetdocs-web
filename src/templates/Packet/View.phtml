@@ -2,12 +2,19 @@
 
 namespace BNETDocs\Templates\Packet;
 
+use \BNETDocs\Libraries\Comment;
+use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
 $comments  = $this->getContext()->comments;
 $object_id = $this->getContext()->packet_id;
 $object    = $this->getContext()->packet;
+
+$logged_in = (
+  isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
+);
+$logged_in_id = ($logged_in ? $logged_in->getId() : null);
 
 $title       = "Packet Not Found";
 $description = "The requested packet does not exist or could not be found.";
@@ -21,9 +28,9 @@ if ($object) {
   $url       = $object->getURI();
   $packet_id = $object->getPacketId(true);
 
-  $title = htmlspecialchars($object->getPacketDirectionTag(), ENT_HTML5, "UTF-8")
-    . " " . $packet_id . " "
-    . htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8");
+  $title = $object->getPacketDirectionTag() . ' '
+    . $packet_id . ' '
+    . $object->getPacketName();
 
   $description = Common::stripUpTo(trim(filter_var(
     $object->getPacketRemarks(true), FILTER_SANITIZE_STRING
@@ -47,6 +54,7 @@ $this->opengraph->attach(new Pair("url", $url));
 
 $this->additional_css[] = "/a/packet.css";
 $this->additional_css[] = "/a/comments.css";
+if ($logged_in) $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
       <article>
@@ -54,24 +62,24 @@ require("./header.inc.phtml");
         <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
         <a href="https://twitter.com/share?text=<?php echo urlencode($packet_id . " " . $object->getPacketName()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-        <header><a href="<?php echo $url; ?>"><?php echo $title; ?></a></header>
+        <header><a href="<?php echo $url; ?>"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></a></header>
         <section>
           <table class="info"><tbody>
             <tr><th style="width:20%;">Message Id:</th><td><?php echo $packet_id; ?></td></tr>
-            <tr><th>Message Name:</th><td><?php echo htmlspecialchars($object->getPacketName(), ENT_HTML5, "UTF-8"); ?></td></tr>
-            <tr><th>Direction:</th><td><?php echo htmlspecialchars($object->getPacketDirectionLabel(), ENT_HTML5, "UTF-8"); ?></td></tr>
+            <tr><th>Message Name:</th><td><?php echo filter_var($object->getPacketName(), FILTER_SANITIZE_STRING); ?></td></tr>
+            <tr><th>Direction:</th><td><?php echo filter_var($object->getPacketDirectionLabel(), FILTER_SANITIZE_STRING); ?></td></tr>
             <tr><th>Used By:</th><td><?php
               $products = $this->getContext()->used_by;
               if (count($products) == 1) {
-                echo htmlspecialchars($products[0]->getLabel(), ENT_HTML5, "UTF-8");
+                echo filter_var($products[0]->getLabel(), FILTER_SANITIZE_STRING);
               } else {
                 $j = count($this->getContext()->used_by);
                 for ($i = 0; $i < $j; ++$i) {
-                  echo htmlspecialchars($this->getContext()->used_by[$i]->getLabel(), ENT_HTML5, "UTF-8");
+                  echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_STRING);
                   if ($i + 1 < $j) {
                     ++$i;
-                    echo ", ";
-                    echo htmlspecialchars($this->getContext()->used_by[$i]->getLabel(), ENT_HTML5, "UTF-8") . "<br/>";
+                    echo ', ';
+                    echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_STRING) . "<br/>";
                   } else {
                     echo "<br/>";
                   }
@@ -92,7 +100,7 @@ require("./header.inc.phtml");
           <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
 <?php } ?>
 <?php if ($user_id !== null) { ?>
-          <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
 <?php } ?>
         </footer>
       </article>
@@ -101,7 +109,10 @@ require("./header.inc.phtml");
         <section>
 <?php if (!$comments) { ?>
           <p class="center"><em>no one has commented yet.</em></p>
-<?php } else { ?>
+<?php } else {
+$c_edit_visible_master   = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
+$c_delete_visible_master = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
+?>
           <table class="comments"><tbody>
 <?php foreach ($comments as $c) {
         $c_user        = $c->getUser();
@@ -109,15 +120,30 @@ require("./header.inc.phtml");
         $c_user_id     = $c->getUserId();
         $c_user_url    = $c_user->getURI();
         $c_user_avatar = $c_user->getAvatarURI(22);
+
+        $c_edit_visible = ($c_user_id == $logged_in_id || $c_edit_visible_master);
+        $c_delete_visible = ($c_user_id == $logged_in_id || $c_delete_visible_master);
 ?>
-            <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo htmlspecialchars($c_user_name, ENT_HTML5, "UTF-8"); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><?php echo $c->getContent(true); ?></td></tr>
+            <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time><?php if ($c_delete_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/delete?id=" . urlencode($c_id)); ?>">Delete</a><?php } if ($c_edit_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/edit?id=" . urlencode($c_id)); ?>">Edit</a><?php } ?></td><td><?php echo $c->getContent(true); ?></td></tr>
 <?php } ?>
           </tbody></table>
 <?php } ?>
         </section>
+<?php if ($logged_in) { ?>
+        <section>
+          <hr/>
+          <form method="POST" action="<?php echo Common::relativeUrlToAbsolute("/comment/create"); ?>">
+            <input type="hidden" name="parent_type" value="<?php echo Comment::PARENT_TYPE_PACKET; ?>"/>
+            <input type="hidden" name="parent_id" value="<?php echo $object_id; ?>"/>
+            <p class="center"><label for="comment-content">Comment on this post:</label></p>
+            <p class="center"><textarea id="comment-content" name="content" cols="80" rows="5"></textarea></p>
+            <p class="center"><input type="submit" value="Comment"/></p>
+          </form>
+        </section>
+<?php } ?>
 <?php } else { ?>
-        <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
-        <section class="red"><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></section>
+        <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
+        <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
 <?php } ?>
       </article>
 <?php require("./footer.inc.phtml"); ?>

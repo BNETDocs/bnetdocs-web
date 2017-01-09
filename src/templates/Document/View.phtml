@@ -3,7 +3,6 @@
 namespace BNETDocs\Templates\Document;
 
 use \BNETDocs\Libraries\Comment;
-use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
@@ -65,7 +64,7 @@ require("./header.inc.phtml");
 <?php if ($delete_visible) { ?>
         <a href="<?php echo $delete_url; ?>" class="header-button float-right">Delete</a>
 <?php } ?>
-        <header><a href="<?php echo $url; ?>"><?php echo $title; ?></a></header>
+        <header><a href="<?php echo $url; ?>"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></a></header>
         <section>
 <?php echo $object->getContent(true); ?>
         </section>
