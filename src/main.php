@@ -1,7 +1,7 @@
 <?php
 /**
  *  BNETDocs, the Battle.net(TM) protocol documentation and discussion website
- *  Copyright (C) 2008-2016  Carl Bennett
+ *  Copyright (C) 2008-2017  Carl Bennett
  *  This file is part of BNETDocs.
  *
  *  BNETDocs is free software: you can redistribute it and/or modify
