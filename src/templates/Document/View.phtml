@@ -8,10 +8,12 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
-$attachments = $this->getContext()->attachments;
-$comments    = $this->getContext()->comments;
-$object_id   = $this->getContext()->document_id;
-$object      = $this->getContext()->document;
+$attachments  = $this->getContext()->attachments;
+$comments     = $this->getContext()->comments;
+$object       = $this->getContext()->document;
+$object_id    = $this->getContext()->document_id;
+$logged_in    = $this->getContext()->user;
+$logged_in_id = ($logged_in ? $logged_in->getId() : null);
 
 $logged_in = (
   isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
@@ -27,8 +29,8 @@ $url = Common::relativeUrlToAbsolute("/document/" . urlencode($object_id));
 if ($object) {
 
   $url         = $object->getURI();
-  $title       = htmlspecialchars($object->getTitle(), ENT_HTML5, "UTF-8");
 
+  $title       = $object->getTitle();
   $description = Common::stripUpTo(trim(filter_var(
     $object->getContent(true), FILTER_SANITIZE_STRING
   )), "\n", 300);
@@ -75,7 +77,7 @@ require("./header.inc.phtml");
           <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
 <?php } ?>
 <?php if ($user_id !== null) { ?>
-          <span class="float-left"><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo htmlspecialchars($user_name, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
 <?php } ?>
         </footer>
       </article>
@@ -95,7 +97,7 @@ require("./header.inc.phtml");
         $a_author_url    = $a_author_user->getURI();
         $a_author_avatar = $a_author_user->getAvatarURI(22);
 ?>
-            <tr><td><a href="<?php echo $a_url; ?>"><?php echo $a_filename; ?></a></td><td><?php echo $a_size; ?></td><td><?php echo $a_uploaddate; ?></td><td><a href="<?php echo $a_author_url; ?>"><img class="avatar" src="<?php echo $a_author_avatar; ?>"/> <?php echo htmlspecialchars($a_author_name, ENT_HTML5, "UTF-8"); ?></a></td></tr>
+            <tr><td><a href="<?php echo $a_url; ?>"><?php echo $a_filename; ?></a></td><td><?php echo $a_size; ?></td><td><?php echo $a_uploaddate; ?></td><td><a href="<?php echo $a_author_url; ?>"><img class="avatar" src="<?php echo $a_author_avatar; ?>"/> <?php echo filter_var($a_author_name, FILTER_SANITIZE_STRING); ?></a></td></tr>
 <?php } ?>
           </tbody></table>
         </section>
@@ -106,23 +108,42 @@ require("./header.inc.phtml");
         <section>
 <?php if (!$comments) { ?>
           <p class="center"><em>no one has commented yet.</em></p>
-<?php } else { ?>
+<?php } else {
+$c_edit_visible_master   = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
+$c_delete_visible_master = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
+?>
           <table class="comments"><tbody>
 <?php foreach ($comments as $c) {
+        $c_id          = $c->getId();
         $c_user        = $c->getUser();
         $c_user_name   = $c_user->getName();
         $c_user_id     = $c->getUserId();
         $c_user_url    = $c_user->getURI();
         $c_user_avatar = $c_user->getAvatarURI(22);
+
+        $c_edit_visible = ($c_user_id == $logged_in_id || $c_edit_visible_master);
+        $c_delete_visible = ($c_user_id == $logged_in_id || $c_delete_visible_master);
 ?>
-            <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo htmlspecialchars($c_user_name, ENT_HTML5, "UTF-8"); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><?php echo $c->getContent(true); ?></td></tr>
+            <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time><?php if ($c_delete_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/delete?id=" . urlencode($c_id)); ?>">Delete</a><?php } if ($c_edit_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/edit?id=" . urlencode($c_id)); ?>">Edit</a><?php } ?></td><td><?php echo $c->getContent(true); ?></td></tr>
 <?php } ?>
           </tbody></table>
 <?php } ?>
         </section>
+<?php if ($logged_in) { ?>
+        <section>
+          <hr/>
+          <form method="POST" action="<?php echo Common::relativeUrlToAbsolute("/comment/create"); ?>">
+            <input type="hidden" name="parent_type" value="<?php echo Comment::PARENT_TYPE_DOCUMENT; ?>"/>
+            <input type="hidden" name="parent_id" value="<?php echo $object_id; ?>"/>
+            <p class="center"><label for="comment-content">Comment on this post:</label></p>
+            <p class="center"><textarea id="comment-content" name="content" cols="80" rows="5"></textarea></p>
+            <p class="center"><input type="submit" value="Comment"/></p>
+          </form>
+        </section>
+<?php } ?>
 <?php } else { ?>
-        <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
-        <section class="red"><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></section>
+        <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
+        <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
 <?php } ?>
       </article>
 <?php require("./footer.inc.phtml"); ?>
