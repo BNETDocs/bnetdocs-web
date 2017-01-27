@@ -3,6 +3,7 @@
 namespace BNETDocs\Models;
 
 use \CarlBennett\MVC\Libraries\Model;
+use \DateTimeInterface;
 use \JsonSerializable;
 
 class Status extends Model implements JsonSerializable {
@@ -18,14 +19,18 @@ class Status extends Model implements JsonSerializable {
   public $version_info;
 
   public function jsonSerialize() {
+    $timestamp = $this->timestamp;
+    if ($timestamp instanceof DateTimeInterface) {
+      $timestamp = [
+        'iso'  =>       $this->timestamp->format('r'),
+        'unix' => (int) $this->timestamp->format('U'),
+      ];
+    }
     return [
       'healthcheck'    => $this->healthcheck,
       'remote_address' => $this->remote_address,
       'remote_geoinfo' => $this->remote_geoinfo,
-      'timestamp'      => [
-        'iso'  =>       $this->timestamp->format('r'),
-        'unix' => (int) $this->timestamp->format('U'),
-      ],
+      'timestamp'      => $timestamp,
       'version_info'   => $this->version_info,
     ];
   }
