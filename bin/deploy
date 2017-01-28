@@ -103,6 +103,7 @@ printf "[3/5] Notifying application monitors...\n"
   -F local_username="$(id -nu ${UID})"
 
 printf "[4/5] Syncing project to target...\n"
+set -x
 pushd "${SOURCE_DIRECTORY}" >/dev/null
 OIFS=$IFS; IFS=,
 for host in ${TARGET_HOST}; do
@@ -113,6 +114,7 @@ for host in ${TARGET_HOST}; do
 done
 IFS=$OIFS
 popd >/dev/null
+set +x
 
 printf "[5/5] Post-deploy clean up...\n"
 rm ${SOURCE_DIRECTORY}/etc/.rsync-version
