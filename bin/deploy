@@ -110,7 +110,7 @@ for host in ${TARGET_HOST}; do
     rsync -avzc --delete --delete-excluded --delete-after --progress \
         --exclude-from="./etc/deploy-ignore.txt" \
         --chown=jenkins:www-data \
-        "./" ${TARGET_HOST}:"${TARGET_DIRECTORY}"
+        "./" ${host}:"${TARGET_DIRECTORY}"
 done
 IFS=$OIFS
 popd >/dev/null
