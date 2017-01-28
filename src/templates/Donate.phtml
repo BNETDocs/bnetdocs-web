@@ -1,0 +1,33 @@
+<?php
+
+namespace BNETDocs\Templates;
+
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title       = "Donate";
+$description = "Donate to BNETDocs to show your support for this project!";
+
+$this->opengraph->attach(new Pair("url", "/donate"));
+$this->opengraph->attach(new Pair("type", "article"));
+
+require("./header.inc.phtml");
+?>
+      <article>
+        <header>Disclaimer</header>
+        <section>
+          <p>By donating to BNETDocs, you understand the following:</p>
+          <p><ol>
+            <li>The donation is non-refundable.</li>
+            <li>The donation's purpose is to pay for hosting of this website and all associated costs, and to further the development of open-source software (OSS).</li>
+            <li>A donation is not acceptable as payment for goods, products, or merchant items.</li>
+            <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net&trade;'s Terms of Service.</li>
+          </ol></p>
+          <p>Please see our <a href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>">Legal Policies</a> for more info.</p>
+        </section>
+        <header>Bitcoin (BTC)</header>
+        <section>
+          <p>Please send your donation to: <code><?php echo $this->getContext()->btc_address; ?></code></p>
+        </section>
+      </article>
+<?php require("./footer.inc.phtml"); ?>
