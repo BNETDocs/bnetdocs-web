@@ -47,11 +47,10 @@ function main() {
 
   VersionInfo::$version = VersionInfo::get();
 
-  // This must come after GlobalErrorHandler::createOverrides() because this
-  // will call Rollbar::init() which will create its own error handlers for
-  // Application Performance Monitoring (APM) purposes. This must also come
-  // after assignment of Common::$config because we need the access token for
-  // Rollbar which is present in the config file only.
+  // This must come after GlobalErrorHandler::createOverrides() so that Logger
+  // has a chance to create its own error handlers for Application Performance
+  // Monitoring (APM) purposes. This must also come after assignment of
+  // Common::$config because we may need access tokens from the config.
   Logger::initialize();
 
   Session::initialize(

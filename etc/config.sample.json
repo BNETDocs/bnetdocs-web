@@ -48,10 +48,5 @@
     "secret": "google-provided-value",
     "sitekey": "google-provided-value",
     "url": "https://www.google.com/recaptcha/api/siteverify"
-  },
-  "rollbar": {
-    "access_token_client": null,
-    "access_token_server": null,
-    "environment": "local"
   }
 }

@@ -12,73 +12,11 @@ use \Exception;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
-use \Rollbar;
 use \RuntimeException;
 
 class Logger extends LoggerMVCLib {
 
-  protected static $event_types       = null;
-  protected static $identified_as     = null;
-  protected static $rollbar_available = false;
-
-  public static function getIdentity() {
-    return self::$identified_as;
-  }
-
-  public static function getIdentityAsRollbar() {
-    $user = self::getIdentity();
-    if (!$user) { return null; }
-    return [
-      'email'    => $user->getEmail(),
-      'id'       => $user->getId(),
-      'username' => $user->getUsername(),
-    ];
-  }
-
-  public static function getTimingHeader($tags = true) {
-    $buffer = parent::getTimingHeader($tags);
-    if (self::$rollbar_available) {
-      ob_start();
-      require('../templates/rollbar.inc.js.phtml');
-      $buffer .= ob_get_clean();
-    }
-    return $buffer;
-  }
-
-  public static function identifyAs(User $user) {
-    self::$identified_as = $user;
-  }
-
-  public static function initialize($override = false) {
-    parent::initialize($override);
-    if (Common::$config->rollbar->access_token_server) {
-      self::$rollbar_available = true;
-
-      $rollbar_handle_exceptions = false;
-      $rollbar_handle_errors     = true;
-      $rollbar_handle_fatal      = true;
-
-      Rollbar::init(
-        [
-          'access_token' => Common::$config->rollbar->access_token_server,
-          'code_version'        => VersionInfo::$version->bnetdocs[0],
-          'environment'         => Common::$config->rollbar->environment,
-          'person_fn'           => 'Logger::getIdentityAsRollbar',
-          'use_error_reporting' => true,
-        ],
-        $rollbar_handle_exceptions,
-        $rollbar_handle_errors,
-        $rollbar_handle_fatal
-      );
-    }
-  }
-
-  public static function logException(Exception $exception) {
-    parent::logException($exception);
-    if (self::$rollbar_available) {
-      Rollbar::report_exception($exception);
-    }
-  }
+  protected static $event_types = null;
 
   public static function &getAllEvents() {
     $event_log = [];
