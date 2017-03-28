@@ -485,4 +485,119 @@ class Packet {
     return false;
   }
 
+  public function save() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        UPDATE
+          `packets`
+        SET
+          `created_datetime` = :created_dt,
+          `edited_count` = :edited_count,
+          `edited_datetime` = :edited_dt,
+          `options_bitmask` = :options,
+          `packet_application_layer_id` = :application_layer_id,
+          `packet_direction_id` = :direction_id,
+          `packet_format` = :format,
+          `packet_name` = :name,
+          `packet_remarks` = :remarks,
+          `packet_transport_layer_id` = :transport_layer_id,
+          `user_id` = :user_id
+        WHERE
+          `id` = :id
+        LIMIT 1;
+      ");
+      $stmt->bindParam(
+        ":application_layer_id", $this->packet_application_layer_id,
+        PDO::PARAM_INT
+      );
+      $stmt->bindParam(":created_dt", $this->created_datetime, PDO::PARAM_INT);
+      $stmt->bindParam(":edited_count", $this->edited_count, PDO::PARAM_INT);
+      $stmt->bindParam(":edited_dt", $this->edited_datetime, PDO::PARAM_INT);
+      $stmt->bindParam(
+        ":direction_id", $this->packet_direction_id, PDO::PARAM_INT
+      );
+      $stmt->bindParam(":format", $this->packet_format, PDO::PARAM_STR);
+      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(":name", $this->packet_name, PDO::PARAM_STR);
+      $stmt->bindParam(":options", $this->options_bitmask, PDO::PARAM_INT);
+      $stmt->bindParam(":remarks", $this->packet_remarks, PDO::PARAM_STR);
+      $stmt->bindParam(
+        ":transport_layer_id", $this->packet_transport_layer_id,
+        PDO::PARAM_INT
+      );
+      $stmt->bindParam(":user_id", $this->user_id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException("Cannot save document");
+      }
+      $stmt->closeCursor();
+
+      $object                              = new StdClass();
+      $object->created_datetime            = $this->created_datetime;
+      $object->edited_count                = $this->edited_count;
+      $object->edited_datetime             = $this->edited_datetime;
+      $object->id                          = $this->id;
+      $object->options_bitmask             = $this->options_bitmask;
+      $object->packet_application_layer_id = $this->packet_application_layer_id;
+      $object->packet_direction_id         = $this->packet_direction_id;
+      $object->packet_format               = $this->packet_format;
+      $object->packet_id                   = $this->packet_id;
+      $object->packet_name                 = $this->packet_name;
+      $object->packet_remarks              = $this->packet_remarks;
+      $object->packet_transport_layer_id   = $this->packet_transport_layer_id;
+      $object->user_id                     = $this->user_id;
+
+      $cache_key = "bnetdocs-packet-" . $this->id;
+      Common::$cache->set($cache_key, serialize($object), 300);
+      Common::$cache->delete("bnetdocs-packets");
+
+      return true;
+    } catch (PDOException $e) {
+      throw new QueryException("Cannot save packet", $e);
+    }
+    return false;
+  }
+
+  public function setEditedCount($value) {
+    $this->edited_count = $value;
+  }
+
+  public function setEditedDateTime(\DateTime $value) {
+    $this->edited_datetime = $value->format("Y-m-d H:i:s");
+  }
+
+  public function setMarkdown($value) {
+    if ($value) {
+      $this->options_bitmask |= self::OPTION_MARKDOWN;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_MARKDOWN;
+    }
+  }
+
+  public function setPacketFormat($value) {
+    $this->packet_format = $value;
+  }
+
+  public function setPacketId($value) {
+    $this->packet_id = $value;
+  }
+
+  public function setPacketName($value) {
+    $this->packet_name = $value;
+  }
+
+  public function setPacketRemarks($value) {
+    $this->packet_remarks = $value;
+  }
+
+  public function setPublished($value) {
+    if ($value) {
+      $this->options_bitmask |= self::OPTION_PUBLISHED;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_PUBLISHED;
+    }
+  }
+
 }

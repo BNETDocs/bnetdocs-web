@@ -1,22 +1,23 @@
 <?php
 
-namespace BNETDocs\Models\Document;
+namespace BNETDocs\Models\Packet;
 
 use \CarlBennett\MVC\Libraries\Model;
 
 class Edit extends Model {
 
   public $acl_allowed;
-  public $category;
-  public $content;
   public $csrf_id;
   public $csrf_token;
-  public $document;
-  public $document_id;
   public $error;
+  public $format;
+  public $id;
   public $markdown;
+  public $name;
+  public $packet;
+  public $packet_id;
   public $published;
-  public $title;
+  public $remarks;
   public $user;
 
 }

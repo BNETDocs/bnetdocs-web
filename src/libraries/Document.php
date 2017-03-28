@@ -367,13 +367,13 @@ class Document {
           `id` = :id
         LIMIT 1;
       ");
-      $stmt->bindParam(":content", $this->content, PDO::PARAM_INT);
+      $stmt->bindParam(":content", $this->content, PDO::PARAM_STR);
       $stmt->bindParam(":created_dt", $this->created_datetime, PDO::PARAM_INT);
       $stmt->bindParam(":edited_count", $this->edited_count, PDO::PARAM_INT);
       $stmt->bindParam(":edited_dt", $this->edited_datetime, PDO::PARAM_INT);
       $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
       $stmt->bindParam(":options", $this->options_bitmask, PDO::PARAM_INT);
-      $stmt->bindParam(":title", $this->title, PDO::PARAM_INT);
+      $stmt->bindParam(":title", $this->title, PDO::PARAM_STR);
       $stmt->bindParam(":user_id", $this->user_id, PDO::PARAM_INT);
       if (!$stmt->execute()) {
         throw new QueryException("Cannot save document");
