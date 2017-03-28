@@ -23,11 +23,14 @@ switch ($this->getContext()->error) {
       . "edit packet form expired, or this may have been a malicious attempt"
       . "to create a packet.";
     break;
-  case "EMPTY_TITLE":
-    $message = "The title of the packet is required.";
+  case "EMPTY_NAME":
+    $message = "The name of the packet is required.";
     break;
-  case "EMPTY_CONTENT":
-    $message = "The content of the packet is required.";
+  case "EMPTY_FORMAT":
+    $message = "The format of the packet is required.";
+    break;
+  case "EMPTY_REMARKS":
+    $message = "The remarks of the packet is required.";
     break;
   case "INTERNAL_ERROR":
     $message = "An internal error occurred while processing your request. "
@@ -56,30 +59,37 @@ require("./header.inc.phtml");
             htmlspecialchars($this->getContext()->csrf_token, ENT_HTML5, "UTF-8");
           ?>"/>
           <section>
-            <label for="title">Title:</label><br/>
-            <input type="text" name="title" id="title" tabindex="1" required
+            <label for="title">Name:</label><br/>
+            <input type="text" name="name" id="name" tabindex="1" required
               autofocus="autofocus" value="<?php echo
-                filter_var($this->getContext()->title, FILTER_SANITIZE_STRING);
+                filter_var($this->getContext()->name, FILTER_SANITIZE_STRING);
               ?>"/>
           </section>
           <section>
-            <label for="content">Content:</label>
+            <label for="format">Remarks:</label>
+            <textarea name="format" id="format" tabindex="2" required
+              style="height:200px;"><?php echo
+                htmlspecialchars($this->getContext()->format, ENT_HTML5, "UTF-8");
+              ?></textarea>
+          </section>
+          <section>
+            <label for="remarks">Remarks:</label>
             <span style="float:right;">
               <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
-              <input type="checkbox" name="markdown" id="markdown" tabindex="3"
+              <input type="checkbox" name="markdown" id="markdown" tabindex="4"
                 title="Use markdown or use raw HTML" value="1"<?php
                   if ($this->getContext()->markdown)
                     echo " checked=\"checked\"";
                 ?>/>
             </span>
-            <textarea name="content" id="content" tabindex="2" required
+            <textarea name="remarks" id="remarks" tabindex="3" required
               style="height:200px;"><?php echo
-                htmlspecialchars($this->getContext()->content, ENT_HTML5, "UTF-8");
+                htmlspecialchars($this->getContext()->remarks, ENT_HTML5, "UTF-8");
               ?></textarea>
           </section>
           <section>
-            <input type="submit" name="publish" value="Publish" tabindex="4"/>
-            <input type="submit" name="save" value="Unpublish" tabindex="5"/>
+            <input type="submit" name="publish" value="Publish" tabindex="5"/>
+            <input type="submit" name="save" value="Unpublish" tabindex="6"/>
           </section>
         </form>
 <?php } ?>

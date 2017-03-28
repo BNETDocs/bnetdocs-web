@@ -7,15 +7,16 @@ use \CarlBennett\MVC\Libraries\Model;
 class Edit extends Model {
 
   public $acl_allowed;
-  public $content;
   public $csrf_id;
   public $csrf_token;
-  public $document;
-  public $document_id;
   public $error;
+  public $format;
   public $markdown;
+  public $name;
+  public $packet;
+  public $packet_id;
   public $published;
-  public $title;
+  public $remarks;
   public $user;
 
 }
