@@ -19,9 +19,9 @@ switch ($this->getContext()->error) {
     $message = "Cannot find document by that id.";
     break;
   case "INVALID_CSRF":
-    $message = "The Cross-Site Request Forgery token was invalid. Either the"
-      . "edit document form expired, or this may have been a malicious attempt"
-      . "to create a document.";
+    $message = "The Cross-Site Request Forgery token was invalid. Either the "
+      . "edit document form expired, or this may have been a malicious "
+      . "attempt to create a document.";
     break;
   case "EMPTY_TITLE":
     $message = "The title of the document is required.";
