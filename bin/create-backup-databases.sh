@@ -40,8 +40,8 @@ printf "[1/4] Getting path of current project...\n"
 SRCDIR="$(git rev-parse --show-toplevel)"
 
 printf "[2/4] Creating new backup directory...\n"
-BKUPDIR="${SRCDIR}/tmp/$(date +%Y%m%d-%H%M)"
-mkdir -v "${BKUPDIR}"
+BKUPDIR="${SRCDIR}/tmp/sql-backups/$(date +%Y%m%d-%H%M)"
+mkdir -v -p "${BKUPDIR}"
 
 printf "[3/4] Dumping BNETDocs Redux database...\n"
 mysqldump --host="${MYSQLHOST}" --user="${MYSQLUSER}" \
