@@ -163,6 +163,9 @@ function main() {
     //$router->addRoute( // URL: /packet/create
     //  "#^/packet/create/?$#", "Packet\\Create", "Packet\\CreateHtml"
     //);
+    $router->addRoute( // URL: /packet/edit
+      "#^/packet/edit/?$#", "Packet\\Edit", "Packet\\EditHtml"
+    );
     $router->addRoute( // URL: /packet/index.cpp
       "#^/packet/index\.cpp/?$#", "Packet\\Index", "Packet\\IndexCpp"
     );
