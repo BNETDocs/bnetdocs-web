@@ -11,6 +11,7 @@ class Edit extends Model {
   public $csrf_token;
   public $error;
   public $format;
+  public $id;
   public $markdown;
   public $name;
   public $packet;

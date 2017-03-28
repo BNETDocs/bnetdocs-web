@@ -27,6 +27,7 @@ class Edit extends Controller {
     $model->csrf_token = CSRF::generate($model->csrf_id, 900); // 15 mins
     $model->error      = null;
     $model->format     = null;
+    $model->id         = null;
     $model->markdown   = null;
     $model->name       = null;
     $model->packet     = null;
@@ -50,8 +51,9 @@ class Edit extends Controller {
     } else {
       $flags = $model->packet->getOptionsBitmask();
 
-      $model->format    = $model->packet->getPacketFormat();
+      $model->id        = $model->packet->getPacketId();
       $model->name      = $model->packet->getPacketName();
+      $model->format    = $model->packet->getPacketFormat();
       $model->remarks   = $model->packet->getPacketRemarks(false);
       $model->markdown  = ($flags & Packet::OPTION_MARKDOWN);
       $model->published = ($flags & Packet::OPTION_PUBLISHED);
@@ -84,6 +86,7 @@ class Edit extends Controller {
     $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
     $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
+    $id         = (isset($data["id"        ]) ? $data["id"        ] : null);
     $name       = (isset($data["name"      ]) ? $data["name"      ] : null);
     $format     = (isset($data["format"    ]) ? $data["format"    ] : null);
     $remarks    = (isset($data["remarks"   ]) ? $data["remarks"   ] : null);
@@ -92,6 +95,7 @@ class Edit extends Controller {
     $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
     $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
 
+    $model->id       = $id;
     $model->name     = $name;
     $model->format   = $format;
     $model->remarks  = $remarks;
@@ -116,6 +120,7 @@ class Edit extends Controller {
 
     try {
 
+      $model->packet->setPacketId($model->id);
       $model->packet->setPacketName($model->name);
       $model->packet->setPacketFormat($model->format);
       $model->packet->setPacketRemarks($model->remarks);

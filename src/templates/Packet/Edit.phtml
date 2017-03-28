@@ -59,15 +59,23 @@ require("./header.inc.phtml");
             htmlspecialchars($this->getContext()->csrf_token, ENT_HTML5, "UTF-8");
           ?>"/>
           <section>
-            <label for="title">Name:</label><br/>
-            <input type="text" name="name" id="name" tabindex="1" required
+            <label for="id">Id:</label>
+            <em style="float:right;">(base 10 / decimal format)</em><br/>
+            <input type="text" name="id" id="id" tabindex="1" required
               autofocus="autofocus" value="<?php echo
+                filter_var($this->getContext()->id, FILTER_SANITIZE_STRING);
+              ?>"/>
+          </section>
+          <section>
+            <label for="name">Name:</label><br/>
+            <input type="text" name="name" id="name" tabindex="2" required
+              value="<?php echo
                 filter_var($this->getContext()->name, FILTER_SANITIZE_STRING);
               ?>"/>
           </section>
           <section>
             <label for="format">Remarks:</label>
-            <textarea name="format" id="format" tabindex="2" required
+            <textarea name="format" id="format" tabindex="3" required
               style="height:200px;"><?php echo
                 htmlspecialchars($this->getContext()->format, ENT_HTML5, "UTF-8");
               ?></textarea>
@@ -76,20 +84,20 @@ require("./header.inc.phtml");
             <label for="remarks">Remarks:</label>
             <span style="float:right;">
               <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
-              <input type="checkbox" name="markdown" id="markdown" tabindex="4"
+              <input type="checkbox" name="markdown" id="markdown" tabindex="5"
                 title="Use markdown or use raw HTML" value="1"<?php
                   if ($this->getContext()->markdown)
                     echo " checked=\"checked\"";
                 ?>/>
             </span>
-            <textarea name="remarks" id="remarks" tabindex="3" required
+            <textarea name="remarks" id="remarks" tabindex="4" required
               style="height:200px;"><?php echo
                 htmlspecialchars($this->getContext()->remarks, ENT_HTML5, "UTF-8");
               ?></textarea>
           </section>
           <section>
-            <input type="submit" name="publish" value="Publish" tabindex="5"/>
-            <input type="submit" name="save" value="Unpublish" tabindex="6"/>
+            <input type="submit" name="publish" value="Publish" tabindex="6"/>
+            <input type="submit" name="save" value="Unpublish" tabindex="7"/>
           </section>
         </form>
 <?php } ?>

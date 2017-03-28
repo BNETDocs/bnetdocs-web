@@ -580,6 +580,10 @@ class Packet {
     $this->packet_format = $value;
   }
 
+  public function setPacketId($value) {
+    $this->packet_id = $value;
+  }
+
   public function setPacketName($value) {
     $this->packet_name = $value;
   }
