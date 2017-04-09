@@ -5,7 +5,7 @@ set -e
 if [ -z "$OS_PASSWORD" ] || [ -z "$OS_TENANT_ID" ]; then
   if [ -s $HOME/.openrc ]; then
     printf "Loading OpenStack credentials from $HOME/.openrc...\n"
-    . $HOME/.openrc
+    source $HOME/.openrc
   fi
 fi
 
