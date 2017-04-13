@@ -18,8 +18,7 @@ while getopts ":e:fy" opt; do
         ;;
     f)  SKIP_COMPOSER=1
         ;;
-    y)
-        SKIP_CONFIRM=1
+    y)  SKIP_CONFIRM=1
         ;;
     \?) printf "Usage: $0 -e <environment>\n" >&2
         exit 1
