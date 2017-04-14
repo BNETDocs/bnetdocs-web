@@ -13,6 +13,7 @@
 *.rar
 *.swp
 *.tar
+*.tgz
 *.vi
 *.vim
 *.zip
