@@ -15,6 +15,6 @@ matrix:
 services:
   - mysql
 before_script:
-  - cp config.sample.json config.redux.json
+  - cp etc/config.sample.json etc/config.redux.json
 script:
   - bash -c 'set -e;for file in $(find . -type f -regextype posix-extended -regex .*\.\(php\|dm\) -print); do php -e -l -f "$file"; done'
