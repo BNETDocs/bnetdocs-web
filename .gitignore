@@ -1,5 +1,6 @@
 /.rsync-target
 /archives/
 /cache/bnetdocsredux.txt
-/config.phoenix.json
-/config.redux.json
+/etc/config.phoenix.json
+/etc/config.redux.json
+/tmp/

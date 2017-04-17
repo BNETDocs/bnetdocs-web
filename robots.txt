@@ -4,7 +4,6 @@ Disallow: /?op=doc&mode=edit
 Disallow: /?op=packet&mode=delete
 Disallow: /?op=packet&mode=edit
 Disallow: /?op=viewlogs
-Disallow: /archives/bhfiles.com/*.orig
 Disallow: /index.php?op=doc&mode=delete
 Disallow: /index.php?op=doc&mode=edit
 Disallow: /index.php?op=packet&mode=delete

@@ -1,5 +1,5 @@
-<?
-	
+<? error_reporting(E_ALL & ~E_NOTICE);
+
 	# Include direct script access authorization variable and other variables
 	#-------------
 
@@ -7,7 +7,7 @@
 		$ip = $_SERVER['REMOTE_ADDR'];
 		$surpress = $_REQUEST['surpress'];
 		#die('This site has been frozen for maintenance.');
-		
+
 	# Set up environment
 	#-------------
 
@@ -20,9 +20,9 @@
 
 	# Security
 	#-------------
-	
+
 		# Prevent spam POST submissions from external domains
-		
+
 		if($_POST){
 			if(!strpos($_SERVER['HTTP_REFERER'],'bnetdocs.org')){
 				exit();
@@ -31,7 +31,7 @@
 
 		# Stripslashes as shown on http://php.net/get_magic_quotes_gpc
 		# Used to prevent remote code injection via post, get, cookie. Also contributes to prevent remote code injection via SQL since input is cleaned prior to inserting to SQL DB.
-		if (get_magic_quotes_gpc()) {	
+		if (get_magic_quotes_gpc()) {
 		   function stripslashes_deep($value) {
 		       $value = is_array($value) ?
 		                   array_map('stripslashes_deep', $value) :
@@ -44,23 +44,23 @@
 		   $_GET = array_map('stripslashes_deep', $_GET);					# Clean browser variables
 		   $_COOKIE = array_map('stripslashes_deep', $_COOKIE);	# Clean cookie variables
 		}
-		
+
 	# Include essential files
 	#-------------
 
 		require_once 'functions.php';
 		require_once 'db.php';
-		
+
 	# Block out unwelcome visitors
 	#-------------
 
-		$userid = GetUserIDFromSession($ip);
+                $userid = GetUserIDFromSession($ip);
 
 	# REQUEST: Get our requested page and set the variable
 	#-------------
 
                 if (isset($_REQUEST["op"]) && is_string($_REQUEST["op"])) {
-  		  $op = $_REQUEST['op'];
+                  $op = $_REQUEST['op'];
                 } else {
                   $op = "";
                 }
@@ -70,7 +70,7 @@
 
 	# BLIZZARD: Is this Blizzard, and if so, log it
 	#-------------
-	
+
 		if(isblizzard($ip)){
 			#IP identified as potentially belonging to blizzard. Note it in log.
 			logthis(-1, 'Blizzard accessed page: ?'.$_SERVER['QUERY_STRING'], 'vip');
@@ -78,7 +78,7 @@
 
 	# SECURITY: Prevent remote inclusion injection
 	#-------------
-	
+
 		$legal_inc=getdir('.');
 
 		$i=0;
@@ -87,9 +87,9 @@
 			if($op.'.php'==$legal_inc[$i]) $allowfile='true';
 			$i++;
 		}
-		
+
 		if(!$op || trim($op) == '') $allowfile='true';
-		
+
 		if($allowfile=='false') exit();
 
         # New Relic Transactions
@@ -108,13 +108,14 @@
 	#-------------
 
 		ob_start('ob_gzhandler');
-		
+
 		if($surpress != "true"){
 			if($op == "") $op = "news";
 			include "bdif/header.dm";
 			if($userid){
+/* phoenix */
 				# Update member last login
-				mysql_query("UPDATE sessions SET dtstamp=NOW() WHERE id='$userid'") or die("UpdateSession Function Error: ".mysql_error());
+				#mysql_query("UPDATE sessions SET dtstamp=NOW() WHERE id='$userid'") or die("UpdateSession Function Error: ".mysql_error());
 				$msg = GetData($userid, 'msg');
 			} else {
 				$msg = $_REQUEST['msg'];
@@ -126,7 +127,7 @@
 					$msg = "Nice try buddy!";
 				}
 			}
-			
+
 			if($msg){
 				$msg = '<center><font color=lime><b>'.$msg.'</b></font></center>';
 				WriteData($userid, 'msg', '');
@@ -146,7 +147,8 @@
 			}
 		}
 
-		mysql_close();
+                global $sql_connection;
+		mysqli_close($sql_connection);
 		ob_end_flush();
 		exit();
 

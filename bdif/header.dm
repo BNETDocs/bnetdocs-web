@@ -16,11 +16,11 @@
 
 	<?
         if( extension_loaded('newrelic') ) { echo newrelic_get_browser_timing_header(); }
-	if(preg_match('/(?i)msie [1-9]/',$_SERVER['HTTP_USER_AGENT'])) { 
+	if(preg_match('/(?i)msie [1-9]/',$_SERVER['HTTP_USER_AGENT'])) {
 		$ie = true;
-	} else { 
+	} else {
 		$ie = false;
-	} 
+	}
 	if($userid){
 		$usercss = GetData($userid, 'usercss');
 		if($usercss){
@@ -49,7 +49,7 @@
 					<style type="text/css">
 					<?=$usercss;?>
 					</style>
-					<!-- End User CSS Inclusion -->		
+					<!-- End User CSS Inclusion -->
 					<?
 				} else {
 					?><link rel="stylesheet" type="text/css" href="<?=$usercssfile;?>"><?
@@ -123,7 +123,7 @@
 	<h2>Navigation</h2>
 	<div id="divMain_Menu"><div id="author">Main Menu</div><div class="navmenu" id="bodyMain_Menu">
 		<a href="/">Main Page</a><br>
-		<a href="https://dev.bnetdocs.org/">BNETDocs: Phoenix</a><br>
+		<a href="https://www.bnetdocs.org/">BNETDocs: Phoenix</a><br>
 		<a href="/?mode=all">View News History</a><br>
 		<a href="generatedocs.php">Download BNETDocs as Text</a><br>
 		<a href="/?op=search">Search BNETDocs</a> &nbsp; <font color=red size=1>Incomplete</font><br>
@@ -147,7 +147,8 @@
 	<div id="divDocuments"><div id="author">Documents</div><div class="navmenu" id="bodyDocuments">
 		<?
 		$sqlqueryz = 'SELECT * FROM documents ORDER BY title ASC';
-		$docarray = mysql_query($sqlqueryz);
+                global $sql_connection;
+		$docarray = mysqli_query($sql_connection,$sqlqueryz);
 		$doccount = 0;
 		function _clearance_name($clearance)
 		{
@@ -164,7 +165,7 @@
 			}
 			return $clearancename;
 		}
-		while($rowz = mysql_fetch_array($docarray)){
+		while($rowz = mysqli_fetch_array($docarray)){
 			$did = $rowz['id'];
 			$title = delslash($rowz['title']);
 			$clearance = $rowz['clearance'];
@@ -192,15 +193,15 @@
 		</form>
 		<br>
 <?
-                $sqlquery_traffic = mysql_query('SELECT * FROM traffic ORDER BY id');
+                $sqlquery_traffic = mysqli_query($sql_connection,'SELECT * FROM traffic ORDER BY id');
                 $traffic = array();
-                while($sqlresult_traffic = mysql_fetch_array($sqlquery_traffic)) {
+                while($sqlresult_traffic = mysqli_fetch_array($sqlquery_traffic)) {
                         $traffic[$sqlresult_traffic["id"]] = $sqlresult_traffic;
                 }
 		$sqlquerya = 'SELECT * FROM groups ORDER BY displayorder';
-		$groupsarray = mysql_query($sqlquerya);
+		$groupsarray = mysqli_query($sql_connection,$sqlquerya);
 		$zs1 = 1;
-		while($rowa = mysql_fetch_array($groupsarray)){
+		while($rowa = mysqli_fetch_array($groupsarray)){
 			$gid = $rowa['id'];
 			$groupname = $rowa['groupname'];
 			$groupdivname = str_replace(' ', '_', $groupname);
@@ -212,8 +213,8 @@
 			} else {
 				$sqlquery = 'SELECT * FROM packets WHERE pgroup='.$gid.' ORDER BY messageid,direction DESC';
 			}
-			$packetsarray = mysql_query($sqlquery);
-			while($row = mysql_fetch_array($packetsarray)){
+			$packetsarray = mysqli_query($sql_connection,$sqlquery);
+			while($row = mysqli_fetch_array($packetsarray)){
 				$pid = $row['id'];
                                 //$direction = $row['direction'];
                                 $direction = $traffic[$row['direction']]['shortdescr'] . ' ';
@@ -225,7 +226,7 @@
 					case 0:
 						$status = '<font class="raw">RAW</font>'."\n";
 						break;
-					case 1: 
+					case 1:
 						$status = '';
 						break;
 					case 2:
@@ -249,7 +250,7 @@
 						echo '<a href="/?op=packet&pid='.$pid.'"><font size=1>'.$direction.$messageid.$messagename.'</font></a>'.$status.'<br>'."\n";
 					}
 				}
-			} 
+			}
 			echo "\n".'<br>'."\n".'<font id="viewcode">View Code: [&nbsp; <a href="/?op=generatecode&gid='.$gid.'&lang=pas">PAS</a> <a href="/?op=generatecode&gid='.$gid.'&lang=cpp">CPP</a> <a href="/?op=generatecode&gid='.$gid.'&lang=vb">VB</a> <a href="/?op=generatecode&gid='.$gid.'&lang=php">PHP</a> &nbsp;]</font><br>'."\n".'</div>'.'<br>'."\n".'</div>'."\n";
 		} 
 		?>

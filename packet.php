@@ -672,11 +672,12 @@ Related: '.$relatedlinkstring;
 				<div id="main2">
 				<h2>User Comments</h2>
 				<center><br>For detailed questions and discussion, visit the <a href="http://forum.valhallalegends.com/index.php/board,17.0.html" target="_blank">Battle.net Research Forum</a><br><br></center>
-				<?
+<?
+                                global $sql_connection;
 				$sqlqueryz = 'SELECT id,posterid,UNIX_TIMESTAMP(dtstamp) as unixdtstamp,message FROM comments WHERE pdid='.$pid.' ORDER BY id';
-				$docarray = mysql_query($sqlqueryz);
+				$docarray = mysqli_query($sql_connection,$sqlqueryz);
 				$commentcount = 0;
-				while($rowz = mysql_fetch_array($docarray)){
+				while($rowz = mysqli_fetch_array($docarray)){
 					$cid = $rowz['id'];
 					$posterid = $rowz['posterid'];
 					$dtstamp = date("M d, Y", $rowz['unixdtstamp']);

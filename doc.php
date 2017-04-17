@@ -429,8 +429,8 @@ New Document Data:
 				<br>
 				<? 
 				if($userid){
-					if(rank($userid) > 2){ 
-						?><center><font size=1>[ &nbsp; <a href="/?op=doc&mode=edit&did=<?=$did;?>">EDIT</a> &nbsp; 
+					if(rank($userid) > 2){
+						?><center><font size=1>[ &nbsp; <a href="/?op=doc&mode=edit&did=<?=$did;?>">EDIT</a> &nbsp;
 						| &nbsp; <a onClick="return confimdelete();" href="/?op=doc&mode=delete&did=<?=$did;?>">DELETE</a> &nbsp; ]</font><br><br></center>
 						<?
 					}
@@ -447,17 +447,18 @@ New Document Data:
 					<?
 				}
 				?></div></div></div></div></div>
-				
+
 				<div id="comments">
 				<div id="container">
 				<div id="main2">
 				<h2>User Comments</h2>
 				<center><br>For detailed questions and discussion, visit the <a href="http://forum.valhallalegends.com/index.php/board,17.0.html" target="_blank">Battle.net Research Forum</a><br><br></center>
-				<?
-				$sqlqueryz = 'SELECT id,posterid,UNIX_TIMESTAMP(dtstamp) as unixdtstamp,message FROM comments WHERE pdid=\''.mysql_real_escape_string($did).'\' ORDER BY id';
-				$docarray = mysql_query($sqlqueryz);
+<?
+                                global $sql_connection;
+				$sqlqueryz = 'SELECT id,posterid,UNIX_TIMESTAMP(dtstamp) as unixdtstamp,message FROM comments WHERE pdid=\''.mysqli_real_escape_string($sql_connection,$did).'\' ORDER BY id';
+				$docarray = mysqli_query($sql_connection,$sqlqueryz);
 				$commentcount = 0;
-				while($rowz = mysql_fetch_array($docarray)){
+				while($rowz = mysqli_fetch_array($docarray)){
 					$cid = $rowz['id'];
 					$posterid = $rowz['posterid'];
 					$dtstamp = date("M d, Y", $rowz['unixdtstamp']);

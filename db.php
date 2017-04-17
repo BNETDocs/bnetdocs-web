@@ -16,7 +16,7 @@
 	$dbpasswd = $config->database->password;
 	$database_name = $config->database->name;
 
-	@$connection = mysql_connect("$dbhost","$dbusername","$dbpasswd") or die ("Couldn't connect to server because ".mysql_error());
-	@$db = mysql_select_db("$database_name", $connection) or die("Couldn't select database because ".mysql_error());
-	@mysql_query('SET NAMES ' . $config->database->character_set . ' COLLATE ' . $config->database->collation . ';');
+        global $sql_connection;
+	@$sql_connection = mysqli_connect("$dbhost","$dbusername","$dbpasswd","$database_name") or die ("Couldn't connect to server because ".mysqli_error());
+	@mysqli_query('SET NAMES ' . $config->database->character_set . ' COLLATE ' . $config->database->collation . ';');
 ?>

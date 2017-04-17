@@ -10,7 +10,7 @@
 	
 	# Begin Code
 	# -------------
-	$config = json_decode(file_get_contents("./config.redux.json"));
+	$config = json_decode(file_get_contents("./etc/config.redux.json"));
 	
 	# DisplayDialogBox Function
 	# --------------------
@@ -176,10 +176,11 @@
 				# If tracking is enabled, log IP and login time/date.
 				#-------------
 
+                                        global $sql_connection;
 					$ip = $_SERVER["REMOTE_ADDR"];
 					$sql = "UPDATE users SET ip=\"$ip\" WHERE username=\"$username\"";
-					if($tracked == true) $sqlresults = mysql_query($sql) or die (mysql_error());
-					if($tracked == true) mysql_query("UPDATE users SET last_login=now() WHERE username='$username'");
+					if($tracked == true) $sqlresults = mysqli_query($sql_connection,$sql) or die (mysqli_error($sql_connection));
+					if($tracked == true) mysqli_query($sql_connection,"UPDATE users SET last_login=now() WHERE username='$username'");
 
 				# Set up session for member
 				#-------------
@@ -224,8 +225,9 @@
 			
 			$sql = "SELECT COUNT(*) AS count FROM `$table` WHERE `$field`=\"$data\"";
 
-			$testercount = mysql_query($sql) or die("mysql error in $sql: ".mysql_error());
-			$testercount = mysql_fetch_object($testercount);
+                        global $sql_connection;
+			$testercount = mysqli_query($sql_connection,$sql) or die("mysql error in $sql: ".mysqli_error($sql_connection));
+			$testercount = mysqli_fetch_object($testercount);
 			$testers = $testercount->count;
 			
 			if($testers > 0){
@@ -258,7 +260,7 @@
 			#------------
 			
 			$userid = GetInfo("sessions", "ipaddress", $ip, "id");
-			mysql_query("UPDATE users SET last_login=now() WHERE id='$userid'");
+			mysqli_query("UPDATE users SET last_login=now() WHERE id='$userid'");
 		}
 
 	#-------------
@@ -301,7 +303,7 @@
 		function WriteData($whoid, $what, $data){
 			$ret = true;
 			$sql = "UPDATE users SET `$what`=\"$data\" WHERE id=$whoid"; 
-			$sqlresults = mysql_query($sql) or $ret = false;
+			$sqlresults = mysqli_query($sql) or $ret = false;
 			return $ret;
 		}
 	#-------------
@@ -312,26 +314,26 @@
 	function Discipline($target, $action, $ip=''){
 		if($action == 'lp'){
 			$sql = "UPDATE discipline SET profile=0 WHERE account=$target";
-			$sqlresults = mysql_query($sql) or die(mysql_error());
+			$sqlresults = mysqli_query($sql) or die(mysqli_error());
 		} else if($action == 'up'){
 			$sql = "UPDATE discipline SET profile=1 WHERE account=$target";
-			$sqlresults = mysql_query($sql) or die(mysql_error());
+			$sqlresults = mysqli_query($sql) or die(mysqli_error());
 		} else if($action == 'fa'){
 			$sql = "UPDATE discipline SET frozen=1 WHERE account=$target";
-			$sqlresults = mysql_query($sql) or die(mysql_error());
+			$sqlresults = mysqli_query($sql) or die(mysqli_error());
 		} else if($action == 'ufa'){
 			$sql = "UPDATE discipline SET frozen=0 WHERE account=$target";
-			$sqlresults = mysql_query($sql) or die(mysql_error());
+			$sqlresults = mysqli_query($sql) or die(mysqli_error());
 		} else if($action == 'ipban'){
 			$sql = "UPDATE discipline SET ipban=1 WHERE account=$target";
-			$sqlresults = mysql_query($sql) or die(mysql_error());
+			$sqlresults = mysqli_query($sql) or die(mysqli_error());
 			$currentip = GetData($target, 'ip');
-			mysql_query("INSERT INTO `banned` (id, ip, bantype) VALUES ($target, '$ip', 'total')") or die("Discipline Function Error: ".mysql_error());
+			mysqli_query("INSERT INTO `banned` (id, ip, bantype) VALUES ($target, '$ip', 'total')") or die("Discipline Function Error: ".mysqli_error());
 		} else if($action == 'unipban'){
 			$sql = "UPDATE discipline SET ipban=0 WHERE account=$target";
-			$sqlresults = mysql_query($sql) or die(mysql_error());
+			$sqlresults = mysqli_query($sql) or die(mysqli_error());
 			$sql = "DELETE FROM banned WHERE id=\"$target\"";
-			$sqlresults = mysql_query($sql) or die (mysql_error());
+			$sqlresults = mysqli_query($sql) or die (mysqli_error());
 		}
 	}
 	
@@ -354,10 +356,11 @@
 		function GetInfo($db, $index, $id, $data){
 	                static $cache = [];
 	                $str = $db.$index.$id.$data;
-	                if (isset($cache[$str])) return $cache[$str];
-	                $sqlquery = mysql_query("SELECT * FROM `$db` WHERE `$index`=\"$id\" LIMIT 1") or die('Attempted Query: '."SELECT * FROM `$db` WHERE `$index`='$id' LIMIT 1"."<br>GetInfo Function Error: ".mysql_error());;
-			if(mysql_num_rows($sqlquery) > 0) {
-				$ret = mysql_result($sqlquery,0,$data);
+                        if (isset($cache[$str])) return $cache[$str];
+                        global $sql_connection;
+	                $sqlquery = mysqli_query($sql_connection,"SELECT * FROM `$db` WHERE `$index`=\"$id\" LIMIT 1") or die('Attempted Query: '."SELECT * FROM `$db` WHERE `$index`='$id' LIMIT 1"."<br>GetInfo Function Error: ".mysqli_error());;
+			if(mysqli_num_rows($sqlquery) > 0) {
+				$ret = mysqli_fetch_assoc($sqlquery)[$data];
 			} else {
 				$ret = false;
 	                }
@@ -386,7 +389,7 @@
 		function WriteInfo($db, $index, $id, $field, $data){
 			$ret = true;
 			$sql = "UPDATE `$db` SET `$field`=\"$data\" WHERE $index=$id"; 
-			$sqlresults = mysql_query($sql) or $ret = false;
+			$sqlresults = mysqli_query($sql) or $ret = false;
 			return $ret;
 		}
 	#-------------
@@ -457,34 +460,7 @@
 	#-------------
 	# End of Email Function
 	#-------------
-	
-	#Applies nl2br to $text, but also makes sure to avoid applying the function to any content within pre tags
-	function nl2brex($text) {
-		$text = nl2br($text);
-		$text = preg_replace('!(<pre.*?>)(.*?)</pre>!ise', " ('$1') .  (clean_pre('$2'))  . '</pre>' ", $text);
-		$text = preg_replace('!(<ol.*?>)(.*?)</ol>!ise', " ('$1') .  (clean_pre('$2'))  . '</ol>' ", $text);
-		$text = preg_replace('!(<ul.*?>)(.*?)</ul>!ise', " ('$1') .  (clean_pre('$2'))  . '</ul>' ", $text);
-		$text = preg_replace('!(<dl.*?>)(.*?)</dl>!ise', " ('$1') .  (clean_pre('$2'))  . '</dl>' ", $text);
-		$text = preg_replace('!(\[nobr.*?\])(.*?)\[/nobr\]!ise', " stripslashes('$1') .  stripslashes(clean_pre('$2'))  . '' ", $text);
-		$text = brfix($text);
-		$text = str_ireplace('[nobr]', '', $text);
-		$text = str_ireplace('[/nobr]', '', $text);
-		return $text;
-	}
-	
-	#nl2brex2 for RSS feeds
-	function nl2brex2($text) {
-		$text = preg_replace('!(<pre.*?>)(.*?)</pre>!ise', " ('$1') .  (clean_pre('$2'))  . '</pre>' ", $text);
-		$text = preg_replace('!(<ol.*?>)(.*?)</ol>!ise', " ('$1') .  (clean_pre('$2'))  . '</ol>' ", $text);
-		$text = preg_replace('!(<ul.*?>)(.*?)</ul>!ise', " ('$1') .  (clean_pre('$2'))  . '</ul>' ", $text);
-		$text = preg_replace('!(<dl.*?>)(.*?)</dl>!ise', " ('$1') .  (clean_pre('$2'))  . '</dl>' ", $text);
-		$text = preg_replace('!(\[nobr.*?\])(.*?)\[/nobr\]!ise', " stripslashes('$1') .  stripslashes(clean_pre('$2'))  . '' ", $text);
-		$text = brfix($text);
-		$text = str_ireplace('[nobr]', '', $text);
-		$text = str_ireplace('[/nobr]', '', $text);
-		return $text;
-	}
-	
+
 	# Workaround for the br tag after a closing tag fix
 	function brfix($text){
 		$text = str_ireplace('</dl><br />', '</dl>', $text);
@@ -512,7 +488,7 @@
 	function totalpurgehtml($source){
 		$allowedTags='';
 		$source = strip_tags($source, $allowedTags);
-		return preg_replace('/<(.*?)>/ie',
+		return preg_replace('/<(.*?)>/i',
 		"'<'.removeEvilAttributes('\\1').'>'", $source);
 	}
 	
@@ -551,25 +527,25 @@
 		ksort($patterns);
 		ksort($replacements);
 		$text = preg_replace($patterns, $replacements, $text);
-		$text = nl2brex($text);
+		$text = nl2br($text);
 		return $text;
 	}
 	#-------------
 	# End of Codify Function
 	#-------------
-	
+
 	if(!function_exists('str_ireplace')) {
 		function str_ireplace($search,$replace,$subject) {
 			$search = preg_quote($search, "/");
-			return preg_replace("/".$search."/i", $replace, $subject); 
-		} 
+			return preg_replace("/".$search."/i", $replace, $subject);
+		}
 	}
 
 	function purge($StringToPurge) {
 		$string = str_replace(array("\r\n", "\r", "\n"), "", $StringToPurge);
 		return $string;
 	}
-	
+
 	function removeEvilTags($source){
 		#$allowedTags='<b><s><u><span><p><i><blockquote><ul><ol><li><br><a><dl><dt><dd>';
 		#$source = strip_tags($source, $allowedTags);
@@ -587,31 +563,35 @@
 		return stripslashes(preg_replace("/$stripAttrib/i", 'forbidden', $tagSource));
 	}
 	
-	function sanitize($string, $min='', $max=''){
-		return mysql_real_escape_string($string);
+        function sanitize($string, $min='', $max=''){
+                global $sql_connection;
+		return mysqli_real_escape_string($sql_connection,$string);
 	}
 
 	function CreateSession($id, $ip){
+                global $sql_connection;
 		if(!FieldVerify('id', 'sessions', $id)){
-			mysql_query("INSERT INTO sessions (id,ipaddress) VALUES ('$id','$ip')") or die("CreateSession Function Error: ".mysql_error());
+			mysqli_query($sql_connection,"INSERT INTO sessions (id,ipaddress) VALUES ('$id','$ip')") or die("CreateSession Function Error: ".mysqli_error($sql_connection));
 		} else {
-			mysql_query("UPDATE sessions SET ipaddress='$ip' WHERE id='$id'") or die("CreateSession Function Error: ".mysql_error());
+			mysqli_query($sql_connection,"UPDATE sessions SET ipaddress='$ip' WHERE id='$id'") or die("CreateSession Function Error: ".mysqli_error($sql_connection));
 		}
 	}
 	
-	function KillSession($id){
+        function KillSession($id){
+                global $sql_connection;
 		if(FieldVerify('id', 'sessions', $id)){
 			$sql = "DELETE FROM sessions WHERE id=$id";
-			$sqlresults = mysql_query($sql) or die (mysql_error());
+			$sqlresults = mysqli_query($sql_connection,$sql) or die (mysqli_error($sql_connection));
 		}
 	}
 	
 	function SwapID($newid, $ip){
+                global $sql_connection;
 		$origid = GetUserIDFromSession($ip);
 		if(!FieldVerify('ip', 'testers', $ip)){
-			mysql_query("INSERT INTO testers (id,ip) VALUES ('$origid','$ip')") or die("SwapID Function Error: ".mysql_error());
+			mysqli_query($sql_connection,"INSERT INTO testers (id,ip) VALUES ('$origid','$ip')") or die("SwapID Function Error: ".mysqli_error($sql_connection));
 		} else {
-			mysql_query("UPDATE testers SET id='$origid' WHERE ip='$ip'") or die("SwapID Function Error: ".mysql_error());
+			mysqli_query($sql_connection,"UPDATE testers SET id='$origid' WHERE ip='$ip'") or die("SwapID Function Error: ".mysqli_error($sql_connection));
 		}
 		KillSession($origid);
 		CreateSession($newid, $ip);
@@ -625,11 +605,12 @@
 		#function FieldVerify($field, $table, $data){
 		
 	function RestoreID($ip){
+                global $sql_connection;
 		if(FieldVerify('ip', 'testers', $ip)){
 			$fakeid = GetInfo('sessions', 'ipaddress', $ip, 'id');
 			$realid = GetInfo('testers', 'ip', $ip, 'id');
 			$sql = "DELETE FROM testers WHERE id=\"$realid\"";
-			$sqlresults = mysql_query($sql) or die (mysql_error());
+			$sqlresults = mysqli_query($sql_connection,$sql) or die (mysqli_error($sql_connection));
 			KillSession($fakeid);
 			CreateSession($realid, $ip);
 		}
@@ -661,8 +642,9 @@
 	function CheckBanned($ip, $type){
 		$sql = "SELECT COUNT(*) AS count FROM `banned` WHERE `ip`=\"$ip\" AND `bantype`=\"$type\"";
 
-		$testercount = mysql_query($sql) or die("mysql error in $sql: ".mysql_error());
-		$testercount = mysql_fetch_object($testercount);
+                global $sql_connection;
+		$testercount = mysqli_query($sql_connection,$sql) or die("mysql error in $sql: ".mysqli_error($sql_connection));
+		$testercount = mysqli_fetch_object($testercount);
 		$testers = $testercount->count;
 
 		if($testers > 0){
@@ -672,8 +654,9 @@
 	}
 		
 	function RecoverUser($id){
+                global $sql_connection;
 		if(!FieldVerify('id', 'users', $id)){
-			mysql_query("INSERT INTO `users` (id) VALUES ($id)") or die("RecoverUser Function Error: ".mysql_error());
+			mysqli_query($sql_connection,"INSERT INTO `users` (id) VALUES ($id)") or die("RecoverUser Function Error: ".mysqli_error($sql_connection));
 		}
 		
 		$temp = GetOldData($id, 'username');
@@ -711,7 +694,7 @@
 		
 		if(FieldVerify("id", "terminated", $id)){
 			$sql = "DELETE FROM `terminated` WHERE id=\"$id\"";
-			$sqlresults = mysql_query($sql) or die (mysql_error());
+			$sqlresults = mysqli_query($sql) or die (mysqli_error());
 		}
 	}
 	
@@ -774,7 +757,7 @@
 					}
 				}
 				$enpassword = md5($password);
-				mysql_query("INSERT INTO users (ip, username, password, email) VALUES ('$ip', '$username', '$enpassword', '$email')") or die("CreateUser Function Error: ".mysql_error());
+				mysqli_query("INSERT INTO users (ip, username, password, email) VALUES ('$ip', '$username', '$enpassword', '$email')") or die("CreateUser Function Error: ".mysqli_error());
 				$body = "Welcome!
 		
 You've registered as an user of BNETDocs. If this email is in error, simply ignore this email.
@@ -803,7 +786,7 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 			} else { #Aha, user was a member before, remove from terminated database and give original id
 				$id = getinfo('terminated', 'username', $username, 'id');
 				$sql = "DELETE FROM terminated WHERE id=\"$id\"";
-				$sqlresults = mysql_query($sql) or die (mysql_error());
+				$sqlresults = mysqli_query($sql) or die (mysqli_error());
 				$breakout = false;
 				while($breakout == false){
 					$password = createRandomPassword();
@@ -812,7 +795,7 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 					}
 				}
 				$enpassword = md5($password);
-				mysql_query("INSERT INTO users (id, ip, username, password, email) VALUES ($id, '$ip', '$username', '$enpassword', '$email')") or die("CreateUser Function Error: ".mysql_error());
+				mysqli_query("INSERT INTO users (id, ip, username, password, email) VALUES ($id, '$ip', '$username', '$enpassword', '$email')") or die("CreateUser Function Error: ".mysqli_error());
 				$body = "Welcome Back!
 		
 You've re-registered as an user of BNETDocs. If this email is in error, simply ignore this email.
@@ -857,7 +840,7 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 		$username = whoisid($userid);
 		$email = GetData($userid, 'email');
 		$enpassword = md5($password);
-		mysql_query("UPDATE users SET password='$enpassword' WHERE id=$userid") or die("ResetPasswrd Function Error: ".mysql_error());
+		mysqli_query("UPDATE users SET password='$enpassword' WHERE id=$userid") or die("ResetPasswrd Function Error: ".mysqli_error());
 		$body = "Hello!
 
 You've requested your password to be resetted. It has been resetted for you.
@@ -893,7 +876,7 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 		# Copy username info to terminated db for stability
 		
 		$username = GetData($id, 'username');
-		mysql_query("INSERT INTO `terminated` (`id`, `username`) VALUES ($id, '" . mysql_real_escape_string($username) . "')") or die("DeleteUser Function Error: ".mysql_error());
+		mysqli_query("INSERT INTO `terminated` (`id`, `username`) VALUES ($id, '" . mysqli_real_escape_string($username) . "')") or die("DeleteUser Function Error: ".mysqli_error());
 		
 		# Delete User's session if it exists
 		
@@ -905,7 +888,7 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 		
 		if(FieldVerify("id", "users", $id)){
 			$sql = "DELETE FROM users WHERE id=$id";
-			$sqlresults = mysql_query($sql) or die (mysql_error());
+			$sqlresults = mysqli_query($sql) or die (mysqli_error());
 		}
 	}
 	
@@ -916,13 +899,14 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 	}
 
 	function rank($id){
-	   	$rank = GetData($id,'levelofaccess');
-	   	return $rank;
+                $rank = GetData($id,'levelofaccess');
+	        return $rank;
 	}
 
-	function rankname($rank){
-		$info = mysql_query("SELECT groupname FROM `membergroup` WHERE `id` ='".$rank."'")  or die("Rank Name Function Error: ".mysql_error());
-		$rank = mysql_result($info,0,"groupname");
+        function rankname($rank){
+                global $sql_connection;
+		$info = mysqli_query($sql_connection,"SELECT groupname FROM `membergroup` WHERE `id` ='".$rank."'")  or die("Rank Name Function Error: ".mysqli_error($sql_connection));
+		$rank = mysqli_fetch_assoc($info)['groupname'];
 		return $rank;
 	}
 	
@@ -934,7 +918,7 @@ If you have any questions, comments, etc, feel free to contact one of the admini
                   $event = sanitize($event);
                   $datetime = date("l, F d Y");
                   $ip = $_SERVER['REMOTE_ADDR'];
-                  mysql_query("INSERT INTO logs (user,event,eventtype, datetime,ip) VALUES ('$userid','$event','$type','$datetime','$ip')") or die("Logthis Function Error: ".mysql_error());
+                  mysqli_query("INSERT INTO logs (user,event,eventtype, datetime,ip) VALUES ('$userid','$event','$type','$datetime','$ip')") or die("Logthis Function Error: ".mysqli_error());
                 }
 	}
 
@@ -993,8 +977,8 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 		#Parameter: Name
 		$queryid = "SELECT * FROM users WHERE username = \"$idtoget\"";
 		if($idtoget != "all"){
-			$identification = mysql_query($queryid);
-			$ret = mysql_result($identification,0,"id");
+			$identification = mysqli_query($queryid);
+			$ret = mysqli_result($identification,0,"id");
 		} else {
 			$ret = "all";
 		}
@@ -1005,9 +989,9 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 		#Return name of packet associated with id
 		#Parameter: id
 		$queryid = "SELECT * FROM packets WHERE id=$id";
-		$identification = mysql_query($queryid);
-		$messageid = mysql_result($identification,0,"messageid");
-		$messagename = mysql_result($identification,0,"messagename");
+		$identification = mysqli_query($queryid);
+		$messageid = mysqli_result($identification,0,"messageid");
+		$messagename = mysqli_result($identification,0,"messagename");
 		$ret = '<a href="/?op=packet&pid='.$id.'">('.$messageid.') '.$messagename.'</a>';
 		return $ret;
 	}
@@ -1016,8 +1000,8 @@ If you have any questions, comments, etc, feel free to contact one of the admini
 		#Return name of packet associated with id
 		#Parameter: id
 		$queryid = "SELECT * FROM documents WHERE id=$id";
-		$identification = mysql_query($queryid);
-		$title = mysql_result($identification,0,"title");
+		$identification = mysqli_query($queryid);
+		$title = mysqli_result($identification,0,"title");
 		$ret = '<a href="/?op=doc&did='.$id.'">'.$title.'</a>';
 		return $ret;
 	}

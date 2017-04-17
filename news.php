@@ -1,4 +1,13 @@
 <?
+/* phoenix */
+$phoenix = function(){ return false;
+  $nid = (isset($_GET["nid"]) ? (int) $_GET["nid"] : null);
+  if (is_null($nid)) return false;
+  http_response_code(302);
+  header("Location: https://www.bnetdocs.org/news/" . $nid);
+  return true;
+};
+if ($phoenix()) { return; }
 	# Block Direct Access Attempts
 	# -------------------------------
 	global $auth, $ie;
@@ -6,7 +15,8 @@
 	
 	# Begin Code
 	# -------------
-	
+
+        global $sql_connection;
 	$mode = sanitize($_GET['mode']);
 	$newsicon = sanitize(strtoupper($_POST['pictureselector']));
 	$title = sanitize($_POST['subject']);
@@ -17,8 +27,8 @@
 		$content = 'Insert news here.';
 		if($mode == 'all'){
 			$sqlquery = 'SELECT * FROM news ORDER BY id DESC';
-			$newsarray = mysql_query($sqlquery);
-			while($row = mysql_fetch_array($newsarray)){
+			$newsarray = mysqli_query($sql_connection,$sqlquery);
+			while($row = mysqli_fetch_array($newsarray)){
 				$nid = $row['id'];
 				$author = $row['poster'];
 				$rank = rank($author);
@@ -45,9 +55,9 @@
 				logthis($userid, 'Illegally attempted to edit a news post NID('.$nid.'). Attempt blocked.', 'hack');
 				blockhack();
 			}
-			$sqlquery = 'SELECT * FROM news WHERE id='.mysql_real_escape_string($nid).' ORDER BY id DESC LIMIT 1';
-			$newsarray = mysql_query($sqlquery);
-			$row = mysql_fetch_array($newsarray);
+			$sqlquery = 'SELECT * FROM news WHERE id='.mysqli_real_escape_string($sql_connection,$nid).' ORDER BY id DESC LIMIT 1';
+			$newsarray = mysqli_query($sql_connection,$sqlquery);
+			$row = mysqli_fetch_array($newsarray);
 			$author = $row['poster'];
 			$rank = rank($author);
 			if($rank){
@@ -79,10 +89,10 @@
 					break;
 				case 'diablo':
 					$dselected = 'selected';
-					break;	
+					break;
 			}
 			$edit = '&edit=true&nid='.$nid;
-			include 'bdif/newssubmission.dm'; 
+			include 'bdif/newssubmission.dm';
 		} elseif($mode == 'delete'){
 			$nid = $_GET['nid'];
 			if(rank($userid) > 2){
@@ -92,7 +102,7 @@
 				$nid = $_GET['nid'];
 				if((rank($userid) > 4) || ($userid == $pid)){
 					$sql = "DELETE FROM news WHERE id=\"$nid\"";
-					$sqlresults = mysql_query($sql) or die('News deletion failure: '.mysql_error());
+					$sqlresults = mysqli_query($sql_connection,$sql) or die('News deletion failure: '.mysqli_error($sql_connection));
 					logthis($userid, 'Deleted a news post containing the title of "'.$title.'" and the contents of "'.$content.'".', 'newsdelete');
 					WriteData($userid, 'msg', 'The news post has been deleted.');
 					redirect('/');
@@ -125,8 +135,8 @@
 			}  else {
 				$sqlquery = 'SELECT * FROM news ORDER BY id DESC LIMIT 3';
 			}
-			$newsarray = mysql_query($sqlquery);
-			while($row = mysql_fetch_array($newsarray)){
+			$newsarray = mysqli_query($sql_connection,$sqlquery);
+			while($row = mysqli_fetch_array($newsarray)){
 				$nid = $row['id'];
 				$author = $row['poster'];
 				$rank = rank($author);
@@ -141,7 +151,7 @@
 				$title = $row['subject'];
 				$content = codify($row['content']);
 				include 'bdif/newspost.dm';
-			} 
+			}
 		}
 	} else {
 		$edit = $_GET['edit'];
@@ -159,7 +169,7 @@
 						$content = 'Insert news here.';
 						include 'bdif/newssubmission.dm';
 					} else {
-						mysql_query("UPDATE news SET topictype='$newsicon',subject='$title',content='$content',edited=1 WHERE id=$nid") or die("News Update Error: ".mysql_error());
+						mysqli_query($sql_connection,"UPDATE news SET topictype='$newsicon',subject='$title',content='$content',edited=1 WHERE id=$nid") or die("News Update Error: ".mysqli_error($sql_connection));
 						logthis($userid, 'Updated a news post (NID: '.$nid.') using the title of "'.$title.'" and the contents of "'.$content.'".', 'newsedit');
 						WriteData($userid, 'msg', 'The news post has been updated.');
 						redirect('/');
@@ -183,7 +193,7 @@
 					$content = 'Insert news here.';
 					include 'bdif/newssubmission.dm';
 				} else {
-					mysql_query("INSERT INTO news (poster,topictype,subject,content) VALUES ('$userid','$newsicon', '$title', '$content')") or die("News Submission Error: ".mysql_error());
+					mysqli_query($sql_connection,"INSERT INTO news (poster,topictype,subject,content) VALUES ('$userid','$newsicon', '$title', '$content')") or die("News Submission Error: ".mysqli_error($sql_connection));
 					logthis($userid, 'Posted to the news using the title of "'.$title.'" and the contents of "'.$content.'".', 'newspost');
 					WriteData($userid, 'msg', 'News submission has been posted.');
 					redirect('/');

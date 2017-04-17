@@ -2,21 +2,7 @@
 	################################
 	##	RSS Feed Generator for news ##
 	################################
-	
-	###########################################################
-	# ADDED 2014-04-06 BY JAILOUT2000 FOR FORCED SSL SECURITY #
-	###########################################################
-	if($_SERVER['SERVER_PORT']!=443 || $_SERVER['HTTP_HOST']!='bnetdocs.org') {
-		http_response_code(301);
-		header('Location: https://bnetdocs.org'.$_SERVER['REQUEST_URI']);
-		exit;
-	}
-	###########################################################
-	#                                                         #
-	###########################################################
-	
-	# \n = newline, \t = tab
-	
+
 	function CropSentence ($strText, $intLength, $strTrail) {
 		$wsCount = 0;
 		$intTempSize = 0;
@@ -35,7 +21,7 @@
 		}
 
 		return $CropSentence;
-	} 
+	}
 
 	$auth = 'true';
 	require_once 'functions.php';

@@ -3,9 +3,11 @@
 	# -------------------------------
 	global $auth;
 	if($auth != 'true') die('<html><head><title>BNETDocs</title></head><body bgcolor=black><table border=0 valign=center align=center width=100% height=100%><tr><td valign=center align=center><font color=red><b>Direct Access Denied. Nice try buddy!</b></font></td></tr></table></body></html>');
-	
+
 	# Begin Code
-	# -------------
+        # -------------
+
+        global $sql_connection;
 ?>
 <div id="container">
 <div id="main2">
@@ -18,22 +20,22 @@
 <br><center>
 	<?
 		$sqlquery = 'SELECT * FROM users WHERE levelofaccess > 3 ORDER BY id ASC';
-		$membersarray = mysql_query($sqlquery);
-		while($row = mysql_fetch_array($membersarray)){
+		$membersarray = mysqli_query($sql_connection,$sqlquery);
+		while($row = mysqli_fetch_array($membersarray)){
 			$username = $row['username'];
 			echo $username.'<br>';
-		} 
+		}
 	?>
 <br></center>
 <div id="author"><center>BNETDocs is edited by:</center></div>
 <br><center>
 	<?
 		$sqlquery = 'SELECT * FROM users WHERE levelofaccess=3 ORDER BY id ASC';
-		$membersarray = mysql_query($sqlquery);
-		while($row = mysql_fetch_array($membersarray)){
+		$membersarray = mysqli_query($sql_connection,$sqlquery);
+		while($row = mysqli_fetch_array($membersarray)){
 			$username = ucfirst($row['username']);
 			echo $username.'<br>';
-		} 
+		}
 	?>
 <br></center>
 <div id="author"><center>Many thanks to the following, in no particular order, for their contributions:</center></div>

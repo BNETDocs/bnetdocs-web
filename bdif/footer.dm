@@ -32,11 +32,12 @@
 		</div>
 		<br>
 	</div></div>-->
-	
+
 	<?
+                global $sql_connection;
 		$sqlquery = 'SELECT id,serveraddress,target,status FROM servers WHERE target != \'\'';
-		$redirects = mysql_query($sqlquery); $displayed = false;
-		while ($redirect = mysql_fetch_array($redirects)) {
+		$redirects = mysqli_query($sql_connection,$sqlquery); $displayed = false;
+		while ($redirect = mysqli_fetch_array($redirects)) {
 			if (!$displayed) {
 				echo "\t<div id=\"container\">\n\t<div id=\"main2\">\n\t<div id=\"author\">BNLS Redirecter Status</div>\n\t\t<div align=center>\n";
 				$displayed = true;
@@ -47,7 +48,7 @@
 				."\t\t</table>\n";
 		} if ($displayed) echo '</div></div>';
 	?>
-	
+
 	<div id="container">
 	<div id="main2">
 	<div id="author">BNLS Server Status</div>
@@ -55,8 +56,8 @@
 		<table cellspacing=2 cellpadding=2 border=0>
 		<?
 			$sqlquery = 'SELECT id,serveraddress,status FROM servers ORDER BY status DESC,id ASC';
-			$serverarray = mysql_query($sqlquery);
-			while($row = mysql_fetch_array($serverarray)){
+			$serverarray = mysqli_query($sql_connection,$sqlquery);
+			while($row = mysqli_fetch_array($serverarray)){
 				$sid = $row['id'];
 				$saddress = $row['serveraddress'];
 				$status = $row['status'];
@@ -66,26 +67,26 @@
 					$status = true;
 				}
 				/*if($saddress != 'bnls.dementedminds.net')*/ echo '<tr><td><font size=2>'.$saddress.': </td><td><img src="'.statusimg($status).'"><br></font></td></tr>';
-			} 
+			}
 		?>
 		</table>
 		</div>
 		<br>
 		<center><font size=1><img src="<? echo statusimg(true); ?>"> = Online &nbsp; &nbsp; &nbsp; <img src="<? echo statusimg(false); ?>"> = Offline<br><br></font></center>
 	</div></div>
-	
+
 	<div id="container">
 	<div id="main2">
 	<div id="author">Battle.net Server Status</div>
 		<div align=center>
 		<?
 			$sqlquery = 'SELECT version FROM bnetservers GROUP BY version ASC';
-			$versions = mysql_query($sqlquery);
-			while ($version = mysql_fetch_array($versions)) {
+			$versions = mysqli_query($sql_connection,$sqlquery);
+			while ($version = mysqli_fetch_array($versions)) {
 				echo '<h2>' . $version['version'] . '</h2><table cellspacing=2 cellpadding=2 border=0>';
 				$sqlquery = 'SELECT id,serveraddress,status FROM bnetservers WHERE version = \'' . $version['version'] . '\' ORDER BY status DESC,id ASC';
-				$serverarray = mysql_query($sqlquery);
-				while($row = mysql_fetch_array($serverarray)){
+				$serverarray = mysqli_query($sql_connection,$sqlquery);
+				while($row = mysqli_fetch_array($serverarray)){
 					$sid = $row['id'];
 					$saddress = $row['serveraddress'];
 					$status = $row['status'];
@@ -103,7 +104,7 @@
 		<br>
 		<center><font size=1><img src="<? echo statusimg(true); ?>"> = Online &nbsp; &nbsp; &nbsp; <img src="<? echo statusimg(false); ?>"> = Offline<br><br></font></center>
 	</div></div>
-	
+
 	<div id="links">
 	<div id="container">
 	<div id="main2">
@@ -115,13 +116,13 @@
 		<a href="http://www.darkblizz.org" target="_blank"><img src="/images/DarkBlizzbnetweb.gif" alt="DarkBlizz" title="DarkBlizz - Making Battle.net Magic"></a><br>
 		</center>
 	</div></div></div>
-	
+
 	<div id="rssfeeds">
 	<div id="container">
 	<div id="main2">
 	<div id="author">RSS Feeds</div>
 		<br>
-		<a href="//www.bnetdocs.org/newsrss.php"><img src="/images/rss.gif"> &nbsp; BNETDocs News</a><br>
+		<a href="/newsrss.php"><img src="/images/rss.gif"> &nbsp; BNETDocs News</a><br>
 		<?
 			if($userid){
 				?>
