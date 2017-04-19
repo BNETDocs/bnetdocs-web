@@ -1,6 +1,7 @@
 # BNETDocs
 
 [![Build Status](https://travis-ci.org/BNETDocs/bnetdocs-web.svg?branch=phoenix)](https://travis-ci.org/BNETDocs/bnetdocs-web)
+[![Build Status](https://jenkins.carlbennett.me/buildStatus/icon?job=bnetdocs-web)](https://jenkins.carlbennett.me/job/bnetdocs-web)
 
 BNETDocs is a web content management system (CMS) and documentation software
 for the Battle.net&trade; online gaming service's protocol. It provides a means
