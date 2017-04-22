@@ -339,11 +339,18 @@ class User implements JsonSerializable {
   }
 
   public function jsonSerialize() {
+    $avatar = (new Gravatar($this->getEmail()))->getUrl(null, 'identicon');
+
     $created_datetime = $this->getCreatedDateTime();
     if (!is_null($created_datetime)) $created_datetime = [
       "iso"  => $created_datetime->format("r"),
       "unix" => $created_datetime->getTimestamp(),
     ];
+
+    $url = Common::relativeUrlToAbsolute(
+      "/user/" . $this->getId() . "/"
+      . Common::sanitizeForUrl($this->getName())
+    );
 
     $verified_datetime = $this->getVerifiedDateTime();
     if (!is_null($verified_datetime)) $verified_datetime = [
@@ -352,10 +359,12 @@ class User implements JsonSerializable {
     ];
 
     return [
+      "avatar_url"        => $avatar,
       "created_datetime"  => $created_datetime,
       "id"                => $this->getId(),
       "name"              => $this->getName(),
       "timezone"          => $this->getTimezone(),
+      "url"               => $url,
       "verified_datetime" => $verified_datetime,
     ];
   }

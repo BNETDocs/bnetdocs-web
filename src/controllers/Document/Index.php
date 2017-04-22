@@ -48,19 +48,6 @@ class Index extends Controller {
       $model->timestamp = new DateTime("now", new DateTimeZone("UTC"));
       $documents = [];
       foreach ($model->documents as $document) {
-        $user = $document->getUser();
-        if ($user) {
-          $user = [
-            "avatar_url" => "https:"
-              . (new Gravatar($user->getEmail()))->getUrl(null, "identicon"),
-            "id"     => $user->getId(),
-            "name"   => $user->getName(),
-            "url"    => Common::relativeUrlToAbsolute(
-              "/user/" . $user->getId() . "/"
-              . Common::sanitizeForUrl($user->getName())
-            )
-          ];
-        }
         $documents[] = [
           "content"          => $document->getContent(false),
           "created_datetime" => self::renderDateTime(
@@ -73,7 +60,7 @@ class Index extends Controller {
           "id"               => $document->getId(),
           "options_bitmask"  => $document->getOptionsBitmask(),
           "title"            => $document->getTitle(),
-          "user"             => $user
+          "user"             => $document->getUser(),
         ];
       }
       $model->documents = $documents;
