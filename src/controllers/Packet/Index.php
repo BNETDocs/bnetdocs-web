@@ -66,7 +66,7 @@ class Index extends Controller {
         $user = $packet->getUser();
         if ($user) {
           $user = [
-            "avatar_url" => 'https:' . $user->getAvatarURI(null)
+            "avatar_url" => 'https:' . $user->getAvatarURI(null),
             "id"         => $user->getId(),
             "name"       => $user->getName(),
             "url"        => Common::relativeUrlToAbsolute(
