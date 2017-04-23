@@ -41,7 +41,14 @@ class Logger extends LoggerMVCLib {
     $stmt->execute();
 
     while ($obj = $stmt->fetch(PDO::FETCH_OBJ)) {
-      $event_log[$obj->id] = $obj;
+      $obj->id               = (int)    $obj->id;
+      $obj->event_type_id    = (int)    $obj->event_type_id;
+      $obj->event_type_name  = (string) $obj->event_type_name;
+      $obj->event_type_label = (string) $obj->event_type_label;
+      $obj->event_datetime   = (string) $obj->event_datetime;
+      $obj->user_id          = (int)    $obj->user_id;
+      $obj->ip_address       = (string) $obj->ip_address;
+      $event_log[$obj->id]   = $obj;
     }
 
     $stmt->closeCursor();
