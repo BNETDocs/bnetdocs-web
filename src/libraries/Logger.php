@@ -20,7 +20,23 @@ class Logger extends LoggerMVCLib {
 
   public static function &getAllEvents() {
     $event_log = [];
-    // TODO
+
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $stmt = Common::$database->prepare("
+      SELECT `id`, `event_type_id`, `event_datetime`, `user_id`, `ip_address`
+      FROM `event_log` ORDER BY `id` DESC LIMIT 1000;
+    ");
+    $stmt->execute();
+
+    while ($obj = $stmt->fetch(PDO::FETCH_OBJ)) {
+      $event_log[$obj->id] = $obj;
+    }
+
+    $stmt->closeCursor();
+
     return $event_log;
   }
 
