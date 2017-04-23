@@ -26,8 +26,17 @@ class Logger extends LoggerMVCLib {
     }
 
     $stmt = Common::$database->prepare("
-      SELECT `id`, `event_type_id`, `event_datetime`, `user_id`, `ip_address`
-      FROM `event_log` ORDER BY `id` DESC LIMIT 1000;
+      SELECT
+        `event_log`.`id`,
+        `event_types`.`id` AS `event_type_id`,
+        `event_types`.`name` AS `event_type_name`,
+        `event_types`.`label` AS `event_type_label`,
+        `event_datetime`,
+        `user_id`,
+        `ip_address`
+      FROM `event_log`
+      JOIN `event_types` ON `event_log`.`event_type_id` = `event_types`.`id`
+      ORDER BY `id` DESC LIMIT 1000;
     ");
     $stmt->execute();
 

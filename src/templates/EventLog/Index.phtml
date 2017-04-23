@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Templates\EventLog;
 
+use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
@@ -32,12 +33,32 @@ require("./header.inc.phtml");
             <th>User</th>
             <th>IP Address</th>
           </tr></thead><tbody>
-<?php foreach ($event_logs as $event_object) { ?>
+<?php foreach ($event_logs as $event_object) {
+            try {
+              $event_user = new User($event_object->user_id);
+            } catch (UserNotFoundException $e) {
+              $event_user = null;
+            }
+            $event_user_html = '<a href="';
+            if (!$event_user) {
+                $event_user_html .= Common::relativeUrlToAbsolute(
+                  '/user/' . $event_object->user_id
+                ) . '">' . $event_object->user_id . '</a>';
+            } else {
+                $event_user_html .= Common::relativeUrlToAbsolute(
+                  '/user/' . $event_object->user_id . '/'
+                  . Common::sanitizeForUrl($user->getName())
+                ) . '">'
+                . '<img src="' . $user->getAvatarURI(22) . '" width="22" /> '
+                . filter_var($user->getName(), FILTER_SANITIZE_STRING)
+                . '</a>';
+            }
+?>
             <tr>
               <td><?php echo $event_object->id; ?></td>
-              <td><?php echo $event_object->event_type_id; ?></td>
+              <td><?php echo $event_object->event_type_label; ?></td>
               <td><?php echo $event_object->event_datetime; ?></td>
-              <td><?php echo $event_object->user_id; ?></td>
+              <td><?php echo $event_user_html; ?></td>
               <td><?php echo $event_object->ip_address; ?></td>
             </tr>
 <?php } ?>
