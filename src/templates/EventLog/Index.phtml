@@ -50,10 +50,11 @@ require("./header.inc.phtml");
             } else {
                 $event_user_html .= Common::relativeUrlToAbsolute(
                   '/user/' . $event_object->user_id . '/'
-                  . Common::sanitizeForUrl($user->getName())
+                  . Common::sanitizeForUrl($event_user->getName())
                 ) . '">'
-                . '<img src="' . $user->getAvatarURI(22) . '" width="22" /> '
-                . filter_var($user->getName(), FILTER_SANITIZE_STRING)
+                . '<img src="'
+                  . $event_user->getAvatarURI(22) . '" width="22" /> '
+                . filter_var($event_user->getName(), FILTER_SANITIZE_STRING)
                 . '</a>';
             }
             $event_timestamp = new DateTime(
