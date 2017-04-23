@@ -11,6 +11,9 @@ $title       = "Event Log Index";
 $description = "The index for event logs on BNETDocs";
 $this->opengraph->attach(new Pair("url", "/eventlog/index"));
 
+$event_logs = $this->getContext()->event_log;
+$event_log_count = $this->getContext()->sum_event_log;
+
 require("./header.inc.phtml");
 ?>
       <article>
@@ -18,6 +21,28 @@ require("./header.inc.phtml");
         <header>Event Log Index</header>
         <section>
 <?php require("./NYI.inc.phtml"); ?>
+        </section>
+        <section>
+          <p>Found <?php echo number_format($event_log_count); ?> event(s).</p>
+<?php if ($event_log_count > 0) { ?>
+          <table><thead><tr>
+            <th>Id</th>
+            <th>Event Type</th>
+            <th>Timestamp</th>
+            <th>User</th>
+            <th>IP Address</th>
+          </tr></thead><tbody>
+<?php foreach ($event_logs as $event_object) { ?>
+            <tr>
+              <td><?php echo $event_object->id; ?></td>
+              <td><?php echo $event_object->event_type_id; ?></td>
+              <td><?php echo $event_object->event_datetime; ?></td>
+              <td><?php echo $event_object->user_id; ?></td>
+              <td><?php echo $event_object->ip_address; ?></td>
+            </tr>
+<?php } ?>
+          </tbody></table>
+<?php } ?>
         </section>
 <?php } else { ?>
         <header class="red">Event Log Index</header>
