@@ -7,13 +7,16 @@ use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
+use \DateTime;
+use \DateTimeZone;
 
 $title       = "Event Log Index";
 $description = "The index for event logs on BNETDocs";
 $this->opengraph->attach(new Pair("url", "/eventlog/index"));
 
-$event_logs = $this->getContext()->event_log;
+$event_logs      = $this->getContext()->event_log;
 $event_log_count = $this->getContext()->sum_event_log;
+$event_tz        = new DateTimeZone('UTC');
 
 require("./header.inc.phtml");
 ?>
@@ -53,11 +56,14 @@ require("./header.inc.phtml");
                 . filter_var($user->getName(), FILTER_SANITIZE_STRING)
                 . '</a>';
             }
+            $event_timestamp = new DateTime(
+              $event_object->event_datetime, $event_tz
+            );
 ?>
             <tr>
               <td><?php echo $event_object->id; ?></td>
               <td><?php echo $event_object->event_type_label; ?></td>
-              <td><?php echo $event_object->event_datetime; ?></td>
+              <td><time datetime="<?php echo $event_timestamp->format('c'); ?>"><?php echo $event_timestamp->format('l, F j, Y'); ?></time></td>
               <td><?php echo $event_user_html; ?></td>
               <td><?php echo $event_object->ip_address; ?></td>
             </tr>
