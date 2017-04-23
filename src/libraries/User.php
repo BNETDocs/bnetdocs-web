@@ -339,8 +339,6 @@ class User implements JsonSerializable {
   }
 
   public function jsonSerialize() {
-    $avatar = (new Gravatar($this->getEmail()))->getUrl(null, 'identicon');
-
     $created_datetime = $this->getCreatedDateTime();
     if (!is_null($created_datetime)) $created_datetime = [
       "iso"  => $created_datetime->format("r"),
@@ -359,7 +357,7 @@ class User implements JsonSerializable {
     ];
 
     return [
-      "avatar_url"        => $avatar,
+      "avatar_url"        => $this->getAvatarURI(null),
       "created_datetime"  => $created_datetime,
       "id"                => $this->getId(),
       "name"              => $this->getName(),

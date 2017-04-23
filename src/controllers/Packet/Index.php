@@ -66,11 +66,10 @@ class Index extends Controller {
         $user = $packet->getUser();
         if ($user) {
           $user = [
-            "avatar_url" => "https:"
-              . (new Gravatar($user->getEmail()))->getUrl(null, "identicon"),
-            "id"     => $user->getId(),
-            "name"   => $user->getName(),
-            "url"    => Common::relativeUrlToAbsolute(
+            "avatar_url" => 'https:' . $user->getAvatarURI(null)
+            "id"         => $user->getId(),
+            "name"       => $user->getName(),
+            "url"        => Common::relativeUrlToAbsolute(
               "/user/" . $user->getId() . "/"
               . Common::sanitizeForUrl($user->getName())
             )
