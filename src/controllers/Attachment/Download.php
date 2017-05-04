@@ -24,7 +24,7 @@ class Download extends Controller {
     $model->attachment_id = (isset($data['id']) ? (int) $data['id'] : null);
 
     try {
-      $model->attachment = new Attachment($id);
+      $model->attachment = new Attachment($model->attachment_id);
     } catch (AttachmentNotFoundException $e) {
       $model->attachment = null;
     }
