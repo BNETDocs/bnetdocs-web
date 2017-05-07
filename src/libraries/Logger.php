@@ -46,8 +46,12 @@ class Logger extends LoggerMVCLib {
       $obj->event_type_name  = (string) $obj->event_type_name;
       $obj->event_type_label = (string) $obj->event_type_label;
       $obj->event_datetime   = (string) $obj->event_datetime;
-      $obj->user_id          = (int)    $obj->user_id;
-      $obj->ip_address       = (string) $obj->ip_address;
+      if (!is_null($obj->user_id)) {
+        $obj->user_id        = (int)    $obj->user_id;
+      }
+      if (!is_null($obj->ip_address)) {
+        $obj->ip_address     = (string) $obj->ip_address;
+      }
       $event_log[$obj->id]   = $obj;
     }
 
