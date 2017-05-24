@@ -1,29 +1,33 @@
 language: php
 os:
-  - linux
+- linux
 sudo: false
 php:
-# - 5.3 (doesn't recognize $var=[], only recognizes $var=array())
-# - 5.4 (doesn't have finally{} in try blocks)
-  - 5.5
-  - 5.6
-  - 7.0
-  - nightly
+#- 5.3 (doesn't recognize $var=[], only recognizes $var=array())
+#- 5.4 (doesn't have finally{} in try blocks)
+- 5.5
+- 5.6
+- 7.0
+- nightly
 matrix:
   allow_failures:
-    - php: nightly
+  - php: nightly
 services:
-  - memcached
-  - mysql
+- memcached
+- mysql
 addons:
   apt:
     packages:
-      - libgeoip-dev
+    - libgeoip-dev
 install:
-  - pear channel-update pear.php.net
-  - pecl install geoip
-  - pear install http2
+- pear channel-update pear.php.net
+- pecl install geoip
+- pear install http2
 before_script:
-  - cp etc/config.sample.json etc/config.phoenix.json
+- cp etc/config.sample.json etc/config.phoenix.json
 script:
-  - bash -c 'set -e;for file in $(find ./src -type f -regex .*\.php -print); do php -e -l -f "$file"; done'
+- bash -c 'set -e;for file in $(find ./src -type f -regex .*\.php -print); do php
+  -e -l -f "$file"; done'
+notifications:
+  slack:
+    secure: IUINjf85l211dL7ET6TmBqq8je1sVYhexpTA4NWN0A+X5b3atH6h9lW6T/AwTP9DM6yWIS1K/OgN4qt746DtyRdH29kwd8j9Kg8zVsf1FA9LVxoKkQzuaiTzepOI4v/m2lMnT3l2CJnZGgPivgoPkLrtpeWZ0z3R+WC2uZmeHbbrvZatYD6ds+XVs8ZM1Oo2/ypYFLL0v7MF0K6FN9no/TyDBAa3MHn3wbXhnuxD+iL+vqrkDON+C7Lo1q8D9+WSH9Gn7xZ1h9dQVTw/VI8vR4LdHQBJ/zotRBrioyKlG+8LU6HoYXUztBdjbO+UutEkyfQzz/ZzXOGVygMgdBsaUrMpMz5XzluC9IlnDJKEA8QaEB11mtr1jlpao/0UGFTa0Pyj2yJLEyZ6oqVWoVDNvrbCEBeJgtD4IzrYtA4YRU8YVk1kg+k8JHCKTPt75lJO1U2n/1mXz75Zq//3jl5rR2d9jQhT6b3rCqZvSsXR+h3uwrfYzWmjivMqPo89telVCUJA3jJ1rpEPEi8Vgc4UsV4x19/tYnIqTn2efor5E3SnNiEAqeICmUqm5OoM/P7WhUpLVf4af7Sz+VMQOqQJWYPMW36MP0CJcq5h5PEK2E6Jc4DiSjlXh9mrTIkitNiiPgGKoTj6Gm2CyxxO1Xur/zAyuRaQ94pEO0D3YK2J5cA=
