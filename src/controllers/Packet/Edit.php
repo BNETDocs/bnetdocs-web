@@ -160,6 +160,7 @@ class Edit extends Controller {
         "error"           => $model->error,
         "packet_id"       => $model->packet_id,
         "options_bitmask" => $model->packet->getOptionsBitmask(),
+        "id"              => $model->packet->getPacketId(),
         "name"            => $model->packet->getPacketName(),
         "format"          => $model->packet->getPacketFormat(),
         "remarks"         => $model->packet->getPacketRemarks(false),
