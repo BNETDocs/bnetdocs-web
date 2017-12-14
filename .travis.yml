@@ -19,9 +19,9 @@ addons:
   apt:
     packages:
     - libgeoip-dev
+    - php-geoip
 install:
 - pear channel-update pear.php.net
-- pecl install geoip
 - pear install http2
 before_script:
 - cp etc/config.sample.json etc/config.phoenix.json
