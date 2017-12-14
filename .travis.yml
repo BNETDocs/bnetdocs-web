@@ -15,11 +15,6 @@ matrix:
 services:
 - memcached
 - mysql
-addons:
-  apt:
-    packages:
-    - libgeoip-dev
-    - php-geoip
 install:
 - pear channel-update pear.php.net
 - pear install http2
