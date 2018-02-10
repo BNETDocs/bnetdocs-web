@@ -21,6 +21,9 @@ if (isset($_SESSION['user_id'])) {
   <head>
 <?php echo Logger::getTimingHeader(); ?>
     <title><?php echo $title; ?> - BNETDocs</title>
+<?php if (isset($url) && !empty($url)) { ?>
+    <link rel="canonical" href="<?php echo $url; ?>"/>
+<?php } ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <?php if (Common::$config->bnetdocs->mobile_site_enabled) { ?>
     <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main.css"); ?>" type="text/css" media="(min-width:1000px)"/>
