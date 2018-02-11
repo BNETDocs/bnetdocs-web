@@ -93,6 +93,8 @@ printf "$(git log -n 1 --pretty='%aI' HEAD)\n" \
 printf "$(git log -n 1 --pretty='%h %aI' ./LICENSE.txt)" \
   >> ${SOURCE_DIRECTORY}/etc/.rsync-version
 
+printf "[3/4] Creating build artifact...\n"
+
 printf "[3/4] Syncing project to target...\n"
 pushd "${SOURCE_DIRECTORY}" >/dev/null
 OIFS=$IFS; IFS=,
