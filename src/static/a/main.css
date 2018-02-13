@@ -214,6 +214,9 @@ main > article > footer {
   min-height: 20px;
   padding: 10px;
 }
+article > footer time {
+  font-size: 80%;
+}
 article > footer img.avatar {
   border-radius: 3px;
   float: left;

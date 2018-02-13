@@ -210,6 +210,16 @@ main > article > footer {
   min-height: 20px;
   padding: 10px;
 }
+article > footer time {
+  font-size: 80%;
+}
+article > footer img.avatar {
+  border-radius: 3px;
+  float: left;
+  max-height: 22px;
+  max-width: 22px;
+  margin: 0px 8px 0px 0px;
+}
 main > p.pagination {
   text-align: center;
 }
