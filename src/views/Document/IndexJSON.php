@@ -19,7 +19,7 @@ class IndexJSON extends View {
       throw new IncorrectModelException();
     }
     echo json_encode([
-      'users' => $model->users
+      'documents' => $model->documents
     ], Common::prettyJSONIfBrowser());
   }
 
