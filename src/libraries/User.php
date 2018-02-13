@@ -164,6 +164,7 @@ class User implements JsonSerializable {
       $stmt->bindParam(":options_bitmask", $options_bitmask, PDO::PARAM_INT);
       $successful = $stmt->execute();
       $stmt->closeCursor();
+      Common::$cache->delete('bnetdocs-users');
     } catch (PDOException $e) {
       throw new QueryException("Cannot create user", $e);
     } finally {
