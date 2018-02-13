@@ -88,10 +88,6 @@ function main() {
     $router->addRoute( // URL: /
       "#^/$#", "Legacy", "LegacyHtml"
     );
-    $router->addRoute( // URL: /attachment/download
-      "#^/attachment/download/?$#",
-      "Attachment\\Download", "Attachment\\DownloadRaw"
-    );
     $router->addRoute( // URL: /comment/create
       "#^/comment/create/?$#", "Comment\\Create", "Comment\\CreateJSON"
     );

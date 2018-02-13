@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers\News;
 
-use \BNETDocs\Libraries\Attachment;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\NewsPost;
@@ -54,12 +53,8 @@ class View extends Controller {
       && !($model->news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)
       && !$model->acl_allowed) $model->news_post = null;
 
-    // Load attachments and comments
+    // Load comments
     if ($model->news_post) {
-      $model->attachments = Attachment::getAll(
-        Comment::PARENT_TYPE_NEWS_POST,
-        $model->news_post_id
-      );
       $model->comments = Comment::getAll(
         Comment::PARENT_TYPE_NEWS_POST,
         $model->news_post_id

@@ -8,7 +8,6 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
-$attachments  = $this->getContext()->attachments;
 $comments     = $this->getContext()->comments;
 $object       = $this->getContext()->news_post;
 $object_id    = $this->getContext()->news_post_id;
@@ -86,28 +85,6 @@ require("./header.inc.phtml");
           <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
         </footer>
       </article>
-<?php if ($attachments) { ?>
-      <article>
-        <header>Attachments</header>
-        <section>
-          <table><thead><th>Filename</th><th>Size</th><th>Upload Date</th><th>Author</th></thead><tbody>
-<?php foreach ($attachments as $a) {
-        $a_url           = Common::relativeUrlToAbsolute("/attachment/download?id=" . rawurlencode($a->getId()));
-        $a_filename      = htmlentities($a->getFilename(), ENT_HTML5, "UTF-8");
-        $a_size          = $a->getContentSize(true);
-        $a_uploaddate    = $a->getCreatedDateTime()->format("l, F j, Y");
-        $a_author_user   = $a->getUser();
-        $a_author_id     = $a->getUserId();
-        $a_author_name   = $a_author_user->getName();
-        $a_author_url    = $a_author_user->getURI();
-        $a_author_avatar = $a_author_user->getAvatarURI(22);
-?>
-            <tr><td><a href="<?php echo $a_url; ?>"><?php echo $a_filename; ?></a></td><td><?php echo $a_size; ?></td><td><?php echo $a_uploaddate; ?></td><td><a href="<?php echo $a_author_url; ?>"><img class="avatar" src="<?php echo $a_author_avatar; ?>"/> <?php echo htmlspecialchars($a_author_name, ENT_HTML5, "UTF-8"); ?></a></td></tr>
-<?php } ?>
-          </tbody></table>
-        </section>
-      </article>
-<?php } ?>
       <article>
         <header><a name="comments">Comments</a></header>
         <section>

@@ -7,7 +7,6 @@ use \CarlBennett\MVC\Libraries\Model;
 class View extends Model {
 
   public $acl_allowed;
-  public $attachments;
   public $comments;
   public $news_post;
   public $news_post_id;

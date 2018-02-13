@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Controllers\RedirectSoft as RedirectSoftController;
-use \BNETDocs\Libraries\Attachment;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
@@ -29,10 +28,6 @@ class View extends Controller {
     }
 
     if ($model->document) {
-      $model->attachments = Attachment::getAll(
-        Comment::PARENT_TYPE_DOCUMENT,
-        $model->document_id
-      );
       $model->comments = Comment::getAll(
         Comment::PARENT_TYPE_DOCUMENT,
         $model->document_id
