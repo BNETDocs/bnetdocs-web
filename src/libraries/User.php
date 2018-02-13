@@ -239,6 +239,62 @@ class User implements JsonSerializable {
     return ($this->options_bitmask & $acl);
   }
 
+  public static function getAllUsers($reverse) {
+    $cache_key = 'bnetdocs-users';
+    $cache_val = Common::$cache->get($cache_key);
+    if ($cache_val !== false && !empty($cache_val)) {
+      $ids     = explode(',', $cache_val);
+      $objects = [];
+      foreach ($ids as $id) {
+        $objects[] = new self($id);
+      }
+      return $objects;
+    }
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare("
+        SELECT
+          `created_datetime`,
+          `display_name`,
+          `email`,
+          `id`,
+          `options_bitmask`,
+          `password_hash`,
+          `password_salt`,
+          `timezone`,
+          `username`,
+          `verified_datetime`
+        FROM `users`
+        ORDER BY
+          `created_datetime`
+          " . ($reverse ? 'DESC' : 'ASC') . ",
+          `id`
+          " . ($reverse ? 'DESC' : 'ASC') . "
+        ;
+      ");
+      if (!$stmt->execute()) {
+        throw new QueryException('Cannot refresh all users');
+      }
+      $ids     = [];
+      $objects = [];
+      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        $ids[]     = (int) $row->id;
+        $objects[] = new self($row);
+        Common::$cache->set(
+          'bnetdocs-user-' . $row->id, serialize($row), 300
+        );
+      }
+      $stmt->closeCursor();
+      Common::$cache->set($cache_key, implode(',', $ids), 300);
+      return $objects;
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot refresh all users', $e);
+    }
+    return null;
+  }
+
   public function getAvatarURI($size) {
     return Common::relativeUrlToAbsolute(
       (new Gravatar($this->getEmail()))->getUrl($size, "identicon")

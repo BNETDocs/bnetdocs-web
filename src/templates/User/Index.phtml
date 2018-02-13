@@ -1,0 +1,37 @@
+<?php
+
+namespace BNETDocs\Templates\User;
+
+use \BNETDocs\Libraries\User;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title       = 'User Index';
+$description = 'The index for users on BNETDocs';
+$this->opengraph->attach(new Pair('url', '/user/index'));
+
+require('./header.inc.phtml');
+?>
+      <article>
+        <header>User Index</header>
+        <section>
+          <table>
+            <thead>
+              <tr>
+                <th class="left">Found <?php echo number_format($this->getContext()->sum_users); ?> user<?php echo ($this->getContext()->sum_users != 1 ? 's' : ''); ?></th>
+                <th class="left">Registered</th>
+              </tr>
+            </thead><tbody>
+<?php foreach ($this->getContext()->users as $user) {
+        $user_url   = $user->getURI();
+        $avatar_url = $user->getAvatarURI(22);
+?>
+              <tr>
+                <td><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/> <?php echo filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td>
+                <td><time datetime="<?php echo $user->getCreatedDateTime()->format('c'); ?>"><?php echo $user->getCreatedDateTime()->format('l, F j, Y'); ?></time></td>
+              </tr>
+<?php } ?>
+          </tbody></table>
+        </section>
+      </article>
+<?php require("./footer.inc.phtml"); ?>
