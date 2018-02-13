@@ -1,0 +1,43 @@
+<?php
+
+namespace BNETDocs\Templates\User;
+
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title       = 'Update Profile';
+$description = 'This form allows an individual to update their account profile information.';
+$this->opengraph->attach(new Pair('url', '/user/update'));
+
+$this->additional_css[] = '/a/forms.css';
+require('./header.inc.phtml');
+?>
+      <article>
+        <header>Update Profile</header>
+        <section><?php include('./NYI.inc.phtml'); ?></section>
+        <form method="POST" action="?">
+          <section>
+            <label for="username">Username:</label><br/>
+            <input
+              tabindex="1" required autofocus="autofocus"
+              type="text" name="username" id="username"
+              value=""/>
+          </section>
+          <section>
+            <label for="email">Email address:</label><br/>
+            <input
+              tabindex="2" required autocomplete="email"
+              type="email" name="email" id="email"
+              value=""/>
+          </section>
+          <section>
+            <label for="display_name">Display Name:</label><br/>
+            <input
+              tabindex="3" type="text" name="display_name" id="display_name"
+              value=""/>
+          </section>
+          <section>
+            <input tabindex="4" type="submit" value="Update"/>
+          </section>
+        </form>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

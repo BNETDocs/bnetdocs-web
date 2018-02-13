@@ -241,6 +241,9 @@ function main() {
       "#^/user/resetpassword/?$#",
       "User\\ResetPassword", "User\\ResetPasswordHtml"
     );
+    $router->addRoute( // URL: /user/update
+      "#^/user/update/?$#", "User\\Update", "User\\UpdateHtml"
+    );
     //$router->addRoute( // URL: /user/update
     //  "#^/user/update/?$#", "User\\Update", "User\\UpdateHtml"
     //);
