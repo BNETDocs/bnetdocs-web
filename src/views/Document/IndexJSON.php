@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Views\Document;
 
-use \BNETDocs\Models\User\Index as UserIndexModel;
+use \BNETDocs\Models\Document\Index as DocumentIndexModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
@@ -15,7 +15,7 @@ class IndexJSON extends View {
   }
 
   public function render(Model &$model) {
-    if (!$model instanceof UserIndexModel) {
+    if (!$model instanceof DocumentIndexModel) {
       throw new IncorrectModelException();
     }
     echo json_encode([
