@@ -225,6 +225,10 @@ function main() {
       "#^/user/changepassword/?$#",
       "User\\ChangePassword", "User\\ChangePasswordHtml"
     );
+    $router->addRoute( // URL: /user/createpassword
+      "#^/user/createpassword/?$#",
+      "User\\CreatePassword", "User\\CreatePasswordHtml"
+    );
     $router->addRoute( // URL: /user/login
       "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"
     );
