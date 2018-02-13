@@ -1,6 +1,6 @@
 <?php
 
-namespace BNETDocs\Views\User;
+namespace BNETDocs\Views\Document;
 
 use \BNETDocs\Models\User\Index as UserIndexModel;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
