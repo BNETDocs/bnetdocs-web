@@ -75,14 +75,18 @@ a.button {
   box-sizing: border-box;
   color: inherit;
   cursor: pointer;
+  display: inline-block;
+  line-height: 18px;
   min-height: 24px;
   min-width: 80px;
   outline: none;
   padding: 4px 8px;
-}
-a.button {
-  display: inline-block;
   text-align: center;
+}
+button.button-disabled,a.button-disabled {
+  background-color: rgba(192,128,128,0.4);
+  cursor: not-allowed;
+  color: rgba(255,218,218,0.4);
 }
 form input[type="submit"]:active,
 form input[type="reset"]:active,

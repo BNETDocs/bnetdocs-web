@@ -10,6 +10,14 @@ $title       = 'User Index';
 $description = 'The index for users on BNETDocs';
 $this->opengraph->attach(new Pair('url', '/user/index'));
 
+$page = $this->getContext()->page;
+$pages = $this->getContext()->pages;
+$limit = $this->getContext()->limit;
+
+$no_prev = ($page <= 1);
+$no_next = ($page >= $pages);
+
+$this->additional_css[] = '/a/forms.css';
 require('./header.inc.phtml');
 ?>
       <article>
@@ -18,7 +26,7 @@ require('./header.inc.phtml');
           <table>
             <thead>
               <tr>
-                <th class="left">Found <?php echo number_format($this->getContext()->sum_users); ?> user<?php echo ($this->getContext()->sum_users != 1 ? 's' : ''); ?></th>
+                <th class="left">Account</th>
                 <th class="left">Registered</th>
               </tr>
             </thead><tbody>
@@ -32,6 +40,26 @@ require('./header.inc.phtml');
               </tr>
 <?php } ?>
           </tbody></table>
+        </section>
+        <section>
+          <hr/>
+          <span class="float-left">
+<?php if (!$no_prev) { ?>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/user/index?page=' . ($this->getContext()->page - 1) . '&limit=' . $this->getContext()->limit); ?>">Prev</a>
+<?php } else { ?>
+            <button class="button button-disabled" disabled="disabled">Prev</button>
+<?php } ?>
+          </span>
+          <span class="float-right">
+<?php if (!$no_next) { ?>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/user/index?page=' . ($this->getContext()->page + 1) . '&limit=' . $this->getContext()->limit); ?>">Next</a>
+<?php } else { ?>
+            <button class="button button-disabled" disabled="disabled">Next</button>
+<?php } ?>
+          </span>
+          <p class="center" style="line-height:24px;">
+            <strong><?php echo $this->getContext()->page; ?></strong> of <?php echo $this->getContext()->pages; ?>
+          </p>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>

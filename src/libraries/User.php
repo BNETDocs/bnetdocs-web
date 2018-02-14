@@ -240,16 +240,25 @@ class User implements JsonSerializable {
     return ($this->options_bitmask & $acl);
   }
 
-  public static function getAllUsers($reverse) {
-    $cache_key = 'bnetdocs-users';
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false && !empty($cache_val)) {
-      $ids     = explode(',', $cache_val);
-      $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
+  public static function getAllUsers($reverse, $limit = null, $index = null) {
+    if (!(is_numeric($limit) || is_numeric($index))) {
+      $limit_clause = '';
+    } else if (!is_numeric($index)) {
+      $limit_clause = 'LIMIT ' . (int) $limit;
+    } else {
+      $limit_clause = 'LIMIT ' . (int) $index . ',' . (int) $limit;
+    }
+    if (empty($limit_clause)) {
+      $cache_key = 'bnetdocs-users';
+      $cache_val = Common::$cache->get($cache_key);
+      if ($cache_val !== false && !empty($cache_val)) {
+        $ids     = explode(',', $cache_val);
+        $objects = [];
+        foreach ($ids as $id) {
+          $objects[] = new self($id);
+        }
+        return $objects;
       }
-      return $objects;
     }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
@@ -273,7 +282,7 @@ class User implements JsonSerializable {
           " . ($reverse ? 'DESC' : 'ASC') . ",
           `id`
           " . ($reverse ? 'DESC' : 'ASC') . "
-        ;
+        " . $limit_clause . ";
       ");
       if (!$stmt->execute()) {
         throw new QueryException('Cannot refresh all users');
@@ -288,7 +297,9 @@ class User implements JsonSerializable {
         );
       }
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(',', $ids), 300);
+      if (empty($limit_clause)) {
+        Common::$cache->set($cache_key, implode(',', $ids), 300);
+      }
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException('Cannot refresh all users', $e);
@@ -348,6 +359,26 @@ class User implements JsonSerializable {
         $this->getName(), true
       )
     );
+  }
+
+  public static function getUserCount() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare('SELECT COUNT(*) FROM `users`;');
+      if (!$stmt->execute()) {
+        throw new QueryException('Cannot query user count');
+      } else if ($stmt->rowCount() == 0) {
+        throw new QueryException('Missing result while querying user count');
+      }
+      $row = $stmt->fetch(PDO::FETCH_NUM);
+      $stmt->closeCursor();
+      return (int) $row[0];
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot query user count', $e);
+    }
+    return null;
   }
 
   public function getTimezone() {
