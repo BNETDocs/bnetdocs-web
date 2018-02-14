@@ -45,20 +45,20 @@ require('./header.inc.phtml');
           <hr/>
           <span class="float-left">
 <?php if (!$no_prev) { ?>
-            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/user/index?page=' . ($this->getContext()->page - 1) . '&limit=' . $this->getContext()->limit); ?>">Prev</a>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/user/index?page=' . ($page - 1) . '&limit=' . $limit); ?>">Prev</a>
 <?php } else { ?>
             <button class="button button-disabled" disabled="disabled">Prev</button>
 <?php } ?>
           </span>
           <span class="float-right">
 <?php if (!$no_next) { ?>
-            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/user/index?page=' . ($this->getContext()->page + 1) . '&limit=' . $this->getContext()->limit); ?>">Next</a>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/user/index?page=' . ($page + 1) . '&limit=' . $limit); ?>">Next</a>
 <?php } else { ?>
             <button class="button button-disabled" disabled="disabled">Next</button>
 <?php } ?>
           </span>
           <p class="center" style="line-height:24px;">
-            <strong><?php echo $this->getContext()->page; ?></strong> of <?php echo $this->getContext()->pages; ?>
+            <strong><?php echo number_format($page); ?></strong> of <?php echo number_format($pages); ?>
           </p>
         </section>
       </article>
