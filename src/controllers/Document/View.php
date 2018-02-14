@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers\Document;
 
-use \BNETDocs\Controllers\RedirectSoft as RedirectSoftController;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;

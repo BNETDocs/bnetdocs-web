@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers\Packet;
 
-use \BNETDocs\Controllers\Redirect as RedirectController;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Packet;
