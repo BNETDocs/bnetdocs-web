@@ -32,7 +32,7 @@ require("./header.inc.phtml");
 ?>
               <tr>
                 <td><strong><a href="<?php echo $document->getURI(); ?>"><?php echo filter_var($document->getTitle(), FILTER_SANITIZE_STRING); ?></a></strong><br/><span style="color:#aaa;"><?php echo rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($document->getContent(true), FILTER_SANITIZE_STRING)), "\n", 90), ". ", 90), "."); ?></span></td>
-                <td><?php if ($user) { ?><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/> <?php echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><?php } else { ?>Anonymous<?php } ?></td>
+                <td><?php if ($user) { ?><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/>&nbsp;<?php echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><?php } else { ?>Anonymous<?php } ?></td>
               </tr>
 <?php } ?>
           </tbody></table>

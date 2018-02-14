@@ -35,7 +35,7 @@ require('./header.inc.phtml');
         $avatar_url = $user->getAvatarURI(22);
 ?>
               <tr>
-                <td><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/> <?php echo filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td>
+                <td><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/>&nbsp;<?php echo filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td>
                 <td><time datetime="<?php echo $user->getCreatedDateTime()->format('c'); ?>"><?php echo $user->getCreatedDateTime()->format('l, F j, Y'); ?></time></td>
               </tr>
 <?php } ?>

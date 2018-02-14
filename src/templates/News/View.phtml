@@ -82,7 +82,7 @@ require("./header.inc.phtml");
 <?php } else { ?>
           <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
 <?php } ?>
-          <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
+          <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/>&nbsp;<?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
         </footer>
       </article>
       <article>

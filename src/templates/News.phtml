@@ -66,7 +66,7 @@ if (is_null($news_posts) || empty($news_posts)) {
 <?php } else { ?>
           <span class="float-right"><time datetime="<?php echo $news_post->getCreatedDateTime()->format('c'); ?>"><?php echo $news_post->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
 <?php } ?>
-          <span><a href="<?php echo $users[$user_id]->getURI(); ?>"><img class="avatar" src="<?php echo $avatar; ?>"/> <?php echo htmlspecialchars($users[$user_id]->getName(), ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><a href="<?php echo $users[$user_id]->getURI(); ?>"><img class="avatar" src="<?php echo $avatar; ?>"/>&nbsp;<?php echo htmlspecialchars($users[$user_id]->getName(), ENT_HTML5, "UTF-8"); ?></a></span>
         </footer>
       </article>
 <?php }
