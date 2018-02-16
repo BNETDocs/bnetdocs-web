@@ -4,11 +4,8 @@ namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Index as UserIndexModel;
-use \BNETDocs\Views\User\IndexHtml as UserIndexHtmlView;
-use \BNETDocs\Views\User\IndexJSON as UserIndexJSONView;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Gravatar;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 
@@ -23,6 +20,27 @@ class Index extends Controller {
     $model = new UserIndexModel();
 
     $query = $router->getRequestQueryArray();
+
+    $model->order = (
+      isset($query['order']) ? $query['order'] : 'registered-asc'
+    );
+
+    switch ($model->order) {
+      case 'id-asc':
+        $order = ['id','ASC']; break;
+      case 'id-desc':
+        $order = ['id','DESC']; break;
+      case 'username-asc':
+        $order = ['username','ASC']; break;
+      case 'username-desc':
+        $order = ['username','DESC']; break;
+      case 'registered-asc':
+        $order = ['created_datetime','ASC']; break;
+      case 'registered-desc':
+        $order = ['created_datetime','DESC']; break;
+      default:
+        $order = null;
+    }
 
     $model->page = (isset($query['page']) ? (int) $query['page'] : 0);
 
@@ -46,7 +64,7 @@ class Index extends Controller {
     if ($model->page > $model->pages) { $model->page = $model->pages; }
 
     $model->users = User::getAllUsers(
-      false, // reverse
+      $order,
       $model->limit,
       $model->limit * ( $model->page - 1 )
     );

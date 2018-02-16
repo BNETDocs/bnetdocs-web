@@ -302,7 +302,9 @@ class User implements JsonSerializable {
     return ($this->options_bitmask & $acl);
   }
 
-  public static function getAllUsers($reverse, $limit = null, $index = null) {
+  public static function getAllUsers(
+    $order = null, $limit = null, $index = null
+  ) {
     if (!(is_numeric($limit) || is_numeric($index))) {
       $limit_clause = '';
     } else if (!is_numeric($index)) {
@@ -340,10 +342,8 @@ class User implements JsonSerializable {
           `verified_datetime`
         FROM `users`
         ORDER BY
-          `created_datetime`
-          " . ($reverse ? 'DESC' : 'ASC') . ",
-          `id`
-          " . ($reverse ? 'DESC' : 'ASC') . "
+          " . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . "
+          `id` ASC
         " . $limit_clause . ";
       ");
       if (!$stmt->execute()) {

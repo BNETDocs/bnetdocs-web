@@ -35,7 +35,8 @@ form input[type="email"],
 form input[type="password"],
 form input[type="number"],
 form textarea,
-form select {
+form select,
+form option {
   background-color: rgba(64,64,64,0.6);
   border: 0px;
   -moz-box-sizing: border-box;
@@ -55,12 +56,14 @@ form input[type="email"]:focus,
 form input[type="password"]:focus,
 form input[type="number"]:focus,
 form textarea:focus,
-form select:focus {
+form select:focus,
+form option:focus {
   background-color: rgba(128,128,128,0.4);
 }
 form input[disabled],
 form textarea[disabled],
-form select[disabled] {
+form select[disabled],
+form option[disabled] {
   background-image: url("/a/unable-20px.png");
   background-position: left top;
   background-repeat: repeat;
