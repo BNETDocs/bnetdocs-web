@@ -2,42 +2,129 @@
 
 namespace BNETDocs\Templates\User;
 
+use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
 $title       = 'Update Profile';
-$description = 'This form allows an individual to update their account profile information.';
+$description = 'This form allows an individual to update their account '
+  . 'information.';
 $this->opengraph->attach(new Pair('url', '/user/update'));
+
+switch ($this->getContext()->username_error[1]) {
+  case null: case '': $username_error = ''; break;
+  case 'CHANGE_FAILED':
+    $username_error = 'Failed to change username.'; break;
+  default:
+    $username_error = 'Internal error: '
+      . $this->getContext()->username_error[1];
+}
+
+switch ($this->getContext()->email_error[1]) {
+  case null: case '': $email_error = ''; break;
+  case 'MISMATCH':
+    $email_error = 'Emails do not match, check for typos.'; break;
+  case 'EMPTY':
+    $email_error = 'Your new email address cannot be blank.'; break;
+  case 'INVALID':
+    $email_error = 'Your new email address uses invalid formatting.'; break;
+  case 'CHANGE_FAILED':
+    $email_error = 'Failed to change email due to an internal error.'; break;
+  case 'CHANGE_SUCCESS':
+    $email_error = 'Your email has been changed.'; break;
+  default:
+    $email_error = 'Internal error: '
+      . $this->getContext()->email_error[1];
+}
+
+switch ($this->getContext()->display_name_error[1]) {
+  case null: case '': $display_name_error = ''; break;
+  case 'CHANGE_FAILED':
+    $display_name_error = 'Failed to change display name.'; break;
+  default:
+    $display_name_error = 'Internal error: '
+      . $this->getContext()->display_name_error[1];
+}
 
 $this->additional_css[] = '/a/forms.css';
 require('./header.inc.phtml');
 ?>
       <article>
+<?php if ($this->getContext()->_responseCode == 401) { ?>
+        <header class="red">Update Profile</header>
+        <section class="red">
+          <p>You are not authorized to access this page.</p>
+          <p><a class="button" href="<?php
+            echo Common::relativeUrlToAbsolute('/user/login');
+            ?>">Log in</a></p>
+        </section>
+<?php } else { ?>
         <header>Update Profile</header>
         <section><?php include('./NYI.inc.phtml'); ?></section>
-        <form method="POST" action="?">
-          <section>
+        <form method="POST">
+          <section<?php
+            if ($username_error) {
+              echo ' class="' . $this->getContext()->username_error[0] . '"';
+            } ?>>
+            <hr/>
             <label for="username">Username:</label><br/>
             <input
-              tabindex="1" required autofocus="autofocus"
+              tabindex="1" required
               type="text" name="username" id="username"
-              value=""/>
+              value="<?php echo filter_var($this->getContext()->username,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
+            <?php if ($username_error) {
+              echo '<p>' . $username_error . '</p>';
+            } ?>
           </section>
-          <section>
-            <label for="email">Email address:</label><br/>
+          <section<?php
+            if ($email_error) {
+              echo ' class="' . $this->getContext()->email_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="email_1">Email address:</label><br/>
             <input
               tabindex="2" required autocomplete="email"
-              type="email" name="email" id="email"
-              value=""/>
-          </section>
-          <section>
-            <label for="display_name">Display Name:</label><br/>
+              type="email" name="email_1" id="email_1"
+              value="<?php echo filter_var($this->getContext()->email_1,
+                  FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
+            <label for="email_2">Confirm email address:
+              <span style="color:rgba(128,128,128,0.8);padding-left:8px;">
+                (Fill box only if changing email address.)
+              </span>
+            </label><br/>
             <input
-              tabindex="3" type="text" name="display_name" id="display_name"
-              value=""/>
+              tabindex="3" autocomplete="email"
+              type="email" name="email_2" id="email_2"
+              value="<?php echo filter_var($this->getContext()->email_2,
+                  FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
+            <?php if ($email_error) {
+              echo '<p>' . $email_error . '</p>';
+            } ?>
+          </section>
+          <section<?php
+            if ($display_name_error) {
+              echo ' class="' .
+                $this->getContext()->display_name_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="display_name">Display name:
+              <span style="color:rgba(128,128,128,0.8);padding-left:8px;">
+                (Your username will be used instead if blank.)
+              </span>
+            </label><br/>
+            <input
+              tabindex="4" type="text" name="display_name" id="display_name"
+              value="<?php echo filter_var($this->getContext()->display_name,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
+            <?php if ($display_name_error) {
+              echo '<p>' . $display_name_error . '</p>';
+            } ?>
           </section>
           <section>
-            <input tabindex="4" type="submit" value="Update"/>
+            <hr/>
+            <input tabindex="5" type="submit" class="bg-green" value="Update"/>
           </section>
         </form>
+<?php } ?>
       </article>
 <?php require('./footer.inc.phtml'); ?>

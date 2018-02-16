@@ -86,6 +86,37 @@ class User implements JsonSerializable {
     }
   }
 
+  public function changeEmail($new_email) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare('
+        UPDATE `users` SET `email` = :email WHERE `id` = :user_id;
+      ');
+      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_STR);
+      $stmt->bindParam(':email', $new_email, PDO::PARAM_STR);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) {
+        $this->email = (string) $new_email;
+        $key = 'bnetdocs-user-' . $this->id;
+        $obj = Common::$cache->get($key);
+        if ($obj !== false) {
+          $obj = unserialize($obj);
+          $obj->email = $this->email;
+          $obj = serialize($obj);
+          Common::$cache->set($key, $obj, 300);
+        }
+      }
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot change user email', $e);
+    } finally {
+      return $successful;
+    }
+  }
+
   public function changePassword($new_password) {
     $password_hash = null; $password_salt = null;
     self::createPassword($new_password, $password_hash, $password_salt);

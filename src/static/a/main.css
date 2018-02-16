@@ -278,44 +278,48 @@ body > footer.slim {
 p.left,
 span.left,
 th.left,
-td.left {
+td.left,
+input.left {
   text-align: left;
 }
 p.center,
 span.center,
 th.center,
-td.center {
+td.center,
+input.center {
   text-align: center;
 }
 p.justify,
 span.justify,
 th.justify,
-td.justify {
+td.justify,
+input.justify {
   text-align: justify;
 }
 p.right,
 span.right,
 th.right,
-td.right {
+td.right,
+input.right {
   text-align: right;
 }
 p.red,
 span.red,
 th.red,
 td.red {
-  color: #d74747;
+  color: #d74747 !important;
 }
 p.green,
 span.green,
 th.green,
 td.green {
-  color: #47d747;
+  color: #47d747 !important;
 }
 p.blue,
 span.blue
 th.blue,
 td.blue {
-  color: #4747d7;
+  color: #4747d7 !important;
 }
 .monospace {
   font-family: source code pro, courier new, monospace;

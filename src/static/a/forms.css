@@ -93,3 +93,12 @@ form input[type="reset"]:active,
 button:active {
   background-color: rgba(128,128,128,0.6);
 }
+button.bg-red,a.button-bg-red,input.bg-red {
+  background-color: rgba(215,71,71,0.4) !important;
+}
+button.bg-green,a.button-bg-green,input.bg-green {
+  background-color: rgba(71,215,71,0.4) !important;
+}
+button.bg-blue,a.button-bg-blue,input.bg-blue {
+  background-color: rgba(71,71,215,0.4) !important;
+}
