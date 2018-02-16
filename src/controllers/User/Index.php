@@ -46,7 +46,7 @@ class Index extends Controller {
     if ($model->page > $model->pages) { $model->page = $model->pages; }
 
     $model->users = User::getAllUsers(
-      false,
+      false, // reverse
       $model->limit,
       $model->limit * ( $model->page - 1 )
     );
