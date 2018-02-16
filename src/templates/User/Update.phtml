@@ -12,8 +12,15 @@ $this->opengraph->attach(new Pair('url', '/user/update'));
 
 switch ($this->getContext()->username_error[1]) {
   case null: case '': $username_error = ''; break;
+  case 'USERNAME_LONG':
+    $username_error = 'Your chosen username is too long.'; break;
+  case 'USERNAME_SHORT':
+    $username_error = 'Your chosen username is too short.'; break;
   case 'CHANGE_FAILED':
-    $username_error = 'Failed to change username.'; break;
+    $username_error = 'Failed to change username due to '
+      . 'an internal error.'; break;
+  case 'CHANGE_SUCCESS':
+    $username_error = 'Your username has been changed.'; break;
   default:
     $username_error = 'Internal error: '
       . $this->getContext()->username_error[1];

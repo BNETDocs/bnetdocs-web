@@ -95,7 +95,7 @@ class User implements JsonSerializable {
       $stmt = Common::$database->prepare('
         UPDATE `users` SET `email` = :email WHERE `id` = :user_id;
       ');
-      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_STR);
+      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
       $stmt->bindParam(':email', $new_email, PDO::PARAM_STR);
       $successful = $stmt->execute();
       $stmt->closeCursor();
@@ -131,7 +131,7 @@ class User implements JsonSerializable {
           `password_salt` = :password_salt
         WHERE `id` = :user_id;
       ");
-      $stmt->bindParam(":user_id", $this->id, PDO::PARAM_STR);
+      $stmt->bindParam(":user_id", $this->id, PDO::PARAM_INT);
       $stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);
       $stmt->bindParam(":password_salt", $password_salt, PDO::PARAM_STR);
       $successful = $stmt->execute();
@@ -151,6 +151,37 @@ class User implements JsonSerializable {
       }
     } catch (PDOException $e) {
       throw new QueryException("Cannot change user password", $e);
+    } finally {
+      return $successful;
+    }
+  }
+
+  public function changeUsername($new_username) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare('
+        UPDATE `users` SET `username` = :username WHERE `id` = :user_id;
+      ');
+      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(':username', $new_username, PDO::PARAM_STR);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) {
+        $this->username = (string) $new_username;
+        $key = 'bnetdocs-user-' . $this->id;
+        $obj = Common::$cache->get($key);
+        if ($obj !== false) {
+          $obj = unserialize($obj);
+          $obj->username = $this->username;
+          $obj = serialize($obj);
+          Common::$cache->set($key, $obj, 300);
+        }
+      }
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot change username of user', $e);
     } finally {
       return $successful;
     }

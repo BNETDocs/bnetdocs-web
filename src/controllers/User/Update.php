@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Update as UserUpdateModel;
+use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
@@ -66,7 +67,38 @@ class Update extends Controller {
 
           // username change request
 
-          $model->username_error = ['red', 'CHANGE_FAILED'];
+          $req = Common::$config->bnetdocs->user_register_requirements;
+
+          $username_len = strlen($model->username);
+
+          if (empty($model->username)) {
+
+            // username is empty
+            $model->username_error = ['red', 'EMPTY'];
+
+          } else if (is_numeric($req->username_length_max)
+            && $username_len > $req->username_length_max) {
+
+            // username too long
+            $model->username_error = ['red', 'USERNAME_LONG'];
+
+          } else if (is_numeric($req->username_length_min)
+            && $username_len < $req->username_length_min) {
+
+            // username too short
+            $model->username_error = ['red', 'USERNAME_SHORT'];
+
+          } else {
+
+            // initiate username change
+
+            if (!$user->changeUsername( $model->username )) {
+              $model->username_error = ['red', 'CHANGE_FAILED'];
+            } else {
+              $model->username_error = ['green', 'CHANGE_SUCCESS'];
+            }
+
+          }
 
         }
 
