@@ -81,22 +81,30 @@ require('./header.inc.phtml');
               echo ' class="' . $this->getContext()->email_error[0] . '"';
             } ?>>
             <hr/>
-            <label for="email_1">Email address:</label><br/>
-            <input
-              tabindex="2" required autocomplete="email"
-              type="email" name="email_1" id="email_1"
-              value="<?php echo filter_var($this->getContext()->email_1,
-                  FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
-            <label for="email_2">Confirm email address:
-              <span style="color:rgba(128,128,128,0.8);padding-left:8px;">
-                (Fill box only if changing email address.)
-              </span>
-            </label><br/>
-            <input
-              tabindex="3" autocomplete="email"
-              type="email" name="email_2" id="email_2"
-              value="<?php echo filter_var($this->getContext()->email_2,
-                  FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
+            <table>
+              <thead></thead>
+              <tbody><tr>
+                <td>
+                  <label for="email_1">Email address:</label><br/>
+                  <input
+                    tabindex="2" required autocomplete="email"
+                    type="email" name="email_1" id="email_1"
+                    value="<?php echo filter_var($this->getContext()->email_1,
+                      FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
+                </td><td>
+                  <label for="email_2">Confirm email address:
+                    <span style="color:rgba(128,128,128,0.8);padding-left:8px;">
+                      (Fill box only if changing email address.)
+                    </span>
+                  </label><br/>
+                  <input
+                    tabindex="3" autocomplete="email"
+                    type="email" name="email_2" id="email_2"
+                    value="<?php echo filter_var($this->getContext()->email_2,
+                        FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
+                </td>
+              </tr></tbody>
+            </table>
             <?php if ($email_error) {
               echo '<p>' . $email_error . '</p>';
             } ?>
