@@ -22,7 +22,7 @@ class Index extends Controller {
     $query = $router->getRequestQueryArray();
 
     $model->order = (
-      isset($query['order']) ? $query['order'] : 'registered-asc'
+      isset($query['order']) ? $query['order'] : 'registered-desc'
     );
 
     switch ($model->order) {
