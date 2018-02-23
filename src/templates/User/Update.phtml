@@ -47,6 +47,12 @@ switch ($this->getContext()->display_name_error[1]) {
   case null: case '': $display_name_error = ''; break;
   case 'CHANGE_FAILED':
     $display_name_error = 'Failed to change display name.'; break;
+  case 'CHANGE_SUCCESS':
+    $display_name_error = 'Your display name has been changed to '
+      . '<strong>' . filter_var(
+        $this->getContext()->display_name_error[2],
+        FILTER_SANITIZE_FULL_SPECIAL_CHARS
+      ) . '</strong>.'; break;
   default:
     $display_name_error = 'Internal error: '
       . $this->getContext()->display_name_error[1];

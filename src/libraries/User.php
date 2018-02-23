@@ -86,6 +86,45 @@ class User implements JsonSerializable {
     }
   }
 
+  public function changeDisplayName($new_display_name) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $successful = false;
+    try {
+      $stmt = Common::$database->prepare('
+        UPDATE `users` SET `display_name` = :dn WHERE `id` = :user_id;
+      ');
+      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
+      if (is_null($new_display_name)) {
+        $stmt->bindParam(':dn', $new_display_name, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':dn', $new_display_name, PDO::PARAM_STR);
+      }
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) {
+        if (is_null($new_display_name)) {
+          $this->display_name = $new_display_name;
+        } else {
+          $this->display_name = (string) $new_display_name;
+        }
+        $key = 'bnetdocs-user-' . $this->id;
+        $obj = Common::$cache->get($key);
+        if ($obj !== false) {
+          $obj = unserialize($obj);
+          $obj->display_name = $this->display_name;
+          $obj = serialize($obj);
+          Common::$cache->set($key, $obj, 300);
+        }
+      }
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot change user display name', $e);
+    } finally {
+      return $successful;
+    }
+  }
+
   public function changeEmail($new_email) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();

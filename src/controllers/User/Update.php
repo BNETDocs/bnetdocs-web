@@ -135,11 +135,26 @@ class Update extends Controller {
 
         }
 
-        if (!empty($model->display_name)) {
+        $display_name = $model->display_name;
+
+        if (empty($display_name) && !is_null($display_name)) {
+          $display_name = null; // blank strings become typed null
+          $new_name = $user->getUsername();
+        } else {
+          $new_name = $display_name;
+        }
+
+        $display_name_diff = ($user->getDisplayName() !== $display_name);
+
+        if ($display_name_diff) {
 
           // display name change request
 
-          $model->display_name_error = ['red', 'CHANGE_FAILED'];
+          if (!$user->changeDisplayName($display_name)) {
+            $model->display_name_error = ['red', 'CHANGE_FAILED'];
+          } else {
+            $model->display_name_error = ['green', 'CHANGE_SUCCESS', $new_name];
+          }
 
         }
 
