@@ -4,21 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f724636c462e6854db5b1e1330ba5986",
     "content-hash": "1fdd3319df32eaa77dfeb509dcb36674",
     "packages": [
         {
             "name": "carlbennett/php-mvc",
-            "version": "2.3.7",
+            "version": "2.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carlbennett/php-mvc.git",
-                "reference": "6234851ff7e3d67b0046e5a03896c2b67cc25b62"
+                "reference": "f518a05d78d7c43bb0554ee951cc6f657cfbc99b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/6234851ff7e3d67b0046e5a03896c2b67cc25b62",
-                "reference": "6234851ff7e3d67b0046e5a03896c2b67cc25b62",
+                "url": "https://api.github.com/repos/carlbennett/php-mvc/zipball/f518a05d78d7c43bb0554ee951cc6f657cfbc99b",
+                "reference": "f518a05d78d7c43bb0554ee951cc6f657cfbc99b",
                 "shasum": ""
             },
             "require": {
@@ -66,7 +65,7 @@
                 "restful",
                 "system"
             ],
-            "time": "2017-04-09 11:43:09"
+            "time": "2017-09-23T08:58:32+00:00"
         }
     ],
     "packages-dev": [],
