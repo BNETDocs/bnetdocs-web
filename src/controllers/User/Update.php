@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Update as UserUpdateModel;
 use \CarlBennett\MVC\Libraries\Common;
@@ -157,6 +158,22 @@ class Update extends Controller {
           }
 
         }
+
+        Logger::logEvent(
+          'user_edited',
+          $user_id,
+          getenv('REMOTE_ADDR'),
+          json_encode([
+            'username_error'     => $model->username_error,
+            'email_error'        => $model->email_error,
+            'display_name_error' => $model->display_name_error,
+            'user_id'            => $user_id,
+            'username'           => $model->username,
+            'email_1'            => $model->email_1,
+            'email_2'            => $model->email_2,
+            'display_name'       => $display_name,
+          ])
+        );
 
       }
 
