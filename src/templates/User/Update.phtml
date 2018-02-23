@@ -71,14 +71,12 @@ require('./header.inc.phtml');
             ?>">Log in</a></p>
         </section>
 <?php } else { ?>
-        <header>Update Profile</header>
-        <section><?php include('./NYI.inc.phtml'); ?></section>
+        <header>Identity</header>
         <form method="POST">
           <section<?php
             if ($username_error) {
               echo ' class="' . $this->getContext()->username_error[0] . '"';
             } ?>>
-            <hr/>
             <label for="username">Username:</label><br/>
             <input
               tabindex="1" required
