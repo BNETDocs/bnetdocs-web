@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\CSRF;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\RecaptchaException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
@@ -149,7 +150,7 @@ class Register extends Controller {
       $model->error = false;
     }
     Logger::logEvent(
-      "user_created",
+      EventTypes::USER_CREATED,
       null,
       getenv("REMOTE_ADDR"),
       json_encode([

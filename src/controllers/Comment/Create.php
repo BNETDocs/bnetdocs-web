@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\Comment;
 
 use \BNETDocs\Libraries\Comment as CommentLib;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
@@ -97,7 +98,7 @@ class Create extends Controller {
     ];
 
     Logger::logEvent(
-      "comment_created_news", $model->user->getId(),
+      EventTypes::COMMENT_CREATED_NEWS, $model->user->getId(),
       getenv("REMOTE_ADDR"), json_encode($model->response)
     );
 

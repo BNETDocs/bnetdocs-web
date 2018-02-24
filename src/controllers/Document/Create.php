@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Document\Create as DocumentCreateModel;
@@ -106,7 +107,7 @@ class Create extends Controller {
     }
 
     Logger::logEvent(
-      "document_created",
+      EventTypes::DOCUMENT_CREATED,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([

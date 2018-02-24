@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\CSRF;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
@@ -79,7 +80,7 @@ class Login extends Controller {
     $model->password     = '';
     $_SESSION['user_id'] = $user->getId();
     Logger::logEvent(
-      "user_login",
+      EventTypes::USER_LOGIN,
       ($user ? $user->getId() : null),
       getenv("REMOTE_ADDR"),
       json_encode(["error" => $model->error])

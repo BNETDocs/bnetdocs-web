@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\CSRF;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\ChangePassword as UserChangePasswordModel;
@@ -79,7 +80,7 @@ class ChangePassword extends Controller {
       $model->error = false;
     }
     Logger::logEvent(
-      "user_pw_change",
+      EventTypes::USER_PASSWORD_CHANGE,
       $_SESSION['user_id'],
       getenv("REMOTE_ADDR"),
       json_encode([

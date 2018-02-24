@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
@@ -141,7 +142,7 @@ class Edit extends Controller {
     }
 
     Logger::logEvent(
-      "document_edited",
+      EventTypes::DOCUMENT_EDITED,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([

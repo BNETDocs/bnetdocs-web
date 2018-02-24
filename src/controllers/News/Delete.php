@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\CSRF;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsPost;
@@ -106,7 +107,7 @@ class Delete extends Controller {
     }
 
     Logger::logEvent(
-      "news_deleted",
+      EventTypes::NEWS_DELETED,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([

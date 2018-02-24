@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\CSRF;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Packet;
@@ -153,7 +154,7 @@ class Edit extends Controller {
     }
 
     Logger::logEvent(
-      "packet_edited",
+      EventTypes::PACKET_EDITED,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([

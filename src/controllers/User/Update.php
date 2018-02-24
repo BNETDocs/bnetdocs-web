@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Update as UserUpdateModel;
@@ -160,7 +161,7 @@ class Update extends Controller {
         }
 
         Logger::logEvent(
-          'user_edited',
+          EventTypes::USER_EDITED,
           $user_id,
           getenv('REMOTE_ADDR'),
           json_encode([

@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\CSRF;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsCategory;
@@ -159,7 +160,7 @@ class Edit extends Controller {
     }
 
     Logger::logEvent(
-      "news_edited",
+      EventTypes::NEWS_EDITED,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([

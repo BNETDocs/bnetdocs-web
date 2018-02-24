@@ -2,91 +2,112 @@
 
 namespace BNETDocs\Templates\EventLog;
 
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\User;
+use \BNETDocs\Libraries\Event;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-use \DateTime;
-use \DateTimeZone;
 
-$title       = "Event Log Index";
-$description = "The index for event logs on BNETDocs";
-$this->opengraph->attach(new Pair("url", "/eventlog/index"));
+$title       = 'Event Logs';
+$description = 'The index for event logs on BNETDocs';
+$this->opengraph->attach(new Pair('url', '/eventlog/index'));
 
-$event_logs      = $this->getContext()->event_log;
-$event_log_count = $this->getContext()->sum_event_log;
-$event_tz        = new DateTimeZone('UTC');
+$page = $this->getContext()->page;
+$pages = $this->getContext()->pages;
+$limit = $this->getContext()->limit;
+$order = $this->getContext()->order;
 
-require("./header.inc.phtml");
+$no_prev = ($page <= 1);
+$no_next = ($page >= $pages);
+
+$this->additional_css[] = '/a/forms.css';
+require('./header.inc.phtml');
 ?>
       <article>
-<?php if ($this->getContext()->acl_allowed) { ?>
-        <header>Event Log Index</header>
-        <section>
-<?php require("./NYI.inc.phtml"); ?>
-        </section>
-        <section>
-          <p>Found <?php echo number_format($event_log_count); ?> event(s).</p>
-<?php if ($event_log_count > 0) { ?>
-          <table><thead><tr>
-            <th>Id</th>
-            <th>Event Type</th>
-            <th>Timestamp</th>
-            <th>User</th>
-            <th>IP Address</th>
-          </tr></thead><tbody>
-<?php foreach ($event_logs as $event_object) {
-            if (is_null($event_object->user_id)) {
-              $event_user = null;
-              $event_user_html = 'Anonymous';
-            } else {
-              try {
-                $event_user = new User($event_object->user_id);
-              } catch (UserNotFoundException $e) {
-                $event_user = null;
-              }
-              $event_user_html = '<a href="';
-              if (!$event_user) {
-                  $event_user_html .= Common::relativeUrlToAbsolute(
-                    '/user/' . $event_object->user_id
-                  ) . '">' . $event_object->user_id . '</a>';
-              } else {
-                  $event_user_html .= Common::relativeUrlToAbsolute(
-                    '/user/' . $event_object->user_id . '/'
-                    . Common::sanitizeForUrl($event_user->getName())
-                  ) . '">'
-                  . '<img src="'
-                    . $event_user->getAvatarURI(22) . '" width="22" /> '
-                  . filter_var($event_user->getName(), FILTER_SANITIZE_STRING)
-                  . '</a>';
-              }
-            }
-            $event_timestamp = new DateTime(
-              $event_object->event_datetime, $event_tz
-            );
-            if (is_null($event_object->ip_address)) {
-              $event_ip = '<em>NULL</em>';
-            } else {
-              $event_ip = filter_var($event_object->ip_address, FILTER_SANITIZE_STRING);
-            }
-?>
-            <tr>
-              <td><?php echo $event_object->id; ?></td>
-              <td><?php echo $event_object->event_type_label; ?></td>
-              <td><time datetime="<?php echo $event_timestamp->format('c'); ?>"><?php echo $event_timestamp->format('l, F j, Y'); ?></time></td>
-              <td><?php echo $event_user_html; ?></td>
-              <td><?php echo $event_ip; ?></td>
-            </tr>
-<?php } ?>
-          </tbody></table>
-<?php } ?>
-        </section>
-<?php } else { ?>
-        <header class="red">Event Log Index</header>
+<?php if (!$this->getContext()->acl_allowed) { ?>
+        <header class="red"><?php echo $title; ?></header>
         <section class="red">
           <p>You are not authorized to view this page.</p>
         </section>
+<?php } else { ?>
+        <header><?php echo $title; ?></header>
+        <section>
+<?php require('./NYI.inc.phtml'); ?><hr/>
+          <form method="GET">
+            <input type="hidden" name="page" value="<?php echo $page; ?>"/>
+            <input type="hidden" name="limit" value="<?php echo $limit; ?>"/>
+            <label for="order">Order by:</label>
+            <select name="order" id="order" onchange="form.submit();"
+              style="display:inline-block;width:200px;">
+              <option value="id-asc"<?php
+                if ($order === 'id-asc') { echo ' selected="selected"';
+                } ?>>User Id (Ascending)</option>
+              <option value="id-desc"<?php
+                if ($order === 'id-desc') { echo ' selected="selected"';
+                } ?>>User Id (Descending)</option>
+              <option value="datetime-asc"<?php
+                if ($order === 'datetime-asc') { echo ' selected="selected"';
+                } ?>>Timestamp (Ascending)</option>
+              <option value="datetime-desc"<?php
+                if ($order === 'datetime-desc') { echo ' selected="selected"';
+                } ?>>Timestamp (Descending)</option>
+            </select>
+            <input type="submit" value="Reorder"/>
+          </form>
+          <table>
+            <thead>
+              <tr>
+                <th class="right">Id</th>
+                <th class="left">Event Type</th>
+                <th class="left">Timestamp</th>
+                <th class="left">IP Address</th>
+                <th class="left">User Account</th>
+                <th class="left"></th>
+              </tr>
+            </thead><tbody>
+<?php foreach ($this->getContext()->events as $event) {
+              $e_id = $event->getId();
+              $e_ip_address = $event->getIPAddress();
+              if ( is_null( $e_ip_address ) ) $e_ip_address = '<em>(null)</em>';
+              $e_user = $event->getUser();
+              if ( is_null( $e_user ) ) { $e_user = '<em>(null)</em>'; }
+              else {
+                $e_user_url    = $e_user->getURI();
+                $e_user_avatar = $e_user->getAvatarURI(22);
+                $e_user        = filter_var( $e_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+                $e_user        = '<a href="' . $e_user_url . '"><img class="avatar" src="' . $e_user_avatar . '"/>&nbsp;' . $e_user . '</a>';
+              }
+?>
+              <tr>
+                <td><?php echo $e_id; ?></td>
+                <td><?php echo $event->getEventTypeName(); ?></td>
+                <td><time datetime="<?php echo $event->getEventDateTime()->format('c'); ?>"><?php echo $event->getEventDateTime()->format('l, F j, Y'); ?></time></td>
+                <td><?php echo $e_ip_address; ?></td>
+                <td><?php echo $e_user; ?></td>
+                <td><a style="min-width:initial;" class="button" href="<?php echo Common::relativeUrlToAbsolute('/eventlog/view?id=' . $e_id); ?>">View</a></td>
+              </tr>
+<?php } ?>
+          </tbody></table>
+        </section>
+        <section>
+          <hr/>
+          <span class="float-left">
+<?php if (!$no_prev) { ?>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/eventlog/index?page=' . ($page - 1) . '&limit=' . $limit . '&order=' . $order); ?>">Prev</a>
+<?php } else { ?>
+            <button class="button button-disabled" disabled="disabled">Prev</button>
+<?php } ?>
+          </span>
+          <span class="float-right">
+<?php if (!$no_next) { ?>
+              <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/eventlog/index?page=' . ($page + 1) . '&limit=' . $limit . '&order=' . $order); ?>">Next</a>
+  <?php } else { ?>
+            <button class="button button-disabled" disabled="disabled">Next</button>
+<?php } ?>
+          </span>
+          <p class="center" style="line-height:24px;">
+            <strong><?php echo number_format($page); ?></strong> of <?php echo number_format($pages); ?>
+          </p>
+        </section>
+      </article>
 <?php } ?>
       </article>
 <?php require("./footer.inc.phtml"); ?>

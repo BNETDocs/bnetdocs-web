@@ -7,8 +7,12 @@ use \CarlBennett\MVC\Libraries\Model;
 class Index extends Model {
 
   public $acl_allowed;
-  public $event_log;
-  public $sum_event_log;
+  public $events;
+  public $limit;
+  public $order;
+  public $page;
+  public $pages;
+  public $sum_events;
   public $user;
 
 }

@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers\Comment;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Comment;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
@@ -90,16 +91,22 @@ class Delete extends Controller {
     $parent_id    = (int) $model->parent_id;
     $user_id      = $model->user->getId();
 
-    $log_key = "";
+    $log_key = null;
     switch ($parent_type) {
-      case Comment::PARENT_TYPE_DOCUMENT:  $log_key = "_document"; break;
-      case Comment::PARENT_TYPE_COMMENT:   $log_key = "_comment";  break;
-      case Comment::PARENT_TYPE_NEWS_POST: $log_key = "_news";     break;
-      case Comment::PARENT_TYPE_PACKET:    $log_key = "_packet";   break;
-      case Comment::PARENT_TYPE_SERVER:    $log_key = "_server";   break;
-      case Comment::PARENT_TYPE_USER:      $log_key = "_user";     break;
+      case Comment::PARENT_TYPE_DOCUMENT:
+        $log_key = EventTypes::COMMENT_DELETED_DOCUMENT; break;
+      case Comment::PARENT_TYPE_COMMENT:
+        $log_key = EventTypes::COMMENT_DELETED_COMMENT; break;
+      case Comment::PARENT_TYPE_NEWS_POST:
+        $log_key = EventTypes::COMMENT_DELETED_NEWS; break;
+      case Comment::PARENT_TYPE_PACKET:
+        $log_key = EventTypes::COMMENT_DELETED_PACKET; break;
+      case Comment::PARENT_TYPE_SERVER:
+        $log_key = EventTypes::COMMENT_DELETED_SERVER; break;
+      case Comment::PARENT_TYPE_USER:
+        $log_key = EventTypes::COMMENT_DELETED_USER; break;
       default: throw new UnexpectedValueException(
-        "Parent type: " . $parent_type
+        'Parent type: ' . $parent_type
       );
     }
 
@@ -124,7 +131,7 @@ class Delete extends Controller {
     }
 
     Logger::logEvent(
-      "comment_deleted" . $log_key,
+      $log_key,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([

@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\CSRF;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsCategory;
@@ -123,7 +124,7 @@ class Create extends Controller {
     }
 
     Logger::logEvent(
-      "news_created",
+      EventTypes::NEWS_CREATED,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([

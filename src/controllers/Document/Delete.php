@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
@@ -106,7 +107,7 @@ class Delete extends Controller {
     }
 
     Logger::logEvent(
-      "document_deleted",
+      EventTypes::DOCUMENT_DELETED,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([

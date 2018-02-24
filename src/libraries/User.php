@@ -381,10 +381,9 @@ class User implements JsonSerializable {
           `verified_datetime`
         FROM `users`
         ORDER BY
-          " . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . "
-          `id` ASC
-        " . $limit_clause . ";
-      ");
+          " . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
+          `id` ' . $order[2] . ' ' . $limit_clause . ';'
+      );
       if (!$stmt->execute()) {
         throw new QueryException('Cannot refresh all users');
       }

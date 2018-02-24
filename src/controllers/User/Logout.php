@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\CSRF;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Models\User\Logout as UserLogoutModel;
 use \CarlBennett\MVC\Libraries\Common;
@@ -51,7 +52,7 @@ class Logout extends Controller {
     $user_id      = $_SESSION['user_id'];
     unset($_SESSION['user_id']);
     Logger::logEvent(
-      "user_logout",
+      EventTypes::USER_LOGOUT,
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode(["error" => $model->error])
