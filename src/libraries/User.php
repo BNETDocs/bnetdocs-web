@@ -367,7 +367,7 @@ class User implements JsonSerializable {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
     try {
-      $stmt = Common::$database->prepare("
+      $stmt = Common::$database->prepare('
         SELECT
           `created_datetime`,
           `display_name`,
@@ -381,8 +381,8 @@ class User implements JsonSerializable {
           `verified_datetime`
         FROM `users`
         ORDER BY
-          " . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
-          `id` ' . $order[2] . ' ' . $limit_clause . ';'
+          ' . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
+          `id` ' . ($order ? $order[1] : 'ASC') . ' ' . $limit_clause . ';'
       );
       if (!$stmt->execute()) {
         throw new QueryException('Cannot refresh all users');
