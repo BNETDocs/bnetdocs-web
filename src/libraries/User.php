@@ -341,7 +341,7 @@ class User implements JsonSerializable {
     return ($this->options_bitmask & $acl);
   }
 
-  public static function getAllUsers(
+  public static function &getAllUsers(
     $order = null, $limit = null, $index = null
   ) {
     if (!(is_numeric($limit) || is_numeric($index))) {
