@@ -82,7 +82,7 @@ require('./header.inc.phtml');
                 <td><?php echo $e_id; ?></td>
                 <td><?php echo $event->getEventTypeName(); ?></td>
                 <td><time datetime="<?php echo $event->getEventDateTime()->format('c'); ?>"><?php echo $event->getEventDateTime()->format('l, F j, Y'); ?></time></td>
-                <td><?php echo $e_ip_address; ?></td>
+                <td style="font-size:smaller;"><?php echo $e_ip_address; ?></td>
                 <td><?php echo $e_user; ?></td>
                 <td><a style="min-width:initial;" class="button" href="<?php echo Common::relativeUrlToAbsolute('/eventlog/view?id=' . $e_id); ?>">View</a></td>
               </tr>
