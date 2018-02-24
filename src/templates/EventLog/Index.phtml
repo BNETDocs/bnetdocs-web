@@ -3,6 +3,7 @@
 namespace BNETDocs\Templates\EventLog;
 
 use \BNETDocs\Libraries\Event;
+use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
@@ -67,7 +68,8 @@ require('./header.inc.phtml');
               $e_id = $event->getId();
               $e_ip_address = $event->getIPAddress();
               if ( is_null( $e_ip_address ) ) $e_ip_address = '<em>(null)</em>';
-              $e_user = $event->getUser();
+              try { $e_user = $event->getUser(); }
+              catch ( UserNotFoundException $e ) { $e_user = null; }
               if ( is_null( $e_user ) ) { $e_user = '<em>(null)</em>'; }
               else {
                 $e_user_url    = $e_user->getURI();
