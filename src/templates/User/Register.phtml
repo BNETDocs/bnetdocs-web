@@ -106,7 +106,7 @@ require("./header.inc.phtml");
                   value="<?php echo $safe_email; ?>" required<?php if ($af == "email") { ?> autofocus="autofocus"<?php } ?>/>
               </td><td>
                 <label for="username">Username:</label><br/>
-                <input type="text" name="username" id="username" tabindex="2"
+                <input type="text" name="username" id="username" tabindex="2" maxlength="<?php echo $this->getContext()->username_max_len; ?>"
                   value="<?php echo $safe_username; ?>" required<?php if ($af == "username") { ?> autofocus="autofocus"<?php } ?>/>
               </td></tr><tr><td>
                 <label for="pw1">Password:</label><br/>

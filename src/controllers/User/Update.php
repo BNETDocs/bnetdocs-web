@@ -27,12 +27,15 @@ class Update extends Controller {
 
       $model->_responseCode = 200;
 
+      $conf = &Common::$config; // local variable for accessing config.
       $data = $router->getRequestBodyArray();
 
       // init model
 
       $model->username           = $user->getUsername();
       $model->username_error     = [null, null];
+      $model->username_max_len   =
+        $conf->bnetdocs->user_register_requirements->username_length_max;
 
       $model->email_1            = $user->getEmail();
       $model->email_2            = '';
@@ -69,7 +72,7 @@ class Update extends Controller {
 
           // username change request
 
-          $req = Common::$config->bnetdocs->user_register_requirements;
+          $req = &Common::$config->bnetdocs->user_register_requirements;
 
           $username_len = strlen($model->username);
 

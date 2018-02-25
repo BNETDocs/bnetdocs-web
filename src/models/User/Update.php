@@ -16,5 +16,6 @@ class Update extends Model {
 
   public $username;
   public $username_error;
+  public $username_max_len;
 
 }

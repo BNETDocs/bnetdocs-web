@@ -81,6 +81,7 @@ require('./header.inc.phtml');
             <input
               tabindex="1" required
               type="text" name="username" id="username"
+              maxlength="<?php echo $this->getContext()->username_max_len; ?>"
               value="<?php echo filter_var($this->getContext()->username,
                 FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
             <?php if ($username_error) {

@@ -9,5 +9,6 @@ class Register extends Model {
   public $email;
   public $recaptcha;
   public $username;
+  public $username_max_len;
 
 }

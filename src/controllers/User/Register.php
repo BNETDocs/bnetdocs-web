@@ -20,15 +20,20 @@ class Register extends Controller {
 
   public function &run(Router &$router, View &$view, array &$args) {
 
+    $conf = &Common::$config; // local variable for accessing config.
+
     $model               = new UserRegisterModel();
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->error        = null;
     $model->recaptcha    = new Recaptcha(
-      Common::$config->recaptcha->secret,
-      Common::$config->recaptcha->sitekey,
-      Common::$config->recaptcha->url
+      $conf->recaptcha->secret,
+      $conf->recaptcha->sitekey,
+      $conf->recaptcha->url
     );
+
+    $model->username_max_len =
+      $conf->bnetdocs->user_register_requirements->username_length_max;
 
     if ($router->getRequestMethod() == "POST") {
       $this->tryRegister($router, $model);
@@ -84,7 +89,7 @@ class Register extends Controller {
     }
     $pwlen       = strlen($pw1);
     $usernamelen = strlen($username);
-    $req = Common::$config->bnetdocs->user_register_requirements;
+    $req = &Common::$config->bnetdocs->user_register_requirements;
     if ($req->email_validate_quick
       && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
       $model->error = "INVALID_EMAIL";
