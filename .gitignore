@@ -21,4 +21,5 @@
 .Spotlight-V100
 .Trashes
 ._*
+/composer.phar
 Thumbs.db
