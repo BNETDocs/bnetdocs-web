@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers;
 
+use \BNETDocs\Libraries\DateTime;
 use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Status as StatusModel;
 use \CarlBennett\MVC\Libraries\Cache;
@@ -12,45 +13,61 @@ use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\GeoIP;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
-use \DateTime;
 use \DateTimeZone;
 use \StdClass;
 
 class Status extends Controller {
 
-  public function &run(Router &$router, View &$view, array &$args) {
+  /**
+   * run()
+   *
+   * @return Model The model with data that can be rendered by a view.
+   */
+  public function &run( Router &$router, View &$view, array &$args ) {
 
     $model = new StatusModel();
-    $code  = (!$this->getStatus($model) ? 500 : 200);
+    $code  = ( self::getStatus( $model ) ? 200 : 500 );
 
-    $view->render($model);
+    $view->render( $model );
 
     $model->_responseCode = $code;
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseHeaders['Content-Type'] = $view->getMimeType();
     $model->_responseTTL = 300;
 
     return $model;
 
   }
 
-  protected function getStatus(StatusModel &$model) {
-    if (!isset(Common::$database)) {
+  /**
+   * getStatus()
+   *
+   * @return bool Indicates summary health status, where true is healthy.
+   */
+  protected static function getStatus( StatusModel &$model ) {
+    if ( !isset( Common::$database ) ) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
     $healthcheck           = new StdClass();
-    $healthcheck->database = (Common::$database instanceof Database);
-    $healthcheck->memcache = (Common::$cache    instanceof Cache   );
+    $healthcheck->database = ( Common::$database instanceof Database );
+    $healthcheck->memcache = ( Common::$cache instanceof Cache );
 
-    $model->healthcheck    = $healthcheck;
-    $model->remote_address = getenv("REMOTE_ADDR");
-    $model->remote_geoinfo = GeoIP::get($model->remote_address);
-    $model->timestamp      = new DateTime("now", new DateTimeZone("UTC"));
-    $model->version_info   = VersionInfo::$version;
+    $model->healthcheck = $healthcheck;
 
-    foreach ($healthcheck as $key => $val) {
-      if (is_bool($val) && !$val) return false;
+    $model->remote_address = getenv( 'REMOTE_ADDR' );
+    $model->remote_geoinfo = GeoIP::get( $model->remote_address );
+
+    $model->timestamp = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
+
+    $model->version_info = VersionInfo::$version;
+
+    foreach ( $healthcheck as $key => $val ) {
+      if (is_bool($val) && !$val) {
+        // let the controller know that we're unhealthy.
+        return false;
+      }
     }
+
     return true;
   }
 

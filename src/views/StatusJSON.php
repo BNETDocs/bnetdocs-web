@@ -11,7 +11,7 @@ use \CarlBennett\MVC\Libraries\View;
 class StatusJSON extends View {
 
   public function getMimeType() {
-    return "application/json;charset=utf-8";
+    return 'application/json;charset=utf-8';
   }
 
   public function render(Model &$model) {
