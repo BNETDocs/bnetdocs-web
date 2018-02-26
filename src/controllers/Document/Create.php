@@ -20,7 +20,7 @@ class Create extends Controller {
 
     $model               = new DocumentCreateModel();
     $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id, 900); // 15 mins
+    $model->csrf_token   = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->error        = null;
     $model->user = (
       isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null

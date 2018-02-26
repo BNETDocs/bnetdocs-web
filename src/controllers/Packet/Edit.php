@@ -25,7 +25,7 @@ class Edit extends Controller {
     $data              = $router->getRequestQueryArray();
     $model             = new PacketEditModel();
     $model->csrf_id    = mt_rand();
-    $model->csrf_token = CSRF::generate($model->csrf_id, 900); // 15 mins
+    $model->csrf_token = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->error      = null;
     $model->format     = null;
     $model->id         = null;

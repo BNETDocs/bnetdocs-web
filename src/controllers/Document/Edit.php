@@ -26,7 +26,7 @@ class Edit extends Controller {
     $model               = new DocumentEditModel();
     $model->content      = null;
     $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id, 900); // 15 mins
+    $model->csrf_token   = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->document     = null;
     $model->document_id  = (isset($data["id"]) ? $data["id"] : null);
     $model->error        = null;

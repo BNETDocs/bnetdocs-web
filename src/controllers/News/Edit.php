@@ -28,7 +28,7 @@ class Edit extends Controller {
     $model->category        = null;
     $model->content         = null;
     $model->csrf_id         = mt_rand();
-    $model->csrf_token      = CSRF::generate($model->csrf_id, 900); // 15 mins
+    $model->csrf_token      = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->error           = null;
     $model->markdown        = null;
     $model->news_categories = null;
