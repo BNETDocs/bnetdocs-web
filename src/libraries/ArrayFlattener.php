@@ -102,7 +102,7 @@ final class ArrayFlattener {
     foreach ( $keys as $_key => $_value ) {
       $__key = $key . self::DELIMITER . $_key;
       self::__flatten(
-        $buffer, $__key, $_value, $show_all, ++$depth
+        $buffer, $__key, $_value, $show_all, $depth++
       );
     }
   }
