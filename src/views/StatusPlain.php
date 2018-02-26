@@ -7,8 +7,6 @@ use \BNETDocs\Libraries\ArrayFlattener;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\View;
-use \RecursiveArrayIterator;
-use \RecursiveIteratorIterator;
 
 class StatusPlain extends View {
 

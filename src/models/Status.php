@@ -3,8 +3,6 @@
 namespace BNETDocs\Models;
 
 use \CarlBennett\MVC\Libraries\Model;
-use \DateTimeInterface;
-use \JsonSerializable;
 
 class Status extends Model {
 
