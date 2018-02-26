@@ -4,12 +4,17 @@ namespace BNETDocs\Libraries;
 
 use \DateTime;
 
-class ArrayFlattener {
+final class ArrayFlattener {
 
   const DELIMITER = '_';
   const MAX_DEPTH = 4;
 
-  final public function __construct() {}
+  /**
+   * __construct()
+   * We set this to private so code cannot instantiate this class.
+   * This class is entirely static and meant to be used that way.
+   */
+  private function __construct() {}
 
   /**
    * flatten()
