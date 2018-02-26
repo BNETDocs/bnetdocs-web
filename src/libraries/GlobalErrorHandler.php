@@ -70,13 +70,6 @@ final class GlobalErrorHandler {
     error_log($_errno . ": " . $errstr
       . " in " . $errfile . " on line " . $errline);
 
-    // Report this to New Relic:
-    if (extension_loaded("newrelic")) {
-      newrelic_notice_error(
-        $errno, $errstr, $errfile, $errline, $errcontext
-      );
-    }
-
     // Stop processing the rest of the application:
     exit();
   }
@@ -115,11 +108,6 @@ final class GlobalErrorHandler {
       . " on line " . $context->line
     );
     error_log(var_export($context->stacktrace, true));
-
-    // Report this to New Relic:
-    if (extension_loaded("newrelic")) {
-      newrelic_notice_error($e->getMessage(), $e);
-    }
 
     // Stop processing the rest of the application:
     exit();
