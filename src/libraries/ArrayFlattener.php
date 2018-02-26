@@ -21,11 +21,10 @@ final class ArrayFlattener {
    * Flattens an array or object into a string.
    *
    * @param $thing The array or object to be flattened.
-   * @param $show_all Whether to hide keys beginning with underscores.
    *
    * @return string The flattened thing.
    */
-  public static function flatten( &$thing, $show_all = false ) {
+  public static function flatten( &$thing ) {
     $buffer = '';
 
     if ( is_object( $thing ) ) {
@@ -35,7 +34,7 @@ final class ArrayFlattener {
     }
 
     foreach ( $vars as $key => $value ) {
-      self::__flatten( $buffer, $key, $value, $show_all, 0 );
+      self::__flatten( $buffer, $key, $value, 0 );
     }
 
     return $buffer;
@@ -48,22 +47,14 @@ final class ArrayFlattener {
    * @param &$buffer The string buffer that will be returned by flatten().
    * @param &$key The name of the current key being processed.
    * @param &$value The key's value, can be anything.
-   * @param &$show_all Whether to hide keys beginning with underscores.
    * @param $depth The current depth level, not to exceed MAX_DEPTH.
    *
    * @return void
    */
-  private static function __flatten(
-    &$buffer, &$key, &$value, &$show_all, $depth
-  ) {
+  private static function __flatten( &$buffer, &$key, &$value, $depth ) {
     if ( $depth >= self::MAX_DEPTH ) {
       // exceeded maximum recursion depth
       $buffer .= $key . PHP_EOL;
-      return;
-    }
-
-    if ( !$show_all && substr( $key, 0, 1 ) == '_' ) {
-      // do not show keys beginning with underscores.
       return;
     }
 
@@ -101,9 +92,7 @@ final class ArrayFlattener {
 
     foreach ( $keys as $_key => $_value ) {
       $__key = $key . self::DELIMITER . $_key;
-      self::__flatten(
-        $buffer, $__key, $_value, $show_all, $depth++
-      );
+      self::__flatten( $buffer, $__key, $_value, $depth++ );
     }
   }
 
