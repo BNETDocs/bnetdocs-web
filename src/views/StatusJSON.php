@@ -18,7 +18,7 @@ class StatusJSON extends View {
     if (!$model instanceof StatusModel) {
       throw new IncorrectModelException();
     }
-    echo json_encode($model, Common::prettyJSONIfBrowser());
+    echo json_encode( $model->status, Common::prettyJSONIfBrowser() );
   }
 
 }

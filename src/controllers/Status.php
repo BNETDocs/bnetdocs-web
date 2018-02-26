@@ -48,18 +48,19 @@ class Status extends Controller {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
+    $status = new StdClass();
+
     $healthcheck           = new StdClass();
     $healthcheck->database = ( Common::$database instanceof Database );
     $healthcheck->memcache = ( Common::$cache instanceof Cache );
 
-    $model->healthcheck = $healthcheck;
+    $status->healthcheck    = $healthcheck;
+    $status->remote_address = getenv( 'REMOTE_ADDR' );
+    $status->remote_geoinfo = GeoIP::get( $status->remote_address );
+    $status->timestamp      = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
+    $status->version_info   = VersionInfo::$version;
 
-    $model->remote_address = getenv( 'REMOTE_ADDR' );
-    $model->remote_geoinfo = GeoIP::get( $model->remote_address );
-
-    $model->timestamp = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
-
-    $model->version_info = VersionInfo::$version;
+    $model->status = $status;
 
     foreach ( $healthcheck as $key => $val ) {
       if (is_bool($val) && !$val) {

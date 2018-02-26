@@ -18,7 +18,7 @@ class StatusPlain extends View {
     if (!$model instanceof StatusModel) {
       throw new IncorrectModelException();
     }
-    echo ArrayFlattener::flatten( $model );
+    echo ArrayFlattener::flatten( $model->status );
   }
 
 }
