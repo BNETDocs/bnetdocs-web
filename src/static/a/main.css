@@ -32,11 +32,11 @@ a:hover {
   text-decoration: underline;
 }
 a:link {
-  color: #00c0ff;
+  color: #00debf;
   text-decoration: none;
 }
 a:visited {
-  color: #00a0cf;
+  color: #00ccad;
 }
 header.main-page {
   background-color: rgba(64,64,64,0.8);
@@ -244,7 +244,7 @@ p.pagination > a {
 p.pagination > a.active {
   background-color: rgba(128,128,128,0.8);
 }
-body > footer {
+footer.main-page {
   box-sizing: border-box;
   color: rgba(224,224,224,0.3);
   font: 9pt source code pro, monospace;
@@ -254,9 +254,15 @@ body > footer {
   text-align: center;
   width: 1000px;
 }
-body > footer.slim {
+footer.main-page.slim {
   overflow: hidden;
   padding: 0px;
+}
+footer.main-page a:link,
+footer.main-page a:visited,
+footer.main-page.slim a:link,
+footer.main-page.slim a:visited {
+  color: rgba(0,204,173,0.4);
 }
 ::-webkit-scrollbar {
   height: 0.8em;

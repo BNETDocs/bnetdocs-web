@@ -32,11 +32,11 @@ a:hover {
   text-decoration: underline;
 }
 a:link {
-  color: #00c0ff;
+  color: #00debf;
   text-decoration: none;
 }
 a:visited {
-  color: #00a0cf;
+  color: #00ccad;
 }
 header.main-page {
   background-color: rgba(64,64,64,0.8);
@@ -249,6 +249,12 @@ footer.main-page.slim {
   padding: 20px;
   text-align: center;
   width: 100%;
+}
+footer.main-page a:link,
+footer.main-page a:visited,
+footer.main-page.slim a:link,
+footer.main-page.slim a:visited {
+  color: rgba(0,204,173,0.4);
 }
 ::-webkit-scrollbar {
   height: 0.6em;
