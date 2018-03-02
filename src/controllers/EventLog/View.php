@@ -44,9 +44,14 @@ class View extends Controller {
 
     }
 
-    $view->render($model);
+    $view->render( $model );
 
-    $model->_responseCode = ( $model->acl_allowed ? 200 : 403 );
+    $model->_responseCode = (
+      $model->acl_allowed ? (
+        $model->event ? 200 : 404
+      ) : 403
+    );
+
     $model->_responseHeaders['Content-Type'] = $view->getMimeType();
     $model->_responseTTL = 0;
 

@@ -32,6 +32,11 @@ $object_user = (
   !is_null( $object_user_id ) ? new User( $object_user_id ) : null
 );
 
+if ( !$object instanceof Event ) {
+  $title = 'Event Not Found';
+  $description = 'The event you tried to access could not be found.';
+}
+
 $tpl_user = (
   is_null( $object_user ) ? '<em>(null)</em>' :
   '<a href="' . $object_user->getURI() . '"><img class="avatar" src="' .
@@ -49,7 +54,7 @@ $tpl_metadata = (
 
 $tpl_referer = getenv( 'HTTP_REFERER' );
 if ( !empty( $tpl_referer )) {
-  $tpl_referer = '<hr/><a href="' . filter_var(
+  $tpl_referer = '<a href="' . filter_var(
     $tpl_referer, FILTER_SANITIZE_FULL_SPECIAL_CHARS
   ) . '">&lt;&lt; Back to Previous</a>';
 }
@@ -64,10 +69,18 @@ $this->additional_css[] = '/a/forms.css';
 require('./header.inc.phtml');
 ?>
       <article>
-<?php if (!$this->getContext()->acl_allowed) { ?>
+<?php if ( !$this->getContext()->acl_allowed ) { ?>
         <header class="red"><?php echo $title; ?></header>
         <section class="red">
           <p>You are not authorized to view this page.</p>
+        </section>
+<?php } else if ( is_null( $object )) { $title = 'Event Not Found' ?>
+        <header class="red"><?php echo $title; ?></header>
+        <section class="red">
+          <p><?php echo $description; ?></p>
+<?php if ( !empty( $tpl_referer )) { ?>
+          <p><?php echo $tpl_referer; ?></p>
+<?php } ?>
         </section>
 <?php } else { ?>
         <header><?php echo $title; ?></header>
@@ -81,7 +94,10 @@ require('./header.inc.phtml');
               <tr><th class="right">User Account</th><td><?php echo $tpl_user; ?></td></tr>
               <tr><th class="right" style="vertical-align:top;">Metadata</th><td><?php echo $tpl_metadata; ?></td></tr>
             </tbody>
-          </table><?php echo $tpl_referer; ?>
+          </table>
+<?php if ( !empty( $tpl_referer )) { ?>
+          <hr/><p><?php echo $tpl_referer; ?></p>
+<?php } ?>
         </section>
       </article>
 <?php } ?>
