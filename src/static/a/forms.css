@@ -34,7 +34,7 @@ form input[type="text"],
 form input[type="email"],
 form input[type="password"],
 form input[type="number"],
-form textarea,
+form textarea, textarea,
 form select,
 form option {
   background-color: rgba(64,64,64,0.6);
@@ -48,20 +48,20 @@ form option {
   padding: 4px;
   width: 100%;
 }
-form textarea {
+form textarea, textarea {
   resize: vertical;
 }
 form input[type="text"]:focus,
 form input[type="email"]:focus,
 form input[type="password"]:focus,
 form input[type="number"]:focus,
-form textarea:focus,
+form textarea:focus, textarea:focus,
 form select:focus,
 form option:focus {
   background-color: rgba(128,128,128,0.4);
 }
 form input[disabled],
-form textarea[disabled],
+form textarea[disabled], textarea[disabled],
 form select[disabled],
 form option[disabled] {
   background-image: url("/a/unable-20px.png");

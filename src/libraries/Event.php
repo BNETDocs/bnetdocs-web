@@ -175,7 +175,7 @@ class Event {
     return $this->ip_address;
   }
 
-  public function getMetaData() {
+  public function getMetadata() {
     return $this->meta_data;
   }
 

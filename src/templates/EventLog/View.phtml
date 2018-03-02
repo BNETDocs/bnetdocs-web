@@ -1,0 +1,89 @@
+<?php
+
+namespace BNETDocs\Templates\EventLog;
+
+use \BNETDocs\Libraries\Event;
+use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \BNETDocs\Libraries\User;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title       = 'Event Log Viewer';
+$description = 'The event log viewer on BNETDocs';
+$this->opengraph->attach( new Pair( 'url', '/eventlog/view' ));
+
+$object_id = $this->getContext()->id;
+$object    = $this->getContext()->event;
+$user      = $this->getContext()->user;
+
+$object_ip_address = (
+  $object instanceof Event ? $object->getIPAddress() : null
+);
+
+$object_metadata = (
+  $object instanceof Event ? $object->getMetadata() : null
+);
+
+$object_user_id = (
+  $object instanceof Event ? $object->getUserId() : null
+);
+
+$object_user = (
+  !is_null( $object_user_id ) ? new User( $object_user_id ) : null
+);
+
+$tpl_user = (
+  is_null( $object_user ) ? '<em>(null)</em>' :
+  '<a href="' . $object_user->getURI() . '"><img class="avatar" src="' .
+  $object_user->getAvatarURI( 22 ) . '"/> ' . filter_var(
+    $object_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS
+  )
+);
+
+$tpl_metadata = (
+  is_null( $object_metadata ) ? '<em>(null)</em>' :
+  '<textarea rows="10" readonly="readonly">' . filter_var(
+    $object_metadata, FILTER_SANITIZE_FULL_SPECIAL_CHARS
+  ) . '</textarea>'
+);
+
+$tpl_referer = getenv( 'HTTP_REFERER' );
+if ( !empty( $tpl_referer )) {
+  $tpl_referer = '<hr/><a href="' . filter_var(
+    $tpl_referer, FILTER_SANITIZE_FULL_SPECIAL_CHARS
+  ) . '">&lt;&lt; Back to Previous</a>';
+}
+if ( stripos( $tpl_referer, getenv( 'HTTP_HOST' ) ) === false ) {
+  $tpl_referer = '';
+}
+if ( stripos( $tpl_referer, '/eventlog/view?id=' . $object_id ) !== false ) {
+  $tpl_referer = '';
+}
+
+$this->additional_css[] = '/a/forms.css';
+require('./header.inc.phtml');
+?>
+      <article>
+<?php if (!$this->getContext()->acl_allowed) { ?>
+        <header class="red"><?php echo $title; ?></header>
+        <section class="red">
+          <p>You are not authorized to view this page.</p>
+        </section>
+<?php } else { ?>
+        <header><?php echo $title; ?></header>
+        <section>
+          <table>
+            <thead></thead><tbody>
+              <tr><th class="right" style="width:100px;">Id</th><td><a href="<?php echo Common::relativeUrlToAbsolute('/eventlog/view?id=' . $object_id); ?>"><?php echo $object_id; ?></a></td></tr>
+              <tr><th class="right">Event Type</th><td><?php echo $object->getEventTypeName(); ?></td></tr>
+              <tr><th class="right">Timestamp</th><td><time datetime='<?php echo $object->getEventDateTime()->format('c'); ?>'><?php echo $object->getEventDateTime()->format('l, F j, Y'); ?></time></td></tr>
+              <tr><th class="right">IP Address</th><td><?php echo ( $object_ip_address ? $object_ip_address : '<em>(null)</em>' ); ?></td></tr>
+              <tr><th class="right">User Account</th><td><?php echo $tpl_user; ?></td></tr>
+              <tr><th class="right" style="vertical-align:top;">Metadata</th><td><?php echo $tpl_metadata; ?></td></tr>
+            </tbody>
+          </table><?php echo $tpl_referer; ?>
+        </section>
+      </article>
+<?php } ?>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

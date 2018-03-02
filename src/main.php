@@ -130,6 +130,9 @@ function main() {
     $router->addRoute( // URL: /eventlog/index
       "#^/eventlog/index/?$#", "EventLog\\Index", "EventLog\\IndexHtml"
     );
+    $router->addRoute( // URL: /eventlog/view
+      "#^/eventlog/view/?$#", "EventLog\\View", "EventLog\\ViewHtml"
+    );
     $router->addRoute( // URL: /legal
       "#^/legal/?$#", "Legal", "LegalHtml"
     );
