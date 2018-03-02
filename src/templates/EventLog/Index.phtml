@@ -53,12 +53,12 @@ require('./header.inc.phtml');
             </select>
             <input type="submit" value="Reorder"/>
           </form>
-          <table style="font-size:small;">
+          <table>
             <thead>
               <tr>
-                <th class="right">Id</th>
-                <th class="left" style="width:184px;">Event Type</th>
-                <th class="left" style="width:184px;">Timestamp</th>
+                <th class="right" style="width:70px;">Id</th>
+                <th class="left" style="width:220px;">Event Type</th>
+                <th class="left" style="width:200px;">Timestamp</th>
                 <th class="left">User Account</th>
               </tr>
             </thead><tbody>
@@ -75,7 +75,7 @@ require('./header.inc.phtml');
               }
 ?>
               <tr>
-                <td><a href="<?php echo Common::relativeUrlToAbsolute('/eventlog/view?id=' . $e_id); ?>"><?php echo $e_id; ?></a></td>
+                <td class="right"><a href="<?php echo Common::relativeUrlToAbsolute('/eventlog/view?id=' . $e_id); ?>"><?php echo $e_id; ?></a></td>
                 <td><?php echo $event->getEventTypeName(); ?></td>
                 <td><time datetime="<?php echo $event->getEventDateTime()->format('c'); ?>"><?php echo $event->getEventDateTime()->format('l, F j, Y'); ?></time></td>
                 <td><?php echo $e_user; ?></td>
