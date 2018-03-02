@@ -220,7 +220,8 @@ class Event {
     $cache_val = Common::$cache->get( $cache_key );
 
     if ( $cache_val !== false ) {
-      return self::normalize( unserialize( $cache_val ) , $this );
+      $cache_val = unserialize( $cache_val );
+      return self::normalize( $cache_val , $this );
     }
 
     if ( !isset( Common::$database ) ) {
