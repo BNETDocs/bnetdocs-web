@@ -24,8 +24,8 @@ class IndexPHP extends View {
 
     echo "<?php\n";
     echo "/**\n";
-    echo " *  BNETDocs, the Battle.net(TM) protocol documentation and discussion website\n";
-    echo " *  Copyright (C) 2008-2017  Carl Bennett\n";
+    echo " *  BNETDocs, the documentation and discussion website for Blizzard protocols\n";
+    echo " *  Copyright (C) 2003-2018  \"Arta\", Don Cullen \"Kyro\", Carl Bennett, others\n";
     echo " *  <" . Common::relativeUrlToAbsolute("/legal") . ">\n";
     echo " *\n";
     echo " *  BNETDocs is free software: you can redistribute it and/or modify\n";
