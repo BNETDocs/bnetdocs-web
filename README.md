@@ -84,7 +84,7 @@ Please read the [CONTRIBUTING.md](/CONTRIBUTING.md) file.
 
 ## Copyright Disclaimer
 This project is licensed under the AGPLv3. A copy of the GNU Affero General
-Public License can be found [here](/LICENSE.md).
+Public License can be found [here](/LICENSE.txt).
 
     BNETDocs, the documentation and discussion website for Blizzard protocols
     Copyright (C) 2003-2018  "Arta", Don Cullen "Kyro", Carl Bennett, others
