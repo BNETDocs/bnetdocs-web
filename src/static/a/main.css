@@ -1,6 +1,6 @@
 /**
- *  BNETDocs, the Battle.net(TM) protocol documentation and discussion website
- *  Copyright (C) 2008-2017  Carl Bennett
+ *  BNETDocs, the documentation and discussion website for Blizzard protocols
+ *  Copyright (C) 2003-2018  "Arta", Don Cullen "Kyro", Carl Bennett, others
  *  This file is part of BNETDocs.
  *
  *  BNETDocs is free software: you can redistribute it and/or modify
@@ -252,7 +252,7 @@ footer.main-page {
   overflow: hidden;
   padding: 0px 0px 0px 224px;
   text-align: center;
-  width: 1000px;
+  width: 968px;
 }
 footer.main-page.slim {
   overflow: hidden;
