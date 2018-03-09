@@ -544,7 +544,7 @@ class Packet {
       }
 
       if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot save document' );
+        throw new QueryException( 'Cannot save packet' );
       }
 
       $stmt->closeCursor();
