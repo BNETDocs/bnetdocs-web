@@ -489,17 +489,17 @@ class Packet {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+
     try {
-      $stmt = Common::$database->prepare("
-        UPDATE
-          `packets`
-        SET
-          `created_datetime` = :created_dt,
-          `edited_count` = :edited_count,
-          `edited_datetime` = :edited_dt,
+
+      $stmt = Common::$database->prepare('
+        UPDATE `packets` SET
+          `created_datetime` = :dt1,
+          `edited_count` = :edit_count,
+          `edited_datetime` = :dt2,
           `options_bitmask` = :options,
-          `packet_application_layer_id` = :application_layer_id,
-          `packet_direction_id` = :direction_id,
+          `packet_application_layer_id` = :app_layer_id,
+          `packet_direction_id` = :direction,
           `packet_format` = :format,
           `packet_name` = :name,
           `packet_remarks` = :remarks,
@@ -508,30 +508,45 @@ class Packet {
         WHERE
           `id` = :id
         LIMIT 1;
-      ");
+      ');
+
       $stmt->bindParam(
-        ":application_layer_id", $this->packet_application_layer_id,
-        PDO::PARAM_INT
+        ':app_layer_id', $this->packet_application_layer_id, PDO::PARAM_INT
       );
-      $stmt->bindParam(":created_dt", $this->created_datetime, PDO::PARAM_INT);
-      $stmt->bindParam(":edited_count", $this->edited_count, PDO::PARAM_INT);
-      $stmt->bindParam(":edited_dt", $this->edited_datetime, PDO::PARAM_INT);
-      $stmt->bindParam(
-        ":direction_id", $this->packet_direction_id, PDO::PARAM_INT
-      );
-      $stmt->bindParam(":format", $this->packet_format, PDO::PARAM_STR);
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(":name", $this->packet_name, PDO::PARAM_STR);
-      $stmt->bindParam(":options", $this->options_bitmask, PDO::PARAM_INT);
-      $stmt->bindParam(":remarks", $this->packet_remarks, PDO::PARAM_STR);
-      $stmt->bindParam(
-        ":transport_layer_id", $this->packet_transport_layer_id,
-        PDO::PARAM_INT
-      );
-      $stmt->bindParam(":user_id", $this->user_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot save document");
+
+      $stmt->bindParam(':dt1', $this->created_datetime, PDO::PARAM_STR);
+      $stmt->bindParam(':edit_count', $this->edited_count, PDO::PARAM_INT);
+
+      if ( is_null( $this->edited_datetime )) {
+        $stmt->bindParam( ':dt2', null, PDO::PARAM_NULL );
+      } else {
+        $stmt->bindParam( ':dt2', $this->edited_datetime, PDO::PARAM_STR );
       }
+
+      $stmt->bindParam(
+        ':direction', $this->packet_direction_id, PDO::PARAM_INT
+      );
+
+      $stmt->bindParam( ':format', $this->packet_format, PDO::PARAM_STR );
+      $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
+      $stmt->bindParam( ':name', $this->packet_name, PDO::PARAM_STR );
+      $stmt->bindParam( ':options', $this->options_bitmask, PDO::PARAM_INT );
+      $stmt->bindParam( ':remarks', $this->packet_remarks, PDO::PARAM_STR );
+
+      $stmt->bindParam(
+        ':transport_layer_id', $this->packet_transport_layer_id, PDO::PARAM_INT
+      );
+
+      if ( is_null( $this->user_id )) {
+        $stmt->bindParam( ':user_id', null, PDO::PARAM_NULL );
+      } else {
+        $stmt->bindParam( ':user_id', $this->user_id, PDO::PARAM_INT );
+      }
+
+      if ( !$stmt->execute() ) {
+        throw new QueryException( 'Cannot save document' );
+      }
+
       $stmt->closeCursor();
 
       $object                              = new StdClass();
@@ -549,13 +564,16 @@ class Packet {
       $object->packet_transport_layer_id   = $this->packet_transport_layer_id;
       $object->user_id                     = $this->user_id;
 
-      $cache_key = "bnetdocs-packet-" . $this->id;
-      Common::$cache->set($cache_key, serialize($object), 300);
-      Common::$cache->delete("bnetdocs-packets");
+      $cache_key = 'bnetdocs-packet-' . $this->id;
+      Common::$cache->set( $cache_key, serialize( $object ), 300 );
+      Common::$cache->delete( 'bnetdocs-packets' );
 
       return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot save packet", $e);
+
+    } catch ( PDOException $e ) {
+
+      throw new QueryException( 'Cannot save packet', $e );
+
     }
     return false;
   }
