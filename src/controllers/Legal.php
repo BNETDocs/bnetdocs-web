@@ -13,21 +13,21 @@ use \DateTimeZone;
 
 class Legal extends Controller {
 
-  public function &run(Router &$router, View &$view, array &$args) {
+  public function &run( Router &$router, View &$view, array &$args ) {
 
     $model                  = new LegalModel();
-    $model->license         = file_get_contents("../LICENSE.txt");
+    $model->license         = file_get_contents( '../LICENSE.txt' );
     $model->license_version = VersionInfo::$version->bnetdocs[3];
-    $model->license_version = explode(' ', $model->license_version);
+    $model->license_version = explode( ' ', $model->license_version );
 
     $model->license_version[1] = new DateTime(
-      $model->license_version[1], new DateTimeZone('Etc/UTC')
+      $model->license_version[1], new DateTimeZone( 'Etc/UTC' )
     );
 
-    $view->render($model);
+    $view->render( $model );
 
     $model->_responseCode = 200;
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseHeaders[ 'Content-Type' ] = $view->getMimeType();
     $model->_responseTTL = 0;
 
     return $model;
