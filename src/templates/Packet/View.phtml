@@ -83,7 +83,9 @@ require("./header.inc.phtml");
             <tr><th>Direction:</th><td><?php echo filter_var($object->getPacketDirectionLabel(), FILTER_SANITIZE_STRING); ?></td></tr>
             <tr><th>Used By:</th><td><?php
               $products = $this->getContext()->used_by;
-              if (count($products) == 1) {
+              if (count($products) == 0) {
+                echo '<em>(nothing or unknown)</em>';
+              } else if (count($products) == 1) {
                 echo filter_var($products[0]->getLabel(), FILTER_SANITIZE_STRING);
               } else {
                 $j = count($this->getContext()->used_by);
