@@ -2,16 +2,18 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\PacketDirectionInvalidException;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\PacketApplicationLayer;
 use \BNETDocs\Libraries\PacketTransportLayer;
 use \BNETDocs\Libraries\User;
+
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Markdown;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -42,8 +44,9 @@ class Packet {
   protected $packet_transport_layer_id;
   protected $user_id;
 
-  public function __construct($data) {
-    if (is_numeric($data)) {
+  public function __construct( $data ) {
+    if ( is_numeric( $data )) {
+
       $this->created_datetime            = null;
       $this->edited_count                = null;
       $this->edited_datetime             = null;
@@ -58,8 +61,11 @@ class Packet {
       $this->packet_transport_layer_id   = null;
       $this->user_id                     = null;
       $this->refresh();
-    } else if ($data instanceof StdClass) {
-      self::normalize($data);
+
+    } else if ( $data instanceof StdClass ) {
+
+      self::normalize( $data );
+
       $this->created_datetime            = $data->created_datetime;
       $this->edited_count                = $data->edited_count;
       $this->edited_datetime             = $data->edited_datetime;
@@ -73,27 +79,37 @@ class Packet {
       $this->packet_remarks              = $data->packet_remarks;
       $this->packet_transport_layer_id   = $data->packet_transport_layer_id;
       $this->user_id                     = $data->user_id;
+
     } else {
-      throw new InvalidArgumentException("Cannot use data argument");
+
+      throw new InvalidArgumentException( 'Cannot use data argument' );
+
     }
   }
 
   public static function getAllPackets() {
-    $cache_key = "bnetdocs-packets";
+
+    $cache_key = 'bnetdocs-packets';
     $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false && !empty($cache_val)) {
-      $ids     = explode(",", $cache_val);
+
+    if ( $cache_val !== false && !empty( $cache_val )) {
+      $ids     = explode(',', $cache_val);
       $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
+
+      foreach ( $ids as $id ) {
+        $objects[] = new self( $id );
       }
+
       return $objects;
     }
-    if (!isset(Common::$database)) {
+
+    if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+
     try {
-      $stmt = Common::$database->prepare("
+
+      $stmt = Common::$database->prepare('
         SELECT
           `created_datetime`,
           `edited_count`,
@@ -110,44 +126,62 @@ class Packet {
           `user_id`
         FROM `packets`
         ORDER BY `id` ASC;
-      ");
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh packets");
+      ');
+
+      if ( !$stmt->execute() ) {
+        throw new QueryException( 'Cannot refresh packets' );
       }
+
       $ids     = [];
       $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+
+      while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
         $ids[]     = (int) $row->id;
-        $objects[] = new self($row);
+        $objects[] = new self( $row );
+
         Common::$cache->set(
-          "bnetdocs-packet-" . $row->id, serialize($row), 300
+          'bnetdocs-packet-' . $row->id, serialize( $row ), 300
         );
       }
+
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(",", $ids), 300);
+
+      Common::$cache->set( $cache_key, implode( ',', $ids ), 300 );
+
       return $objects;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh packets", $e);
+
+    } catch ( PDOException $e ) {
+
+      throw new QueryException( 'Cannot refresh packets', $e );
+
     }
+
     return null;
   }
 
   public static function getAllPacketsBySearch($query) {
-    $cache_key = "bnetdocs-packetsearch-" . hash("md5", $query);
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false && !empty($cache_val)) {
-      $ids     = explode(",", $cache_val);
+
+    $cache_key = 'bnetdocs-packetsearch-' . hash( 'md5', $query );
+    $cache_val = Common::$cache->get( $cache_key );
+
+    if ( $cache_val !== false && !empty( $cache_val )) {
+      $ids     = explode( ',', $cache_val );
       $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
+
+      foreach ( $ids as $id ) {
+        $objects[] = new self( $id );
       }
+
       return $objects;
     }
-    if (!isset(Common::$database)) {
+
+    if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+
     try {
-      $stmt = Common::$database->prepare("
+
+      $stmt = Common::$database->prepare('
         SELECT
           `created_datetime`,
           `edited_count`,
@@ -167,39 +201,52 @@ class Packet {
           MATCH (`packet_remarks`, `packet_format`, `packet_name`)
           AGAINST (:query IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)
         ;
-      ");
-      $stmt->bindParam(":query", $query, PDO::PARAM_STR);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot search packets");
+      ');
+
+      $stmt->bindParam( ':query', $query, PDO::PARAM_STR );
+
+      if ( !$stmt->execute() ) {
+        throw new QueryException( 'Cannot search packets' );
       }
+
       $ids     = [];
       $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+
+      while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
         $ids[]     = (int) $row->id;
-        $objects[] = new self($row);
+        $objects[] = new self( $row );
+
         Common::$cache->set(
-          "bnetdocs-packet-" . $row->id, serialize($row), 300
+          'bnetdocs-packet-' . $row->id, serialize( $row ), 300
         );
       }
+
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(",", $ids), 300);
+
+      Common::$cache->set( $cache_key, implode( ',', $ids ), 300 );
+
       return $objects;
-    } catch (PDOException $e) {
-      var_dump($e);die();
-      throw new QueryException("Cannot search packets", $e);
+
+    } catch ( PDOException $e ) {
+
+      throw new QueryException( 'Cannot search packets', $e );
+
     }
+
     return null;
   }
 
   public function getCreatedDateTime() {
-    if (is_null($this->created_datetime)) {
+    if ( is_null( $this->created_datetime )) {
       return $this->created_datetime;
-    } else {
-      $tz = new DateTimeZone("UTC");
-      $dt = new DateTime($this->created_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
     }
+
+    $tz = new DateTimeZone( 'UTC' );
+    $dt = new DateTime( $this->created_datetime );
+
+    $dt->setTimezone( $tz );
+
+    return $dt;
   }
 
   public function getEditedCount() {
@@ -207,14 +254,16 @@ class Packet {
   }
 
   public function getEditedDateTime() {
-    if (is_null($this->edited_datetime)) {
+    if ( is_null( $this->edited_datetime )) {
       return $this->edited_datetime;
-    } else {
-      $tz = new DateTimeZone("UTC");
-      $dt = new DateTime($this->edited_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
     }
+
+    $tz = new DateTimeZone( 'UTC' );
+    $dt = new DateTime( $this->edited_datetime );
+
+    $dt->setTimezone( $tz );
+
+    return $dt;
   }
 
   public function getId() {
@@ -226,7 +275,7 @@ class Packet {
   }
 
   public function getPacketApplicationLayer() {
-    return new PacketApplicationLayer($this->packet_application_layer);
+    return new PacketApplicationLayer( $this->packet_application_layer );
   }
 
   public function getPacketApplicationLayerId() {
@@ -239,21 +288,21 @@ class Packet {
 
   public function getPacketDirectionLabel() {
     switch ($this->packet_direction_id) {
-      case self::DIRECTION_CLIENT_SERVER: return "Client to Server";
-      case self::DIRECTION_SERVER_CLIENT: return "Server to Client";
-      case self::DIRECTION_PEER_TO_PEER:  return "Peer to Peer";
+      case self::DIRECTION_CLIENT_SERVER: return 'Client to Server';
+      case self::DIRECTION_SERVER_CLIENT: return 'Server to Client';
+      case self::DIRECTION_PEER_TO_PEER:  return 'Peer to Peer';
       default:
-        throw new PacketDirectionInvalidException($this->packet_direction_id);
+        throw new PacketDirectionInvalidException( $this->packet_direction_id );
     }
   }
 
   public function getPacketDirectionTag() {
     switch ($this->packet_direction_id) {
-      case self::DIRECTION_CLIENT_SERVER: return "C>S";
-      case self::DIRECTION_SERVER_CLIENT: return "S>C";
-      case self::DIRECTION_PEER_TO_PEER:  return "P2P";
+      case self::DIRECTION_CLIENT_SERVER: return 'C>S';
+      case self::DIRECTION_SERVER_CLIENT: return 'S>C';
+      case self::DIRECTION_PEER_TO_PEER:  return 'P2P';
       default:
-        throw new PacketDirectionInvalidException($this->packet_direction_id);
+        throw new PacketDirectionInvalidException( $this->packet_direction_id );
     }
   }
 
@@ -265,37 +314,43 @@ class Packet {
     return $this->packet_name;
   }
 
-  public function getPacketId($format = false) {
-    if (!$format) return $this->packet_id;
-    return "0x" . strtoupper(substr("0" . dechex($this->packet_id), -2));
+  public function getPacketId( $format = false ) {
+    if (!$format) {
+      return $this->packet_id;
+    }
+
+    return '0x' . strtoupper( substr( '0' . dechex( $this->packet_id ), -2 ));
   }
 
-  public function getPacketRemarks($prepare) {
-    if (!$prepare) {
+  public function getPacketRemarks( $prepare ) {
+    if ( !$prepare ) {
       return $this->packet_remarks;
     }
-    if ($this->options_bitmask & self::OPTION_MARKDOWN) {
+
+    if ( $this->options_bitmask & self::OPTION_MARKDOWN ) {
       $md = new Markdown();
       return $md->text($this->packet_remarks);
-    } else {
-      return $this->packet_remarks;
     }
+
+    return $this->packet_remarks;
   }
 
   public function getPacketTransportLayer() {
-    return new PacketTransportLayer($this->packet_transport_layer_id);
+    return new PacketTransportLayer( $this->packet_transport_layer_id );
   }
 
   public function getPacketTransportLayerId() {
     return $this->packet_transport_layer_id;
   }
 
-  public static function getPacketsByUserId($user_id) {
-    if (!isset(Common::$database)) {
+  public static function getPacketsByUserId( $user_id ) {
+    if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+
     try {
-      $stmt = Common::$database->prepare("
+
+      $stmt = Common::$database->prepare('
         SELECT
           `created_datetime`,
           `edited_count`,
@@ -313,84 +368,116 @@ class Packet {
         FROM `packets`
         WHERE `user_id` = :user_id
         ORDER BY `id` ASC;
-      ");
-      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot query packets by user id");
+      ');
+
+      $stmt->bindParam( ':user_id', $user_id, PDO::PARAM_INT );
+
+      if ( !$stmt->execute() ) {
+        throw new QueryException( 'Cannot query packets by user id' );
       }
+
       $packets = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $packets[] = new self($row);
+
+      while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
+        $packets[] = new self( $row );
+
         Common::$cache->set(
-          "bnetdocs-packet-" . $row->id, serialize($row), 300
+          'bnetdocs-packet-' . $row->id, serialize( $row ), 300
         );
       }
+
       $stmt->closeCursor();
+
       return $packets;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot query packets by user id", $e);
+
+    } catch ( PDOException $e ) {
+
+      throw new QueryException( 'Cannot query packets by user id', $e );
+
     }
+
     return null;
   }
 
   public function getPublishedDateTime() {
-    if (!is_null($this->edited_datetime)) {
+    if ( !is_null( $this->edited_datetime )) {
       return $this->getEditedDateTime();
-    } else {
-      return $this->getCreatedDateTime();
     }
+
+    return $this->getCreatedDateTime();
   }
 
   public function getURI() {
     return Common::relativeUrlToAbsolute(
-      "/packet/" . $this->getId() . "/" . Common::sanitizeForUrl(
+      '/packet/' . $this->getId() . '/' . Common::sanitizeForUrl(
         $this->getPacketName(), true
       )
     );
   }
 
   public function getUsedBy() {
-    $ckey = "bnetdocs-packetusedby-" . $this->id;
+
+    $ckey = 'bnetdocs-packetusedby-' . $this->id;
     $cval = Common::$cache->get($ckey);
-    if ($cval !== false) return unserialize($cval);
-    if (!isset(Common::$database)) {
+
+    if ( $cval !== false ) {
+      return unserialize( $cval );
+    }
+
+    if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+
     try {
-      $stmt = Common::$database->prepare("
+
+      $stmt = Common::$database->prepare('
         SELECT
           `bnet_product_id`
         FROM `packet_used_by`
         WHERE `id` = :id
         ORDER BY `id` ASC;
-      ");
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      ');
+
+      $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
+
       if (!$stmt->execute()) {
-        throw new QueryException("Cannot query packet used by");
+        throw new QueryException( 'Cannot query packet used by' );
       }
+
       $values = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+      while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
         $values[] = (int) $row->bnet_product_id;
       }
+
       $stmt->closeCursor();
-      Common::$cache->set($ckey, serialize($values), 300);
+
+      Common::$cache->set( $ckey, serialize( $values ), 300 );
+
       return $values;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot query packet used by", $e);
+
+    } catch ( PDOException $e ) {
+
+      throw new QueryException( 'Cannot query packet used by', $e );
+
     }
+
     return null;
   }
 
   public function getUser() {
-    if (is_null($this->user_id)) return null;
-    return new User($this->user_id);
+    if ( is_null( $this->user_id )) {
+      return null;
+    }
+
+    return new User( $this->user_id );
   }
 
   public function getUserId() {
     return $this->user_id;
   }
 
-  protected static function normalize(StdClass &$data) {
+  protected static function normalize( StdClass &$data ) {
+
     $data->created_datetime            = (string) $data->created_datetime;
     $data->edited_count                = (int)    $data->edited_count;
     $data->id                          = (int)    $data->id;
@@ -413,10 +500,13 @@ class Packet {
   }
 
   public function refresh() {
-    $ckey = "bnetdocs-packet-" . $this->id;
-    $cval = Common::$cache->get($ckey);
-    if ($cval !== false) {
-      $cval                              = unserialize($cval);
+
+    $ckey = 'bnetdocs-packet-' . $this->id;
+    $cval = Common::$cache->get( $ckey );
+
+    if ( $cval !== false ) {
+      $cval = unserialize( $cval );
+
       $this->created_datetime            = $cval->created_datetime;
       $this->edited_count                = $cval->edited_count;
       $this->edited_datetime             = $cval->edited_datetime;
@@ -430,13 +520,17 @@ class Packet {
       $this->packet_remarks              = $cval->packet_remarks;
       $this->packet_transport_layer_id   = $cval->packet_transport_layer_id;
       $this->user_id                     = $cval->user_id;
+
       return true;
     }
-    if (!isset(Common::$database)) {
+
+    if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+
     try {
-      $stmt = Common::$database->prepare("
+
+      $stmt = Common::$database->prepare('
         SELECT
           `created_datetime`,
           `edited_count`,
@@ -454,16 +548,22 @@ class Packet {
         FROM `packets`
         WHERE `id` = :id
         LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh packet");
-      } else if ($stmt->rowCount() == 0) {
-        throw new PacketNotFoundException($this->id);
+      ');
+
+      $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
+
+      if ( !$stmt->execute() ) {
+        throw new QueryException( 'Cannot refresh packet' );
+      } else if ( $stmt->rowCount() == 0 ) {
+        throw new PacketNotFoundException( $this->id );
       }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
+
+      $row = $stmt->fetch( PDO::FETCH_OBJ );
+
       $stmt->closeCursor();
-      self::normalize($row);
+
+      self::normalize( $row );
+
       $this->created_datetime            = $row->created_datetime;
       $this->edited_count                = $row->edited_count;
       $this->edited_datetime             = $row->edited_datetime;
@@ -477,48 +577,54 @@ class Packet {
       $this->packet_remarks              = $row->packet_remarks;
       $this->packet_transport_layer_id   = $row->packet_transport_layer_id;
       $this->user_id                     = $row->user_id;
-      Common::$cache->set($ckey, serialize($row), 300);
+
+      Common::$cache->set( $ckey, serialize( $row ), 300 );
+
       return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh packet", $e);
+
+    } catch ( PDOException $e ) {
+
+      throw new QueryException( 'Cannot refresh packet', $e );
+
     }
+
     return false;
   }
 
-  public function setEditedCount($value) {
+  public function setEditedCount( $value ) {
     $this->edited_count = $value;
   }
 
-  public function setEditedDateTime(\DateTime $value) {
-    $this->edited_datetime = $value->format("Y-m-d H:i:s");
+  public function setEditedDateTime( DateTime $value ) {
+    $this->edited_datetime = $value->format( 'Y-m-d H:i:s' );
   }
 
-  public function setMarkdown($value) {
-    if ($value) {
+  public function setMarkdown( $value ) {
+    if ( $value ) {
       $this->options_bitmask |= self::OPTION_MARKDOWN;
     } else {
       $this->options_bitmask &= ~self::OPTION_MARKDOWN;
     }
   }
 
-  public function setPacketFormat($value) {
+  public function setPacketFormat( $value ) {
     $this->packet_format = $value;
   }
 
-  public function setPacketId($value) {
+  public function setPacketId( $value ) {
     $this->packet_id = $value;
   }
 
-  public function setPacketName($value) {
+  public function setPacketName( $value ) {
     $this->packet_name = $value;
   }
 
-  public function setPacketRemarks($value) {
+  public function setPacketRemarks( $value ) {
     $this->packet_remarks = $value;
   }
 
-  public function setPublished($value) {
-    if ($value) {
+  public function setPublished( $value ) {
+    if ( $value ) {
       $this->options_bitmask |= self::OPTION_PUBLISHED;
     } else {
       $this->options_bitmask &= ~self::OPTION_PUBLISHED;
@@ -584,7 +690,7 @@ class Packet {
       }
 
       if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot save packet' );
+        throw new QueryException( 'Cannot update packet' );
       }
 
       $stmt->closeCursor();
@@ -612,7 +718,7 @@ class Packet {
 
     } catch ( PDOException $e ) {
 
-      throw new QueryException( 'Cannot save packet', $e );
+      throw new QueryException( 'Cannot update packet', $e );
 
     }
     return false;
