@@ -10,7 +10,6 @@ use \BNETDocs\Libraries\PacketTransportLayer;
 use \BNETDocs\Libraries\User;
 
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Markdown;
 
