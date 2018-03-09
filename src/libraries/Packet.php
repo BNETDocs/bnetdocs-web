@@ -485,7 +485,47 @@ class Packet {
     return false;
   }
 
-  public function save() {
+  public function setEditedCount($value) {
+    $this->edited_count = $value;
+  }
+
+  public function setEditedDateTime(\DateTime $value) {
+    $this->edited_datetime = $value->format("Y-m-d H:i:s");
+  }
+
+  public function setMarkdown($value) {
+    if ($value) {
+      $this->options_bitmask |= self::OPTION_MARKDOWN;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_MARKDOWN;
+    }
+  }
+
+  public function setPacketFormat($value) {
+    $this->packet_format = $value;
+  }
+
+  public function setPacketId($value) {
+    $this->packet_id = $value;
+  }
+
+  public function setPacketName($value) {
+    $this->packet_name = $value;
+  }
+
+  public function setPacketRemarks($value) {
+    $this->packet_remarks = $value;
+  }
+
+  public function setPublished($value) {
+    if ($value) {
+      $this->options_bitmask |= self::OPTION_PUBLISHED;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_PUBLISHED;
+    }
+  }
+
+  public function update() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -576,46 +616,6 @@ class Packet {
 
     }
     return false;
-  }
-
-  public function setEditedCount($value) {
-    $this->edited_count = $value;
-  }
-
-  public function setEditedDateTime(\DateTime $value) {
-    $this->edited_datetime = $value->format("Y-m-d H:i:s");
-  }
-
-  public function setMarkdown($value) {
-    if ($value) {
-      $this->options_bitmask |= self::OPTION_MARKDOWN;
-    } else {
-      $this->options_bitmask &= ~self::OPTION_MARKDOWN;
-    }
-  }
-
-  public function setPacketFormat($value) {
-    $this->packet_format = $value;
-  }
-
-  public function setPacketId($value) {
-    $this->packet_id = $value;
-  }
-
-  public function setPacketName($value) {
-    $this->packet_name = $value;
-  }
-
-  public function setPacketRemarks($value) {
-    $this->packet_remarks = $value;
-  }
-
-  public function setPublished($value) {
-    if ($value) {
-      $this->options_bitmask |= self::OPTION_PUBLISHED;
-    } else {
-      $this->options_bitmask &= ~self::OPTION_PUBLISHED;
-    }
   }
 
 }

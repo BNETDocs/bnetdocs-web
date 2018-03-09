@@ -135,7 +135,7 @@ class Edit extends Controller {
         new DateTime("now", new DateTimeZone("UTC"))
       );
 
-      $success = $model->packet->save();
+      $success = $model->packet->update();
 
     } catch (QueryException $e) {
 
