@@ -106,9 +106,9 @@ class Packet implements JsonSerializable {
       $ckey = 'bnetdocs-packets';
       $cval = Common::$cache->get( $ckey );
 
-      if ( $cache_val !== false && !empty( $cache_val )) {
+      if ( $cval !== false && !empty( $cval )) {
 
-        $ids     = explode(',', $cache_val);
+        $ids     = explode(',', $cval);
         $objects = [];
 
         foreach ( $ids as $id ) {
