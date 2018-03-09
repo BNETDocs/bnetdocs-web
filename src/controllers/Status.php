@@ -59,7 +59,7 @@ class Status extends Controller {
     $status->healthcheck    = $healthcheck;
     $status->remote_address = getenv( 'REMOTE_ADDR' );
     $status->remote_geoinfo = GeoIP::get( $status->remote_address );
-    $status->timestamp      = new DateTime( 'now', $utc ));
+    $status->timestamp      = new DateTime( 'now', $utc );
     $status->version_info   = VersionInfo::$version;
 
     $model->status = $status;
