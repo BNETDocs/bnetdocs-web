@@ -49,7 +49,7 @@ class IndexPHP extends View {
     echo "namespace BNETDocs\Packets;\n\n";
 
     foreach ($model->packets as $pkt) {
-      echo "define(\"" . $pkt->getPacketName() . "\", "
+      echo "define('" . $pkt->getPacketName() . "', "
         . $pkt->getPacketId(true) . ");\n";
     }
 

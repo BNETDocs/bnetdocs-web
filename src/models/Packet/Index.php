@@ -6,7 +6,12 @@ use \CarlBennett\MVC\Libraries\Model;
 
 class Index extends Model {
 
+  public $limit;
+  public $order;
   public $packets;
-  public $sum_packets;
+  public $page;
+  public $pages;
+  public $timestamp;
+  public $user;
 
 }

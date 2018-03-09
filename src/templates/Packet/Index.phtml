@@ -7,26 +7,63 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
-$title       = "Packet Index";
-$description = "The index for packets on BNETDocs";
-$this->opengraph->attach(new Pair("url", "/packet/index"));
+$title       = 'Packet Index';
+$description = 'The index for packets on BNETDocs';
+$this->opengraph->attach(new Pair('url', '/packet/index'));
 
-require("./header.inc.phtml");
+$page = $this->getContext()->page;
+$pages = $this->getContext()->pages;
+$limit = $this->getContext()->limit;
+$order = $this->getContext()->order;
+
+$no_prev = ($page <= 1);
+$no_next = ($page >= $pages);
+
+$this->additional_css[] = '/a/forms.css';
+require('./header.inc.phtml');
 ?>
       <article>
         <header>Packet Index</header>
         <section>
-          <p>These packets are also available as constants in
-            <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index.cpp"); ?>">C++</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index.java"); ?>">Java</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index.json"); ?>">JSON</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index.php"); ?>">PHP</a>, and
-            <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index.vb"); ?>">VB6</a>.
-          </p>
+          <form method="GET">
+            <input type="hidden" name="page" value="<?php echo $page; ?>"/>
+            <input type="hidden" name="limit" value="<?php echo $limit; ?>"/>
+            <label for="order">Order by:</label>
+            <select name="order" id="order" onchange="form.submit();"
+              style="display:inline-block;width:200px;">
+              <option value="id-asc"<?php
+                if ($order === 'id-asc') { echo ' selected="selected"';
+                } ?>>Database Id (Ascending)</option>
+              <option value="id-desc"<?php
+                if ($order === 'id-desc') { echo ' selected="selected"';
+                } ?>>Database Id (Descending)</option>
+              <option value="packet-id-asc"<?php
+                if ($order === 'packet-id-asc') { echo ' selected="selected"';
+                } ?>>Packet Id (Ascending)</option>
+              <option value="packet-id-desc"<?php
+                if ($order === 'packet-id-desc') { echo ' selected="selected"';
+                } ?>>Packet Id (Descending)</option>
+              <option value="created-datetime-asc"<?php
+                if ($order === 'created-datetime-asc') {
+                  echo ' selected="selected"';
+                } ?>>Created Timestamp (Ascending)</option>
+              <option value="created-datetime-desc"<?php
+                if ($order === 'created-datetime-desc') {
+                  echo ' selected="selected"';
+                } ?>>Created Timestamp (Descending)</option>
+              <option value="user-id-asc"<?php
+                if ($order === 'user-id-asc') { echo ' selected="selected"';
+                } ?>>User Id (Ascending)</option>
+              <option value="user-id-desc"<?php
+                if ($order === 'user-id-desc') { echo ' selected="selected"';
+                } ?>>User Id (Descending)</option>
+            </select>
+            <input type="submit" value="Reorder"/>
+          </form>
           <table>
             <thead>
               <tr>
-                <th class="left">Found <?php echo number_format($this->getContext()->sum_packets); ?> packet<?php echo ($this->getContext()->sum_packets != 1 ? "s" : ""); ?></th>
+                <th class="left"></th>
                 <th class="left">Author</th>
               </tr>
             </thead><tbody>
@@ -44,6 +81,33 @@ require("./header.inc.phtml");
               </tr>
 <?php } ?>
           </tbody></table>
+        </section>
+        <section>
+          <p>These packets are also available as constants in
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.cpp'); ?>">C++</a>,
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.java'); ?>">Java</a>,
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.json'); ?>">JSON</a>,
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.php'); ?>">PHP</a>, and
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.vb'); ?>">VB6</a>.
+          </p>
+          <hr/>
+          <span class="float-left">
+<?php if (!$no_prev) { ?>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/packet/index?page=' . ($page - 1) . '&limit=' . $limit . '&order=' . $order); ?>">Prev</a>
+<?php } else { ?>
+            <button class="button button-disabled" disabled="disabled">Prev</button>
+<?php } ?>
+          </span>
+          <span class="float-right">
+<?php if (!$no_next) { ?>
+              <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/packet/index?page=' . ($page + 1) . '&limit=' . $limit . '&order=' . $order); ?>">Next</a>
+  <?php } else { ?>
+            <button class="button button-disabled" disabled="disabled">Next</button>
+<?php } ?>
+          </span>
+          <p class="center" style="line-height:24px;">
+            <strong><?php echo number_format($page); ?></strong> of <?php echo number_format($pages); ?>
+          </p>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>

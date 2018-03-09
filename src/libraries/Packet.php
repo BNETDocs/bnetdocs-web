@@ -16,11 +16,12 @@ use \CarlBennett\MVC\Libraries\Markdown;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
+use \JsonSerializable;
 use \PDO;
 use \PDOException;
 use \StdClass;
 
-class Packet {
+class Packet implements JsonSerializable {
 
   const CACHE_TTL = 300;
 
@@ -88,21 +89,44 @@ class Packet {
     }
   }
 
-  public static function getAllPackets() {
+  public static function &getAllPackets(
+    $order = null, $limit = null, $index = null
+  ) {
 
-    $cache_key = 'bnetdocs-packets';
-    $cache_val = Common::$cache->get($cache_key);
+    if ( !( is_numeric( $limit ) || is_numeric( $index ))) {
+      $limit_clause = '';
+    } else if ( !is_numeric( $index )) {
+      $limit_clause = 'LIMIT ' . (int) $limit;
+    } else {
+      $limit_clause = 'LIMIT ' . (int) $index . ',' . (int) $limit;
+    }
 
-    if ( $cache_val !== false && !empty( $cache_val )) {
-      $ids     = explode(',', $cache_val);
-      $objects = [];
+    if ( empty( $limit_clause )) {
 
-      foreach ( $ids as $id ) {
-        $objects[] = new self( $id );
+      $ckey = 'bnetdocs-packets';
+      $cval = Common::$cache->get( $ckey );
+
+      if ( $cache_val !== false && !empty( $cache_val )) {
+
+        $ids     = explode(',', $cache_val);
+        $objects = [];
+
+        foreach ( $ids as $id ) {
+          $objects[] = new self( $id );
+        }
+
+        return $objects;
+
       }
 
-      return $objects;
     }
+
+    $order_clause =
+      ( $order ? '`' .
+        implode( '`,`', explode( ',', $order[0] )) .
+        '` ' . $order[1] . ',' : ''
+      ) . '`id` ' . ( $order ? $order[1] : 'ASC' ) . ' ' .
+      $limit_clause;
 
     if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
@@ -111,26 +135,25 @@ class Packet {
     try {
 
       $stmt = Common::$database->prepare('
-        SELECT
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `options_bitmask`,
-          `packet_application_layer_id`,
-          `packet_direction_id`,
-          `packet_format`,
-          `packet_id`,
-          `packet_name`,
-          `packet_remarks`,
-          `packet_transport_layer_id`,
-          `user_id`
+        SELECT `created_datetime`,
+               `edited_count`,
+               `edited_datetime`,
+               `id`,
+               `options_bitmask`,
+               `packet_application_layer_id`,
+               `packet_direction_id`,
+               `packet_format`,
+               `packet_id`,
+               `packet_name`,
+               `packet_remarks`,
+               `packet_transport_layer_id`,
+               `user_id`
         FROM `packets`
-        ORDER BY `id` ASC;
+        ORDER BY ' . $order_clause . ';
       ');
 
       if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot refresh packets' );
+        throw new QueryException( 'Cannot refresh all packets' );
       }
 
       $ids     = [];
@@ -147,7 +170,9 @@ class Packet {
 
       $stmt->closeCursor();
 
-      Common::$cache->set( $cache_key, implode( ',', $ids ), self::CACHE_TTL );
+      if ( empty( $limit_clause )) {
+        Common::$cache->set( $ckey, implode( ',', $ids ), self::CACHE_TTL );
+      }
 
       return $objects;
 
@@ -400,6 +425,38 @@ class Packet {
     return null;
   }
 
+  public static function getPacketCount() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    try {
+
+      $stmt = Common::$database->prepare('SELECT COUNT(*) FROM `packets`;');
+
+      if ( !$stmt->execute() ) {
+        throw new QueryException( 'Cannot query packet count' );
+      } else if ( $stmt->rowCount() == 0 ) {
+        throw new QueryException(
+          'Missing result while querying packet count'
+        );
+      }
+
+      $row = $stmt->fetch( PDO::FETCH_NUM );
+
+      $stmt->closeCursor();
+
+      return (int) $row[0];
+
+    } catch ( PDOException $e ) {
+
+      throw new QueryException( 'Cannot query packet count', $e );
+
+    }
+
+    return null;
+  }
+
   public function getPublishedDateTime() {
     if ( !is_null( $this->edited_datetime )) {
       return $this->getEditedDateTime();
@@ -475,6 +532,24 @@ class Packet {
 
   public function getUserId() {
     return $this->user_id;
+  }
+
+  public function jsonSerialize() {
+    return [
+      'created_datetime'            => $this->getCreatedDateTime(),
+      'edited_count'                => $this->getEditedCount(),
+      'edited_datetime'             => $this->getEditedDateTime(),
+      'id'                          => $this->getId(),
+      'options_bitmask'             => $this->getOptionsBitmask(),
+      'packet_application_layer_id' => $this->getPacketApplicationLayerId(),
+      'packet_direction_id'         => $this->getPacketDirectionId(),
+      'packet_format'               => $this->getPacketFormat(),
+      'packet_id'                   => $this->getPacketId(),
+      'packet_name'                 => $this->getPacketName(),
+      'packet_remarks'              => $this->getPacketRemarks( false ),
+      'packet_transport_layer_id'   => $this->getPacketTransportLayerId(),
+      'user'                        => $this->getUser(),
+    ];
   }
 
   protected static function normalize( StdClass &$data ) {
