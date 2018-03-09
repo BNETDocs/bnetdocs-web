@@ -23,6 +23,8 @@ use \StdClass;
 
 class Packet {
 
+  const CACHE_TTL = 300;
+
   const DIRECTION_CLIENT_SERVER = 1;
   const DIRECTION_SERVER_CLIENT = 2;
   const DIRECTION_PEER_TO_PEER  = 3;
@@ -140,13 +142,13 @@ class Packet {
         $objects[] = new self( $row );
 
         Common::$cache->set(
-          'bnetdocs-packet-' . $row->id, serialize( $row ), 300
+          'bnetdocs-packet-' . $row->id, serialize( $row ), self::CACHE_TTL
         );
       }
 
       $stmt->closeCursor();
 
-      Common::$cache->set( $cache_key, implode( ',', $ids ), 300 );
+      Common::$cache->set( $cache_key, implode( ',', $ids ), self::CACHE_TTL );
 
       return $objects;
 
@@ -217,13 +219,13 @@ class Packet {
         $objects[] = new self( $row );
 
         Common::$cache->set(
-          'bnetdocs-packet-' . $row->id, serialize( $row ), 300
+          'bnetdocs-packet-' . $row->id, serialize( $row ), self::CACHE_TTL
         );
       }
 
       $stmt->closeCursor();
 
-      Common::$cache->set( $cache_key, implode( ',', $ids ), 300 );
+      Common::$cache->set( $cache_key, implode( ',', $ids ), self::CACHE_TTL );
 
       return $objects;
 
@@ -382,7 +384,7 @@ class Packet {
         $packets[] = new self( $row );
 
         Common::$cache->set(
-          'bnetdocs-packet-' . $row->id, serialize( $row ), 300
+          'bnetdocs-packet-' . $row->id, serialize( $row ), self::CACHE_TTL
         );
       }
 
@@ -451,7 +453,7 @@ class Packet {
 
       $stmt->closeCursor();
 
-      Common::$cache->set( $ckey, serialize( $values ), 300 );
+      Common::$cache->set( $ckey, serialize( $values ), self::CACHE_TTL );
 
       return $values;
 
@@ -578,7 +580,7 @@ class Packet {
       $this->packet_transport_layer_id   = $row->packet_transport_layer_id;
       $this->user_id                     = $row->user_id;
 
-      Common::$cache->set( $ckey, serialize( $row ), 300 );
+      Common::$cache->set( $ckey, serialize( $row ), self::CACHE_TTL );
 
       return true;
 
@@ -711,7 +713,7 @@ class Packet {
       $object->user_id                     = $this->user_id;
 
       $cache_key = 'bnetdocs-packet-' . $this->id;
-      Common::$cache->set( $cache_key, serialize( $object ), 300 );
+      Common::$cache->set( $cache_key, serialize( $object ), self::CACHE_TTL );
       Common::$cache->delete( 'bnetdocs-packets' );
 
       return true;
