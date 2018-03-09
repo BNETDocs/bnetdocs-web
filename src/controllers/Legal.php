@@ -21,7 +21,7 @@ class Legal extends Controller {
     $model->license_version = explode(' ', $model->license_version);
 
     $model->license_version[1] = new DateTime(
-      $model->license_version[1], new DateTimeZone('UTC')
+      $model->license_version[1], new DateTimeZone('Etc/UTC')
     );
 
     $view->render($model);

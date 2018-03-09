@@ -95,7 +95,7 @@ class View extends Controller {
     // How long have they been a member?
     $model->user_est = Common::intervalToString(
       $model->user->getCreatedDateTime()->diff(
-        new DateTime("now", new DateTimeZone("UTC"))
+        new DateTime("now", new DateTimeZone("Etc/UTC"))
       )
     );
     $user_est_comma = strpos($model->user_est, ",");

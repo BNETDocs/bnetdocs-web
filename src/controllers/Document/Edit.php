@@ -120,7 +120,7 @@ class Edit extends Controller {
         $model->document->getEditedCount() + 1
       );
       $model->document->setEditedDateTime(
-        new DateTime("now", new DateTimeZone("UTC"))
+        new DateTime("now", new DateTimeZone("Etc/UTC"))
       );
 
       $success = $model->document->save();

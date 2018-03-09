@@ -106,7 +106,7 @@ class Index extends Controller {
     }
 
     if ( !$view instanceof PacketIndexHtmlView ) {
-      $model->timestamp = new DateTime( 'now', new DateTimeZone( 'UTC' ));
+      $model->timestamp = new DateTime( 'now', new DateTimeZone( 'Etc/UTC' ));
     }
 
     $view->render($model);

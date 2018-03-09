@@ -54,10 +54,12 @@ class Status extends Controller {
     $healthcheck->database = ( Common::$database instanceof Database );
     $healthcheck->memcache = ( Common::$cache instanceof Cache );
 
+    $utc = new DateTimeZone( 'Etc/UTC' );
+
     $status->healthcheck    = $healthcheck;
     $status->remote_address = getenv( 'REMOTE_ADDR' );
     $status->remote_geoinfo = GeoIP::get( $status->remote_address );
-    $status->timestamp      = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
+    $status->timestamp      = new DateTime( 'now', $utc ));
     $status->version_info   = VersionInfo::$version;
 
     $model->status = $status;

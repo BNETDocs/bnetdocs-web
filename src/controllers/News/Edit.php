@@ -138,7 +138,7 @@ class Edit extends Controller {
         $model->news_post->getEditedCount() + 1
       );
       $model->news_post->setEditedDateTime(
-        new DateTime("now", new DateTimeZone("UTC"))
+        new DateTime("now", new DateTimeZone("Etc/UTC"))
       );
 
       $success = $model->news_post->save();
