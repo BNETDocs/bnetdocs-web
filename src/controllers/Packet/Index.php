@@ -23,16 +23,12 @@ class Index extends Controller {
 
     $model = new PacketIndexModel();
 
-    if ( $view instanceof PacketIndexHtmlView
-      || $view instanceof PacketIndexJSONView ) {
+    $model->packets = Packet::getAllPackets(
+      ['packet_application_layer_id,packet_id', 'ASC']
+    );
 
-      $model->packets = Packet::getAllPackets();
-
-    } else {
-
-      $model->packets = Packet::getAllPackets(
-        ['packet_application_layer_id,packet_id', 'ASC']
-      );
+    if ( !( $view instanceof PacketIndexHtmlView
+      || $view instanceof PacketIndexJSONView )) {
 
       $model->packets = self::disambiguify( $model->packets );
 
