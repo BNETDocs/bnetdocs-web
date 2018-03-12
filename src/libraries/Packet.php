@@ -760,7 +760,7 @@ class Packet implements JsonSerializable {
       );
 
       if ( is_null( $this->user_id )) {
-        $stmt->bindParam( ':user_id', null, PDO::PARAM_NULL );
+        $stmt->bindParam( ':user_id', $this->user_id, PDO::PARAM_NULL );
       } else {
         $stmt->bindParam( ':user_id', $this->user_id, PDO::PARAM_INT );
       }
