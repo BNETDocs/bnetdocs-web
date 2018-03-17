@@ -196,6 +196,12 @@ function main() {
     $router->addRoute( // URL: /packet/search
       "#^/packet/search/?$#", "Packet\\Search", "Packet\\SearchHtml"
     );
+    $router->addRoute( // URL: /server/:id.json
+      "#^/server/(\d+)/?.*\.json$#", "Server\\View", "Server\\ViewJSON"
+    );
+    $router->addRoute( // URL: /server/:id.txt
+      "#^/server/(\d+)/?.*\.txt$#", "Server\\View", "Server\\ViewPlain"
+    );
     $router->addRoute( // URL: /server/:id
       "#^/server/(\d+)/?#", "Server\\View", "Server\\ViewHtml"
     );

@@ -18,24 +18,24 @@ use \DateTimeZone;
 
 class View extends Controller {
 
-  public function &run(Router &$router, ViewLib &$view, array &$args) {
+  public function &run( Router &$router, ViewLib &$view, array &$args ) {
 
     $model               = new ServerViewModel();
-    $model->server_id    = array_shift($args);
+    $model->server_id    = array_shift( $args );
 
     try {
-      $model->server      = new Server($model->server_id);
-      $model->server_type = new ServerType($model->server->getTypeId());
-    } catch (ServerNotFoundException $e) {
+      $model->server      = new Server( $model->server_id );
+      $model->server_type = new ServerType( $model->server->getTypeId() );
+    } catch ( ServerNotFoundException $e ) {
       $model->server = null;
-    } catch (ServerTypeNotFoundException $e) {
+    } catch ( ServerTypeNotFoundException $e ) {
       $model->server_type = null;
     }
 
-    $view->render($model);
+    $view->render( $model );
 
-    $model->_responseCode = ($model->server ? 200 : 404);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
+    $model->_responseCode = ( $model->server ? 200 : 404 );
+    $model->_responseHeaders['Content-Type'] = $view->getMimeType();
     $model->_responseTTL = 0;
 
     return $model;

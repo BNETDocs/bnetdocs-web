@@ -2,17 +2,20 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\Exceptions\ServerTypeNotFoundException;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Exceptions\ServerTypeNotFoundException;
+
 use \InvalidArgumentException;
+use \JsonSerializable;
 use \PDO;
 use \PDOException;
 use \StdClass;
 
-class ServerType {
+class ServerType implements JsonSerializable {
 
   protected $id;
   protected $label;
@@ -80,6 +83,13 @@ class ServerType {
 
   public function getLabel() {
     return $this->label;
+  }
+
+  public function jsonSerialize() {
+    return array(
+      'id'    => $this->id,
+      'label' => $this->label,
+    );
   }
 
   protected static function normalize(StdClass &$data) {
