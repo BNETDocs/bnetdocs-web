@@ -26,9 +26,12 @@ class ViewPlain extends View {
       return;
     }
 
-    $status = $model->server->getStatusBitmask();
-    $status = ( ( $status & Server::STATUS_ONLINE ) ? 'online' : 'offline' );
-    $status = ( ( $status & Server::STATUS_DISABLED ) ? 'disabled' : $status );
+    $status_i = $model->server->getStatusBitmask();
+    $status_s = (
+      ( $status_i & Server::STATUS_DISABLED ) ? 'disabled' : (
+        ( $status_i & Server::STATUS_ONLINE ) ? 'online' : 'offline'
+      )
+    );
 
     $updated = $model->server->getUpdatedDateTime();
     $updated = ( $updated ? ' '
@@ -45,7 +48,7 @@ class ViewPlain extends View {
     echo 'id ' . $model->server_id . PHP_EOL;
     echo 'label ' . $model->server->getLabel() . PHP_EOL;
     echo 'port ' . $model->server->getPort() . PHP_EOL;
-    echo 'status ' . $status . PHP_EOL;
+    echo 'status ' . $status_s . PHP_EOL;
     echo 'type ' . $model->server_type->getId() . ' '
       . $model->server_type->getLabel() . PHP_EOL;
     echo 'updated_datetime' . $updated . PHP_EOL;
