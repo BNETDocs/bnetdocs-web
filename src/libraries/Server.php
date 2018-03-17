@@ -207,7 +207,8 @@ class Server implements JsonSerializable {
       "status_bitmask"   => $this->getStatusBitmask(),
       "type_id"          => $this->getTypeId(),
       "updated_datetime" => $updated_datetime,
-      "user"             => $this->getUser()
+      "uri"              => $this->getURI(),
+      "user"             => $this->getUser(),
     ];
   }
 

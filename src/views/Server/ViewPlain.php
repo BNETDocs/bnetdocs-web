@@ -52,6 +52,7 @@ class ViewPlain extends View {
     echo 'type ' . $model->server_type->getId() . ' '
       . $model->server_type->getLabel() . PHP_EOL;
     echo 'updated_datetime' . $updated . PHP_EOL;
+    echo 'uri ' . $model->server->getURI() . PHP_EOL;
     echo 'user' . $user . PHP_EOL;
   }
 
