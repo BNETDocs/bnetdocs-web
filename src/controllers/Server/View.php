@@ -32,15 +32,6 @@ class View extends Controller {
       $model->server_type = null;
     }
 
-    if ($model->server) {
-      $model->server_uptime = ServerMetric::getUptime(
-        $model->server_id
-      );
-      $model->server_response_time = ServerMetric::getLatestResponseTime(
-        $model->server_id
-      );
-    }
-
     $view->render($model);
 
     $model->_responseCode = ($model->server ? 200 : 404);
