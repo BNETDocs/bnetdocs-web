@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Libraries\UserSession;
 use \BNETDocs\Models\User\ResetPassword as UserResetPasswordModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
