@@ -96,7 +96,8 @@ class Authentication {
     self::$key  = self::getUniqueKey( $user );
     self::$user = $user;
 
-    self::store( self::$key, self::getFingerprint( $user ));
+    $fingerprint = self::getFingerprint( $user );
+    self::store( self::$key, $fingerprint );
 
     return setcookie(
       self::COOKIE_NAME,   // name
