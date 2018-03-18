@@ -17,6 +17,7 @@ services:
 - mysql
 install:
 - pear channel-update pear.php.net
+- pecl install geoip-1.1.1
 - pear install http2
 before_script:
 - cp etc/config.sample.json etc/config.phoenix.json
