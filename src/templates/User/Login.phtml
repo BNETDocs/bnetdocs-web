@@ -51,29 +51,37 @@ require("./header.inc.phtml");
           <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
           <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
           <section>
-            <label for="email">Email address:</label><br/>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              value=""
-              tabindex="1"
-              required
-              autocomplete="email"
-              autofocus="autofocus"
-            />
-          </section>
-          <section>
-            <label for="password">Password:</label><br/>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              value=""
-              tabindex="2"
-            />
-          </section>
-          <section>
+            <table>
+              <thead></thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <label for="email">Email address:</label><br/>
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      value=""
+                      tabindex="1"
+                      required
+                      autocomplete="email"
+                      autofocus="autofocus"
+                    />
+                  </td><td>
+                    <label for="password">Password:</label><br/>
+                    <input
+                      type="password"
+                      name="password"
+                      id="password"
+                      value=""
+                      tabindex="2"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="color:rgba(128,128,128,0.8);">Session lifetime is 1 month.</p>
+            <hr/>
             <input
               type="submit"
               value="Log In"

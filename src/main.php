@@ -54,7 +54,7 @@ function main() {
   Logger::initialize();
 
   Session::initialize(
-    Common::$config->memcache->session_server_string, 'sid'
+    Common::$config->memcache->session_server_string, 'sid', Session::LOGIN_TTL
   );
 
   Common::$cache = new Cache(
