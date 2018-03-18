@@ -99,14 +99,18 @@ class Authentication {
     $fingerprint = self::getFingerprint( $user );
     self::store( self::$key, $fingerprint );
 
+    // 'domain' is an empty string to only allow this specific http host to
+    // authenticate, excluding any subdomains. If we were to specify our
+    // current http host, it would also include all subdomains.
+    // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
     return setcookie(
-      self::COOKIE_NAME,   // name
-      self::$key,          // value
-      time() + self::TTL,  // expire
-      '/',                 // path
-      getenv('HTTP_HOST'), // domain
-      true,                // secure
-      true                 // httponly
+      self::COOKIE_NAME,  // name
+      self::$key,         // value
+      time() + self::TTL, // expire
+      '/',                // path
+      '',                 // domain
+      true,               // secure
+      true                // httponly
     );
   }
 
@@ -122,14 +126,18 @@ class Authentication {
     self::$key  = '';
     self::$user = null;
 
+    // 'domain' is an empty string to only allow this specific http host to
+    // authenticate, excluding any subdomains. If we were to specify our
+    // current http host, it would also include all subdomains.
+    // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
     return setcookie(
-      self::COOKIE_NAME,   // name
-      '',                  // value
-      time(),              // expire
-      '/',                 // path
-      getenv('HTTP_HOST'), // domain
-      true,                // secure
-      true                 // httponly
+      self::COOKIE_NAME, // name
+      '',                // value
+      time(),            // expire
+      '/',               // path
+      '',                // domain
+      true,              // secure
+      true               // httponly
     );
   }
 
