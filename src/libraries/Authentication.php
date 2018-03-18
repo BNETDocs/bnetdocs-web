@@ -26,7 +26,9 @@ class Authentication {
 
   /**
    * __construct()
-   * This class is private so it cannot be instantiated.
+   * This class's constructor is private to prevent being instantiated.
+   * All functionality of this class is meant to be used as a global state
+   * rather than individual auth objects.
    */
   private function __construct() {}
 
