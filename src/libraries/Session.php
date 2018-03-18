@@ -8,7 +8,7 @@ use CarlBennett\MVC\Libraries\Session as BaseSession;
 class Session extends BaseSession  {
 
   const COOKIE_NAME = 'uid';
-  const LOGIN_TTL   = 86400; // 1 day
+  const LOGIN_TTL   = 2592000; // 1 month
 
   public static function checkLogin(Router &$router) {
     // Check if logged in by session but long-term cookie not set
