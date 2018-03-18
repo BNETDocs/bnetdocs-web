@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\Comment;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\EventTypes;
@@ -9,10 +10,12 @@ use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Comment\Delete as CommentDeleteModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \InvalidArgumentException;
 use \UnexpectedValueException;
 
@@ -29,9 +32,7 @@ class Delete extends Controller {
     $model->id           = (isset($data["id"]) ? $data["id"] : null);
     $model->parent_id    = null;
     $model->parent_type  = null;
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user         = Authentication::$user;
 
     try { $model->comment = new Comment($model->id); }
     catch (CommentNotFoundException $e) { $model->comment = null; }

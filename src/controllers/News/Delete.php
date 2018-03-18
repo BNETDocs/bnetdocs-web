@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\News;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
@@ -9,10 +10,12 @@ use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\News\Delete as NewsDeleteModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \InvalidArgumentException;
 
 class Delete extends Controller {
@@ -27,9 +30,7 @@ class Delete extends Controller {
     $model->id           = (isset($data["id"]) ? $data["id"] : null);
     $model->news_post    = null;
     $model->title        = null;
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user         = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_NEWS_DELETE

@@ -20,8 +20,8 @@
 
 namespace BNETDocs;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Session;
 use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Cache;
 use \CarlBennett\MVC\Libraries\Common;
@@ -53,10 +53,6 @@ function main() {
   // Common::$config because we may need access tokens from the config.
   Logger::initialize();
 
-  Session::initialize(
-    Common::$config->memcache->session_server_string, 'sid', Session::LOGIN_TTL
-  );
-
   Common::$cache = new Cache(
     Common::$config->memcache->servers,
     Common::$config->memcache->connect_timeout,
@@ -72,12 +68,12 @@ function main() {
   DatabaseDriver::$timeout       = Common::$config->mysql->timeout;
   DatabaseDriver::$username      = Common::$config->mysql->username;
 
+  Authentication::verify();
+
   $router = new Router(
     "BNETDocs\\Controllers\\",
     "BNETDocs\\Views\\"
   );
-
-  Session::checkLogin($router);
 
   if (Common::$config->bnetdocs->maintenance[0]) {
     $router->addRoute( // URL: *

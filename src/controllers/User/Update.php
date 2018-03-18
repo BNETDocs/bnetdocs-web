@@ -2,10 +2,12 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Update as UserUpdateModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
@@ -16,10 +18,7 @@ class Update extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $model = new UserUpdateModel();
 
-    $user_id = (isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null);
-    $user    = (!is_null($user_id) ? new User($user_id) : null);
-
-    if ( is_null( $user ) ) {
+    if ( !isset( Authentication::$user )) {
 
       $model->_responseCode = 401;
 
@@ -32,16 +31,16 @@ class Update extends Controller {
 
       // init model
 
-      $model->username           = $user->getUsername();
+      $model->username           = Authentication::$user->getUsername();
       $model->username_error     = [null, null];
       $model->username_max_len   =
         $conf->bnetdocs->user_register_requirements->username_length_max;
 
-      $model->email_1            = $user->getEmail();
+      $model->email_1            = Authentication::$user->getEmail();
       $model->email_2            = '';
       $model->email_error        = [null, null];
 
-      $model->display_name       = $user->getDisplayName();
+      $model->display_name       = Authentication::$user->getDisplayName();
       $model->display_name_error = [null, null];
 
       // process request
@@ -68,7 +67,7 @@ class Update extends Controller {
 
         // process input
 
-        if ($model->username !== $user->getUsername()) {
+        if ($model->username !== Authentication::$user->getUsername()) {
 
           // username change request
 
@@ -97,7 +96,7 @@ class Update extends Controller {
 
             // initiate username change
 
-            if (!$user->changeUsername( $model->username )) {
+            if (!Authentication::$user->changeUsername( $model->username )) {
               $model->username_error = ['red', 'CHANGE_FAILED'];
             } else {
               $model->username_error = ['green', 'CHANGE_SUCCESS'];
@@ -107,7 +106,7 @@ class Update extends Controller {
 
         }
 
-        if ($model->email_1 !== $user->getEmail()) {
+        if ($model->email_1 !== Authentication::$user->getEmail()) {
 
           // email change request
 
@@ -130,7 +129,7 @@ class Update extends Controller {
 
             // initiate email change
 
-            if (!$user->changeEmail( $model->email_2 )) {
+            if (!Authentication::$user->changeEmail( $model->email_2 )) {
               $model->email_error = ['red', 'CHANGE_FAILED'];
             } else {
               $model->email_error = ['green', 'CHANGE_SUCCESS'];
@@ -144,18 +143,20 @@ class Update extends Controller {
 
         if (empty($display_name) && !is_null($display_name)) {
           $display_name = null; // blank strings become typed null
-          $new_name = $user->getUsername();
+          $new_name = Authentication::$user->getUsername();
         } else {
           $new_name = $display_name;
         }
 
-        $display_name_diff = ($user->getDisplayName() !== $display_name);
+        $display_name_diff = (
+          Authentication::$user->getDisplayName() !== $display_name
+        );
 
         if ($display_name_diff) {
 
           // display name change request
 
-          if (!$user->changeDisplayName($display_name)) {
+          if (!Authentication::$user->changeDisplayName($display_name)) {
             $model->display_name_error = ['red', 'CHANGE_FAILED'];
           } else {
             $model->display_name_error = ['green', 'CHANGE_SUCCESS', $new_name];
@@ -165,13 +166,13 @@ class Update extends Controller {
 
         Logger::logEvent(
           EventTypes::USER_EDITED,
-          $user_id,
+          Authentication::$user->getId(),
           getenv('REMOTE_ADDR'),
           json_encode([
             'username_error'     => $model->username_error,
             'email_error'        => $model->email_error,
             'display_name_error' => $model->display_name_error,
-            'user_id'            => $user_id,
+            'user_id'            => Authentication::$user->getId(),
             'username'           => $model->username,
             'email_1'            => $model->email_1,
             'email_2'            => $model->email_2,

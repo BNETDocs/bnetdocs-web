@@ -2,12 +2,14 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Login as UserLoginModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
@@ -53,7 +55,7 @@ class Login extends Controller {
       return;
     }
     CSRF::invalidate($csrf_id);
-    if (isset($_SESSION['user_id'])) {
+    if ( isset( Authentication::$user )) {
       $model->error = "ALREADY_LOGGED_IN";
     } else if (empty($email)) {
       $model->error = "EMPTY_EMAIL";
@@ -78,7 +80,7 @@ class Login extends Controller {
     if ($model->error) return;
     $model->error        = false;
     $model->password     = '';
-    $_SESSION['user_id'] = $user->getId();
+    Authentication::login( $user );
     Logger::logEvent(
       EventTypes::USER_LOGIN,
       ($user ? $user->getId() : null),

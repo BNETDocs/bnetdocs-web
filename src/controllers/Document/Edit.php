@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\Document;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\EventTypes;
@@ -9,11 +10,13 @@ use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Document\Edit as DocumentEditModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -33,9 +36,7 @@ class Edit extends Controller {
     $model->markdown     = null;
     $model->published    = null;
     $model->title        = null;
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user         = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_DOCUMENT_MODIFY

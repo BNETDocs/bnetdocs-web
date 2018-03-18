@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\News;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
@@ -10,11 +11,13 @@ use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\News\Edit as NewsEditModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -37,9 +40,7 @@ class Edit extends Controller {
     $model->published       = null;
     $model->rss_exempt      = null;
     $model->title           = null;
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user            = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_NEWS_MODIFY

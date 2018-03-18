@@ -2,11 +2,13 @@
 
 namespace BNETDocs\Controllers\News;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\News\View as NewsViewModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
@@ -18,9 +20,7 @@ class View extends Controller {
 
     $model = new NewsViewModel();
     $model->news_post_id = array_shift($args);
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_NEWS_CREATE |

@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\Document;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\EventTypes;
@@ -9,10 +10,12 @@ use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Document\Delete as DocumentDeleteModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \InvalidArgumentException;
 
 class Delete extends Controller {
@@ -27,9 +30,7 @@ class Delete extends Controller {
     $model->error        = null;
     $model->id           = (isset($data["id"]) ? $data["id"] : null);
     $model->title        = null;
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user         = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_DOCUMENT_DELETE

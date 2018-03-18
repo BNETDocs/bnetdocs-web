@@ -2,15 +2,18 @@
 
 namespace BNETDocs\Controllers;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Pagination;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\News as NewsModel;
 use \BNETDocs\Views\NewsRSS as NewsRSSView;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \DateTime;
 use \DateTimeZone;
 use \OutOfBoundsException;
@@ -23,9 +26,7 @@ class News extends Controller {
 
     $model = new NewsModel();
 
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_NEWS_CREATE |

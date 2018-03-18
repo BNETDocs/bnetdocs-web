@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\News;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
@@ -10,6 +11,7 @@ use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\News\Create as NewsCreateModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
@@ -25,9 +27,7 @@ class Create extends Controller {
     $model->csrf_token      = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->error           = null;
     $model->news_categories = null;
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user            = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_NEWS_CREATE
@@ -101,12 +101,10 @@ class Create extends Controller {
     if ($rss_exempt) $options_bitmask |= NewsPost::OPTION_RSS_EXEMPT;
     if ($publish   ) $options_bitmask |= NewsPost::OPTION_PUBLISHED;
 
-    $user_id = $_SESSION['user_id'];
-
     try {
 
       $success = NewsPost::create(
-        $user_id, $category, $options_bitmask, $title, $content
+        $model->user->getId(), $category, $options_bitmask, $title, $content
       );
 
     } catch (QueryException $e) {
@@ -125,7 +123,7 @@ class Create extends Controller {
 
     Logger::logEvent(
       EventTypes::NEWS_CREATED,
-      $user_id,
+      $model->user->getId(),
       getenv("REMOTE_ADDR"),
       json_encode([
         "error"           => $model->error,

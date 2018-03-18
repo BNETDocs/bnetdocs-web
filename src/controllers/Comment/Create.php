@@ -2,16 +2,19 @@
 
 namespace BNETDocs\Controllers\Comment;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment as CommentLib;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Comment\Create as CreateModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \UnexpectedValueException;
 
 class Create extends Controller {
@@ -20,9 +23,7 @@ class Create extends Controller {
 
     $model = new CreateModel();
 
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_COMMENT_CREATE

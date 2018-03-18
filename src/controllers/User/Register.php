@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\QueryException;
@@ -11,6 +12,7 @@ use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Recaptcha;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Register as UserRegisterModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
@@ -53,7 +55,7 @@ class Register extends Controller {
     $data = $router->getRequestBodyArray();
     $model->email    = (isset($data["email"   ]) ? $data["email"   ] : null);
     $model->username = (isset($data["username"]) ? $data["username"] : null);
-    if (isset($_SESSION['user_id'])) {
+    if ( isset( Authentication::$user )) {
       $model->error = "ALREADY_LOGGED_IN";
       return;
     }

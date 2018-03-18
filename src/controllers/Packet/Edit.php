@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\Packet;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
@@ -9,11 +10,13 @@ use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Packet\Edit as PacketEditModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -35,9 +38,7 @@ class Edit extends Controller {
     $model->packet_id  = (isset($data["id"]) ? $data["id"] : null);
     $model->published  = null;
     $model->remarks    = null;
-    $model->user = (
-      isset($_SESSION['user_id']) ? new User($_SESSION['user_id']) : null
-    );
+    $model->user       = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_PACKET_MODIFY

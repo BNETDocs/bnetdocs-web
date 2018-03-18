@@ -2,11 +2,13 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\ChangePassword as UserChangePasswordModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
@@ -38,7 +40,7 @@ class ChangePassword extends Controller {
   protected function tryChangePassword(
     Router &$router, UserChangePasswordModel &$model
   ) {
-    if (!isset($_SESSION['user_id'])) {
+    if ( !isset( Authentication::$user )) {
       $model->error = "NOT_LOGGED_IN";
       return;
     }
@@ -58,22 +60,21 @@ class ChangePassword extends Controller {
       $model->error = "NONMATCHING_PASSWORD";
       return;
     }
-    $user = new User($_SESSION['user_id']);
-    if (!$user->checkPassword($pw1)) {
+    if ( !Authentication::$user->checkPassword( $pw1 )) {
       $model->error = "PASSWORD_INCORRECT";
       return;
     }
-    $old_password_hash = $user->getPasswordHash();
-    $old_password_salt = $user->getPasswordSalt();
+    $old_password_hash = Authentication::$user->getPasswordHash();
+    $old_password_salt = Authentication::$user->getPasswordSalt();
     try {
-      $success = $user->changePassword($pw2);
+      $success = Authentication::$user->changePassword($pw2);
     } catch (QueryException $e) {
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
     }
-    $new_password_hash = $user->getPasswordHash();
-    $new_password_salt = $user->getPasswordSalt();
+    $new_password_hash = Authentication::$user->getPasswordHash();
+    $new_password_salt = Authentication::$user->getPasswordSalt();
     if (!$success) {
       $model->error = "INTERNAL_ERROR";
     } else {
@@ -81,7 +82,7 @@ class ChangePassword extends Controller {
     }
     Logger::logEvent(
       EventTypes::USER_PASSWORD_CHANGE,
-      $_SESSION['user_id'],
+      Authentication::$user->getId(),
       getenv("REMOTE_ADDR"),
       json_encode([
         "error"             => $model->error,
