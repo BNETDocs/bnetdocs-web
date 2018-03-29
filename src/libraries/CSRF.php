@@ -6,7 +6,7 @@ use \CarlBennett\MVC\Libraries\Common;
 
 class CSRF {
 
-  const TTL = 300;
+  const TTL = 900; // 15 minutes
 
   private function __construct() {}
 
