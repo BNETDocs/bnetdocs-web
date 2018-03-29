@@ -350,6 +350,10 @@ pre > code {
   word-break: normal;
   word-wrap: normal;
 }
+pre > code.wrap {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
 pre > code:before,
 pre > code:after {
   content: initial;
