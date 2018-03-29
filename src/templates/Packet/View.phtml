@@ -59,7 +59,7 @@ $edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
 $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
                 & User::OPTION_ACL_PACKET_DELETE));
 
-$this->additional_css[] = "/a/packet.css";
+$this->additional_css[] = "/a/table-keypair.css";
 $this->additional_css[] = "/a/comments.css";
 if ($logged_in) $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");

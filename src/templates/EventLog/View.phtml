@@ -45,11 +45,18 @@ $tpl_user = (
   )
 );
 
+$tpl_metadata_j = @json_decode( $object_metadata );
 $tpl_metadata = (
-  is_null( $object_metadata ) ? '<em>(null)</em>' :
-  '<textarea rows="10" readonly="readonly">' . filter_var(
-    $object_metadata, FILTER_SANITIZE_FULL_SPECIAL_CHARS
-  ) . '</textarea>'
+  is_null( $object_metadata ) ? '<em>(null)</em>' : (
+    json_last_error() === JSON_ERROR_NONE ? (
+      '<pre><code>' . json_encode( $tpl_metadata_j, JSON_PRETTY_PRINT ) .
+      '</code></pre>'
+    ) : (
+      '<textarea rows="10" readonly="readonly">' . filter_var(
+        $object_metadata, FILTER_SANITIZE_FULL_SPECIAL_CHARS
+      ) . '</textarea>'
+    )
+  )
 );
 
 $tpl_referer = getenv( 'HTTP_REFERER' );
@@ -65,7 +72,7 @@ if ( stripos( $tpl_referer, '/eventlog/view?id=' . $object_id ) !== false ) {
   $tpl_referer = '';
 }
 
-$this->additional_css[] = '/a/forms.css';
+$this->additional_css[] = '/a/table-keypair.css';
 require('./header.inc.phtml');
 ?>
       <article>
@@ -85,7 +92,7 @@ require('./header.inc.phtml');
 <?php } else { ?>
         <header><?php echo $title; ?></header>
         <section>
-          <table>
+          <table class="info">
             <thead></thead><tbody>
               <tr><th class="right" style="width:100px;">Id</th><td><a href="<?php echo Common::relativeUrlToAbsolute('/eventlog/view?id=' . $object_id); ?>"><?php echo $object_id; ?></a></td></tr>
               <tr><th class="right">Event Type</th><td><?php echo $object->getEventTypeName(); ?></td></tr>
