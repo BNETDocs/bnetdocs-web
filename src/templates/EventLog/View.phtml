@@ -49,7 +49,8 @@ $tpl_metadata_j = @json_decode( $object_metadata );
 $tpl_metadata = (
   is_null( $object_metadata ) ? '<em>(null)</em>' : (
     json_last_error() === JSON_ERROR_NONE ? (
-      '<pre><code>' . json_encode( $tpl_metadata_j, JSON_PRETTY_PRINT ) .
+      '<pre><code class="wrap">' .
+      json_encode( $tpl_metadata_j, JSON_PRETTY_PRINT ) .
       '</code></pre>'
     ) : (
       '<textarea rows="10" readonly="readonly">' . filter_var(
