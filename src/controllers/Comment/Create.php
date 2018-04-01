@@ -69,12 +69,36 @@ class Create extends Controller {
       if ($p_type !== null) $p_type = (int) $p_type;
 
       switch ($p_type) {
-        case CommentLib::PARENT_TYPE_DOCUMENT:  $origin = "/document/"; break;
-        case CommentLib::PARENT_TYPE_COMMENT:   $origin = "/comment/";  break;
-        case CommentLib::PARENT_TYPE_NEWS_POST: $origin = "/news/";     break;
-        case CommentLib::PARENT_TYPE_PACKET:    $origin = "/packet/";   break;
-        case CommentLib::PARENT_TYPE_SERVER:    $origin = "/server/";   break;
-        case CommentLib::PARENT_TYPE_USER:      $origin = "/user/";     break;
+        case CommentLib::PARENT_TYPE_DOCUMENT: {
+          $log_event_type = EventTypes::COMMENT_CREATED_DOCUMENT;
+          $origin = "/document/";
+          break;
+        }
+        case CommentLib::PARENT_TYPE_COMMENT: {
+          $log_event_type = EventTypes::COMMENT_CREATED_COMMENT;
+          $origin = "/comment/";
+          break;
+        }
+        case CommentLib::PARENT_TYPE_NEWS_POST: {
+          $log_event_type = EventTypes::COMMENT_CREATED_NEWS;
+          $origin = "/news/";
+          break;
+        }
+        case CommentLib::PARENT_TYPE_PACKET: {
+          $log_event_type = EventTypes::COMMENT_CREATED_PACKET;
+          $origin = "/packet/";
+          break;
+        }
+        case CommentLib::PARENT_TYPE_SERVER: {
+          $log_event_type = EventTypes::COMMENT_CREATED_SERVER;
+          $origin = "/server/";
+          break;
+        }
+        case CommentLib::PARENT_TYPE_USER: {
+          $log_event_type = EventTypes::COMMENT_CREATED_USER;
+          $origin = "/user/";
+          break;
+        }
         default: throw new UnexpectedValueException("Parent type: " . $p_type);
       }
       $origin = Common::relativeUrlToAbsolute($origin . $p_id . "#comments");
@@ -99,7 +123,7 @@ class Create extends Controller {
     ];
 
     Logger::logEvent(
-      EventTypes::COMMENT_CREATED_NEWS, $model->user->getId(),
+      $log_event_type, $model->user->getId(),
       getenv("REMOTE_ADDR"), json_encode($model->response)
     );
 
