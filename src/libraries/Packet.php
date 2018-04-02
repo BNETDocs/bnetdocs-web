@@ -5,8 +5,10 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Libraries\Exceptions\PacketDirectionInvalidException;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\ITag;
 use \BNETDocs\Libraries\PacketApplicationLayer;
 use \BNETDocs\Libraries\PacketTransportLayer;
+use \BNETDocs\Libraries\TagRelationship;
 use \BNETDocs\Libraries\User;
 
 use \CarlBennett\MVC\Libraries\Common;
@@ -21,7 +23,7 @@ use \PDO;
 use \PDOException;
 use \StdClass;
 
-class Packet implements JsonSerializable {
+class Packet implements ITag, JsonSerializable {
 
   const CACHE_TTL = 300;
 
@@ -87,6 +89,12 @@ class Packet implements JsonSerializable {
       throw new InvalidArgumentException( 'Cannot use data argument' );
 
     }
+  }
+
+  public function addTag( $tag_id ) {
+    TagRelationship::add(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_PACKET
+    );
   }
 
   public static function &getAllPackets(
@@ -465,6 +473,12 @@ class Packet implements JsonSerializable {
     return $this->getCreatedDateTime();
   }
 
+  public function getTags() {
+    return TagRelationship::getObjectTags(
+      $this->id, TagRelationship::OBJECT_TYPE_PACKET
+    );
+  }
+
   public function getURI() {
     return Common::relativeUrlToAbsolute(
       '/packet/' . $this->getId() . '/' . Common::sanitizeForUrl(
@@ -665,6 +679,12 @@ class Packet implements JsonSerializable {
     }
 
     return false;
+  }
+
+  public function removeTag( $tag_id ) {
+    TagRelationship::remove(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_PACKET
+    );
   }
 
   public function setEditedCount( $value ) {

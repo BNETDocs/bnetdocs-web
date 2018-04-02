@@ -2,13 +2,17 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\ITag;
+use \BNETDocs\Libraries\TagRelationship;
 use \BNETDocs\Libraries\User;
+
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Markdown;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -16,7 +20,7 @@ use \PDO;
 use \PDOException;
 use \StdClass;
 
-class Document {
+class Document implements ITag {
 
   const OPTION_MARKDOWN  = 0x00000001;
   const OPTION_PUBLISHED = 0x00000002;
@@ -54,6 +58,12 @@ class Document {
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
     }
+  }
+
+  public function addTag( $tag_id ) {
+    TagRelationship::add(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_DOCUMENT
+    );
   }
 
   public static function create(
@@ -252,6 +262,12 @@ class Document {
     }
   }
 
+  public function getTags() {
+    return TagRelationship::getObjectTags(
+      $this->id, TagRelationship::OBJECT_TYPE_DOCUMENT
+    );
+  }
+
   public function getTitle() {
     return $this->title;
   }
@@ -345,6 +361,12 @@ class Document {
       throw new QueryException("Cannot refresh document", $e);
     }
     return false;
+  }
+
+  public function removeTag( $tag_id ) {
+    TagRelationship::remove(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_DOCUMENT
+    );
   }
 
   public function save() {

@@ -2,11 +2,15 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\Exceptions\ServerNotFoundException;
+use \BNETDocs\Libraries\ITag;
+use \BNETDocs\Libraries\TagRelationship;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Exceptions\ServerNotFoundException;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -15,7 +19,7 @@ use \PDO;
 use \PDOException;
 use \StdClass;
 
-class Server implements JsonSerializable {
+class Server implements ITag, JsonSerializable {
 
   const STATUS_ONLINE   = 0x00000001;
   const STATUS_DISABLED = 0x00000002;
@@ -56,6 +60,12 @@ class Server implements JsonSerializable {
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
     }
+  }
+
+  public function addTag( $tag_id ) {
+    TagRelationship::add(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_SERVER
+    );
   }
 
   public function getAddress() {
@@ -149,6 +159,12 @@ class Server implements JsonSerializable {
 
   public function getStatusBitmask() {
     return $this->status_bitmask;
+  }
+
+  public function getTags() {
+    return TagRelationship::getObjectTags(
+      $this->id, TagRelationship::OBJECT_TYPE_SERVER
+    );
   }
 
   public function getTypeId() {
@@ -289,6 +305,12 @@ class Server implements JsonSerializable {
       throw new QueryException("Cannot refresh server", $e);
     }
     return false;
+  }
+
+  public function removeTag( $tag_id ) {
+    TagRelationship::remove(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_SERVER
+    );
   }
 
 }

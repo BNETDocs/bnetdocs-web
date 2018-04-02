@@ -5,10 +5,14 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \BNETDocs\Libraries\ITag;
+use \BNETDocs\Libraries\TagRelationship;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Gravatar;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -17,7 +21,7 @@ use \PDO;
 use \PDOException;
 use \StdClass;
 
-class User implements JsonSerializable {
+class User implements ITag, JsonSerializable {
 
   const DEFAULT_OPTION              = 0x00000020;
 
@@ -84,6 +88,12 @@ class User implements JsonSerializable {
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
     }
+  }
+
+  public function addTag( $tag_id ) {
+    TagRelationship::add(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_USER
+    );
   }
 
   public function changeDisplayName($new_display_name) {
@@ -453,6 +463,16 @@ class User implements JsonSerializable {
     return $this->password_salt;
   }
 
+  public function getTags() {
+    return TagRelationship::getObjectTags(
+      $this->id, TagRelationship::OBJECT_TYPE_USER
+    );
+  }
+
+  public function getTimezone() {
+    return $this->timezone;
+  }
+
   public function getURI() {
     return Common::relativeUrlToAbsolute(
       "/user/" . $this->getId() . "/" . Common::sanitizeForUrl(
@@ -479,10 +499,6 @@ class User implements JsonSerializable {
       throw new QueryException('Cannot query user count', $e);
     }
     return null;
-  }
-
-  public function getTimezone() {
-    return $this->timezone;
   }
 
   public function getUsername() {
@@ -640,6 +656,12 @@ class User implements JsonSerializable {
       throw new QueryException("Cannot refresh user", $e);
     }
     return false;
+  }
+
+  public function removeTag( $tag_id ) {
+    TagRelationship::remove(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_USER
+    );
   }
 
   public function setAcl($acl, $value) {

@@ -2,13 +2,17 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\ITag;
+use \BNETDocs\Libraries\TagRelationship;
 use \BNETDocs\Libraries\User;
+
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Markdown;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -17,7 +21,7 @@ use \PDO;
 use \PDOException;
 use \StdClass;
 
-class Comment implements JsonSerializable {
+class Comment implements ITag, JsonSerializable {
 
   const PARENT_TYPE_DOCUMENT  = 0;
   const PARENT_TYPE_COMMENT   = 1;
@@ -59,6 +63,12 @@ class Comment implements JsonSerializable {
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
     }
+  }
+
+  public function addTag( $tag_id ) {
+    TagRelationship::add(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_COMMENT
+    );
   }
 
   public static function create($parent_type, $parent_id, $user_id, $content) {
@@ -218,6 +228,12 @@ class Comment implements JsonSerializable {
     return $this->parent_type;
   }
 
+  public function getTags() {
+    return TagRelationship::getObjectTags(
+      $this->id, TagRelationship::OBJECT_TYPE_COMMENT
+    );
+  }
+
   public function getUser() {
     if (is_null($this->user_id)) return null;
     return new User($this->user_id);
@@ -321,6 +337,12 @@ class Comment implements JsonSerializable {
       throw new QueryException("Cannot refresh comment", $e);
     }
     return false;
+  }
+
+  public function removeTag( $tag_id ) {
+    TagRelationship::remove(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_COMMENT
+    );
   }
 
 }

@@ -27,3 +27,4 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | 20         | `ProductNotFoundException`                | Product not found                                    |
 | 21         | `CommentNotFoundException`                | Comment not found                                    |
 | 22         | `EventNotFoundException`                  | Event not found                                      |
+| 23         | `TagNotFoundException`                    | Tag not found                                        |

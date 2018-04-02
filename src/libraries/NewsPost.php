@@ -5,12 +5,16 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\ITag;
 use \BNETDocs\Libraries\NewsCategory;
+use \BNETDocs\Libraries\TagRelationship;
 use \BNETDocs\Libraries\User;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Markdown;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -18,7 +22,7 @@ use \PDO;
 use \PDOException;
 use \StdClass;
 
-class NewsPost {
+class NewsPost implements ITag {
 
   const OPTION_MARKDOWN   = 0x00000001;
   const OPTION_PUBLISHED  = 0x00000002;
@@ -60,6 +64,12 @@ class NewsPost {
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
     }
+  }
+
+  public function addTag( $tag_id ) {
+    TagRelationship::add(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_NEWS_POST
+    );
   }
 
   public static function create(
@@ -301,6 +311,12 @@ class NewsPost {
     );
   }
 
+  public function getTags() {
+    return TagRelationship::getObjectTags(
+      $this->id, TagRelationship::OBJECT_TYPE_NEWS_POST
+    );
+  }
+
   public function getUser() {
     if (is_null($this->user_id)) return null;
     return new User($this->user_id);
@@ -385,6 +401,12 @@ class NewsPost {
       throw new QueryException("Cannot refresh news post", $e);
     }
     return false;
+  }
+
+  public function removeTag( $tag_id ) {
+    TagRelationship::remove(
+      $tag_id, $this->id, TagRelationship::OBJECT_TYPE_NEWS_POST
+    );
   }
 
   public function save() {
