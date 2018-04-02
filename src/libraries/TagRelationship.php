@@ -97,7 +97,7 @@ class TagRelationship {
       (int) $object_type . '-' . (int) $object_id;
     $cache_val = Common::$cache->get( $cache_key );
 
-    if ( $cache_val !== false ) {
+    if ( $cache_val !== false && !empty( $cache_val )) {
       $ids = explode( ',', $cache_val );
       foreach ( $ids as $tag_id ) {
         $tags[] = new Tag( $tag_id );
@@ -119,11 +119,13 @@ class TagRelationship {
       $stmt->bindParam( ':object_type', $object_type, PDO::PARAM_INT );
       $stmt->bindParam( ':object_id', $object_id, PDO::PARAM_INT );
 
+      $stmt->execute();
+
       $ids = array();
 
       while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
-        $ids[] = (int) $row['tag_id'];
-        $tags[] = new Tag( (int) $row['tag_id'] );
+        $ids[] = (int) $row->tag_id;
+        $tags[] = new Tag( (int) $row->tag_id );
       }
 
       $stmt->closeCursor();

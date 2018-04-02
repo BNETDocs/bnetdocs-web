@@ -23,7 +23,7 @@ class Tag {
   protected $name;
 
   public function __construct( $data ) {
-    if ( is_numeric( $id )) {
+    if ( is_numeric( $data )) {
       $this->id = (int) $data;
       $this->refresh();
     } else if ( $data instanceof StdClass ) {
