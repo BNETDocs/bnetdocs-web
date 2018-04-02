@@ -48,6 +48,8 @@ class View extends Controller {
       $model->news_post = null;
     }
 
+    $model->tags = $model->news_post->getTags();
+
     // Don't show unpublished news posts to non-staff
     if ($model->news_post
       && !($model->news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)

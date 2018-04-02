@@ -37,6 +37,8 @@ if ($object) {
   $user_url    = $object->getUser()->getURI();
   $user_avatar = $object->getUser()->getAvatarURI(22);
 
+  $tags = $this->getContext()->tags;
+
 }
 
 $this->opengraph->attach(new Pair("url", $url));
@@ -48,6 +50,7 @@ $edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
 $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
                 & User::OPTION_ACL_DOCUMENT_DELETE));
 
+$this->additional_css[] = "/a/tags.css";
 $this->additional_css[] = "/a/comments.css";
 if ($logged_in) $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
@@ -67,6 +70,16 @@ require("./header.inc.phtml");
         <section>
 <?php echo $object->getContent(true); ?>
         </section>
+<?php if (!empty($tags)) { ?>
+        <section class="tags">
+          <hr/><strong>Tags:</strong>
+          <ul>
+<?php foreach ($tags as $tag_object) { ?>
+            <li><?php echo $tag_object->getName(); ?></li>
+<?php } ?>
+          </ul>
+        </section>
+<?php } ?>
         <footer>
 <?php if ($object->getEditedDateTime() !== null) { ?>
           <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<?php echo $object->getEditedDateTime()->format('c'); ?>"><?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>

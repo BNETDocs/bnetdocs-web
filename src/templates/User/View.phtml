@@ -29,10 +29,13 @@ if ($object) {
   if ($this->getContext()->biography) $description = $this->getContext()->biography;
   $safe_biography = htmlspecialchars($this->getContext()->biography, ENT_HTML5, "UTF-8");
 
+  $tags = $this->getContext()->tags;
+
 }
 
 $this->opengraph->attach(new Pair("url", $url));
 
+$this->additional_css[] = "/a/tags.css";
 $this->additional_css[] = "/a/userprofile.css";
 require("./header.inc.phtml");
 ?>
@@ -77,6 +80,16 @@ require("./header.inc.phtml");
 <?php if ($this->getContext()->website) { ?>
           <span><strong>Website:</strong> <a href="<?php echo $this->getContext()->website_uri; ?>"><?php echo htmlspecialchars($this->getContext()->website, ENT_HTML5, "UTF-8"); ?></a></span>
 <?php } ?>
+        </section>
+<?php } ?>
+<?php if (!empty($tags)) { ?>
+        <section class="tags">
+          <hr/><strong>Tags:</strong>
+          <ul>
+<?php foreach ($tags as $tag_object) { ?>
+            <li><?php echo $tag_object->getName(); ?></li>
+<?php } ?>
+          </ul>
         </section>
 <?php } ?>
         <header>User Statistics</header>

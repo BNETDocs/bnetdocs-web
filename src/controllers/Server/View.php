@@ -32,6 +32,10 @@ class View extends Controller {
       $model->server_type = null;
     }
 
+    if ( $model->server ) {
+      $model->tags = $model->server->getTags();
+    }
+
     $view->render( $model );
 
     $model->_responseCode = ( $model->server ? 200 : 404 );

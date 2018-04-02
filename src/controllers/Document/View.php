@@ -31,6 +31,7 @@ class View extends Controller {
         Comment::PARENT_TYPE_DOCUMENT,
         $model->document_id
       );
+      $model->tags = $model->document->getTags();
     }
 
     $view->render($model);

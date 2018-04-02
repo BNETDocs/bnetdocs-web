@@ -10,6 +10,7 @@ class View extends Model {
   public $comments;
   public $news_post;
   public $news_post_id;
+  public $tags;
   public $user;
 
 }

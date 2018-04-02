@@ -47,6 +47,9 @@ class View extends Controller {
       return;
     }
 
+    // Get any associated tags
+    $model->tags = $model->user->getTags();
+
     // Try to get their user profile
     try {
 

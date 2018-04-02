@@ -53,9 +53,12 @@ if ($object) {
   $user_name   = $user->getName();
   $user_url    = $user->getURI();
   $user_avatar = $user->getAvatarURI(22);
+
+  $tags = $this->getContext()->tags;
 }
 
 $this->additional_css[] = "/a/news.css";
+$this->additional_css[] = "/a/tags.css";
 $this->additional_css[] = "/a/comments.css";
 if ($logged_in) $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
@@ -76,6 +79,16 @@ require("./header.inc.phtml");
         <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
 <?php } ?>
         <section class="news"><img class="category" alt="<?php echo $object->getCategory()->getLabel(); ?>" title="<?php echo $object->getCategory()->getLabel(); ?>" src="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/" . $object->getCategory()->getFilename()); ?>"/><?php echo $object->getContent(true); ?></section>
+<?php if (!empty($tags)) { ?>
+        <section class="tags">
+          <hr/><strong>Tags:</strong>
+          <ul>
+<?php foreach ($tags as $tag_object) { ?>
+            <li><?php echo $tag_object->getName(); ?></li>
+<?php } ?>
+          </ul>
+        </section>
+<?php } ?>
         <footer>
 <?php if ($object->getEditedDateTime() !== null) { ?>
           <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<?php echo $object->getEditedDateTime()->format('c'); ?>"><?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>

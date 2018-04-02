@@ -1,0 +1,32 @@
+/**
+ *  BNETDocs, the documentation and discussion website for Blizzard protocols
+ *  Copyright (C) 2003-2018  "Arta", Don Cullen "Kyro", Carl Bennett, others
+ *  This file is part of BNETDocs.
+ *
+ *  BNETDocs is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  BNETDocs is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with BNETDocs.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+section.tags {
+  font-size: small;
+}
+section.tags ul {
+  display: inline-block;
+  list-style-type: none;
+  margin: 0px;
+  padding: 0px;
+}
+section.tags ul li {
+  display: inline-block;
+  padding-left: 8px;
+}

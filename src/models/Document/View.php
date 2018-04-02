@@ -10,5 +10,6 @@ class View extends Model {
   public $comments;
   public $document;
   public $document_id;
+  public $tags;
 
 }

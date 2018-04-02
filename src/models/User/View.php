@@ -29,6 +29,7 @@ class View extends Model {
   public $sum_news_posts;
   public $sum_packets;
   public $sum_servers;
+  public $tags;
   public $twitter;
   public $twitter_uri;
   public $user;

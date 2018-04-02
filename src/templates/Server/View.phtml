@@ -37,11 +37,14 @@ if ($object) {
     $object_status .= ", <span class=\"disabled\">Disabled</span>";
   }
 
+  $tags = $this->getContext()->tags;
+
 }
 
 $this->opengraph->attach(new Pair("url", $url));
 
 $this->additional_css[] = "/a/servers.css";
+$this->additional_css[] = "/a/tags.css";
 require("./header.inc.phtml");
 ?>
       <article>
@@ -61,6 +64,16 @@ require("./header.inc.phtml");
           <hr/>
           <p style="font-size:smaller;text-align:center;"><a href="<?php echo Common::relativeUrlToAbsolute( $url . '.json' ); ?>">JSON</a> | <a href="<?php echo Common::relativeUrlToAbsolute( $url . '.txt' ); ?>">TXT</a></p>
         </section>
+<?php if (!empty($tags)) { ?>
+        <section class="tags">
+          <hr/><strong>Tags:</strong>
+          <ul>
+<?php foreach ($tags as $tag_object) { ?>
+            <li><?php echo $tag_object->getName(); ?></li>
+<?php } ?>
+          </ul>
+        </section>
+<?php } ?>
 <?php } else { ?>
         <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></header>
         <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></section>

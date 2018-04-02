@@ -22,9 +22,9 @@ class View extends Controller {
     $model->packet_id = array_shift($args);
 
     try {
-      $model->packet  = new Packet($model->packet_id);
+      $model->packet = new Packet($model->packet_id);
     } catch (PacketNotFoundException $e) {
-      $model->packet  = null;
+      $model->packet = null;
     }
 
     if ($model->packet) {
@@ -32,6 +32,7 @@ class View extends Controller {
         Comment::PARENT_TYPE_PACKET,
         $model->packet_id
       );
+      $model->tags = $model->packet->getTags();
       $model->used_by = $this->getUsedBy($model->packet);
     } else {
       $model->used_by = null;
