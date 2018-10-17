@@ -56,11 +56,12 @@ class Status extends Controller {
 
     $utc = new DateTimeZone( 'Etc/UTC' );
 
-    $status->healthcheck    = $healthcheck;
-    $status->remote_address = getenv( 'REMOTE_ADDR' );
-    $status->remote_geoinfo = GeoIP::get( $status->remote_address );
-    $status->timestamp      = new DateTime( 'now', $utc );
-    $status->version_info   = VersionInfo::$version;
+    $status->healthcheck       = $healthcheck;
+    $status->remote_address    = getenv( 'REMOTE_ADDR' );
+    $status->remote_geoinfo    = GeoIP::get( $status->remote_address );
+    $status->remote_user_agent = getenv( 'HTTP_USER_AGENT' );
+    $status->timestamp         = new DateTime( 'now', $utc );
+    $status->version_info      = VersionInfo::$version;
 
     $model->status = $status;
 
