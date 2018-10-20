@@ -78,7 +78,7 @@ The following software will need to be installed to run this project:
 * [Remi's PHP 7.2 repository](https://blog.remirepo.net/post/2017/12/04/Install-PHP-7.2-on-CentOS-RHEL-or-Fedora)
 * [MariaDB](https://mariadb.com/kb/en/library/yum/)
 * [Composer](https://getcomposer.org/)
-* Memcached
+* [Memcached](https://memcached.org/)
 
 PHP should be capable of retrieving geoip information, generating gmp values,
 encoding and decoding json, accessing mysql with PDO, and able to manage a
