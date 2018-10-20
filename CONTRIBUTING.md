@@ -64,6 +64,10 @@ that is capable of running **CentOS 7 x86\_64**.
 
 * [VirtualBox](https://www.virtualbox.org/)
 
+A compute server provider may be used instead if preferred, and typically will
+have their own CentOS 7 image for use, which would allow the next step of
+grabbing the CentOS 7 iso image and installing it manually to be skipped.
+
 ### OS
 Using the virtualization software, create a virtual machine instance using the
 latest CentOS 7 x86\_64 iso image available for download
