@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\DateTime;
 use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Status as StatusModel;
 use \CarlBennett\MVC\Libraries\Cache;
@@ -10,6 +9,7 @@ use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
+use \CarlBennett\MVC\Libraries\DateTime;
 use \CarlBennett\MVC\Libraries\GeoIP;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
