@@ -92,8 +92,8 @@ Configure these such that nginx is a fastcgi proxy to php-fpm. You'll then run
 You should point nginx/php-fpm at the `/main.php` file for all requests.
 
 MariaDB should be configured with the `TRADITIONAL,NO_AUTO_VALUE_ON_ZERO` modes.
-A sample configuration can be found `etc/mysql-server.sample.cnf`. MariaDB data
-can be seeded by importing the contents of: `/etc/database.sample.sql`
+A sample configuration can be found at `etc/mysql-server.sample.cnf`. MariaDB
+data can be seeded by importing the contents of: `/etc/database.sample.sql`
 
 Memcached does not require extra configuration from its package defaults, but
 a sample configuration is available at `etc/memcached.sample.conf`. Memcached
