@@ -91,9 +91,15 @@ Configure these such that nginx is a fastcgi proxy to php-fpm. You'll then run
 
 You should point nginx/php-fpm at the `/main.php` file for all requests.
 
-MariaDB can be seeded by importing the contents of: `/etc/database.sample.sql`
+MariaDB should be configured with the `TRADITIONAL,NO_AUTO_VALUE_ON_ZERO` modes.
+A sample configuration can be found `etc/mysql-server.sample.cnf`. MariaDB data
+can be seeded by importing the contents of: `/etc/database.sample.sql`
 
-Memcached memory could be increased in: `/etc/sysconfig/memcached`
+Memcached does not require extra configuration from its package defaults, but
+a sample configuration is available at `etc/memcached.sample.conf`. Memcached
+settings typically are saved to `/etc/sysconfig/memcached` and increasing the
+memory Memcached can use is typically recommended but not required for a
+development environment.
 
 The PHP date timezone should be in UTC, though the code will configure PHP for
 this on its own.
