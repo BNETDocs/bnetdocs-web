@@ -46,7 +46,6 @@ if (is_null($news_posts) || empty($news_posts)) {
     if (!isset($users[$user_id])) $users[$user_id] = new User($user_id);
     $avatar = $users[$user_id]->getAvatarURI(22); ?>
       <article>
-        <a href="https://plus.google.com/share?url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-gplus-24px.png"); ?>"/></a>
         <a href="https://twitter.com/share?text=<?php echo urlencode($news_post->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
 <?php if ($edit_visible) { ?>
