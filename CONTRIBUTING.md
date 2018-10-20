@@ -95,6 +95,9 @@ MariaDB can be seeded by importing the contents of: `/etc/database.sample.sql`
 
 Memcached memory could be increased in: `/etc/sysconfig/memcached`
 
-The PHP date timezone should be in UTC.
+The PHP date timezone should be in UTC, though the code will configure PHP for
+this on its own.
 
-### 
+The `etc/config.sample.json` should be copied to `etc/config.phoenix.json` and
+modified for your environment settings. It will need at the very least the
+settings for MariaDB and Memcached.
