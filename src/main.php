@@ -39,7 +39,7 @@ function main() {
 
   GlobalErrorHandler::createOverrides();
 
-  date_default_timezone_set('UTC');
+  date_default_timezone_set('Etc/UTC');
 
   Common::$config = json_decode(file_get_contents(
     __DIR__ . "/../etc/config.phoenix.json"
