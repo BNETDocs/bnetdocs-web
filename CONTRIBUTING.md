@@ -66,7 +66,9 @@ that is capable of running **CentOS 7 x86\_64**.
 
 ### OS
 Using the virtualization software, create a virtual machine instance using the
-latest CentOS 7 x86\_64 iso image, and install the minimal operating system.
+latest CentOS 7 x86\_64 iso image available for download
+[here](https://www.centos.org/download/), and install the minimal operating
+system.
 
 Details of the OS install are not important at this point in time, tune the OS
 however is preferred.
