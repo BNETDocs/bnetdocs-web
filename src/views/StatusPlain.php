@@ -3,7 +3,7 @@
 namespace BNETDocs\Views;
 
 use \BNETDocs\Models\Status as StatusModel;
-use \BNETDocs\Libraries\ArrayFlattener;
+use \CarlBennett\MVC\Libraries\ArrayFlattener;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\View;

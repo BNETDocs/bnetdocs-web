@@ -2,10 +2,10 @@
 
 namespace BNETDocs\Views\Server;
 
-use \BNETDocs\Libraries\ArrayFlattener;
 use \BNETDocs\Libraries\Server;
 use \BNETDocs\Models\Server\View as ServerViewModel;
 
+use \CarlBennett\MVC\Libraries\ArrayFlattener;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\View;
