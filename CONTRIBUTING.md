@@ -83,21 +83,24 @@ The following software will need to be installed to run this project:
 PHP should be capable of retrieving geoip information, generating gmp values,
 encoding and decoding json, accessing mysql with PDO, and able to manage a
 Memcached store. Aside from that, it also needs the pecl http library. The full
-list of required extensions is in the `/composer.json` file in the root of this
-repository.
+list of required extensions is in the [composer.json](./composer.json) file.
 
 ### Configuring
 Configure nginx so that it is a fastcgi proxy to php-fpm. You will then run
 `composer install` to get additional vendor files required for this project.
 
-Nginx should be pointed at the `/main.php` file for all requests.
+Nginx should be pointed at the [src/main.php](./src/main.php) file for all
+requests.
 
 MariaDB should be configured with the `TRADITIONAL,NO_AUTO_VALUE_ON_ZERO` modes.
-A sample configuration can be found at `etc/mysql-server.sample.cnf`. MariaDB
-data can be seeded by importing the contents of `/etc/database.sample.sql`.
+A sample configuration can be found at
+[etc/mysql-server.sample.cnf](./etc/mysql-server.sample.cnf). MariaDB data can
+be seeded by importing the contents of
+[etc/database.sample.sql](./etc/database.sample.sql).
 
 Memcached does not require extra configuration from its package defaults, but
-a sample configuration is available at `etc/memcached.sample.conf`. Memcached
+a sample configuration is available at
+[etc/memcached.sample.conf](./etc/memcached.sample.conf). Memcached
 settings typically are saved to `/etc/sysconfig/memcached` and increasing the
 memory Memcached can use is typically recommended but not required for a
 development environment.
@@ -105,6 +108,7 @@ development environment.
 The PHP date timezone should be in UTC, though the code will configure PHP for
 this on its own.
 
-The `etc/config.sample.json` should be copied to `etc/config.phoenix.json` and
+The [etc/config.sample.json](./etc/config.sample.json) should be copied to
+[etc/config.phoenix.json](./etc/config.phoenix.json) and
 modified for the environment settings. It will need at the very least the
 settings for MariaDB and Memcached.
