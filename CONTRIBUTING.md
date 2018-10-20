@@ -111,6 +111,5 @@ The PHP date timezone should be in UTC, though the code will configure PHP for
 this on its own.
 
 The [etc/config.sample.json](./etc/config.sample.json) should be copied to
-[etc/config.phoenix.json](./etc/config.phoenix.json) and
-modified for the environment settings. It will need at the very least the
-settings for MariaDB and Memcached.
+`etc/config.phoenix.json` and modified for the environment settings. It will
+need at the very least the settings for MariaDB and Memcached.
