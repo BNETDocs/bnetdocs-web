@@ -341,6 +341,16 @@ class User implements JsonSerializable {
     return ($this->options_bitmask & $acl);
   }
 
+  public static function findUserById($user_id) {
+    if (is_null($user_id)) return null;
+    
+    try {
+      return new User($user_id);
+    } catch (UserNotFoundException $e) {
+      return null;
+    }
+  }
+  
   public static function &getAllUsers(
     $order = null, $limit = null, $index = null
   ) {

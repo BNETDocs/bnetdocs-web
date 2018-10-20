@@ -265,8 +265,7 @@ class Document {
   }
 
   public function getUser() {
-    if (is_null($this->user_id)) return null;
-    return new User($this->user_id);
+    return User::findUserById($this->user_id);
   }
 
   public function getUserId() {

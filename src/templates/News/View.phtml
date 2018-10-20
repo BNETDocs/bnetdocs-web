@@ -85,44 +85,12 @@ require("./header.inc.phtml");
         </footer>
       </article>
       <article>
-        <header><a name="comments">Comments</a></header>
-        <section>
-<?php if (!$comments) { ?>
-          <p class="center"><em>no one has commented yet.</em></p>
-<?php } else {
-$c_edit_visible_master   = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
-$c_delete_visible_master = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
-?>
-          <table class="comments"><tbody>
-<?php foreach ($comments as $c) {
-        $c_id          = $c->getId();
-        $c_user        = $c->getUser();
-        $c_user_name   = $c_user->getName();
-        $c_user_id     = $c->getUserId();
-        $c_user_url    = $c_user->getURI();
-        $c_user_avatar = $c_user->getAvatarURI(22);
+<?php
 
-        $c_edit_visible = ($c_user_id == $logged_in_id || $c_edit_visible_master);
-        $c_delete_visible = ($c_user_id == $logged_in_id || $c_delete_visible_master);
-?>
-            <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time><?php if ($c_delete_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/delete?id=" . urlencode($c_id)); ?>">Delete</a><?php } if ($c_edit_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/edit?id=" . urlencode($c_id)); ?>">Edit</a><?php } ?></td><td><?php echo $c->getContent(true); ?></td></tr>
-<?php } ?>
-          </tbody></table>
-<?php } ?>
-        </section>
-<?php if ($logged_in) { ?>
-        <section>
-          <hr/>
-          <form method="POST" action="<?php echo Common::relativeUrlToAbsolute("/comment/create"); ?>">
-            <input type="hidden" name="parent_type" value="<?php echo Comment::PARENT_TYPE_NEWS_POST; ?>"/>
-            <input type="hidden" name="parent_id" value="<?php echo $object_id; ?>"/>
-            <p class="center"><label for="comment-content">Comment on this post:</label></p>
-            <p class="center"><textarea id="comment-content" name="content" cols="80" rows="5"></textarea></p>
-            <p class="center"><input type="submit" value="Comment"/></p>
-          </form>
-        </section>
-<?php } ?>
-<?php } else { ?>
+$comment_parent_type = Comment::PARENT_TYPE_NEWS_POST;
+require("./Comment/Section.inc.phtml");
+
+      } else { ?>
         <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
         <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
 <?php } ?>
