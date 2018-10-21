@@ -702,6 +702,49 @@ class Packet implements JsonSerializable {
       $this->options_bitmask &= ~self::OPTION_PUBLISHED;
     }
   }
+  
+  public function setUsedBy( $value ) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      Common::$database->beginTransaction();
+      $stmt = Common::$database->prepare('
+        DELETE FROM `packet_used_by`
+        WHERE `id` = :id;
+      ');
+      $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException('Cannot update packet used by');
+      }
+      if ($value !== null && count($value) > 0) {
+        $insert = [];
+        $placeholders = [];
+        foreach ($value as $v) {
+          array_push($insert, $this->id, (int)$v);
+          $placeholders[] = '(?, ?)';
+        }
+        $stmt = Common::$database->prepare('
+          INSERT INTO `packet_used_by`
+            (`id`, `bnet_product_id`)
+          VALUES
+            ' . implode(', ', $placeholders) . '; 
+        ');
+        if (!$stmt->execute($insert)) {
+          Common::$database->rollBack();
+          throw new QueryException('Cannot update packet used by');
+        }
+      }
+
+      Common::$database->commit();
+
+      $cache_key = 'bnetdocs-packetusedby-' . $this->id;
+      Common::$cache->set($cache_key, serialize($value), self::CACHE_TTL);
+    } catch (PDOException $e) {
+      Common::$database->rollBack();
+      throw new QueryException('Cannot update packet used by', $e);
+    }
+  }
 
   public function update() {
     if (!isset(Common::$database)) {

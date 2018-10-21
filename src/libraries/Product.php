@@ -90,6 +90,16 @@ class Product {
     return null;
   }
 
+  public static function getProductsFromIds($product_ids) {
+    $products = [];
+    if ($product_ids !== null) {
+      foreach ($product_ids as $bnet_product_id) {
+        $products[] = new Product($bnet_product_id);
+      }
+    }
+    return $products;
+  }
+
   public function getBnetProductId() {
     return $this->bnet_product_id;
   }

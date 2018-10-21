@@ -19,5 +19,6 @@ class Edit extends Model {
   public $published;
   public $remarks;
   public $user;
+  public $used_by;
 
 }

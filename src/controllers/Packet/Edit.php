@@ -9,6 +9,7 @@ use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\User;
+use \BNETDocs\Libraries\Product;
 use \BNETDocs\Models\Packet\Edit as PacketEditModel;
 
 use \CarlBennett\MVC\Libraries\Common;
@@ -39,6 +40,7 @@ class Edit extends Controller {
     $model->published  = null;
     $model->remarks    = null;
     $model->user       = Authentication::$user;
+    $model->used_by    = null;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_PACKET_MODIFY
@@ -59,6 +61,7 @@ class Edit extends Controller {
       $model->remarks   = $model->packet->getPacketRemarks(false);
       $model->markdown  = ($flags & Packet::OPTION_MARKDOWN);
       $model->published = ($flags & Packet::OPTION_PUBLISHED);
+      $model->used_by   = $this->getUsedBy($model->packet);
 
       if ($router->getRequestMethod() == "POST") {
         $this->handlePost($router, $model);
@@ -96,6 +99,7 @@ class Edit extends Controller {
     $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
     $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
     $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
+    $used_by    = (isset($data["used_by"   ]) ? $data["used_by"   ] : null);
 
     $model->id       = $id;
     $model->name     = $name;
@@ -135,6 +139,8 @@ class Edit extends Controller {
       $model->packet->setEditedDateTime(
         new DateTime("now", new DateTimeZone("Etc/UTC"))
       );
+      
+      $model->packet->setUsedBy($used_by);
 
       $success = $model->packet->update();
 
@@ -166,8 +172,14 @@ class Edit extends Controller {
         "name"            => $model->packet->getPacketName(),
         "format"          => $model->packet->getPacketFormat(),
         "remarks"         => $model->packet->getPacketRemarks(false),
+        "used_by"         => $used_by
       ])
     );
+  }
+
+  protected function getUsedBy(Packet &$packet) {
+    if (is_null($packet)) return null;
+    return Product::getProductsFromIds($packet->getUsedBy());
   }
 
 }

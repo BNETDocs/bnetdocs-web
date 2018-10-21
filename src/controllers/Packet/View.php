@@ -49,12 +49,7 @@ class View extends Controller {
 
   protected function getUsedBy(Packet &$packet) {
     if (is_null($packet)) return null;
-    $used_by = $packet->getUsedBy();
-    $products = [];
-    foreach ($used_by as $bnet_product_id) {
-      $products[] = new Product($bnet_product_id);
-    }
-    return $products;
+    return Product::getProductsFromIds($packet->getUsedBy());
   }
 
 }
