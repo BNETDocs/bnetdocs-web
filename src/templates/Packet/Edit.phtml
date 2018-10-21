@@ -85,19 +85,19 @@ require('./header.inc.phtml');
               ?></textarea>
           </section>
           <section>
-          	<label for="usedby">Used by:</label>
+						<label for="usedby">Used by:</label>
           	<table><?php
-          	  $all_products = Product::getAllProducts();
-          	  $used_by = $this->getContext()->used_by;
-          	  $j = count($all_products);
-          	  for ($i = 0; $i < $j; ++$i) { ?>
-          	  <tr><td><input type="checkbox" name="used_by[]" value="<?php 
-          	    echo $all_products[$i]->getBnetProductId() . "\"" . ($used_by !== null && in_array($all_products[$i], $used_by) ? " checked> " : "> ") . filter_var($all_products[$i]->getLabel(), FILTER_SANITIZE_STRING) . "</td><td>";
-          	    if ($i + 1 < $j) {
-          	      ++$i;
-          	      ?><input type="checkbox" name="used_by[]" value="<?php 
-          	      echo $all_products[$i]->getBnetProductId() . "\"" . ($used_by !== null && in_array($all_products[$i], $used_by) ? " checked> " : "> ") . filter_var($all_products[$i]->getLabel(), FILTER_SANITIZE_STRING); ?></td></tr>
-<?php      	    }
+              $all_products = Product::getAllProducts();
+              $used_by = $this->getContext()->used_by;
+              $j = count($all_products);
+              for ($i = 0; $i < $j; ++$i) { ?>
+							<tr><td><input type="checkbox" name="used_by[]" value="<?php 
+                echo $all_products[$i]->getBnetProductId() . "\"" . ($used_by !== null && in_array($all_products[$i], $used_by) ? " checked> " : "> ") . filter_var($all_products[$i]->getLabel(), FILTER_SANITIZE_STRING) . "</td><td>";
+                if ($i + 1 < $j) {
+                  ++$i;
+                  ?><input type="checkbox" name="used_by[]" value="<?php 
+                  echo $all_products[$i]->getBnetProductId() . "\"" . ($used_by !== null && in_array($all_products[$i], $used_by) ? " checked> " : "> ") . filter_var($all_products[$i]->getLabel(), FILTER_SANITIZE_STRING); ?></td></tr>
+<?php           }
               } ?>
 			</table>
           </section>
