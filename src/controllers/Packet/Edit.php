@@ -8,8 +8,8 @@ use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\Product;
+use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Packet\Edit as PacketEditModel;
 
 use \CarlBennett\MVC\Libraries\Common;

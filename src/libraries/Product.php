@@ -94,7 +94,7 @@ class Product {
     $products = [];
     if ($product_ids !== null) {
       foreach ($product_ids as $bnet_product_id) {
-        $products[] = new Product($bnet_product_id);
+        $products[] = new self($bnet_product_id);
       }
     }
     return $products;
