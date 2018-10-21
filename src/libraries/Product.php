@@ -65,7 +65,7 @@ class Product {
           `bnls_product_id`,
           `label`,
           `sort`,
-          `version_byte
+          `version_byte`
         FROM `products`
         ORDER BY `sort` ASC;
       ");
