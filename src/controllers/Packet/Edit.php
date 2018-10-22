@@ -139,10 +139,12 @@ class Edit extends Controller {
       $model->packet->setEditedDateTime(
         new DateTime("now", new DateTimeZone("Etc/UTC"))
       );
-      
-      $model->packet->setUsedBy($used_by);
 
       $success = $model->packet->update();
+
+      // Used-by is stored in a different table than packet data so it is
+      // updated separately.
+      $model->packet->setUsedBy($used_by);
 
     } catch (QueryException $e) {
 
