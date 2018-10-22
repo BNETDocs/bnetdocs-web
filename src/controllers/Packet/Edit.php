@@ -39,8 +39,8 @@ class Edit extends Controller {
     $model->packet_id  = (isset($data["id"]) ? $data["id"] : null);
     $model->published  = null;
     $model->remarks    = null;
-    $model->user       = Authentication::$user;
     $model->used_by    = null;
+    $model->user       = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
       User::OPTION_ACL_PACKET_MODIFY
