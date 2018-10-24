@@ -57,6 +57,7 @@ class Status extends Controller {
     $utc = new DateTimeZone( 'Etc/UTC' );
 
     $status->healthcheck       = $healthcheck;
+    $status->is_browser        = Common::isBrowser(getenv( 'HTTP_USER_AGENT' ));
     $status->remote_address    = getenv( 'REMOTE_ADDR' );
     $status->remote_geoinfo    = GeoIP::get( $status->remote_address );
     $status->remote_user_agent = getenv( 'HTTP_USER_AGENT' );
@@ -66,7 +67,7 @@ class Status extends Controller {
     $model->status = $status;
 
     foreach ( $healthcheck as $key => $val ) {
-      if (is_bool($val) && !$val) {
+      if ( is_bool( $val ) && !$val ) {
         // let the controller know that we're unhealthy.
         return false;
       }
