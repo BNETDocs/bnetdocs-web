@@ -43,7 +43,8 @@ class Delete extends Controller {
     if ($model->packet === null) {
       $model->error = "NOT_FOUND";
     } else {
-      $model->title = $model->packet->getPacketDirectionTag() . ' ' . $model->packet->getPacketName();
+      $model->title = $model->packet->getPacketDirectionTag() . 
+        ' ' . $model->packet->getPacketName();
 
       if ($router->getRequestMethod() == "POST") {
         $this->tryDelete($router, $model);
@@ -112,7 +113,7 @@ class Delete extends Controller {
       $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([
-        "error"       => $model->error,
+        "error"     => $model->error,
         "packet_id" => $id,
       ])
     );
