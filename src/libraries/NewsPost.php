@@ -408,14 +408,22 @@ class NewsPost {
         LIMIT 1;
       ");
       $stmt->bindParam(":category_id", $this->category_id, PDO::PARAM_INT);
-      $stmt->bindParam(":content", $this->content, PDO::PARAM_INT);
-      $stmt->bindParam(":created_dt", $this->created_datetime, PDO::PARAM_INT);
+      $stmt->bindParam(":content", $this->content, PDO::PARAM_STR);
+      $stmt->bindParam(":created_dt", $this->created_datetime, PDO::PARAM_STR);
       $stmt->bindParam(":edited_count", $this->edited_count, PDO::PARAM_INT);
-      $stmt->bindParam(":edited_dt", $this->edited_datetime, PDO::PARAM_INT);
+      if (is_null($this->edited_datetime)) {
+        $stmt->bindParam(":edited_dt", null, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(":edited_dt", $this->edited_datetime, PDO::PARAM_STR);
+      }
       $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
       $stmt->bindParam(":options", $this->options_bitmask, PDO::PARAM_INT);
-      $stmt->bindParam(":title", $this->title, PDO::PARAM_INT);
-      $stmt->bindParam(":user_id", $this->user_id, PDO::PARAM_INT);
+      $stmt->bindParam(":title", $this->title, PDO::PARAM_STR);
+      if (is_null($this->user_id)) {
+        $stmt->bindParam(":user_id", null, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(":user_id", $this->user_id, PDO::PARAM_INT);
+      }
       if (!$stmt->execute()) {
         throw new QueryException("Cannot save news post");
       }
