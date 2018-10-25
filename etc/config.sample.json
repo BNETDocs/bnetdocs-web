@@ -1,7 +1,10 @@
 {
   "bnetdocs": {
-    "battleforthenet": "",
     "btc_donate_address": "",
+    "campaigns": {
+      "battleforthenet": "",
+      "vultr": ""
+    },
     "maintenance": [
       false,
       "BNETDocs has to take a brief moment to do some system maintenance. We'll be back shortly."
