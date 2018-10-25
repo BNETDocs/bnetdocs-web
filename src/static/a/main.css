@@ -58,6 +58,10 @@ header.main-page {
   -ms-user-select: none;
   user-select: none;
 }
+header.main-page img#vultr-campaign {
+  float: right;
+  height: 32px;
+}
 header.main-page #mobile-nav {
   display: none;
 }

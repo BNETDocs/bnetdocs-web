@@ -1,5 +1,6 @@
 {
   "bnetdocs": {
+    "asset_versioning": true,
     "btc_donate_address": "",
     "campaigns": {
       "battleforthenet": "",

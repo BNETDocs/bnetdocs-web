@@ -5,6 +5,7 @@ namespace BNETDocs\Templates;
 use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
+use \BNETDocs\Libraries\VersionInfo;
 
 use \CarlBennett\MVC\Libraries\Common;
 
@@ -18,6 +19,14 @@ if ( isset( Authentication::$user  )) {
   $_header_staff    = null;
 }
 
+if ( Common::$config->bnetdocs->asset_versioning ) {
+  if ( !is_null( VersionInfo::$version->bnetdocs )) {
+    $_unique_css = '?v=' . VersionInfo::$version->bnetdocs[1];
+  } else {
+    $_unique_css = '?v=' . date('YmdHis');
+  }
+}
+
 $_campaign_battleforthenet = (
   !empty( Common::$config->bnetdocs->campaigns->battleforthenet ) ?
   '<script type="text/javascript" src="' .
@@ -29,9 +38,9 @@ $_campaign_vultr = (
   !empty( Common::$config->bnetdocs->campaigns->vultr ) ?
   '<a href="' . Common::relativeUrlToAbsolute(
     Common::$config->bnetdocs->campaigns->vultr
-  ) . '"><img src="' . Common::relativeUrlToAbsolute(
+  ) . '"><img id="vultr-campaign" src="' . Common::relativeUrlToAbsolute(
     '/a/vultr_badge_ondark.svg'
-  ) . '" style="float:right;margin-right:16px;height:32px;"/></a>'  : ''
+  ) . '"/></a>'  : ''
 );
 
 ?><!DOCTYPE html>
@@ -44,13 +53,13 @@ $_campaign_vultr = (
 <?php } ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <?php if (Common::$config->bnetdocs->mobile_site_enabled) { ?>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main.css"); ?>" type="text/css" media="(min-width:1000px)"/>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main-mobile.css"); ?>" type="text/css" media="(max-width:999px)"/>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_css); ?>" type="text/css" media="(min-width:1000px)"/>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main-mobile.css' . $_unique_css); ?>" type="text/css" media="(max-width:999px)"/>
 <?php } else { ?>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute("/a/main.css"); ?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_css); ?>" type="text/css" media="all"/>
 <?php }
       foreach ($this->additional_css as $path) { ?>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute($path); ?>" media="all"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute($path . $_unique_css); ?>" media="all"/>
 <?php } ?>
     <link rel="icon" href="<?php echo Common::relativeUrlToAbsolute("/a/VSZX0bJ.png"); ?>" type="image/png" sizes="156x174"/>
     <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("/a/font/SourceSansPro-Regular-201508251844.css"); ?>"/>
