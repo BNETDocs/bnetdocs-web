@@ -2,7 +2,8 @@
   "bnetdocs": {
     "btc_donate_address": "",
     "campaigns": {
-      "battleforthenet": ""
+      "battleforthenet": "",
+      "vultr": ""
     },
     "maintenance": [
       false,

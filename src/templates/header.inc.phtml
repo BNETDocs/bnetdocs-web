@@ -18,6 +18,12 @@ if ( isset( Authentication::$user  )) {
   $_header_staff    = null;
 }
 
+$_campaign_vultr = ( !empty( Common::$config->bnetdocs->campaigns->vultr ) ?
+  '<a href="' . Common::$config->bnetdocs->campaigns->vultr . '"><img src="' .
+  Common::relativeUrlToAbsolute( '/a/vultr_badge_ondark.svg' ) .
+  '" style="float:right;margin-right:16px;height:32px;"/></a>' : ''
+);
+
 ?><!DOCTYPE html>
 <html lang="en-US">
   <head>
@@ -74,7 +80,7 @@ if ( isset( Authentication::$user  )) {
 <?php } ?>
   </head>
   <body>
-    <header class="main-page"><img src="<?php echo Common::relativeUrlToAbsolute("/a/VSZX0bJ.png"); ?>" style="float:left;margin-right:6px;height:32px;"/> BNETDocs<span id="mobile-nav">&#9776;</span></header>
+    <header class="main-page"><img src="<?php echo Common::relativeUrlToAbsolute("/a/VSZX0bJ.png"); ?>" style="float:left;margin-right:6px;height:32px;"/> BNETDocs<span id="mobile-nav">&#9776;</span><?php echo $_campaign_vultr; ?></header>
 <?php if (!(isset($slim_ui) && $slim_ui)) { ?>
     <nav>
       <a>Portal</a>
