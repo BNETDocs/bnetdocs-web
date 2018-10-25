@@ -40,8 +40,8 @@ if ( isset( Authentication::$user  )) {
     <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("/a/font/SourceSansPro-Regular-201508251844.css"); ?>"/>
     <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("/a/font/SourceCodePro-Regular-201508251844.css"); ?>"/>
     <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute("/a/BNETDocs.js"); ?>" async><![CDATA[]]></script>
-<?php if (Common::$config->bnetdocs->battleforthenet) { ?>
-    <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute(Common::$config->bnetdocs->battleforthenet); ?>" async><![CDATA[]]></script>
+<?php if (Common::$config->bnetdocs->campaigns->battleforthenet) { ?>
+    <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute(Common::$config->bnetdocs->campaigns->battleforthenet); ?>" async><![CDATA[]]></script>
 <?php } ?>
     <link rel="alternate" href="<?php echo Common::relativeUrlToAbsolute("/news.rss"); ?>" type="application/rss+xml" title="BNETDocs News"/>
     <link rel="license" href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>"/>
