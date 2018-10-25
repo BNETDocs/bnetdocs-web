@@ -29,9 +29,9 @@ $_campaign_vultr = (
   !empty( Common::$config->bnetdocs->campaigns->vultr ) ?
   '<a href="' . Common::relativeUrlToAbsolute(
     Common::$config->bnetdocs->campaigns->vultr
-  ) . '"><img src="' . Common::relativeUrlToAbsolute(
+  ) . '"><img id="vultr-campaign" src="' . Common::relativeUrlToAbsolute(
     '/a/vultr_badge_ondark.svg'
-  ) . '" style="float:right;margin-right:16px;height:32px;"/></a>'  : ''
+  ) . '"/></a>'  : ''
 );
 
 ?><!DOCTYPE html>
