@@ -18,10 +18,20 @@ if ( isset( Authentication::$user  )) {
   $_header_staff    = null;
 }
 
-$_campaign_vultr = ( !empty( Common::$config->bnetdocs->campaigns->vultr ) ?
-  '<a href="' . Common::$config->bnetdocs->campaigns->vultr . '"><img src="' .
-  Common::relativeUrlToAbsolute( '/a/vultr_badge_ondark.svg' ) .
-  '" style="float:right;margin-right:16px;height:32px;"/></a>' : ''
+$_campaign_battleforthenet = (
+  !empty( Common::$config->bnetdocs->campaigns->battleforthenet ) ?
+  '<script type="text/javascript" src="' .
+  Common::relativeUrlToAbsolute(
+    Common::$config->bnetdocs->campaigns->battleforthenet
+  ) . '" async><![CDATA[]]></script>' . PHP_EOL : ''
+);
+$_campaign_vultr = (
+  !empty( Common::$config->bnetdocs->campaigns->vultr ) ?
+  '<a href="' . Common::relativeUrlToAbsolute(
+    Common::$config->bnetdocs->campaigns->vultr
+  ) . '"><img src="' . Common::relativeUrlToAbsolute(
+    '/a/vultr_badge_ondark.svg'
+  ) . '" style="float:right;margin-right:16px;height:32px;"/></a>'  : ''
 );
 
 ?><!DOCTYPE html>
@@ -46,9 +56,7 @@ $_campaign_vultr = ( !empty( Common::$config->bnetdocs->campaigns->vultr ) ?
     <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("/a/font/SourceSansPro-Regular-201508251844.css"); ?>"/>
     <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("/a/font/SourceCodePro-Regular-201508251844.css"); ?>"/>
     <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute("/a/BNETDocs.js"); ?>" async><![CDATA[]]></script>
-<?php if (Common::$config->bnetdocs->campaigns->battleforthenet) { ?>
-    <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute(Common::$config->bnetdocs->campaigns->battleforthenet); ?>" async><![CDATA[]]></script>
-<?php } ?>
+    <?php echo $_campaign_battleforthenet; ?>
     <link rel="alternate" href="<?php echo Common::relativeUrlToAbsolute("/news.rss"); ?>" type="application/rss+xml" title="BNETDocs News"/>
     <link rel="license" href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>"/>
     <meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding"/>
