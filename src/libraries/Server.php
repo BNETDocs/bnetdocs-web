@@ -121,7 +121,7 @@ class Server implements JsonSerializable {
     if (is_null($this->created_datetime)) {
       return $this->created_datetime;
     } else {
-      $tz = new DateTimeZone("UTC");
+      $tz = new DateTimeZone( 'Etc/UTC' );
       $dt = new DateTime($this->created_datetime);
       $dt->setTimezone($tz);
       return $dt;
@@ -169,7 +169,7 @@ class Server implements JsonSerializable {
     if (is_null($this->updated_datetime)) {
       return $this->updated_datetime;
     } else {
-      $tz = new DateTimeZone("UTC");
+      $tz = new DateTimeZone( 'Etc/UTC' );
       $dt = new DateTime($this->updated_datetime);
       $dt->setTimezone($tz);
       return $dt;

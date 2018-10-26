@@ -133,7 +133,7 @@ class Edit extends Controller {
         $model->packet->getEditedCount() + 1
       );
       $model->packet->setEditedDateTime(
-        new DateTime("now", new DateTimeZone("Etc/UTC"))
+        new DateTime( 'now', new DateTimeZone( 'Etc/UTC' ))
       );
 
       $success = $model->packet->update();

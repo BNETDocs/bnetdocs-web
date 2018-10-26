@@ -186,7 +186,7 @@ class Comment implements JsonSerializable {
     if (is_null($this->created_datetime)) {
       return $this->created_datetime;
     } else {
-      $tz = new DateTimeZone("UTC");
+      $tz = new DateTimeZone( 'Etc/UTC' );
       $dt = new DateTime($this->created_datetime);
       $dt->setTimezone($tz);
       return $dt;
@@ -201,7 +201,7 @@ class Comment implements JsonSerializable {
     if (is_null($this->edited_datetime)) {
       return $this->edited_datetime;
     } else {
-      $tz = new DateTimeZone("UTC");
+      $tz = new DateTimeZone( 'Etc/UTC' );
       $dt = new DateTime($this->edited_datetime);
       $dt->setTimezone($tz);
       return $dt;
