@@ -45,7 +45,7 @@ class Index extends Controller {
 
     // Objectify for JSON
     if ($view instanceof DocumentIndexJSONView) {
-      $model->timestamp = new DateTime("now", new DateTimeZone("Etc/UTC"));
+      $model->timestamp = new DateTime( 'now', new DateTimeZone( 'Etc/UTC' ));
       $documents = [];
       foreach ($model->documents as $document) {
         $documents[] = [

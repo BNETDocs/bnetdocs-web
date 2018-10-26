@@ -427,7 +427,7 @@ class User implements JsonSerializable {
     if (is_null($this->created_datetime)) {
       return $this->created_datetime;
     } else {
-      $tz = new DateTimeZone("UTC");
+      $tz = new DateTimeZone( 'Etc/UTC' );
       $dt = new DateTime($this->created_datetime);
       $dt->setTimezone($tz);
       return $dt;
@@ -503,7 +503,7 @@ class User implements JsonSerializable {
     if (is_null($this->verified_datetime)) {
       return $this->verified_datetime;
     } else {
-      $tz = new DateTimeZone("UTC");
+      $tz = new DateTimeZone( 'Etc/UTC' );
       $dt = new DateTime($this->verified_datetime);
       $dt->setTimezone($tz);
       return $dt;

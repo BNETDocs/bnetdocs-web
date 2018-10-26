@@ -152,7 +152,7 @@ class Event {
     if ( is_null( $this->event_datetime ) ) {
       return $this->event_datetime;
     } else {
-      $tz = new DateTimeZone( 'UTC' );
+      $tz = new DateTimeZone( 'Etc/UTC' );
       $dt = new DateTime( $this->event_datetime );
       $dt->setTimezone( $tz );
       return $dt;

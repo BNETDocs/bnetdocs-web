@@ -290,7 +290,7 @@ class Packet implements JsonSerializable {
       return $this->created_datetime;
     }
 
-    $tz = new DateTimeZone( 'UTC' );
+    $tz = new DateTimeZone( 'Etc/UTC' );
     $dt = new DateTime( $this->created_datetime );
 
     $dt->setTimezone( $tz );
@@ -307,7 +307,7 @@ class Packet implements JsonSerializable {
       return $this->edited_datetime;
     }
 
-    $tz = new DateTimeZone( 'UTC' );
+    $tz = new DateTimeZone( 'Etc/UTC' );
     $dt = new DateTime( $this->edited_datetime );
 
     $dt->setTimezone( $tz );

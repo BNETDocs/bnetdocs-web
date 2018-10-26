@@ -1,0 +1,82 @@
+<?php
+
+namespace BNETDocs\Templates\Comment;
+
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title       = "Edit Comment";
+$description = "This form allows an individual to edit a comment.";
+
+$this->opengraph->attach(new Pair("url", "/comment/edit"));
+$this->opengraph->attach(new Pair("type", "article"));
+
+switch ($this->getContext()->error) {
+  case "ACL_NOT_SET":
+    $message = "You do not have the privilege to edit this comment.";
+    break;
+  case "NOT_FOUND":
+    $message = "Cannot find comment by that id.";
+    break;
+  case "NOT_LOGGED_IN":
+    $message = "You must be logged in to edit comments.";
+    break;
+  case "INVALID_CSRF":
+    $message = "The Cross-Site Request Forgery token was invalid. Either the "
+      . "edit comment form expired, or this may have been a malicious "
+      . "attempt to edit a comment.";
+    break;
+  case "INTERNAL_ERROR":
+    $message = "An internal error occurred while processing your request. "
+      . "Our staff has been notified of the issue. Try again later.";
+    break;
+  default:
+    $message = $this->getContext()->error;
+}
+
+$c = $this->getContext()->comment;
+if ($c) {
+  $c_id          = $c->getId();
+  $c_user        = $c->getUser();
+  $c_user_id     = $c->getUserId();
+  $c_user_name   = $c_user->getName();
+  $c_user_url    = $c_user->getURI();
+  $c_user_avatar = $c_user->getAvatarURI(22);
+}
+
+$this->additional_css[] = "/a/comments.css";
+$this->additional_css[] = "/a/forms.css";
+require("./header.inc.phtml");
+?>
+      <article>
+<?php if (is_null($this->getContext()->error) && !is_null($c)) { ?>
+        <header>Edit Comment</header>
+        <form method="POST" action="<?php echo Common::relativeUrlToAbsolute( '/comment/edit?id=' . $c_id ); ?>">
+          <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
+          <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
+          <section>
+            <table class="comments"><tbody>
+              <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><textarea id="comment-content" name="content" cols="80" rows="5" tabindex="1" autofocus="autofocus"><?php echo filter_var( $c->getContent( false ), FILTER_SANITIZE_FULL_SPECIAL_CHARS ); ?></textarea></td></tr>
+            </tbody></table><hr/>
+            <p>
+              <input class="float-right bg-green" type="submit" value="Edit Comment" tabindex="2"/>
+              <a class="button button-bg-red" href="<?php echo $this->getContext()->return_url; ?>" id="cancel-btn">Cancel</a>
+            </p>
+          </section>
+        </form>
+<?php } else if ($this->getContext()->error === false) { ?>
+        <header class="green">Comment Edited</header>
+        <section class="green">
+          <p>You have successfully edited the comment!</p>
+          <p><a href="<?php echo $this->getContext()->return_url; ?>#comments">Return to previous page</a></p>
+        </section>
+<?php } else { ?>
+        <header class="red">Edit Comment</header>
+        <section class="red">
+          <p>An error occurred while attempting to delete the comment.</p>
+          <p><?php echo $message; ?></p>
+          <p>Use the navigation to the left to move to another page.</p>
+        </section>
+<?php } ?>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

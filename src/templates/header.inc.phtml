@@ -19,12 +19,12 @@ if ( isset( Authentication::$user  )) {
   $_header_staff    = null;
 }
 
-if ( Common::$config->bnetdocs->asset_versioning ) {
-  if ( !is_null( VersionInfo::$version->bnetdocs )) {
-    $_unique_css = '?v=' . VersionInfo::$version->bnetdocs[1];
-  } else {
-    $_unique_css = '?v=' . date('YmdHis');
-  }
+if ( !Common::$config->bnetdocs->asset_versioning ) {
+  $_unique_asset = '';
+} else if ( !is_null( VersionInfo::$version->bnetdocs )) {
+  $_unique_asset = '?v=' . VersionInfo::$version->bnetdocs[1];
+} else {
+  $_unique_asset = '?v=' . date('YmdHis');
 }
 
 $_campaign_battleforthenet = (
@@ -53,21 +53,21 @@ $_campaign_vultr = (
 <?php } ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <?php if (Common::$config->bnetdocs->mobile_site_enabled) { ?>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_css); ?>" type="text/css" media="(min-width:1000px)"/>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main-mobile.css' . $_unique_css); ?>" type="text/css" media="(max-width:999px)"/>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_asset); ?>" type="text/css" media="(min-width:1000px)"/>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main-mobile.css' . $_unique_asset); ?>" type="text/css" media="(max-width:999px)"/>
 <?php } else { ?>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_css); ?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_asset); ?>" type="text/css" media="all"/>
 <?php }
       foreach ($this->additional_css as $path) { ?>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute($path . $_unique_css); ?>" media="all"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute($path . $_unique_asset); ?>" media="all"/>
 <?php } ?>
-    <link rel="icon" href="<?php echo Common::relativeUrlToAbsolute("/a/VSZX0bJ.png"); ?>" type="image/png" sizes="156x174"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("/a/font/SourceSansPro-Regular-201508251844.css"); ?>"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute("/a/font/SourceCodePro-Regular-201508251844.css"); ?>"/>
-    <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute("/a/BNETDocs.js"); ?>" async><![CDATA[]]></script>
+    <link rel="icon" href="<?php echo Common::relativeUrlToAbsolute('/a/VSZX0bJ.png'); ?>" type="image/png" sizes="156x174"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute('/a/font/SourceSansPro-Regular-201508251844.css'); ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute('/a/font/SourceCodePro-Regular-201508251844.css'); ?>"/>
+    <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute('/a/BNETDocs.js' . $_unique_asset); ?>" async><![CDATA[]]></script>
     <?php echo $_campaign_battleforthenet; ?>
-    <link rel="alternate" href="<?php echo Common::relativeUrlToAbsolute("/news.rss"); ?>" type="application/rss+xml" title="BNETDocs News"/>
-    <link rel="license" href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>"/>
+    <link rel="alternate" href="<?php echo Common::relativeUrlToAbsolute('/news.rss'); ?>" type="application/rss+xml" title="BNETDocs News"/>
+    <link rel="license" href="<?php echo Common::relativeUrlToAbsolute('/legal'); ?>"/>
     <meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding"/>
 <?php if (!empty($description)) { ?>
     <meta name="description" content="<?php echo $description; ?>"/>
