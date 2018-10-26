@@ -2,8 +2,6 @@
 
 namespace BNETDocs\Templates\Packet;
 
-use \BNETDocs\Libraries\Product;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
@@ -85,21 +83,29 @@ require('./header.inc.phtml');
               ?></textarea>
           </section>
           <section>
-						<label for="usedby">Used by:</label>
-          	<table><?php
-              $all_products = Product::getAllProducts();
-              $used_by = $this->getContext()->used_by;
-              $j = count($all_products);
-              for ($i = 0; $i < $j; ++$i) { ?>
-							<tr><td><input type="checkbox" name="used_by[]" value="<?php 
-                echo $all_products[$i]->getBnetProductId() . "\"" . ($used_by !== null && in_array($all_products[$i], $used_by) ? " checked> " : "> ") . filter_var($all_products[$i]->getLabel(), FILTER_SANITIZE_STRING) . "</td><td>";
-                if ($i + 1 < $j) {
-                  ++$i;
-                  ?><input type="checkbox" name="used_by[]" value="<?php 
-                  echo $all_products[$i]->getBnetProductId() . "\"" . ($used_by !== null && in_array($all_products[$i], $used_by) ? " checked> " : "> ") . filter_var($all_products[$i]->getLabel(), FILTER_SANITIZE_STRING); ?></td></tr>
-<?php           }
-              } ?>
-			</table>
+            <label for="usedby">Used by:</label>
+            <table>
+              <thead></thead><tbody>
+<?php function add_product_checkbox( $id, $name, $checked ) { ?>
+                  <td><input type="checkbox" id="<?php echo $id; ?>" name="used_by[]" value="<?php echo $id; ?>"<?php if ( $checked ) { ?> checked="checked"<?php } ?>/><label for="<?php echo $id; ?>"><?php echo $name; ?></label></td>
+<?php }
+$product_ubound = count( $this->getContext()->products );
+for ( $product_i = 0; $product_i < $product_ubound; ++$product_i ) {
+  $p = $this->getContext()->products[ $product_i ];
+?>
+                <tr>
+<?php
+  $checked = isset( $this->getContext()->used_by[ $p->getBnetProductId() ]);
+  add_product_checkbox( $p->getBnetProductId(), $p->getLabel(), $checked );
+  if ( $product_i + 1 < $product_ubound ) {
+    $p = $this->getContext()->products[ ++$product_i ];
+    $checked = isset( $this->getContext()->used_by[ $p->getBnetProductId() ]);
+    add_product_checkbox( $p->getBnetProductId(), $p->getLabel(), $checked );
+  } ?>
+                </tr>
+<?php } ?>
+              </tbody>
+            </table>
           </section>
           <section>
             <label for="remarks">Remarks:</label>

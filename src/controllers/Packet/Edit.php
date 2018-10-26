@@ -37,6 +37,7 @@ class Edit extends Controller {
     $model->name       = null;
     $model->packet     = null;
     $model->packet_id  = (isset($data["id"]) ? $data["id"] : null);
+    $model->products   = Product::getAllProducts();
     $model->published  = null;
     $model->remarks    = null;
     $model->used_by    = null;
