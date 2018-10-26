@@ -90,6 +90,9 @@ function main() {
     $router->addRoute( // URL: /comment/delete
       "#^/comment/delete/?$#", "Comment\\Delete", "Comment\\DeleteHtml"
     );
+    $router->addRoute( // URL: /comment/edit
+      "#^/comment/edit/?$#", "Comment\\Edit", "Comment\\EditHtml"
+    );
     $router->addRoute( // URL: /credits
       "#^/credits/?$#", "Credits", "CreditsHtml"
     );

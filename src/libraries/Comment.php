@@ -19,6 +19,8 @@ use \StdClass;
 
 class Comment implements JsonSerializable {
 
+  const CACHE_TTL = 300;
+
   const PARENT_TYPE_DOCUMENT  = 0;
   const PARENT_TYPE_COMMENT   = 1;
   const PARENT_TYPE_NEWS_POST = 2;
@@ -160,11 +162,11 @@ class Comment implements JsonSerializable {
         $ids[]     = (int) $row->id;
         $objects[] = new self($row);
         Common::$cache->set(
-          "bnetdocs-comment-" . $row->id, serialize($row), 300
+          "bnetdocs-comment-" . $row->id, serialize($row), self::CACHE_TTL
         );
       }
       $stmt->closeCursor();
-      Common::$cache->set($ck, implode(",", $ids), 300);
+      Common::$cache->set($ck, implode(",", $ids), self::CACHE_TTL);
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh comment", $e);
@@ -314,12 +316,82 @@ class Comment implements JsonSerializable {
       $this->parent_id        = $row->parent_id;
       $this->parent_type      = $row->parent_type;
       $this->user_id          = $row->user_id;
-      Common::$cache->set($ck, serialize($row), 300);
+      Common::$cache->set($ck, serialize($row), self::CACHE_TTL);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh comment", $e);
     }
     return false;
+  }
+
+  public function save() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare('
+        UPDATE
+          `comments`
+        SET
+          `content` = :content,
+          `created_datetime` = :created_dt,
+          `edited_count` = :edited_count,
+          `edited_datetime` = :edited_dt,
+          `parent_id` = :parent_id,
+          `parent_type` = :parent_type,
+          `user_id` = :user_id
+        WHERE
+          `id` = :id
+        LIMIT 1;
+      ');
+      $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
+      $stmt->bindParam(':created_dt', $this->created_datetime, PDO::PARAM_STR);
+      $stmt->bindParam(':edited_count', $this->edited_count, PDO::PARAM_INT);
+      $stmt->bindParam(':edited_dt', $this->edited_datetime, PDO::PARAM_STR);
+      $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(':parent_id', $this->parent_id, PDO::PARAM_INT);
+      $stmt->bindParam(':parent_type', $this->parent_type, PDO::PARAM_INT);
+      $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException( 'Cannot save comment' );
+      }
+      $stmt->closeCursor();
+
+      $object                   = new StdClass();
+      $object->content          = $this->content;
+      $object->created_datetime = $this->created_datetime;
+      $object->edited_count     = $this->edited_count;
+      $object->edited_datetime  = $this->edited_datetime;
+      $object->id               = $this->id;
+      $object->parent_id        = $this->parent_id;
+      $object->parent_type      = $this->parent_type;
+      $object->user_id          = $this->user_id;
+
+      Common::$cache->set(
+        'bnetdocs-comment-' . $this->id, serialize( $object ), self::CACHE_TTL
+      );
+
+      Common::$cache->delete(
+        'bnetdocs-comment-' . $this->parent_type . '-' . $this->parent_id
+      );
+
+      return true;
+    } catch ( PDOException $e ) {
+      throw new QueryException( 'Cannot save comment', $e );
+    }
+    return false;
+  }
+
+  public function setContent( $value ) {
+    $this->content = $value;
+  }
+
+  public function setEditedCount( $value ) {
+    $this->edited_count = $value;
+  }
+
+  public function setEditedDateTime( \DateTime $value ) {
+    $this->edited_datetime = $value->format( 'Y-m-d H:i:s' );
   }
 
 }
