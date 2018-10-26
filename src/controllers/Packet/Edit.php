@@ -8,6 +8,7 @@ use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Packet;
+use \BNETDocs\Libraries\Product;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Packet\Edit as PacketEditModel;
 
@@ -38,6 +39,7 @@ class Edit extends Controller {
     $model->packet_id  = (isset($data["id"]) ? $data["id"] : null);
     $model->published  = null;
     $model->remarks    = null;
+    $model->used_by    = null;
     $model->user       = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getAcl(
@@ -59,6 +61,7 @@ class Edit extends Controller {
       $model->remarks   = $model->packet->getPacketRemarks(false);
       $model->markdown  = ($flags & Packet::OPTION_MARKDOWN);
       $model->published = ($flags & Packet::OPTION_PUBLISHED);
+      $model->used_by   = $this->getUsedBy($model->packet);
 
       if ($router->getRequestMethod() == "POST") {
         $this->handlePost($router, $model);
@@ -96,6 +99,7 @@ class Edit extends Controller {
     $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
     $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
     $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
+    $used_by    = (isset($data["used_by"   ]) ? $data["used_by"   ] : null);
 
     $model->id       = $id;
     $model->name     = $name;
@@ -138,6 +142,10 @@ class Edit extends Controller {
 
       $success = $model->packet->update();
 
+      // Used-by is stored in a different table than packet data so it is
+      // updated separately.
+      $model->packet->setUsedBy($used_by);
+
     } catch (QueryException $e) {
 
       // SQL error occurred. We can show a friendly message to the user while
@@ -166,8 +174,14 @@ class Edit extends Controller {
         "name"            => $model->packet->getPacketName(),
         "format"          => $model->packet->getPacketFormat(),
         "remarks"         => $model->packet->getPacketRemarks(false),
+        "used_by"         => $used_by
       ])
     );
+  }
+
+  protected function getUsedBy(Packet &$packet) {
+    if (is_null($packet)) return null;
+    return Product::getProductsFromIds($packet->getUsedBy());
   }
 
 }

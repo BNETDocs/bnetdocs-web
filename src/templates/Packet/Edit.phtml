@@ -2,6 +2,8 @@
 
 namespace BNETDocs\Templates\Packet;
 
+use \BNETDocs\Libraries\Product;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
@@ -81,6 +83,23 @@ require('./header.inc.phtml');
               style="height:200px;"><?php echo
                 filter_var( $this->getContext()->format, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
               ?></textarea>
+          </section>
+          <section>
+						<label for="usedby">Used by:</label>
+          	<table><?php
+              $all_products = Product::getAllProducts();
+              $used_by = $this->getContext()->used_by;
+              $j = count($all_products);
+              for ($i = 0; $i < $j; ++$i) { ?>
+							<tr><td><input type="checkbox" name="used_by[]" value="<?php 
+                echo $all_products[$i]->getBnetProductId() . "\"" . ($used_by !== null && in_array($all_products[$i], $used_by) ? " checked> " : "> ") . filter_var($all_products[$i]->getLabel(), FILTER_SANITIZE_STRING) . "</td><td>";
+                if ($i + 1 < $j) {
+                  ++$i;
+                  ?><input type="checkbox" name="used_by[]" value="<?php 
+                  echo $all_products[$i]->getBnetProductId() . "\"" . ($used_by !== null && in_array($all_products[$i], $used_by) ? " checked> " : "> ") . filter_var($all_products[$i]->getLabel(), FILTER_SANITIZE_STRING); ?></td></tr>
+<?php           }
+              } ?>
+			</table>
           </section>
           <section>
             <label for="remarks">Remarks:</label>
