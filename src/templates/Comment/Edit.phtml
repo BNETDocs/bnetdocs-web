@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Templates\Comment;
 
+use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
 $title       = "Edit Comment";
@@ -50,30 +51,24 @@ require("./header.inc.phtml");
       <article>
 <?php if (is_null($this->getContext()->error) && !is_null($c)) { ?>
         <header>Edit Comment</header>
-        <form method="POST">
-          <input type="hidden" name="comment_id" value="<?php echo $c_id; ?>"/>
+        <form method="POST" action="<?php echo Common::relativeUrlToAbsolute( '/comment/edit?id=' . $c_id ); ?>">
           <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
           <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
           <section>
             <table class="comments"><tbody>
-              <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><textarea id="comment-content" name="content" cols="80" rows="5"><?php echo $c->getContent(false); ?></textarea></td></tr>
+              <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><textarea id="comment-content" name="content" cols="80" rows="5" tabindex="1" autofocus="autofocus"><?php echo filter_var( $c->getContent( false ), FILTER_SANITIZE_FULL_SPECIAL_CHARS ); ?></textarea></td></tr>
             </tbody></table><hr/>
             <p>
-              <input class="float-right bg-green" type="submit" value="Edit Comment" tabindex="2" autofocus="autofocus"/>
-              <a class="button button-bg-red" href="javascript:history.go(-1);" id="cancel-btn">Cancel</a>
+              <input class="float-right bg-green" type="submit" value="Edit Comment" tabindex="2"/>
+              <a class="button button-bg-red" href="<?php echo $this->getContext()->return_url; ?>" id="cancel-btn">Cancel</a>
             </p>
-            <script type="text/javascript">
-              if (history.length == 1) {
-                document.getElementById('cancel-btn').className += ' button-disabled';
-              }
-            </script>
           </section>
         </form>
 <?php } else if ($this->getContext()->error === false) { ?>
         <header class="green">Comment Edited</header>
         <section class="green">
           <p>You have successfully edited the comment!</p>
-          <p>Use the navigation to the left to move to another page.</p>
+          <p><a href="<?php echo $this->getContext()->return_url; ?>#comments">Return to previous page</a></p>
         </section>
 <?php } else { ?>
         <header class="red">Edit Comment</header>

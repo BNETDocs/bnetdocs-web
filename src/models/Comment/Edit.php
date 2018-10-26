@@ -14,6 +14,7 @@ class Edit extends Model {
   public $id;
   public $parent_id;
   public $parent_type;
+  public $return_url;
   public $user;
 
 }

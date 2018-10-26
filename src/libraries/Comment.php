@@ -345,9 +345,9 @@ class Comment implements JsonSerializable {
         LIMIT 1;
       ');
       $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
-      $stmt->bindParam(':created_dt', $this->created_datetime, PDO::PARAM_INT);
+      $stmt->bindParam(':created_dt', $this->created_datetime, PDO::PARAM_STR);
       $stmt->bindParam(':edited_count', $this->edited_count, PDO::PARAM_INT);
-      $stmt->bindParam(':edited_dt', $this->edited_datetime, PDO::PARAM_INT);
+      $stmt->bindParam(':edited_dt', $this->edited_datetime, PDO::PARAM_STR);
       $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
       $stmt->bindParam(':parent_id', $this->parent_id, PDO::PARAM_INT);
       $stmt->bindParam(':parent_type', $this->parent_type, PDO::PARAM_INT);
@@ -376,10 +376,22 @@ class Comment implements JsonSerializable {
       );
 
       return true;
-    } catch (PDOException $e) {
+    } catch ( PDOException $e ) {
       throw new QueryException( 'Cannot save comment', $e );
     }
     return false;
+  }
+
+  public function setContent( $value ) {
+    $this->content = $value;
+  }
+
+  public function setEditedCount( $value ) {
+    $this->edited_count = $value;
+  }
+
+  public function setEditedDateTime( \DateTime $value ) {
+    $this->edited_datetime = $value->format( 'Y-m-d H:i:s' );
   }
 
 }
