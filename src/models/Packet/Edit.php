@@ -16,8 +16,10 @@ class Edit extends Model {
   public $name;
   public $packet;
   public $packet_id;
+  public $products;
   public $published;
   public $remarks;
+  public $used_by;
   public $user;
 
 }

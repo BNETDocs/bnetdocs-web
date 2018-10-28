@@ -65,7 +65,7 @@ class Product {
           `bnls_product_id`,
           `label`,
           `sort`,
-          `version_byte
+          `version_byte`
         FROM `products`
         ORDER BY `sort` ASC;
       ");
@@ -88,6 +88,16 @@ class Product {
       throw new QueryException("Cannot refresh products", $e);
     }
     return null;
+  }
+
+  public static function getProductsFromIds($product_ids) {
+    $products = [];
+    if ($product_ids !== null) {
+      foreach ($product_ids as $bnet_product_id) {
+        $products[] = new self($bnet_product_id);
+      }
+    }
+    return $products;
   }
 
   public function getBnetProductId() {
