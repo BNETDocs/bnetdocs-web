@@ -83,6 +83,31 @@ require('./header.inc.phtml');
               ?></textarea>
           </section>
           <section>
+            <label for="usedby">Used by:</label>
+            <table>
+              <thead></thead><tbody>
+<?php function add_product_checkbox( $id, $name, $checked ) { ?>
+                  <td><input type="checkbox" id="used_by_<?php echo $id; ?>" name="used_by[]" value="<?php echo $id; ?>"<?php if ( $checked ) { ?> checked="checked"<?php } ?>/><label for="used_by_<?php echo $id; ?>"><?php echo $name; ?></label></td>
+<?php }
+$product_ubound = count( $this->getContext()->products );
+for ( $product_i = 0; $product_i < $product_ubound; ++$product_i ) { ?>
+                <tr>
+<?php
+  $p = $this->getContext()->products[ $product_i ];
+  $checked = in_array( $p, $this->getContext()->used_by );
+  add_product_checkbox( $p->getBnetProductId(), $p->getLabel(), $checked );
+  if ( $product_i + 1 < $product_ubound ) {
+    $p = $this->getContext()->products[ ++$product_i ];
+    $checked = in_array( $p, $this->getContext()->used_by );
+    add_product_checkbox( $p->getBnetProductId(), $p->getLabel(), $checked );
+  }
+?>
+                </tr>
+<?php } ?>
+              </tbody>
+            </table>
+          </section>
+          <section>
             <label for="remarks">Remarks:</label>
             <span style="float:right;">
               <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
