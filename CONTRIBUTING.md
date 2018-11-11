@@ -96,7 +96,8 @@ Configure nginx so that it is a fastcgi proxy to php-fpm. You will then run
 `composer install` to get additional vendor files required for this project.
 
 Nginx should be pointed at the [src/main.php](./src/main.php) file for all
-requests.
+requests. A sample config exists at
+[etc/nginx-vhost-sample.conf](./etc/nginx-vhost.sample.conf).
 
 MariaDB should be configured with the `TRADITIONAL,NO_AUTO_VALUE_ON_ZERO` modes.
 A sample configuration can be found at
