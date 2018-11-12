@@ -29,16 +29,16 @@ class UpdateJob extends Controller {
 
     } else {
 
-      $query = $router->getRequestQueryArray();
+      $q = $router->getRequestBodyArray();
 
-      $server_id = ( isset( $query[ 'id' ]) ? $query[ 'id' ] : null );
+      $server_id = ( isset( $q[ 'id' ]) ? $q[ 'id' ] : null );
 
       $job_token = (
-        isset( $query[ 'job_token' ]) ? $query[ 'job_token' ] : null
+        isset( $q[ 'job_token' ]) ? $q[ 'job_token' ] : null
       );
 
       $status = (
-        isset( $query[ 'status' ]) ? $query[ 'status' ] : null
+        isset( $q[ 'status' ]) ? $q[ 'status' ] : null
       );
 
       if ( !is_null( $server_id )) $server_id = (int) $server_id;
