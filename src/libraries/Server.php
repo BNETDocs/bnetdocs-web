@@ -290,4 +290,83 @@ class Server implements JsonSerializable {
     return false;
   }
 
+  public function save() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    try {
+
+      $stmt = Common::$database->prepare('
+        UPDATE
+          `servers`
+        SET
+          `address` = :address,
+          `created_datetime` = :created_dt,
+          `label` = :label,
+          `port` = :port,
+          `status_bitmask` = :status,
+          `type_id` = :type_id,
+          `updated_datetime` = :updated_dt,
+          `user_id` = :user_id
+        WHERE
+          `id` = :id
+        LIMIT 1;
+      ');
+
+      $stmt->bindParam( ':address', $this->address, PDO::PARAM_STR );
+      $stmt->bindParam(
+        ':created_dt', $this->created_datetime, PDO::PARAM_STR
+      );
+      $stmt->bindParam( ':label', $this->label, PDO::PARAM_STR );
+      $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
+      $stmt->bindParam( ':port', $this->port, PDO::PARAM_INT );
+      $stmt->bindParam( ':status', $this->status_bitmask, PDO::PARAM_INT );
+      $stmt->bindParam( ':type_id', $this->type_id, PDO::PARAM_INT );
+      if ( is_null( $this->updated_datetime )) {
+        $stmt->bindParam( ':updated_dt', null, PDO::PARAM_NULL );
+      } else {
+        $stmt->bindParam(
+          ':updated_dt', $this->updated_datetime, PDO::PARAM_STR
+        );
+      }
+      if ( is_null( $this->user_id )) {
+        $stmt->bindParam( ':user_id', null, PDO::PARAM_NULL );
+      } else {
+        $stmt->bindParam( ':user_id', $this->user_id, PDO::PARAM_INT );
+      }
+
+      if (!$stmt->execute()) {
+        throw new QueryException( 'Cannot save server' );
+      }
+      $stmt->closeCursor();
+
+      $object                   = new StdClass();
+      $object->address          = $this->address;
+      $object->created_datetime = $this->created_datetime;
+      $object->id               = $this->id;
+      $object->label            = $this->label;
+      $object->port             = $this->port;
+      $object->status_bitmask   = $this->status_bitmask;
+      $object->type_id          = $this->type_id;
+      $object->updated_datetime = $this->updated_datetime;
+      $object->user_id          = $this->user_id;
+
+      $cache_key = 'bnetdocs-server-' . $this->id;
+      Common::$cache->set( $cache_key, serialize( $object ), 300 );
+      Common::$cache->delete( 'bnetdocs-servers' );
+
+      return true;
+
+    } catch ( PDOException $e ) {
+      throw new QueryException( 'Cannot save server', $e );
+    }
+
+    return false;
+  }
+
+  public function setStatusBitmask( $status_bitmask ) {
+    $this->status_bitmask = $status_bitmask;
+  }
+
 }

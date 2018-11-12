@@ -210,6 +210,9 @@ function main() {
     //$router->addRoute( // URL: /server/create
     //  "#^/server/create/?$#", "Server\\Create", "Server\\CreateHtml"
     //);
+    $router->addRoute( // URL: /server/updatejob.json
+      "#^/server/updatejob.json$#", "Server\\UpdateJob", "Server\\UpdateJobJSON"
+    );
     $router->addRoute( // URL: /servers
       "#^/servers/?$#", "Servers", "ServersHtml"
     );
