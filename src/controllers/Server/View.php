@@ -4,7 +4,6 @@ namespace BNETDocs\Controllers\Server;
 
 use \BNETDocs\Libraries\Exceptions\ServerNotFoundException;
 use \BNETDocs\Libraries\Exceptions\ServerTypeNotFoundException;
-use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\ServerMetric;
 use \BNETDocs\Libraries\ServerType;
