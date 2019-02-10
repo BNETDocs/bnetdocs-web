@@ -16,9 +16,24 @@ require("./header.inc.phtml");
       <article>
         <header>Welcome to BNETDocs!</header>
         <section>
-          <p>TODO: make this page fuller.</p>
-          <p>i Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae suscipit ex. Phasellus tempus scelerisque pulvinar. Donec sollicitudin porta sapien quis accumsan. Quisque ipsum lectus, tempor eget purus eu, bibendum interdum ligula. Morbi quis magna a leo volutpat malesuada. Nulla hendrerit elementum nisl, eget lobortis massa tincidunt in. Pellentesque vestibulum accumsan vulputate. Sed arcu augue, congue ut sapien vitae, pharetra facilisis lacus. Aenean elit metus, cursus vel mauris in, condimentum elementum nisl.</p>
-          <p>Praesent quam magna, pretium vitae fermentum sed, iaculis ut lectus. Vestibulum dapibus purus vitae bibendum volutpat. Quisque pretium, orci ut facilisis ullamcorper, nulla lectus sodales ex, vel bibendum dui lectus et risus. Vivamus quis vestibulum magna. Mauris tristique arcu mauris, id consequat est convallis vel. Nam at diam sed nisi maximus sodales at nec nunc. Etiam sagittis tellus eget fermentum rutrum. Vivamus et fermentum lacus. Duis dapibus libero quis fermentum feugiat.</p>
+          <p>BNETDocs is a community website that documents and discusses the Classic Battle.net&trade; protocol.</p>
+          <h2>Our Legacy</h2>
+          <p>From 2003 to today, the documentation has been maintained by a loving and passionate community of gamers and developers like you. A lot of us have poured our heart and soul into keeping accurate documentation to the best of our ability. It is with the support of our community that we are able to continue this legacy, as Blizzard Entertainment continues updating their classic games.</p>
+          <h2>Support Us</h2>
+          <p>To that end, if you would like to support us, there are a few ways you can do so. You could:</p>
+          <p><ul>
+            <li><a href="<?php echo Common::relativeUrlToAbsolute(Common::$config->bnetdocs->discord_url); ?>">join our Discord</a> and have a chat,</li>
+            <li><a href="<?php echo Common::relativeUrlToAbsolute('/user/register'); ?>">register</a> an account and add your knowledge to our site,</li>
+            <li><a href="<?php echo Common::relativeUrlToAbsolute('/donate'); ?>">donate</a> to costs of running this website,</li>
+            <li>and help <a href="<?php echo Common::relativeUrlToAbsolute('https://github.com/BNETDocs/bnetdocs-web'); ?>">develop this website</a>.</li>
+          </ul></p>
+          <p>Help our community and documentation grow! Get involved today!</p>
+        </section>
+      </article>
+      <article>
+        <header>Recent Updates</header>
+        <section>
+<?php include('./NYI.inc.phtml'); ?>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>
