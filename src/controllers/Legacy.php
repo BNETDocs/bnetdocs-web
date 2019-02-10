@@ -46,7 +46,7 @@ class Legacy extends Controller {
     }
 
     if (is_null($model->url)) {
-      $model->url = '/news';
+      $model->url = '/welcome';
       $model->is_legacy = false;
       $code = 302;
     } else {

@@ -1,0 +1,24 @@
+<?php
+
+namespace BNETDocs\Templates;
+
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title       = "Welcome";
+$description = "Welcome to the documentation and discussion for the Classic Battle.net protocol";
+
+$this->opengraph->attach(new Pair("url", "/welcome"));
+$this->opengraph->attach(new Pair("type", "article"));
+
+require("./header.inc.phtml");
+?>
+      <article>
+        <header>Welcome to BNETDocs!</header>
+        <section>
+          <p>TODO: make this page fuller.</p>
+          <p>i Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae suscipit ex. Phasellus tempus scelerisque pulvinar. Donec sollicitudin porta sapien quis accumsan. Quisque ipsum lectus, tempor eget purus eu, bibendum interdum ligula. Morbi quis magna a leo volutpat malesuada. Nulla hendrerit elementum nisl, eget lobortis massa tincidunt in. Pellentesque vestibulum accumsan vulputate. Sed arcu augue, congue ut sapien vitae, pharetra facilisis lacus. Aenean elit metus, cursus vel mauris in, condimentum elementum nisl.</p>
+          <p>Praesent quam magna, pretium vitae fermentum sed, iaculis ut lectus. Vestibulum dapibus purus vitae bibendum volutpat. Quisque pretium, orci ut facilisis ullamcorper, nulla lectus sodales ex, vel bibendum dui lectus et risus. Vivamus quis vestibulum magna. Mauris tristique arcu mauris, id consequat est convallis vel. Nam at diam sed nisi maximus sodales at nec nunc. Etiam sagittis tellus eget fermentum rutrum. Vivamus et fermentum lacus. Duis dapibus libero quis fermentum feugiat.</p>
+        </section>
+      </article>
+<?php require("./footer.inc.phtml"); ?>

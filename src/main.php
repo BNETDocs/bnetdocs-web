@@ -1,7 +1,7 @@
 <?php
 /**
  *  BNETDocs, the documentation and discussion website for Blizzard protocols
- *  Copyright (C) 2003-2018  "Arta", Don Cullen "Kyro", Carl Bennett, others
+ *  Copyright (C) 2003-2019  "Arta", Don Cullen "Kyro", Carl Bennett, others
  *  This file is part of BNETDocs.
  *
  *  BNETDocs is free software: you can redistribute it and/or modify
@@ -257,6 +257,9 @@ function main() {
     );
     $router->addRoute( // URL: /user/update
       "#^/user/update/?$#", "User\\Update", "User\\UpdateHtml"
+    );
+    $router->addRoute( // URL: /welcome
+      "#^/welcome/?$#", "FrontPage", "FrontPageHtml"
     );
     $router->addRoute("#.*#", "PageNotFound", "PageNotFoundHtml"); // URL: *
   }
