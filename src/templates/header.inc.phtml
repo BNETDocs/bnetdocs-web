@@ -99,7 +99,7 @@ $_campaign_vultr = (
 <?php } ?>
   </head>
   <body>
-    <header class="main-page"><a href="<?php echo Common::relativeUrlToAbsolute('/welcome'); ?>"><img src="<?php echo Common::relativeUrlToAbsolute("/a/VSZX0bJ.png"); ?>" style="float:left;margin-right:6px;height:32px;"/> BNETDocs</a> <span id="mobile-nav">&#9776;</span><?php echo $_campaign_vultr; ?></header>
+    <header class="main-page"><a href="<?php echo Common::relativeUrlToAbsolute($_header_navigation_config->front_page); ?>"><img src="<?php echo Common::relativeUrlToAbsolute("/a/VSZX0bJ.png"); ?>" style="float:left;margin-right:6px;height:32px;"/> BNETDocs</a> <span id="mobile-nav">&#9776;</span><?php echo $_campaign_vultr; ?></header>
 <?php if (!(isset($slim_ui) && $slim_ui)) { ?>
     <nav>
       <a>Portal</a>

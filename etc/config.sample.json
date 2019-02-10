@@ -12,6 +12,7 @@
     ],
     "mobile_site_enabled": true,
     "navigation": {
+      "front_page": "/welcome",
       "hide_search_documents": false,
       "hide_search_packets": false,
       "hide_popular_documents": false,

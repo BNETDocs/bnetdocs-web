@@ -46,7 +46,7 @@ class Legacy extends Controller {
     }
 
     if (is_null($model->url)) {
-      $model->url = '/welcome';
+      $model->url = Common::$config->bnetdocs->navigation->front_page;
       $model->is_legacy = false;
       $code = 302;
     } else {
