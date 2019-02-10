@@ -19,6 +19,8 @@ if ( isset( Authentication::$user  )) {
   $_header_staff    = null;
 }
 
+$_header_navigation_config = Common::$config->bnetdocs->navigation;
+
 if ( !Common::$config->bnetdocs->asset_versioning ) {
   $_unique_asset = '';
 } else if ( !is_null( VersionInfo::$version->bnetdocs )) {
@@ -121,11 +123,19 @@ $_campaign_vultr = (
 <?php } ?>
       <a>Documentation</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/document/index"); ?>">Document Index</a>
+<?php if (!$_header_navigation_config->hide_search_documents) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/document/search"); ?>">Search Documents</a>
+<?php } ?>
+<?php if (!$_header_navigation_config->hide_popular_documents) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/document/popular"); ?>">Popular Documents</a>
+<?php } ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index"); ?>">Packet Index</a>
+<?php if (!$_header_navigation_config->hide_search_packets) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/packet/search"); ?>">Search Packets</a>
+<?php } ?>
+<?php if (!$_header_navigation_config->hide_popular_packets) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/packet/popular"); ?>">Popular Packets</a>
+<?php } ?>
 <?php if ($_header_staff) { ?>
       <a>Administration</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/document/create"); ?>">Create Document</a>
