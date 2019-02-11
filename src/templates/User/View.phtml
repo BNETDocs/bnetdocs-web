@@ -24,10 +24,10 @@ if ($object) {
 
   $this->opengraph->attach(new Pair("image", $object->getAvatarURI(null)));
 
-  $safe_name = htmlspecialchars($object->getName(), ENT_HTML5, "UTF-8");
+  $safe_name = filter_var($object->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
   if ($this->getContext()->biography) $description = $this->getContext()->biography;
-  $safe_biography = htmlspecialchars($this->getContext()->biography, ENT_HTML5, "UTF-8");
+  $safe_biography = filter_var($this->getContext()->biography, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
 }
 
@@ -53,28 +53,28 @@ require("./header.inc.phtml");
 <?php if ($this->getContext()->profiledata) { ?>
         <section class="profiledata">
 <?php if ($this->getContext()->github) { ?>
-          <span><strong>GitHub:</strong> <a href="<?php echo $this->getContext()->github_uri; ?>"><?php echo htmlspecialchars($this->getContext()->github, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><strong>GitHub:</strong> <a href="<?php echo $this->getContext()->github_uri; ?>"><?php echo filter_var($this->getContext()->github, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->reddit) { ?>
-          <span><strong>Reddit:</strong> <a href="<?php echo $this->getContext()->reddit_uri; ?>"><?php echo htmlspecialchars($this->getContext()->reddit, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><strong>Reddit:</strong> <a href="<?php echo $this->getContext()->reddit_uri; ?>"><?php echo filter_var($this->getContext()->reddit, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->steam_id) { ?>
-          <span><strong>Steam:</strong> <a href="<?php echo $this->getContext()->steam_uri; ?>"><?php echo htmlspecialchars($this->getContext()->steam_id, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><strong>Steam:</strong> <a href="<?php echo $this->getContext()->steam_uri; ?>"><?php echo filter_var($this->getContext()->steam_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->facebook) { ?>
-          <span><strong>Facebook:</strong> <a href="<?php echo $this->getContext()->facebook_uri; ?>"><?php echo htmlspecialchars($this->getContext()->facebook, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><strong>Facebook:</strong> <a href="<?php echo $this->getContext()->facebook_uri; ?>"><?php echo filter_var($this->getContext()->facebook, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->twitter) { ?>
-          <span><strong>Twitter:</strong> <a href="<?php echo $this->getContext()->twitter_uri; ?>"><?php echo htmlspecialchars($this->getContext()->twitter, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><strong>Twitter:</strong> <a href="<?php echo $this->getContext()->twitter_uri; ?>"><?php echo filter_var($this->getContext()->twitter, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->instagram) { ?>
-          <span><strong>Instagram:</strong> <a href="<?php echo $this->getContext()->instagram_uri; ?>"><?php echo htmlspecialchars($this->getContext()->instagram, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><strong>Instagram:</strong> <a href="<?php echo $this->getContext()->instagram_uri; ?>"><?php echo filter_var($this->getContext()->instagram, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->skype) { ?>
-          <span><strong>Skype:</strong> <a href="<?php echo $this->getContext()->skype_uri; ?>"><?php echo htmlspecialchars($this->getContext()->skype, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><strong>Skype:</strong> <a href="<?php echo $this->getContext()->skype_uri; ?>"><?php echo filter_var($this->getContext()->skype, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
 <?php if ($this->getContext()->website) { ?>
-          <span><strong>Website:</strong> <a href="<?php echo $this->getContext()->website_uri; ?>"><?php echo htmlspecialchars($this->getContext()->website, ENT_HTML5, "UTF-8"); ?></a></span>
+          <span><strong>Website:</strong> <a href="<?php echo $this->getContext()->website_uri; ?>"><?php echo filter_var($this->getContext()->website, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
         </section>
 <?php } ?>
@@ -91,8 +91,8 @@ require("./header.inc.phtml");
           </tr></tbody></table>
         </section>
 <?php } else { ?>
-        <header class="red"><?php echo htmlspecialchars($title, ENT_HTML5, "UTF-8"); ?></header>
-        <section class="red"><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></section>
+        <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></header>
+        <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></section>
 <?php } ?>
       </article>
 <?php if (isset($this->getContext()->documents)) { ?>
@@ -101,7 +101,7 @@ require("./header.inc.phtml");
         <section>
           <table><tbody>
 <?php foreach ($this->getContext()->documents as $document) { ?>
-            <tr><td><a href="<?php echo $document->getURI(); ?>"><?php echo htmlspecialchars($document->getTitle()); ?></a></td></tr>
+            <tr><td><a href="<?php echo $document->getURI(); ?>"><?php echo filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
 <?php } ?>
           </tbody></table>
         </section>
@@ -113,7 +113,7 @@ require("./header.inc.phtml");
         <section>
           <table><tbody>
 <?php foreach ($this->getContext()->news_posts as $news_post) { ?>
-            <tr><td><a href="<?php echo $news_post->getURI(); ?>"><?php echo htmlspecialchars($news_post->getTitle()); ?></a></td></tr>
+            <tr><td><a href="<?php echo $news_post->getURI(); ?>"><?php echo filter_var($news_post->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
 <?php } ?>
           </tbody></table>
         </section>
@@ -125,7 +125,7 @@ require("./header.inc.phtml");
         <section>
           <table><tbody>
 <?php foreach ($this->getContext()->packets as $packet) { ?>
-            <tr><td><a href="<?php echo $packet->getURI(); ?>"><?php echo htmlspecialchars($packet->getPacketDirectionTag(), ENT_HTML5, "UTF-8"); ?> <?php echo htmlspecialchars($packet->getPacketId(true), ENT_HTML5, "UTF-8"); ?> <?php echo htmlspecialchars($packet->getPacketName()); ?></a></td></tr>
+            <tr><td><a href="<?php echo $packet->getURI(); ?>"><?php echo filter_var($packet->getPacketDirectionTag(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?> <?php echo filter_var($packet->getPacketId(true), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?> <?php echo filter_var($packet->getPacketName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
 <?php } ?>
           </tbody></table>
         </section>
