@@ -36,8 +36,16 @@ class Event {
   }
 
   public static function &getAllEvents(
-    $order = null, $limit = null, $index = null
+    $filter_types = null, $order = null, $limit = null, $index = null
   ) {
+
+    if (empty($filter_types)) {
+      $where_clause = '';
+    } else {
+      $where_clause = 'WHERE `event_type_id` IN ('
+        . implode( ',', $filter_types ) . ')'
+      ;
+    }
 
     if (!(is_numeric($limit) || is_numeric($index))) {
       $limit_clause = '';
@@ -49,7 +57,7 @@ class Event {
 
     if (empty($limit_clause)) {
 
-      $cache_key = 'bnetdocs-events';
+      $cache_key = 'bnetdocs-events-' . hash( 'md5', $where_clause );
       $cache_val = Common::$cache->get( $cache_key );
 
       if ( $cache_val !== false && !empty( $cache_val ) ) {
@@ -81,6 +89,7 @@ class Event {
                `meta_data`,
                `user_id`
         FROM `event_log`
+        ' . $where_clause . '
         ORDER BY
           ' . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
           `id` ' . ($order ? $order[1] : 'ASC') . ' ' . $limit_clause . ';'
@@ -118,14 +127,24 @@ class Event {
     return null;
   }
 
-  public static function getEventCount() {
+  public static function getEventCount($filter_types = null) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
     try {
 
-      $stmt = Common::$database->prepare('SELECT COUNT(*) FROM `event_log`;');
+      if (empty($filter_types)) {
+        $where_clause = '';
+      } else {
+        $where_clause = ' WHERE event_type_id IN ('
+          . implode( ',', $filter_types ) . ')'
+        ;
+      }
+
+      $stmt = Common::$database->prepare(
+        'SELECT COUNT(*) FROM `event_log`' . $where_clause . ';'
+      );
 
       if ( !$stmt->execute() ) {
         throw new QueryException( 'Cannot query event count' );

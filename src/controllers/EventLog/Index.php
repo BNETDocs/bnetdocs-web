@@ -71,6 +71,7 @@ class Index extends Controller {
       if ($model->page > $model->pages) { $model->page = $model->pages; }
 
       $model->events = Event::getAllEvents(
+        null,
         $order,
         $model->limit,
         $model->limit * ( $model->page - 1 )

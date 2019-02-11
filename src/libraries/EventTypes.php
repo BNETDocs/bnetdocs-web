@@ -2,6 +2,8 @@
 
 namespace BNETDocs\Libraries;
 
+use \SplEnum;
+
 class EventTypes {
 
   const LOG_NOTE = 0;
