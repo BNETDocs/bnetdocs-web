@@ -8,6 +8,7 @@ use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Packet;
+use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\User as UserLib;
 use \BNETDocs\Libraries\UserProfile;
 use \BNETDocs\Models\User\View as UserViewModel;
@@ -133,7 +134,9 @@ class View extends Controller {
     $model->packets    = ($model->sum_packets    ?
       Packet::getPacketsByUserId($model->user_id) : null
     );
-    $model->servers    = ($model->sum_servers    ? true : null);
+    $model->servers    = ($model->sum_servers    ?
+      Server::getServersByUserId($model->user_id) : null
+    );
 
     // Process documents
     if ($model->documents) {
@@ -158,7 +161,7 @@ class View extends Controller {
 
     // Process news posts
     if ($model->news_posts) {
-      // Alphabetically sort the documents
+      // Alphabetically sort the news posts
       usort($model->news_posts, function($a, $b){
         $a1 = $a->getTitle();
         $b1 = $b->getTitle();
@@ -166,7 +169,7 @@ class View extends Controller {
         return ($a1 < $b1 ? -1 : 1);
       });
 
-      // Remove documents that are not published
+      // Remove news posts that are not published
       $i = count($model->news_posts) - 1;
       while ($i >= 0) {
         if (!($model->news_posts[$i]->getOptionsBitmask()
@@ -179,7 +182,7 @@ class View extends Controller {
 
     // Process packets
     if ($model->packets) {
-      // Alphabetically sort the documents
+      // Alphabetically sort the packets
       usort($model->packets, function($a, $b){
         $a1 = $a->getPacketName();
         $b1 = $b->getPacketName();
@@ -187,7 +190,7 @@ class View extends Controller {
         return ($a1 < $b1 ? -1 : 1);
       });
 
-      // Remove documents that are not published
+      // Remove packets that are not published
       $i = count($model->packets) - 1;
       while ($i >= 0) {
         if (!($model->packets[$i]->getOptionsBitmask()
@@ -196,6 +199,17 @@ class View extends Controller {
         }
         --$i;
       }
+    }
+
+    // Process servers
+    if ($model->servers) {
+      // Alphabetically sort the servers
+      usort($model->servers, function($a, $b){
+        $a1 = $a->getName();
+        $b1 = $b->getName();
+        if ($a1 == $b1) return 0;
+        return ($a1 < $b1 ? -1 : 1);
+      });
     }
 
   }

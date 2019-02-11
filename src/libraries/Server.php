@@ -147,6 +147,47 @@ class Server implements JsonSerializable {
     return $this->port;
   }
 
+  public static function getServersByUserId($user_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare('
+        SELECT
+          `address`,
+          `created_datetime`,
+          `id`,
+          `label`,
+          `port`,
+          `status_bitmask`,
+          `type_id`,
+          `updated_datetime`,
+          `user_id`
+        FROM `servers`
+        WHERE `user_id` = :user_id
+        ORDER BY `id` ASC;
+      ');
+      $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+      if (!$stmt->execute()) {
+        throw new QueryException('Cannot query servers by user id');
+      }
+      $ids     = [];
+      $objects = [];
+      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
+        $ids[]     = (int) $row->id;
+        $objects[] = new self($row);
+        Common::$cache->set(
+          'bnetdocs-server-' . $row->id, serialize($row), 300
+        );
+      }
+      $stmt->closeCursor();
+      return $objects;
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot query servers by user id', $e);
+    }
+    return null;
+  }
+
   public function getStatusBitmask() {
     return $this->status_bitmask;
   }

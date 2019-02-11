@@ -135,7 +135,11 @@ require("./header.inc.phtml");
       <article>
         <header>Servers</header>
         <section>
-          <?php require("./NYI.inc.phtml"); ?>
+          <table><tbody>
+<?php foreach ($this->getContext()->servers as $server) { ?>
+            <tr><td><a href="<?php echo $server->getURI(); ?>"><?php echo htmlspecialchars($server->getName()); ?></a></td></tr>
+<?php } ?>
+          </tbody></table>
         </section>
       </article>
 <?php } ?>
