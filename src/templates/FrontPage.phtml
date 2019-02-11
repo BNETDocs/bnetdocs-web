@@ -11,6 +11,7 @@ $description = "Welcome to the documentation and discussion for the Classic Batt
 $this->opengraph->attach(new Pair("url", "/welcome"));
 $this->opengraph->attach(new Pair("type", "article"));
 
+$this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
       <article>
@@ -18,22 +19,32 @@ require("./header.inc.phtml");
         <section>
           <p>BNETDocs is a community website that documents and discusses the Classic Battle.net&trade; protocol.</p>
           <h2>Our Legacy</h2>
+          <img class="welcome-logo-book" alt="BNETDocs Logo" title="BNETDocs Logo" src="<?php echo Common::relativeUrlToAbsolute('/a/VSZX0bJ.png'); ?>"/>
           <p>From 2003 to today, the documentation has been maintained by a loving and passionate community of gamers and developers like you. A lot of us have poured our heart and soul into keeping accurate documentation to the best of our ability. It is with the support of our community that we are able to continue this legacy, as Blizzard Entertainment continues updating their classic games.</p>
           <h2>Support Us</h2>
+          <img class="welcome-logo-gnome" alt="Gnome Icon" title="Gnome Icon" src="<?php echo Common::relativeUrlToAbsolute('/a/gnome_l.gif'); ?>"/>
           <p>To that end, if you would like to support us, there are a few ways you can do so. You could:</p>
           <p><ul>
             <li><a href="<?php echo Common::relativeUrlToAbsolute(Common::$config->bnetdocs->discord_url); ?>">join our Discord</a> and have a chat,</li>
             <li><a href="<?php echo Common::relativeUrlToAbsolute('/user/register'); ?>">register</a> an account and add your knowledge to our site,</li>
             <li><a href="<?php echo Common::relativeUrlToAbsolute('/donate'); ?>">donate</a> to costs of running this website,</li>
-            <li>and help <a href="<?php echo Common::relativeUrlToAbsolute('https://github.com/BNETDocs/bnetdocs-web'); ?>">develop this website</a>.</li>
+            <li>help <a href="<?php echo Common::relativeUrlToAbsolute('https://github.com/BNETDocs/bnetdocs-web'); ?>">develop this website</a>,</li>
+            <li>and <a href="<?php echo Common::relativeUrlToAbsolute('https://github.com/BNETDocs/bnetdocs-web/issues'); ?>">suggest improvements</a> to the site.</li>
           </ul></p>
-          <p>Help our community and documentation grow! Get involved today!</p>
+          <p>Help our community and documentation grow! Receive recognition for your work on our <a href="<?php echo Common::relativeUrlToAbsolute('/credits'); ?>">contributors</a> page!</p>
         </section>
       </article>
       <article>
-        <header>Recent Updates</header>
+        <header>Activity Feed</header>
         <section>
-<?php include('./NYI.inc.phtml'); ?>
+          <p>Here's the latest of what's going on at BNETDocs.</p>
+          <?php include('./NYI.inc.phtml'); ?>
+          <hr/>
+          <p>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/news'); ?>">Read News</a>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/document/index'); ?>">View Documents</a>
+            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/packet/index'); ?>">View Packets</a>
+          </p>
         </section>
       </article>
 <?php require("./footer.inc.phtml"); ?>

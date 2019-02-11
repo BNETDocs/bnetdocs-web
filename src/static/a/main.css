@@ -122,9 +122,11 @@ main {
   width: 1000px;
 }
 main > article {
-  margin: 0px 0px 0px 224px;
+  margin: 10px 0px 0px 240px;
   overflow: hidden;
-  padding: 10px 8px 0px 16px;
+}
+main > article:first-child {
+  margin-top: 10px;
 }
 main.slim > article {
   margin: 0px;
@@ -247,6 +249,16 @@ p.pagination > a {
 }
 p.pagination > a.active {
   background-color: rgba(128,128,128,0.8);
+}
+img.welcome-logo-book {
+  float: right;
+  height: 100px;
+  margin: 8px;
+}
+img.welcome-logo-gnome {
+  float: right;
+  height: 80px;
+  margin: 8px;
 }
 footer.main-page {
   box-sizing: border-box;
