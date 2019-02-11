@@ -259,7 +259,7 @@ function main() {
       "#^/user/update/?$#", "User\\Update", "User\\UpdateHtml"
     );
     $router->addRoute( // URL: /welcome
-      "#^/welcome/?$#", "FrontPage", "FrontPageHtml"
+      "#^/welcome/?$#", "Welcome", "WelcomeHtml"
     );
     $router->addRoute("#.*#", "PageNotFound", "PageNotFoundHtml"); // URL: *
   }

@@ -4,4 +4,4 @@ namespace BNETDocs\Models;
 
 use \CarlBennett\MVC\Libraries\Model;
 
-class FrontPage extends Model {}
+class Welcome extends Model {}

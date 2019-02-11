@@ -2,16 +2,16 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Models\FrontPage as FrontPageModel;
+use \BNETDocs\Models\Welcome as WelcomeModel;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 
-class FrontPage extends Controller {
+class Welcome extends Controller {
 
   public function &run( Router &$router, View &$view, array &$args ) {
 
-    $model = new FrontPageModel();
+    $model = new WelcomeModel();
 
     $view->render( $model );
 
