@@ -5,15 +5,25 @@ namespace BNETDocs\Templates;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
-$title       = "Donate";
-$description = "Donate to BNETDocs to show your support for this project!";
+$title       = 'Donate';
+$description = 'Donate to BNETDocs to show your support for this project!';
 
-$this->opengraph->attach(new Pair("url", "/donate"));
-$this->opengraph->attach(new Pair("type", "article"));
+$this->opengraph->attach(new Pair('url', '/donate'));
+$this->opengraph->attach(new Pair('type', 'article'));
 
-require("./header.inc.phtml");
+$btc_address = $this->getContext()->donations->btc_address;
+$paypal_url  = $this->getContext()->donations->paypal_url;
+
+require('./header.inc.phtml');
 ?>
       <article>
+        <header>Support Us</header>
+        <section>
+          <p><ul>
+            <li>PayPal: <a href="<?php echo filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"><?php echo filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></li>
+            <li>BTC: <code><?php echo $btc_address; ?></code></li>
+          </ul></p>
+        </section>
         <header>Disclaimer</header>
         <section>
           <p>By donating to BNETDocs, you understand the following:</p>
@@ -23,11 +33,7 @@ require("./header.inc.phtml");
             <li>A donation is not acceptable as payment for goods, products, or merchant items.</li>
             <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net&trade;'s Terms of Service.</li>
           </ol></p>
-          <p>Please see our <a href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>">Legal Policies</a> for more info.</p>
-        </section>
-        <header>Bitcoin (BTC)</header>
-        <section>
-          <p>Please send your donation to: <code><?php echo $this->getContext()->btc_address; ?></code></p>
+          <p>Please see our <a href="<?php echo Common::relativeUrlToAbsolute('/legal'); ?>">Legal Policies</a> for more info.</p>
         </section>
       </article>
-<?php require("./footer.inc.phtml"); ?>
+<?php require('./footer.inc.phtml'); ?>

@@ -1,12 +1,15 @@
 {
   "bnetdocs": {
     "asset_versioning": true,
-    "btc_donate_address": "",
     "campaigns": {
       "battleforthenet": "",
       "vultr": ""
     },
     "discord_url": "https://discord.gg/u87WVeu",
+    "donations": {
+      "btc_address": "",
+      "paypal_url": ""
+    },
     "maintenance": [
       false,
       "BNETDocs has to take a brief moment to do some system maintenance. We'll be back shortly."

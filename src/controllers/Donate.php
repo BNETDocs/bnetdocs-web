@@ -15,8 +15,8 @@ class Donate extends Controller {
 
   public function &run(Router &$router, View &$view, array &$args) {
 
-    $model              = new DonateModel();
-    $model->btc_address = Common::$config->bnetdocs->btc_donate_address;
+    $model            = new DonateModel();
+    $model->donations = Common::$config->bnetdocs->donations;
 
     $view->render($model);
 

@@ -6,6 +6,6 @@ use \CarlBennett\MVC\Libraries\Model;
 
 class Donate extends Model {
 
-  public $btc_address;
+  public $donations;
 
 }
