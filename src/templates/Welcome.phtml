@@ -25,7 +25,7 @@ require("./header.inc.phtml");
           <img class="welcome-logo-gnome" alt="Gnome Icon" title="Gnome Icon" src="<?php echo Common::relativeUrlToAbsolute('/a/gnome_l.gif'); ?>"/>
           <p>To that end, if you would like to support us, there are a few ways you can do so. You could:</p>
           <p><ul>
-            <li><a href="<?php echo Common::relativeUrlToAbsolute(Common::$config->bnetdocs->discord_url); ?>">join our Discord</a> and have a chat,</li>
+            <li><a href="<?php echo Common::relativeUrlToAbsolute($this->getContext()->discord_url); ?>">join our Discord</a> and have a chat,</li>
             <li><a href="<?php echo Common::relativeUrlToAbsolute('/user/register'); ?>">register</a> an account and add your knowledge to our site,</li>
             <li><a href="<?php echo Common::relativeUrlToAbsolute('/donate'); ?>">donate</a> to costs of running this website,</li>
             <li>help <a href="<?php echo Common::relativeUrlToAbsolute('https://github.com/BNETDocs/bnetdocs-web'); ?>">develop this website</a>,</li>
