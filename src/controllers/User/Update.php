@@ -62,7 +62,7 @@ class Update extends Controller {
         $model->skype_username     = $model->profile->getSkypeUsername();
         $model->steam_id           = $model->profile->getSteamId();
         $model->twitter_username   = $model->profile->getTwitterUsername();
-        $model->website            = $model->profile->getWebsite();
+        $model->website            = $model->profile->getWebsite(false);
 
       }
 
@@ -358,7 +358,7 @@ class Update extends Controller {
 
         if ($model->twitter_username !== $model->profile->getTwitterUsername()) {
 
-          // steam id change request
+          // twitter username change request
 
           if (strlen($model->twitter_username) >
             $model->twitter_username_max_len
@@ -372,9 +372,9 @@ class Update extends Controller {
 
         }
 
-        if ($model->website !== $model->profile->getWebsite()) {
+        if ($model->website !== $model->profile->getWebsite(false)) {
 
-          // steam id change request
+          // website change request
 
           if (strlen($model->website) > $model->website_max_len) {
             $model->website_error = ['red', 'TOO_LONG'];
