@@ -189,6 +189,7 @@ class Update extends Controller {
           // biography change request
 
           $model->profile->setBiography($model->biography);
+          $model->biography_error = ['green', 'CHANGE_SUCCESS'];
           $profile_changed = true;
 
         }

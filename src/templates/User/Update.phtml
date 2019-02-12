@@ -58,6 +58,17 @@ switch ($this->getContext()->display_name_error[1]) {
       . $this->getContext()->display_name_error[1];
 }
 
+switch ($this->getContext()->biography_error[1]) {
+  case null: case '': $biography_error = ''; break;
+  case 'CHANGE_FAILED':
+    $biography_error = 'Failed to change biography.'; break;
+  case 'CHANGE_SUCCESS':
+    $biography_error = 'Your biography was updated.'; break;
+  default:
+    $biography_error = 'Internal error: '
+      . $this->getContext()->biography_error[1];
+}
+
 $this->additional_css[] = '/a/forms.css';
 require('./header.inc.phtml');
 ?>
@@ -140,10 +151,17 @@ require('./header.inc.phtml');
               echo '<p>' . $display_name_error . '</p>';
             } ?>
           </section>
-          <section>
+          <section<?php
+            if ($biography_error) {
+              echo ' class="' .
+                $this->getContext()->biography_error[0] . '"';
+            } ?>>
             <hr/>
             <label for="biography">Biography:</label>
             <textarea maxlength="<?php echo $this->getContext()->biography_max_len; ?>" name="biography" id="biography"><?php echo filter_var($this->getContext()->biography, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></textarea>
+            <?php if ($biography_error) {
+              echo '<p>' . $biography_error . '</p>';
+            } ?>
           </section>
           <section>
             <hr/>
