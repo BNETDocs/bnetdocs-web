@@ -278,9 +278,33 @@ class UserProfile {
     }
     try {
       $stmt = Common::$database->prepare('
-        UPDATE
-          `user_profiles`
-        SET
+        INSERT INTO `user_profiles` (
+          `biography`,
+          `discord_username`,
+          `facebook_username`,
+          `github_username`,
+          `instagram_username`,
+          `phone`,
+          `reddit_username`,
+          `skype_username`,
+          `steam_id`,
+          `twitter_username`,
+          `user_id`,
+          `website`
+        ) VALUES (
+          :bio,
+          :discord,
+          :fb,
+          :github,
+          :ig,
+          :ph,
+          :reddit,
+          :skype,
+          :steam,
+          :twitter,
+          :user_id,
+          :website
+        ) ON DUPLICATE KEY UPDATE
           `biography` = :bio,
           `discord_username` = :discord,
           `facebook_username` = :fb,
@@ -291,11 +315,9 @@ class UserProfile {
           `skype_username` = :skype,
           `steam_id` = :steam,
           `twitter_username` = :twitter,
+          `user_id` = :user_id,
           `website` = :website
-        WHERE
-          `user_id` = :id
-        LIMIT 1;
-      ');
+      ;');
       $stmt->bindParam(':bio', $this->biography, PDO::PARAM_STR);
       $stmt->bindParam(':discord', $this->discord_username, PDO::PARAM_STR);
       $stmt->bindParam(':fb', $this->facebook_username, PDO::PARAM_STR);
@@ -307,6 +329,7 @@ class UserProfile {
       $stmt->bindParam(':skype', $this->skype_username, PDO::PARAM_STR);
       $stmt->bindParam(':steam', $this->steam_id, PDO::PARAM_STR);
       $stmt->bindParam(':twitter', $this->twitter_username, PDO::PARAM_STR);
+      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
       $stmt->bindParam(':website', $this->website, PDO::PARAM_STR);
       if (!$stmt->execute()) {
         throw new QueryException('Cannot save user profile');
@@ -315,6 +338,7 @@ class UserProfile {
 
       $object                     = new StdClass();
       $object->biography          = $this->biography;
+      $object->discord_username   = $this->discord_username;
       $object->facebook_username  = $this->facebook_username;
       $object->github_username    = $this->github_username;
       $object->id                 = $this->id;
