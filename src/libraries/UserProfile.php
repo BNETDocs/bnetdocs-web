@@ -304,6 +304,8 @@ class UserProfile {
       $object->twitter_username   = $this->twitter_username;
       $object->website            = $this->website;
 
+      self::normalize($object);
+
       $cache_key = 'bnetdocs-userprofile-' . $this->id;
       Common::$cache->set($cache_key, serialize($object), 300);
 
