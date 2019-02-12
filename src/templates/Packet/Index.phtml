@@ -20,36 +20,55 @@ require('./header.inc.phtml');
         <header>Packet Index</header>
         <section>
           <form method="GET">
-            <label for="order">Order by:</label>
-            <select name="order" id="order" onchange="form.submit();"
-              style="display:inline-block;width:200px;">
-              <option value="created-datetime-asc"<?php
-                if ($order === 'created-datetime-asc') { echo ' selected="selected"';
-                } ?>>Created Timestamp (Ascending)</option>
-              <option value="created-datetime-desc"<?php
-                if ($order === 'created-datetime-desc') { echo ' selected="selected"';
-                } ?>>Created Timestamp (Descending)</option>
-              <option value="id-asc"<?php
-                if ($order === 'id-asc') { echo ' selected="selected"';
-                } ?>>Database Id (Ascending)</option>
-              <option value="id-desc"<?php
-                if ($order === 'id-desc') { echo ' selected="selected"';
-                } ?>>Database Id (Descending)</option>
-              <option value="packet-id-asc"<?php
-                if ($order === 'packet-id-asc') { echo ' selected="selected"';
-                } ?>>Packet Id (Ascending)</option>
-              <option value="packet-id-desc"<?php
-                if ($order === 'packet-id-desc') { echo ' selected="selected"';
-                } ?>>Packet Id (Descending)</option>
-              <option value="user-id-asc"<?php
-                if ($order === 'user-id-asc') { echo ' selected="selected"';
-                } ?>>User Id (Ascending)</option>
-              <option value="user-id-desc"<?php
-                if ($order === 'user-id-desc') { echo ' selected="selected"';
-                } ?>>User Id (Descending)</option>
-            </select>
-            <input type="submit" value="Reorder"/>
+            <div style="text-align:center;">
+              <label for="order">Order by:</label>
+              <select name="order" id="order" onchange="form.submit();"
+                style="display:inline-block;width:200px;">
+                <option value="created-datetime-asc"<?php
+                  if ($order === 'created-datetime-asc') { echo ' selected="selected"';
+                  } ?>>Created Timestamp (Ascending)</option>
+                <option value="created-datetime-desc"<?php
+                  if ($order === 'created-datetime-desc') { echo ' selected="selected"';
+                  } ?>>Created Timestamp (Descending)</option>
+                <option value="id-asc"<?php
+                  if ($order === 'id-asc') { echo ' selected="selected"';
+                  } ?>>Database Id (Ascending)</option>
+                <option value="id-desc"<?php
+                  if ($order === 'id-desc') { echo ' selected="selected"';
+                  } ?>>Database Id (Descending)</option>
+                <option value="packet-id-asc"<?php
+                  if ($order === 'packet-id-asc') { echo ' selected="selected"';
+                  } ?>>Packet Id (Ascending)</option>
+                <option value="packet-id-desc"<?php
+                  if ($order === 'packet-id-desc') { echo ' selected="selected"';
+                  } ?>>Packet Id (Descending)</option>
+                <option value="user-id-asc"<?php
+                  if ($order === 'user-id-asc') { echo ' selected="selected"';
+                  } ?>>User Id (Ascending)</option>
+                <option value="user-id-desc"<?php
+                  if ($order === 'user-id-desc') { echo ' selected="selected"';
+                  } ?>>User Id (Descending)</option>
+              </select>
+            </div>
+            <table><thead><tr><th colspan="3">Packet Types</th></tr></thead><tbody>
+<?php $x = 0; foreach ($this->getContext()->application_layers as $layer) {
+  $id = 'pktapplayer-' . $layer->getId();
+  $chk = in_array( $layer->getId(), $this->getContext()->pktapplayer );
+  if ( $x % 3 == 0 ) { ?>
+              <tr>
+<?php } ?>
+                <td><input type="checkbox" name="pktapplayer[]" id="<?php echo $id; ?>" value="<?php echo $layer->getId(); ?>"<?php if ($chk) { ?> checked="checked"<?php } ?>> <label for="<?php echo $id; ?>"><?php echo $layer->getTag(); ?></label></td>
+<?php if ( $x % 3 == 2 ) { ?>
+              </tr>
+<?php } ?>
+<?php $x++; } ?>
+<?php if ( $x % 3 > 0 ) { ?>
+              </tr>
+<?php } ?>
+            </tbody></table>
+            <div style="text-align:center;"><input type="submit" value="Submit"/></div>
           </form>
+          <hr/>
           <table>
             <thead>
               <tr>

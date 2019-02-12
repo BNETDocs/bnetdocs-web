@@ -113,8 +113,12 @@ class Packet implements JsonSerializable {
   }
 
   public static function &getAllPackets(
-    $order = null, $limit = null, $index = null
+    $where_clause = null, $order = null, $limit = null, $index = null
   ) {
+
+    if ( !empty( $where_clause )) {
+      $where_clause = 'WHERE ' . $where_clause;
+    }
 
     if ( !( is_numeric( $limit ) || is_numeric( $index ))) {
       $limit_clause = '';
@@ -126,7 +130,9 @@ class Packet implements JsonSerializable {
 
     if ( empty( $limit_clause )) {
 
-      $ckey = 'bnetdocs-packets-' . hash('md5', $order[0] . $order[1]);
+      $ckey = 'bnetdocs-packets-' . $where_clause
+        . hash('md5', $order[0] . $order[1])
+      ;
       $cval = Common::$cache->get( $ckey );
 
       if ( $cval !== false && !empty( $cval )) {
@@ -171,7 +177,7 @@ class Packet implements JsonSerializable {
                `packet_remarks`,
                `packet_transport_layer_id`,
                `user_id`
-        FROM `packets`
+        FROM `packets` ' . $where_clause . '
         ORDER BY ' . $order_clause . ';
       ');
 

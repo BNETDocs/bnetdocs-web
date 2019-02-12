@@ -3,13 +3,13 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Packet;
+use \BNETDocs\Libraries\PacketApplicationLayer as PktAppLayer;
 use \BNETDocs\Models\Packet\Index as PacketIndexModel;
 use \BNETDocs\Views\Packet\IndexHtml as PacketIndexHtmlView;
 use \BNETDocs\Views\Packet\IndexJSON as PacketIndexJSONView;
 
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Gravatar;
 use \CarlBennett\MVC\Libraries\Pair;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
@@ -27,6 +27,10 @@ class Index extends Controller {
 
     $model->order = (
       isset( $query['order'] ) ? $query['order'] : 'packet-id-asc'
+    );
+
+    $model->pktapplayer = (
+      isset( $query['pktapplayer'] ) ? $query['pktapplayer'] : array()
     );
 
     switch ( $model->order ) {
@@ -58,7 +62,19 @@ class Index extends Controller {
         $order = null;
     }
 
-    $model->packets = Packet::getAllPackets( $order );
+    $model->application_layers = PktAppLayer::getAllPacketApplicationLayers();
+
+    if ( empty( $model->pktapplayer )) {
+      foreach ( $model->application_layers as $layer ) {
+        $model->pktapplayer[] = $layer->getId();
+      }
+    }
+
+    $where_clause = '`packet_application_layer_id` IN ('
+      . implode( ',', $model->pktapplayer ) . ')'
+    ;
+
+    $model->packets = Packet::getAllPackets( $where_clause, $order );
 
     if ( !( $view instanceof PacketIndexHtmlView
       || $view instanceof PacketIndexJSONView )) {
