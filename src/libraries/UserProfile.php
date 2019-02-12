@@ -323,21 +323,79 @@ class UserProfile {
           `user_id` = :user_id,
           `website` = :website
       ;');
-      $stmt->bindParam(':bio', $this->biography, PDO::PARAM_STR);
-      $stmt->bindParam(':discord', $this->discord_username, PDO::PARAM_STR);
-      $stmt->bindParam(':fb', $this->facebook_username, PDO::PARAM_STR);
-      $stmt->bindParam(':github', $this->github_username, PDO::PARAM_STR);
-      $stmt->bindParam(':ig', $this->instagram_username, PDO::PARAM_STR);
-      $stmt->bindParam(':ph', $this->phone, PDO::PARAM_STR);
-      $stmt->bindParam(':reddit', $this->reddit_username, PDO::PARAM_STR);
-      $stmt->bindParam(':skype', $this->skype_username, PDO::PARAM_STR);
-      $stmt->bindParam(':steam', $this->steam_id, PDO::PARAM_STR);
-      $stmt->bindParam(':twitter', $this->twitter_username, PDO::PARAM_STR);
+
+      if (is_null($this->biography)) {
+        $stmt->bindParam(':bio', $this->biography, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':bio', $this->biography, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->discord_username)) {
+        $stmt->bindParam(':discord', $this->discord_username, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':discord', $this->discord_username, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->facebook_username)) {
+        $stmt->bindParam(':fb', $this->facebook_username, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':fb', $this->facebook_username, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->github_username)) {
+        $stmt->bindParam(':github', $this->github_username, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':github', $this->github_username, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->instagram_username)) {
+        $stmt->bindParam(':ig', $this->instagram_username, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':ig', $this->instagram_username, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->phone)) {
+        $stmt->bindParam(':ph', $this->phone, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':ph', $this->phone, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->reddit_username)) {
+        $stmt->bindParam(':reddit', $this->reddit_username, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':reddit', $this->reddit_username, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->skype_username)) {
+        $stmt->bindParam(':skype', $this->skype_username, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':skype', $this->skype_username, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->steam_id)) {
+        $stmt->bindParam(':steam', $this->steam_id, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':steam', $this->steam_id, PDO::PARAM_STR);
+      }
+
+      if (is_null($this->twitter_username)) {
+        $stmt->bindParam(':twitter', $this->twitter_username, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':twitter', $this->twitter_username, PDO::PARAM_STR);
+      }
+
       $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
-      $stmt->bindParam(':website', $this->website, PDO::PARAM_STR);
+
+      if (is_null($this->website)) {
+        $stmt->bindParam(':website', $this->website, PDO::PARAM_NULL);
+      } else {
+        $stmt->bindParam(':website', $this->website, PDO::PARAM_STR);
+      }
+
       if (!$stmt->execute()) {
         throw new QueryException('Cannot save user profile');
       }
+
       $stmt->closeCursor();
 
       $object                     = new StdClass();
