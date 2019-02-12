@@ -34,7 +34,7 @@ final class GlobalErrorHandler {
     while (ob_get_level()) ob_end_clean();
 
     // Determine error name from $errno:
-    if (class_exists("\\BNETDocs\\Libraries\\Common")) {
+    if (class_exists("\\CarlBennett\\MVC\\Libraries\\Common")) {
       $_errno = Common::phpErrorName($errno);
     } else {
       // Utility function inaccessible, use raw code:
