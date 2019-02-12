@@ -2,11 +2,12 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
+use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
@@ -18,13 +19,13 @@ class UserProfile {
   protected $discord_username;
   protected $facebook_username;
   protected $github_username;
-  protected $id;
   protected $instagram_username;
   protected $phone;
   protected $reddit_username;
   protected $skype_username;
   protected $steam_id;
   protected $twitter_username;
+  protected $user_id;
   protected $website;
 
   public function __construct($data) {
@@ -33,13 +34,13 @@ class UserProfile {
       $this->discord_username   = null;
       $this->facebook_username  = null;
       $this->github_username    = null;
-      $this->id                 = (int) $data;
       $this->instagram_username = null;
       $this->phone              = null;
       $this->reddit_username    = null;
       $this->skype_username     = null;
       $this->steam_id           = null;
       $this->twitter_username   = null;
+      $this->user_id            = (int) $data;
       $this->website            = null;
       $this->refresh();
     } else if ($data instanceof StdClass) {
@@ -48,13 +49,13 @@ class UserProfile {
       $this->discord_username   = $data->discord_username;
       $this->facebook_username  = $data->facebook_username;
       $this->github_username    = $data->github_username;
-      $this->id                 = $data->id;
       $this->instagram_username = $data->instagram_username;
       $this->phone              = $data->phone;
       $this->reddit_username    = $data->reddit_username;
       $this->skype_username     = $data->skype_username;
       $this->steam_id           = $data->steam_id;
       $this->twitter_username   = $data->twitter_username;
+      $this->user_id            = $data->user_id;
       $this->website            = $data->website;
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
@@ -83,10 +84,6 @@ class UserProfile {
 
   public function getGitHubUsername() {
     return $this->github_username;
-  }
-
-  public function getId() {
-    return $this->id;
   }
 
   public function getInstagramURI() {
@@ -140,6 +137,14 @@ class UserProfile {
 
   public function getTwitterUsername() {
     return $this->twitter_username;
+  }
+
+  public function getUser() {
+    return new User($this->user_id);
+  }
+
+  public function getUserId() {
+    return $this->user_id;
   }
 
   public function getWebsite($clean = true) {
@@ -205,7 +210,7 @@ class UserProfile {
   }
 
   public function refresh() {
-    $cache_key = "bnetdocs-userprofile-" . $this->id;
+    $cache_key = "bnetdocs-userprofile-" . $this->user_id;
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false) {
       $cache_val = unserialize($cache_val);
@@ -244,11 +249,11 @@ class UserProfile {
         WHERE `user_id` = :id
         LIMIT 1;
       ");
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(":id", $this->user_id, PDO::PARAM_INT);
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh user profile");
       } else if ($stmt->rowCount() == 0) {
-        throw new UserProfileNotFoundException($this->id);
+        throw new UserProfileNotFoundException($this->user_id);
       }
       $row = $stmt->fetch(PDO::FETCH_OBJ);
       $stmt->closeCursor();
@@ -322,14 +327,13 @@ class UserProfile {
       $stmt->bindParam(':discord', $this->discord_username, PDO::PARAM_STR);
       $stmt->bindParam(':fb', $this->facebook_username, PDO::PARAM_STR);
       $stmt->bindParam(':github', $this->github_username, PDO::PARAM_STR);
-      $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
       $stmt->bindParam(':ig', $this->instagram_username, PDO::PARAM_STR);
       $stmt->bindParam(':ph', $this->phone, PDO::PARAM_STR);
       $stmt->bindParam(':reddit', $this->reddit_username, PDO::PARAM_STR);
       $stmt->bindParam(':skype', $this->skype_username, PDO::PARAM_STR);
       $stmt->bindParam(':steam', $this->steam_id, PDO::PARAM_STR);
       $stmt->bindParam(':twitter', $this->twitter_username, PDO::PARAM_STR);
-      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
       $stmt->bindParam(':website', $this->website, PDO::PARAM_STR);
       if (!$stmt->execute()) {
         throw new QueryException('Cannot save user profile');
@@ -341,18 +345,18 @@ class UserProfile {
       $object->discord_username   = $this->discord_username;
       $object->facebook_username  = $this->facebook_username;
       $object->github_username    = $this->github_username;
-      $object->id                 = $this->id;
       $object->instagram_username = $this->instagram_username;
       $object->phone              = $this->phone;
       $object->reddit_username    = $this->reddit_username;
       $object->skype_username     = $this->skype_username;
       $object->steam_id           = $this->steam_id;
       $object->twitter_username   = $this->twitter_username;
+      $object->user_id            = $this->user_id;
       $object->website            = $this->website;
 
       self::normalize($object);
 
-      $cache_key = 'bnetdocs-userprofile-' . $this->id;
+      $cache_key = 'bnetdocs-userprofile-' . $this->user_id;
       Common::$cache->set($cache_key, serialize($object), 300);
 
       return true;
