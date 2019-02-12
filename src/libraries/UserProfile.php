@@ -252,4 +252,70 @@ class UserProfile {
     return false;
   }
 
+  public function save() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try {
+      $stmt = Common::$database->prepare('
+        UPDATE
+          `user_profiles`
+        SET
+          `biography` = :bio,
+          `facebook_username` = :fb,
+          `github_username` = :github,
+          `instagram_username` = :ig,
+          `phone` = :ph,
+          `reddit_username` = :reddit,
+          `skype_username` = :skype,
+          `steam_id` = :steam,
+          `twitter_username` = :twitter,
+          `website` = :website
+        WHERE
+          `user_id` = :id
+        LIMIT 1;
+      ');
+      $stmt->bindParam(':bio', $this->biography, PDO::PARAM_STR);
+      $stmt->bindParam(':fb', $this->facebook_username, PDO::PARAM_STR);
+      $stmt->bindParam(':github', $this->github_username, PDO::PARAM_STR);
+      $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+      $stmt->bindParam(':ig', $this->instagram_username, PDO::PARAM_STR);
+      $stmt->bindParam(':ph', $this->phone, PDO::PARAM_STR);
+      $stmt->bindParam(':reddit', $this->reddit_username, PDO::PARAM_STR);
+      $stmt->bindParam(':skype', $this->skype_username, PDO::PARAM_STR);
+      $stmt->bindParam(':steam', $this->steam_id, PDO::PARAM_STR);
+      $stmt->bindParam(':twitter', $this->twitter_username, PDO::PARAM_STR);
+      $stmt->bindParam(':website', $this->website, PDO::PARAM_STR);
+      if (!$stmt->execute()) {
+        throw new QueryException('Cannot save user profile');
+      }
+      $stmt->closeCursor();
+
+      $object                     = new StdClass();
+      $object->biography          = $this->biography;
+      $object->facebook_username  = $this->facebook_username;
+      $object->github_username    = $this->github_username;
+      $object->id                 = $this->id;
+      $object->instagram_username = $this->instagram_username;
+      $object->phone              = $this->phone;
+      $object->reddit_username    = $this->reddit_username;
+      $object->skype_username     = $this->skype_username;
+      $object->steam_id           = $this->steam_id;
+      $object->twitter_username   = $this->twitter_username;
+      $object->website            = $this->website;
+
+      $cache_key = 'bnetdocs-userprofile-' . $this->id;
+      Common::$cache->set($cache_key, serialize($object), 300);
+
+      return true;
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot save user profile', $e);
+    }
+    return false;
+  }
+
+  public function setBiography($value) {
+    $this->biography = $value;
+  }
+
 }

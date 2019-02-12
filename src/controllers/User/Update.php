@@ -4,8 +4,10 @@ namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\EventTypes;
+use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
+use \BNETDocs\Libraries\UserProfile;
 use \BNETDocs\Models\User\Update as UserUpdateModel;
 
 use \CarlBennett\MVC\Libraries\Common;
@@ -43,6 +45,18 @@ class Update extends Controller {
       $model->display_name       = Authentication::$user->getDisplayName();
       $model->display_name_error = [null, null];
 
+      try {
+        $model->profile = new UserProfile( Authentication::$user->getId() );
+      } catch (UserProfileNotFoundException $e) {
+        $model->profile = null;
+      }
+
+      if ( $model->profile ) {
+
+        $model->biography = $model->profile->getBiography();
+
+      }
+
       // process request
 
       if ($router->getRequestMethod() == 'POST') {
@@ -63,6 +77,10 @@ class Update extends Controller {
 
         $model->display_name = (
           isset($data['display_name']) ? $data['display_name'] : null
+        );
+
+        $model->biography = (
+          isset($data['biography']) ? $data['biography'] : null
         );
 
         // process input
@@ -164,6 +182,21 @@ class Update extends Controller {
 
         }
 
+        $profile_changed = false;
+
+        if ($model->biography !== $model->profile->getBiography()) {
+
+          // biography change request
+
+          $model->profile->setBiography($model->biography);
+          $profile_changed = true;
+
+        }
+
+        if ($profile_changed) {
+          $model->profile->save();
+        }
+
         Logger::logEvent(
           EventTypes::USER_EDITED,
           Authentication::$user->getId(),
@@ -177,6 +210,8 @@ class Update extends Controller {
             'email_1'            => $model->email_1,
             'email_2'            => $model->email_2,
             'display_name'       => $display_name,
+            'profile_changed'    => $profile_changed,
+            'biography'          => $model->biography,
           ])
         );
 

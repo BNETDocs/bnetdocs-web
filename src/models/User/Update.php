@@ -18,4 +18,9 @@ class Update extends Model {
   public $username_error;
   public $username_max_len;
 
+  public $profile;
+
+  public $biography;
+  public $biography_max_len = 255; // table design: varchar(255)
+
 }
