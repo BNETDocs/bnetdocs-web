@@ -667,6 +667,7 @@ DROP TABLE IF EXISTS `user_profiles`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_profiles` (
   `user_id` bigint(20) unsigned NOT NULL,
+  `discord_username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `github_username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `reddit_username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `steam_id` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,

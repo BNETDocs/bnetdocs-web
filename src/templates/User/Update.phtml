@@ -69,6 +69,17 @@ switch ($this->getContext()->biography_error[1]) {
       . $this->getContext()->biography_error[1];
 }
 
+switch ($this->getContext()->discord_username_error[1]) {
+  case null: case '': $discord_username_error = ''; break;
+  case 'TOO_LONG':
+    $discord_username_error = 'Your Discord username is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $discord_username_error = 'Your Discord username was updated.'; break;
+  default:
+    $discord_username_error = 'Internal error: '
+      . $this->getContext()->discord_username_error[1];
+}
+
 switch ($this->getContext()->facebook_username_error[1]) {
   case null: case '': $facebook_username_error = ''; break;
   case 'TOO_LONG':
@@ -268,13 +279,32 @@ require('./header.inc.phtml');
             } ?>
           </section>
           <section<?php
+            if ($discord_username_error) {
+              echo ' class="' .
+                $this->getContext()->discord_username_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="discord_username">Discord Username:</label>
+            <input tabindex="6"
+              maxlength="<?php echo
+                $this->getContext()->discord_username_max_len; ?>"
+              type="text" name="discord_username" id="discord_username"
+              value="<?php
+                echo filter_var($this->getContext()->discord_username,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($discord_username_error) {
+              echo '<p>' . $discord_username_error . '</p>';
+            } ?>
+          </section>
+          <section<?php
             if ($facebook_username_error) {
               echo ' class="' .
                 $this->getContext()->facebook_username_error[0] . '"';
             } ?>>
             <hr/>
             <label for="facebook_username">Facebook Username:</label>
-            <input tabindex="6"
+            <input tabindex="7"
               maxlength="<?php echo
                 $this->getContext()->facebook_username_max_len; ?>"
               type="text" name="facebook_username" id="facebook_username"
@@ -293,7 +323,7 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="github_username">Github Username:</label>
-            <input tabindex="7"
+            <input tabindex="8"
               maxlength="<?php echo
                 $this->getContext()->github_username_max_len; ?>"
               type="text" name="github_username" id="github_username"
@@ -312,7 +342,7 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="instagram_username">Instagram Username:</label>
-            <input tabindex="8"
+            <input tabindex="9"
               maxlength="<?php echo
                 $this->getContext()->instagram_username_max_len; ?>"
               type="text" name="instagram_username" id="instagram_username"
@@ -330,7 +360,7 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="phone">Phone Number:</label>
-            <input tabindex="9" maxlength="<?php echo
+            <input tabindex="10" maxlength="<?php echo
                 $this->getContext()->phone_max_len; ?>"
               type="text" name="phone" id="phone"
               value="<?php
@@ -346,7 +376,7 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="reddit_username">Reddit Username:</label>
-            <input tabindex="10"
+            <input tabindex="11"
               maxlength="<?php echo
                 $this->getContext()->reddit_username_max_len; ?>"
               type="text" name="reddit_username" id="reddit_username"
@@ -365,7 +395,7 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="skype_username">Skype Username:</label>
-            <input tabindex="11"
+            <input tabindex="12"
               maxlength="<?php echo
                 $this->getContext()->skype_username_max_len; ?>"
               type="text" name="skype_username" id="skype_username"
@@ -384,7 +414,7 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="steam_id">Steam Id:</label>
-            <input tabindex="12"
+            <input tabindex="13"
               maxlength="<?php echo
                 $this->getContext()->steam_id_max_len; ?>"
               type="text" name="steam_id" id="steam_id"
@@ -403,7 +433,7 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="twitter_username">Twitter Username:</label>
-            <input tabindex="13"
+            <input tabindex="14"
               maxlength="<?php echo
                 $this->getContext()->twitter_username_max_len; ?>"
               type="text" name="twitter_username" id="twitter_username"
@@ -422,7 +452,7 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="website">Website:</label>
-            <input tabindex="14"
+            <input tabindex="15"
               maxlength="<?php echo
                 $this->getContext()->website_max_len; ?>"
               type="text" name="website" id="website"
@@ -436,7 +466,7 @@ require('./header.inc.phtml');
           </section>
           <section>
             <hr/>
-            <input tabindex="15" type="submit" class="bg-green" value="Update"/>
+            <input tabindex="16" type="submit" class="bg-green" value="Update"/>
           </section>
         </form>
 <?php } ?>

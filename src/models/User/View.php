@@ -8,6 +8,7 @@ class View extends Model {
 
   public $biography;
   public $contributions;
+  public $discord;
   public $documents;
   public $facebook;
   public $facebook_uri;

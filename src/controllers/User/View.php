@@ -55,6 +55,8 @@ class View extends Controller {
 
       $model->biography     = $model->user_profile->getBiography();
 
+      $model->discord       = $model->user_profile->getDiscordUsername();
+
       $model->facebook      = $model->user_profile->getFacebookUsername();
       $model->facebook_uri  = $model->user_profile->getFacebookURI();
 

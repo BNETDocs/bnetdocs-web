@@ -26,6 +26,10 @@ class Update extends Model {
   public $biography_error;
   public $biography_max_len = self::MAX_LEN;
 
+  public $discord_username;
+  public $discord_username_error;
+  public $discord_username_max_len = self::MAX_LEN;
+
   public $facebook_username;
   public $facebook_username_error;
   public $facebook_username_max_len = self::MAX_LEN;

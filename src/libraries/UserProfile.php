@@ -15,6 +15,7 @@ use \StdClass;
 class UserProfile {
 
   protected $biography;
+  protected $discord_username;
   protected $facebook_username;
   protected $github_username;
   protected $id;
@@ -29,6 +30,7 @@ class UserProfile {
   public function __construct($data) {
     if (is_numeric($data)) {
       $this->biography          = null;
+      $this->discord_username   = null;
       $this->facebook_username  = null;
       $this->github_username    = null;
       $this->id                 = (int) $data;
@@ -43,6 +45,7 @@ class UserProfile {
     } else if ($data instanceof StdClass) {
       self::normalize($data);
       $this->biography          = $data->biography;
+      $this->discord_username   = $data->discord_username;
       $this->facebook_username  = $data->facebook_username;
       $this->github_username    = $data->github_username;
       $this->id                 = $data->id;
@@ -60,6 +63,10 @@ class UserProfile {
 
   public function getBiography() {
     return $this->biography;
+  }
+
+  public function getDiscordUsername() {
+    return $this->discord_username;
   }
 
   public function getFacebookURI() {
@@ -164,6 +171,9 @@ class UserProfile {
     if (!is_null($data->biography))
       $data->biography = (string) $data->biography;
 
+    if (!is_null($data->discord_username))
+      $data->discord_username = (string) $data->discord_username;
+
     if (!is_null($data->facebook_username))
       $data->facebook_username = (string) $data->facebook_username;
 
@@ -200,6 +210,7 @@ class UserProfile {
     if ($cache_val !== false) {
       $cache_val = unserialize($cache_val);
       $this->biography          = $cache_val->biography;
+      $this->discord_username   = $cache_val->discord_username;
       $this->facebook_username  = $cache_val->facebook_username;
       $this->github_username    = $cache_val->github_username;
       $this->instagram_username = $cache_val->instagram_username;
@@ -218,6 +229,7 @@ class UserProfile {
       $stmt = Common::$database->prepare("
         SELECT
           `biography`,
+          `discord_username`,
           `facebook_username`,
           `github_username`,
           `instagram_username`,
@@ -242,6 +254,7 @@ class UserProfile {
       $stmt->closeCursor();
       self::normalize($row);
       $this->biography          = $row->biography;
+      $this->discord_username   = $row->discord_username;
       $this->facebook_username  = $row->facebook_username;
       $this->github_username    = $row->github_username;
       $this->instagram_username = $row->instagram_username;
@@ -269,6 +282,7 @@ class UserProfile {
           `user_profiles`
         SET
           `biography` = :bio,
+          `discord_username` = :discord,
           `facebook_username` = :fb,
           `github_username` = :github,
           `instagram_username` = :ig,
@@ -283,6 +297,7 @@ class UserProfile {
         LIMIT 1;
       ');
       $stmt->bindParam(':bio', $this->biography, PDO::PARAM_STR);
+      $stmt->bindParam(':discord', $this->discord_username, PDO::PARAM_STR);
       $stmt->bindParam(':fb', $this->facebook_username, PDO::PARAM_STR);
       $stmt->bindParam(':github', $this->github_username, PDO::PARAM_STR);
       $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
@@ -325,6 +340,10 @@ class UserProfile {
 
   public function setBiography($value) {
     $this->biography = $value;
+  }
+
+  public function setDiscordUsername($value) {
+    $this->discord_username = $value;
   }
 
   public function setFacebookUsername($value) {

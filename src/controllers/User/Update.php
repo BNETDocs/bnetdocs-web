@@ -54,6 +54,7 @@ class Update extends Controller {
       if ( $model->profile ) {
 
         $model->biography          = $model->profile->getBiography();
+        $model->discord_username   = $model->profile->getDiscordUsername();
         $model->facebook_username  = $model->profile->getFacebookUsername();
         $model->github_username    = $model->profile->getGitHubUsername();
         $model->instagram_username = $model->profile->getInstagramUsername();
@@ -90,6 +91,10 @@ class Update extends Controller {
 
         $model->biography = (
           isset($data['biography']) ? $data['biography'] : null
+        );
+
+        $model->discord_username = (
+          isset($data['discord_username']) ? $data['discord_username'] : null
         );
 
         $model->facebook_username = (
@@ -239,6 +244,24 @@ class Update extends Controller {
           } else {
             $model->profile->setBiography($model->biography);
             $model->biography_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
+        if (
+          $model->discord_username !== $model->profile->getDiscordUsername()
+        ) {
+
+          // discord username change request
+
+          if (strlen($model->discord_username) >
+            $model->discord_username_max_len
+          ) {
+            $model->discord_username_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setDiscordUsername($model->discord_username);
+            $model->discord_username_error = ['green', 'CHANGE_SUCCESS'];
             $profile_changed = true;
           }
 
@@ -399,6 +422,7 @@ class Update extends Controller {
             'email_error'              => $model->email_error,
             'display_name_error'       => $model->display_name_error,
             'biography_error'          => $model->biography_error,
+            'discord_username_error'   => $model->discord_username_error,
             'facebook_username_error'  => $model->facebook_username_error,
             'github_username_error'    => $model->github_username_error,
             'instagram_username_error' => $model->instagram_username_error,
@@ -415,6 +439,7 @@ class Update extends Controller {
             'display_name'             => $display_name,
             'profile_changed'          => $profile_changed,
             'biography'                => $model->biography,
+            'discord_username'         => $model->discord_username,
             'facebook_username'        => $model->facebook_username,
             'github_username'          => $model->github_username,
             'instagram_username'       => $model->instagram_username,

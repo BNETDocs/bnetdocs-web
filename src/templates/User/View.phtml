@@ -52,6 +52,9 @@ require("./header.inc.phtml");
         </section>
 <?php if ($this->getContext()->profiledata) { ?>
         <section class="profiledata">
+<?php if ($this->getContext()->discord) { ?>
+          <span><strong>Discord:</strong> <?php echo filter_var($this->getContext()->discord, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></span>
+<?php } ?>
 <?php if ($this->getContext()->github) { ?>
           <span><strong>GitHub:</strong> <a href="<?php echo $this->getContext()->github_uri; ?>"><?php echo filter_var($this->getContext()->github, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
 <?php } ?>
