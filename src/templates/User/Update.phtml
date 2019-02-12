@@ -261,6 +261,14 @@ require('./header.inc.phtml');
               echo '<p>' . $display_name_error . '</p>';
             } ?>
           </section>
+          <section>
+            <hr/>
+            <label>Avatar:</label>
+            <p style="color:rgba(128,128,128,1);">Currently custom avatars are
+              unsupported. You may set your avatar by using
+              <a href="https://en.gravatar.com/">Gravatar</a> and matching your
+              email address.</p>
+          </section>
           <section<?php
             if ($biography_error) {
               echo ' class="' .
