@@ -43,6 +43,10 @@ class Index extends Controller {
         $order = ['edited_datetime','ASC']; break;
       case 'updated-desc':
         $order = ['edited_datetime','DESC']; break;
+      case 'user-id-asc':
+        $order = [ 'user_id','ASC' ]; break;
+      case 'user-id-desc':
+        $order = [ 'user_id','DESC' ]; break;
       default:
         $order = null;
     }

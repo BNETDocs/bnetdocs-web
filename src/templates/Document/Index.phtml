@@ -47,6 +47,12 @@ require('./header.inc.phtml');
               <option value="updated-desc"<?php
                 if ($order === 'updated-desc') { echo ' selected="selected"';
                 } ?>>Updated (Descending)</option>
+              <option value="user-id-asc"<?php
+                if ($order === 'user-id-asc') { echo ' selected="selected"';
+                } ?>>User Id (Ascending)</option>
+              <option value="user-id-desc"<?php
+                if ($order === 'user-id-desc') { echo ' selected="selected"';
+                } ?>>User Id (Descending)</option>
             </select>
             <input type="submit" value="Reorder"/>
           </form>
