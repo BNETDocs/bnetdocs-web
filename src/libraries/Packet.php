@@ -126,7 +126,7 @@ class Packet implements JsonSerializable {
 
     if ( empty( $limit_clause )) {
 
-      $ckey = 'bnetdocs-packets';
+      $ckey = 'bnetdocs-packets-' . hash('md5', $order[0] . $order[1]);
       $cval = Common::$cache->get( $ckey );
 
       if ( $cval !== false && !empty( $cval )) {

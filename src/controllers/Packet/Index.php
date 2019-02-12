@@ -23,9 +23,42 @@ class Index extends Controller {
 
     $model = new PacketIndexModel();
 
-    $model->packets = Packet::getAllPackets(
-      ['packet_application_layer_id,packet_id', 'ASC']
+    $query = $router->getRequestQueryArray();
+
+    $model->order = (
+      isset( $query['order'] ) ? $query['order'] : 'packet-id-asc'
     );
+
+    switch ( $model->order ) {
+      case 'created-datetime-asc':
+        $order = [ 'created_datetime','ASC' ]; break;
+
+      case 'created-datetime-desc':
+        $order = [ 'created_datetime','DESC' ]; break;
+
+      case 'id-asc':
+        $order = [ 'id','ASC' ]; break;
+
+      case 'id-desc':
+        $order = [ 'id','DESC' ]; break;
+
+      case 'packet-id-asc':
+        $order = [ 'packet_application_layer_id,packet_id','ASC' ]; break;
+
+      case 'packet-id-desc':
+        $order = [ 'packet_application_layer_id,packet_id','DESC' ]; break;
+
+      case 'user-id-asc':
+        $order = [ 'user_id','ASC' ]; break;
+
+      case 'user-id-desc':
+        $order = [ 'user_id','DESC' ]; break;
+
+      default:
+        $order = null;
+    }
+
+    $model->packets = Packet::getAllPackets( $order );
 
     if ( !( $view instanceof PacketIndexHtmlView
       || $view instanceof PacketIndexJSONView )) {

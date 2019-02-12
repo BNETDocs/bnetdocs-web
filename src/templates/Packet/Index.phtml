@@ -11,12 +11,45 @@ $title       = 'Packet Index';
 $description = 'The index for packets on BNETDocs';
 $this->opengraph->attach(new Pair('url', '/packet/index'));
 
+$order = $this->getContext()->order;
+
 $this->additional_css[] = '/a/forms.css';
 require('./header.inc.phtml');
 ?>
       <article>
         <header>Packet Index</header>
         <section>
+          <form method="GET">
+            <label for="order">Order by:</label>
+            <select name="order" id="order" onchange="form.submit();"
+              style="display:inline-block;width:200px;">
+              <option value="created-datetime-asc"<?php
+                if ($order === 'created-datetime-asc') { echo ' selected="selected"';
+                } ?>>Created Timestamp (Ascending)</option>
+              <option value="created-datetime-desc"<?php
+                if ($order === 'created-datetime-desc') { echo ' selected="selected"';
+                } ?>>Created Timestamp (Descending)</option>
+              <option value="id-asc"<?php
+                if ($order === 'id-asc') { echo ' selected="selected"';
+                } ?>>Database Id (Ascending)</option>
+              <option value="id-desc"<?php
+                if ($order === 'id-desc') { echo ' selected="selected"';
+                } ?>>Database Id (Descending)</option>
+              <option value="packet-id-asc"<?php
+                if ($order === 'packet-id-asc') { echo ' selected="selected"';
+                } ?>>Packet Id (Ascending)</option>
+              <option value="packet-id-desc"<?php
+                if ($order === 'packet-id-desc') { echo ' selected="selected"';
+                } ?>>Packet Id (Descending)</option>
+              <option value="user-id-asc"<?php
+                if ($order === 'user-id-asc') { echo ' selected="selected"';
+                } ?>>User Id (Ascending)</option>
+              <option value="user-id-desc"<?php
+                if ($order === 'user-id-desc') { echo ' selected="selected"';
+                } ?>>User Id (Descending)</option>
+            </select>
+            <input type="submit" value="Reorder"/>
+          </form>
           <table>
             <thead>
               <tr>
