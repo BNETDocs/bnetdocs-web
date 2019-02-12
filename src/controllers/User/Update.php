@@ -210,6 +210,7 @@ class Update extends Controller {
             'username_error'     => $model->username_error,
             'email_error'        => $model->email_error,
             'display_name_error' => $model->display_name_error,
+            'biography_error'    => $model->biography_error,
             'user_id'            => Authentication::$user->getId(),
             'username'           => $model->username,
             'email_1'            => $model->email_1,
