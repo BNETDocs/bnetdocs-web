@@ -18,18 +18,36 @@ class Index extends Controller {
 
   public function &run(Router &$router, View &$view, array &$args) {
 
-    $model               = new DocumentIndexModel();
-    $model->documents    = Document::getAllDocuments();
+    $model = new DocumentIndexModel();
 
-    // Alphabetically sort the documents for HTML
-    if ($view instanceof DocumentIndexHtmlView && $model->documents) {
-      usort($model->documents, function($a, $b){
-        $a1 = $a->getTitle();
-        $b1 = $b->getTitle();
-        if ($a1 == $b1) return 0;
-        return ($a1 < $b1 ? -1 : 1);
-      });
+    $query = $router->getRequestQueryArray();
+
+    $model->order = (
+      isset($query['order']) ? $query['order'] : 'title-asc'
+    );
+
+    switch ($model->order) {
+      case 'created-asc':
+        $order = ['created_datetime','ASC']; break;
+      case 'created-desc':
+        $order = ['created_datetime','DESC']; break;
+      case 'id-asc':
+        $order = ['id','ASC']; break;
+      case 'id-desc':
+        $order = ['id','DESC']; break;
+      case 'title-asc':
+        $order = ['title','ASC']; break;
+      case 'title-desc':
+        $order = ['title','DESC']; break;
+      case 'updated-asc':
+        $order = ['edited_datetime','ASC']; break;
+      case 'updated-desc':
+        $order = ['edited_datetime','DESC']; break;
+      default:
+        $order = null;
     }
+
+    $model->documents = Document::getAllDocuments( $order );
 
     // Remove documents that are not published
     if ($model->documents) {

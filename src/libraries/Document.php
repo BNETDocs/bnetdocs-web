@@ -111,8 +111,8 @@ class Document {
     }
   }
 
-  public static function getAllDocuments() {
-    $cache_key = "bnetdocs-documents";
+  public static function getAllDocuments( $order = null ) {
+    $cache_key = 'bnetdocs-documents-' . hash('md5', $order[0] . $order[1]);
     $cache_val = Common::$cache->get($cache_key);
     if ($cache_val !== false && !empty($cache_val)) {
       $ids     = explode(",", $cache_val);
@@ -126,7 +126,7 @@ class Document {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
     try {
-      $stmt = Common::$database->prepare("
+      $stmt = Common::$database->prepare('
         SELECT
           `content`,
           `created_datetime`,
@@ -137,10 +137,12 @@ class Document {
           `title`,
           `user_id`
         FROM `documents`
-        ORDER BY `id` ASC;
-      ");
+        ORDER BY
+          ' . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
+          `id` ' . ($order ? $order[1] : 'ASC') . ';'
+      );
       if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh documents");
+        throw new QueryException('Cannot refresh documents');
       }
       $ids     = [];
       $objects = [];
@@ -148,14 +150,14 @@ class Document {
         $ids[]     = (int) $row->id;
         $objects[] = new self($row);
         Common::$cache->set(
-          "bnetdocs-document-" . $row->id, serialize($row), 300
+          'bnetdocs-document-' . $row->id, serialize($row), 300
         );
       }
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(",", $ids), 300);
+      Common::$cache->set($cache_key, implode(',', $ids), 300);
       return $objects;
     } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh documents", $e);
+      throw new QueryException('Cannot refresh documents', $e);
     }
     return null;
   }

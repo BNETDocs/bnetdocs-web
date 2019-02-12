@@ -7,15 +7,49 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
-$title       = "Document Index";
-$description = "The index for documents on BNETDocs";
-$this->opengraph->attach(new Pair("url", "/document/index"));
+$title       = 'Document Index';
+$description = 'The index for documents on BNETDocs';
+$this->opengraph->attach(new Pair('url', '/document/index'));
 
-require("./header.inc.phtml");
+$order = $this->getContext()->order;
+
+$this->additional_css[] = '/a/forms.css';
+require('./header.inc.phtml');
 ?>
       <article>
         <header>Document Index</header>
         <section>
+          <form method="GET">
+            <label for="order">Order by:</label>
+            <select name="order" id="order" onchange="form.submit();"
+              style="display:inline-block;width:200px;">
+              <option value="created-asc"<?php
+                if ($order === 'created-asc') { echo ' selected="selected"';
+                } ?>>Created (Ascending)</option>
+              <option value="created-desc"<?php
+                if ($order === 'created-desc') { echo ' selected="selected"';
+                } ?>>Created (Descending)</option>
+              <option value="id-asc"<?php
+                if ($order === 'id-asc') { echo ' selected="selected"';
+                } ?>>Id (Ascending)</option>
+              <option value="id-desc"<?php
+                if ($order === 'id-desc') { echo ' selected="selected"';
+                } ?>>Id (Descending)</option>
+              <option value="title-asc"<?php
+                if ($order === 'title-asc') { echo ' selected="selected"';
+                } ?>>Title (Ascending)</option>
+              <option value="title-desc"<?php
+                if ($order === 'title-desc') { echo ' selected="selected"';
+                } ?>>Title (Descending)</option>
+              <option value="updated-asc"<?php
+                if ($order === 'updated-asc') { echo ' selected="selected"';
+                } ?>>Updated (Ascending)</option>
+              <option value="updated-desc"<?php
+                if ($order === 'updated-desc') { echo ' selected="selected"';
+                } ?>>Updated (Descending)</option>
+            </select>
+            <input type="submit" value="Reorder"/>
+          </form>
           <table>
             <thead>
               <tr>
