@@ -118,7 +118,7 @@ class Update extends Controller {
         );
 
         $model->steam_id = (
-          isset($data['steam_id']) ? (int) $data['steam_id'] : null
+          isset($data['steam_id']) ? $data['steam_id'] : null
         );
 
         $model->twitter_username = (

@@ -119,7 +119,12 @@ class UserProfile {
   }
 
   public function getSteamURI() {
-    return "https://steamcommunity.com/profiles/" . $this->getSteamId();
+    $steam = $this->getSteamId();
+    if (is_numeric($steam)) {
+      return "https://steamcommunity.com/profiles/" . $steam;
+    } else {
+      return "https://steamcommunity.com/id/" . $steam;
+    }
   }
 
   public function getTwitterURI() {
@@ -155,7 +160,6 @@ class UserProfile {
 
   protected static function normalize(StdClass &$data) {
     $data->user_id  = (int) $data->user_id;
-    $data->steam_id = (int) $data->steam_id;
 
     if (!is_null($data->biography))
       $data->biography = (string) $data->biography;
@@ -180,6 +184,9 @@ class UserProfile {
 
     if (!is_null($data->twitter_username))
       $data->twitter_username = (string) $data->twitter_username;
+
+    if (!is_null($data->steam_id))
+      $data->steam_id = (string) $data->steam_id;
 
     if (!is_null($data->website))
       $data->website = (string) $data->website;
