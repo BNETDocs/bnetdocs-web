@@ -50,14 +50,14 @@ require('./header.inc.phtml');
                   } ?>>User Id (Descending)</option>
               </select>
             </div>
-            <table><thead><tr><th colspan="3">Packet Types</th></tr></thead><tbody>
+            <table><thead><tr><th colspan="6">Packet Types</th></tr></thead><tbody>
 <?php $x = 0; foreach ($this->getContext()->application_layers as $layer) {
   $id = 'pktapplayer-' . $layer->getId();
   $chk = in_array( $layer->getId(), $this->getContext()->pktapplayer );
   if ( $x % 3 == 0 ) { ?>
               <tr>
 <?php } ?>
-                <td><input type="checkbox" name="pktapplayer[]" id="<?php echo $id; ?>" value="<?php echo $layer->getId(); ?>"<?php if ($chk) { ?> checked="checked"<?php } ?>> <label for="<?php echo $id; ?>"><?php echo $layer->getTag(); ?></label></td>
+                <td style="width:20px;"><input type="checkbox" name="pktapplayer[]" id="<?php echo $id; ?>" value="<?php echo $layer->getId(); ?>"<?php if ($chk) { ?> checked="checked"<?php } ?>></td><td><label style="display:inline-block;" for="<?php echo $id; ?>"><?php echo $layer->getTag(); ?></label></td>
 <?php if ( $x % 3 == 2 ) { ?>
               </tr>
 <?php } ?>
