@@ -188,9 +188,13 @@ class Update extends Controller {
 
           // biography change request
 
-          $model->profile->setBiography($model->biography);
-          $model->biography_error = ['green', 'CHANGE_SUCCESS'];
-          $profile_changed = true;
+          if (strlen($model->biography) > $model->biography_max_len) {
+            $model->biography_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setBiography($model->biography);
+            $model->biography_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
 
         }
 
