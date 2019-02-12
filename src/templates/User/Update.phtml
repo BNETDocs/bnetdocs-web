@@ -69,6 +69,17 @@ switch ($this->getContext()->biography_error[1]) {
       . $this->getContext()->biography_error[1];
 }
 
+switch ($this->getContext()->facebook_username_error[1]) {
+  case null: case '': $facebook_username_error = ''; break;
+  case 'TOO_LONG':
+    $facebook_username_error = 'Your facebook username is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $facebook_username_error = 'Your facebook username was updated.'; break;
+  default:
+    $facebook_username_error = 'Internal error: '
+      . $this->getContext()->facebook_username_error[1];
+}
+
 $this->additional_css[] = '/a/forms.css';
 require('./header.inc.phtml');
 ?>
@@ -168,9 +179,28 @@ require('./header.inc.phtml');
               echo '<p>' . $biography_error . '</p>';
             } ?>
           </section>
+          <section<?php
+            if ($facebook_username_error) {
+              echo ' class="' .
+                $this->getContext()->facebook_username_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="facebook_username">Facebook Username:</label>
+            <input tabindex="6"
+              maxlength="<?php echo
+                $this->getContext()->facebook_username_max_len; ?>"
+              type="text" name="facebook_username" id="facebook_username"
+              value="<?php
+                echo filter_var($this->getContext()->facebook_username,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($facebook_username_error) {
+              echo '<p>' . $facebook_username_error . '</p>';
+            } ?>
+          </section>
           <section>
             <hr/>
-            <input tabindex="5" type="submit" class="bg-green" value="Update"/>
+            <input tabindex="7" type="submit" class="bg-green" value="Update"/>
           </section>
         </form>
 <?php } ?>

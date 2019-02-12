@@ -318,4 +318,8 @@ class UserProfile {
     $this->biography = $value;
   }
 
+  public function setFacebookUsername($value) {
+    $this->facebook_username = $value;
+  }
+
 }

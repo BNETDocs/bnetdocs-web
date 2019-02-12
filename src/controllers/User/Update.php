@@ -53,7 +53,8 @@ class Update extends Controller {
 
       if ( $model->profile ) {
 
-        $model->biography = $model->profile->getBiography();
+        $model->biography         = $model->profile->getBiography();
+        $model->facebook_username = $model->profile->getFacebookUsername();
 
       }
 
@@ -81,6 +82,10 @@ class Update extends Controller {
 
         $model->biography = (
           isset($data['biography']) ? $data['biography'] : null
+        );
+
+        $model->facebook_username = (
+          isset($data['facebook_username']) ? $data['facebook_username'] : null
         );
 
         // process input
@@ -198,6 +203,24 @@ class Update extends Controller {
 
         }
 
+        if (
+          $model->facebook_username !== $model->profile->getFacebookUsername()
+        ) {
+
+          // facebook username change request
+
+          if (strlen($model->facebook_username) >
+            $model->facebook_username_max_len
+          ) {
+            $model->facebook_username_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setFacebookUsername($model->facebook_username);
+            $model->facebook_username_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
         if ($profile_changed) {
           $model->profile->save();
         }
@@ -207,17 +230,19 @@ class Update extends Controller {
           Authentication::$user->getId(),
           getenv('REMOTE_ADDR'),
           json_encode([
-            'username_error'     => $model->username_error,
-            'email_error'        => $model->email_error,
-            'display_name_error' => $model->display_name_error,
-            'biography_error'    => $model->biography_error,
-            'user_id'            => Authentication::$user->getId(),
-            'username'           => $model->username,
-            'email_1'            => $model->email_1,
-            'email_2'            => $model->email_2,
-            'display_name'       => $display_name,
-            'profile_changed'    => $profile_changed,
-            'biography'          => $model->biography,
+            'username_error'          => $model->username_error,
+            'email_error'             => $model->email_error,
+            'display_name_error'      => $model->display_name_error,
+            'biography_error'         => $model->biography_error,
+            'facebook_username_error' => $model->facebook_username_error,
+            'user_id'                 => Authentication::$user->getId(),
+            'username'                => $model->username,
+            'email_1'                 => $model->email_1,
+            'email_2'                 => $model->email_2,
+            'display_name'            => $display_name,
+            'profile_changed'         => $profile_changed,
+            'biography'               => $model->biography,
+            'facebook_username'       => $model->facebook_username,
           ])
         );
 
