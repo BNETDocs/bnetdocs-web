@@ -53,8 +53,16 @@ class Update extends Controller {
 
       if ( $model->profile ) {
 
-        $model->biography         = $model->profile->getBiography();
-        $model->facebook_username = $model->profile->getFacebookUsername();
+        $model->biography          = $model->profile->getBiography();
+        $model->facebook_username  = $model->profile->getFacebookUsername();
+        $model->github_username    = $model->profile->getGitHubUsername();
+        $model->instagram_username = $model->profile->getInstagramUsername();
+        $model->phone              = $model->profile->getPhone();
+        $model->reddit_username    = $model->profile->getRedditUsername();
+        $model->skype_username     = $model->profile->getSkypeUsername();
+        $model->steam_id           = $model->profile->getSteamId();
+        $model->twitter_username   = $model->profile->getTwitterUsername();
+        $model->website            = $model->profile->getWebsite();
 
       }
 
@@ -86,6 +94,39 @@ class Update extends Controller {
 
         $model->facebook_username = (
           isset($data['facebook_username']) ? $data['facebook_username'] : null
+        );
+
+        $model->github_username = (
+          isset($data['github_username']) ? $data['github_username'] : null
+        );
+
+        $model->instagram_username = (
+          isset($data['instagram_username']) ?
+          $data['instagram_username'] : null
+        );
+
+        $model->phone = (
+          isset($data['phone']) ? $data['phone'] : null
+        );
+
+        $model->reddit_username = (
+          isset($data['reddit_username']) ? $data['reddit_username'] : null
+        );
+
+        $model->skype_username = (
+          isset($data['skype_username']) ? $data['skype_username'] : null
+        );
+
+        $model->steam_id = (
+          isset($data['steam_id']) ? $data['steam_id'] : null
+        );
+
+        $model->twitter_username = (
+          isset($data['twitter_username']) ? $data['twitter_username'] : null
+        );
+
+        $model->website = (
+          isset($data['website']) ? $data['website'] : null
         );
 
         // process input
@@ -221,6 +262,130 @@ class Update extends Controller {
 
         }
 
+        if (
+          $model->github_username !== $model->profile->getGitHubUsername()
+        ) {
+
+          // github username change request
+
+          if (strlen($model->github_username) >
+            $model->github_username_max_len
+          ) {
+            $model->github_username_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setGitHubUsername($model->github_username);
+            $model->github_username_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
+        if (
+          $model->instagram_username !== $model->profile->getInstagramUsername()
+        ) {
+
+          // instagram username change request
+
+          if (strlen($model->instagram_username) >
+            $model->instagram_username_max_len
+          ) {
+            $model->instagram_username_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setInstagramUsername($model->instagram_username);
+            $model->instagram_username_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
+        if ($model->phone !== $model->profile->getPhone()) {
+
+          // phone change request
+
+          if (strlen($model->phone) > $model->phone_max_len) {
+            $model->phone_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setPhone($model->phone);
+            $model->phone_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
+        if ($model->reddit_username !== $model->profile->getRedditUsername()) {
+
+          // reddit username change request
+
+          if (strlen($model->reddit_username) >
+            $model->reddit_username_max_len
+          ) {
+            $model->reddit_username_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setRedditUsername($model->reddit_username);
+            $model->reddit_username_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
+        if ($model->skype_username !== $model->profile->getSkypeUsername()) {
+
+          // skype username change request
+
+          if (strlen($model->skype_username) > $model->skype_username_max_len) {
+            $model->skype_username_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setSkypeUsername($model->skype_username);
+            $model->skype_username_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
+        if ($model->steam_id !== $model->profile->getSteamId()) {
+
+          // steam id change request
+
+          if (strlen($model->steam_id) > $model->steam_id_max_len) {
+            $model->steam_id_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setSteamId($model->steam_id);
+            $model->steam_id_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
+        if ($model->twitter_username !== $model->profile->getTwitterUsername()) {
+
+          // steam id change request
+
+          if (strlen($model->twitter_username) >
+            $model->twitter_username_max_len
+          ) {
+            $model->twitter_username_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setTwitterUsername($model->twitter_username);
+            $model->twitter_username_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
+        if ($model->website !== $model->profile->getWebsite()) {
+
+          // steam id change request
+
+          if (strlen($model->website) > $model->website_max_len) {
+            $model->website_error = ['red', 'TOO_LONG'];
+          } else {
+            $model->profile->setWebsite($model->website);
+            $model->website_error = ['green', 'CHANGE_SUCCESS'];
+            $profile_changed = true;
+          }
+
+        }
+
         if ($profile_changed) {
           $model->profile->save();
         }
@@ -230,19 +395,35 @@ class Update extends Controller {
           Authentication::$user->getId(),
           getenv('REMOTE_ADDR'),
           json_encode([
-            'username_error'          => $model->username_error,
-            'email_error'             => $model->email_error,
-            'display_name_error'      => $model->display_name_error,
-            'biography_error'         => $model->biography_error,
-            'facebook_username_error' => $model->facebook_username_error,
-            'user_id'                 => Authentication::$user->getId(),
-            'username'                => $model->username,
-            'email_1'                 => $model->email_1,
-            'email_2'                 => $model->email_2,
-            'display_name'            => $display_name,
-            'profile_changed'         => $profile_changed,
-            'biography'               => $model->biography,
-            'facebook_username'       => $model->facebook_username,
+            'username_error'           => $model->username_error,
+            'email_error'              => $model->email_error,
+            'display_name_error'       => $model->display_name_error,
+            'biography_error'          => $model->biography_error,
+            'facebook_username_error'  => $model->facebook_username_error,
+            'github_username_error'    => $model->github_username_error,
+            'instagram_username_error' => $model->instagram_username_error,
+            'phone_error'              => $model->phone_error,
+            'reddit_username_error'    => $model->reddit_username_error,
+            'skype_username_error'     => $model->skype_username_error,
+            'steam_id_error'           => $model->steam_id_error,
+            'twitter_username_error'   => $model->twitter_username_error,
+            'website_error'            => $model->website_error,
+            'user_id'                  => Authentication::$user->getId(),
+            'username'                 => $model->username,
+            'email_1'                  => $model->email_1,
+            'email_2'                  => $model->email_2,
+            'display_name'             => $display_name,
+            'profile_changed'          => $profile_changed,
+            'biography'                => $model->biography,
+            'facebook_username'        => $model->facebook_username,
+            'github_username'          => $model->github_username,
+            'instagram_username'       => $model->instagram_username,
+            'phone'                    => $model->phone,
+            'reddit_username'          => $model->reddit_username,
+            'skype_username'           => $model->skype_username,
+            'steam_id'                 => $model->steam_id,
+            'twitter_username'         => $model->twitter_username,
+            'website'                  => $model->website,
           ])
         );
 

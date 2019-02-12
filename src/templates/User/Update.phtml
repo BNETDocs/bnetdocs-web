@@ -72,12 +72,100 @@ switch ($this->getContext()->biography_error[1]) {
 switch ($this->getContext()->facebook_username_error[1]) {
   case null: case '': $facebook_username_error = ''; break;
   case 'TOO_LONG':
-    $facebook_username_error = 'Your facebook username is too long.'; break;
+    $facebook_username_error = 'Your Facebook username is too long.'; break;
   case 'CHANGE_SUCCESS':
-    $facebook_username_error = 'Your facebook username was updated.'; break;
+    $facebook_username_error = 'Your Facebook username was updated.'; break;
   default:
     $facebook_username_error = 'Internal error: '
       . $this->getContext()->facebook_username_error[1];
+}
+
+switch ($this->getContext()->github_username_error[1]) {
+  case null: case '': $github_username_error = ''; break;
+  case 'TOO_LONG':
+    $github_username_error = 'Your Github username is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $github_username_error = 'Your Github username was updated.'; break;
+  default:
+    $github_username_error = 'Internal error: '
+      . $this->getContext()->github_username_error[1];
+}
+
+switch ($this->getContext()->instagram_username_error[1]) {
+  case null: case '': $instagram_username_error = ''; break;
+  case 'TOO_LONG':
+    $instagram_username_error = 'Your Instagram username is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $instagram_username_error = 'Your Instagram username was updated.'; break;
+  default:
+    $instagram_username_error = 'Internal error: '
+      . $this->getContext()->instagram_username_error[1];
+}
+
+switch ($this->getContext()->phone_error[1]) {
+  case null: case '': $phone_error = ''; break;
+  case 'TOO_LONG':
+    $phone_error = 'Your phone number is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $phone_error = 'Your phone number was updated.'; break;
+  default:
+    $phone_error = 'Internal error: '
+      . $this->getContext()->phone_error[1];
+}
+
+switch ($this->getContext()->reddit_username_error[1]) {
+  case null: case '': $reddit_username_error = ''; break;
+  case 'TOO_LONG':
+    $reddit_username_error = 'Your Reddit username is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $reddit_username_error = 'Your Reddit username was updated.'; break;
+  default:
+    $reddit_username_error = 'Internal error: '
+      . $this->getContext()->reddit_username_error[1];
+}
+
+switch ($this->getContext()->skype_username_error[1]) {
+  case null: case '': $skype_username_error = ''; break;
+  case 'TOO_LONG':
+    $skype_username_error = 'Your Skype username is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $skype_username_error = 'Your Skype username was updated.'; break;
+  default:
+    $skype_username_error = 'Internal error: '
+      . $this->getContext()->skype_username_error[1];
+}
+
+switch ($this->getContext()->steam_id_error[1]) {
+  case null: case '': $steam_id_error = ''; break;
+  case 'TOO_LONG':
+    $steam_id_error = 'Your Steam Id is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $steam_id_error = 'Your Steam Id was updated.'; break;
+  default:
+    $steam_id_error = 'Internal error: '
+      . $this->getContext()->steam_id_error[1];
+}
+
+switch ($this->getContext()->twitter_username_error[1]) {
+  case null: case '': $twitter_username_error = ''; break;
+  case 'TOO_LONG':
+    $twitter_username_error = 'Your Twitter username is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $twitter_username_error = 'Your Twitter username was updated.'; break;
+  default:
+    $twitter_username_error = 'Internal error: '
+      . $this->getContext()->twitter_username_error[1];
+}
+
+switch ($this->getContext()->website_error[1]) {
+  case null: case '': $website_error = ''; break;
+  case 'TOO_LONG':
+    $website_error = 'Your website url is too long.'; break;
+  case 'CHANGE_SUCCESS':
+    $website_error = 'Your website url was updated.'; break;
+  default:
+    $website_error = 'Internal error: '
+      . $this->getContext()->website_error[1];
 }
 
 $this->additional_css[] = '/a/forms.css';
@@ -198,9 +286,157 @@ require('./header.inc.phtml');
               echo '<p>' . $facebook_username_error . '</p>';
             } ?>
           </section>
+          <section<?php
+            if ($github_username_error) {
+              echo ' class="' .
+                $this->getContext()->github_username_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="github_username">Github Username:</label>
+            <input tabindex="7"
+              maxlength="<?php echo
+                $this->getContext()->github_username_max_len; ?>"
+              type="text" name="github_username" id="github_username"
+              value="<?php
+                echo filter_var($this->getContext()->github_username,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($github_username_error) {
+              echo '<p>' . $github_username_error . '</p>';
+            } ?>
+          </section>
+          <section<?php
+            if ($instagram_username_error) {
+              echo ' class="' .
+                $this->getContext()->instagram_username_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="instagram_username">Instagram Username:</label>
+            <input tabindex="8"
+              maxlength="<?php echo
+                $this->getContext()->instagram_username_max_len; ?>"
+              type="text" name="instagram_username" id="instagram_username"
+              value="<?php
+                echo filter_var($this->getContext()->instagram_username,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($instagram_username_error) {
+              echo '<p>' . $instagram_username_error . '</p>';
+            } ?>
+          </section>
+          <section<?php
+            if ($phone_error) { echo ' class="' .
+                $this->getContext()->phone_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="phone">Phone Number:</label>
+            <input tabindex="9" maxlength="<?php echo
+                $this->getContext()->phone_max_len; ?>"
+              type="text" name="phone" id="phone"
+              value="<?php
+                echo filter_var($this->getContext()->phone,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($phone_error) { echo '<p>' . $phone_error . '</p>'; } ?>
+          </section>
+          <section<?php
+            if ($reddit_username_error) {
+              echo ' class="' .
+                $this->getContext()->reddit_username_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="reddit_username">Reddit Username:</label>
+            <input tabindex="10"
+              maxlength="<?php echo
+                $this->getContext()->reddit_username_max_len; ?>"
+              type="text" name="reddit_username" id="reddit_username"
+              value="<?php
+                echo filter_var($this->getContext()->reddit_username,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($reddit_username_error) {
+              echo '<p>' . $reddit_username_error . '</p>';
+            } ?>
+          </section>
+          <section<?php
+            if ($skype_username_error) {
+              echo ' class="' .
+                $this->getContext()->skype_username_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="skype_username">Skype Username:</label>
+            <input tabindex="11"
+              maxlength="<?php echo
+                $this->getContext()->skype_username_max_len; ?>"
+              type="text" name="skype_username" id="skype_username"
+              value="<?php
+                echo filter_var($this->getContext()->skype_username,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($skype_username_error) {
+              echo '<p>' . $skype_username_error . '</p>';
+            } ?>
+          </section>
+          <section<?php
+            if ($steam_id_error) {
+              echo ' class="' .
+                $this->getContext()->steam_id_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="steam_id">Steam Id:</label>
+            <input tabindex="12"
+              maxlength="<?php echo
+                $this->getContext()->steam_id_max_len; ?>"
+              type="text" name="steam_id" id="steam_id"
+              value="<?php
+                echo filter_var($this->getContext()->steam_id,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($steam_id_error) {
+              echo '<p>' . $steam_id_error . '</p>';
+            } ?>
+          </section>
+          <section<?php
+            if ($twitter_username_error) {
+              echo ' class="' .
+                $this->getContext()->twitter_username_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="twitter_username">Twitter Username:</label>
+            <input tabindex="13"
+              maxlength="<?php echo
+                $this->getContext()->twitter_username_max_len; ?>"
+              type="text" name="twitter_username" id="twitter_username"
+              value="<?php
+                echo filter_var($this->getContext()->twitter_username,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($twitter_username_error) {
+              echo '<p>' . $twitter_username_error . '</p>';
+            } ?>
+          </section>
+          <section<?php
+            if ($website_error) {
+              echo ' class="' .
+                $this->getContext()->website_error[0] . '"';
+            } ?>>
+            <hr/>
+            <label for="website">Website:</label>
+            <input tabindex="14"
+              maxlength="<?php echo
+                $this->getContext()->website_max_len; ?>"
+              type="text" name="website" id="website"
+              value="<?php
+                echo filter_var($this->getContext()->website,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+              ?>"/>
+            <?php if ($website_error) {
+              echo '<p>' . $website_error . '</p>';
+            } ?>
+          </section>
           <section>
             <hr/>
-            <input tabindex="7" type="submit" class="bg-green" value="Update"/>
+            <input tabindex="15" type="submit" class="bg-green" value="Update"/>
           </section>
         </form>
 <?php } ?>

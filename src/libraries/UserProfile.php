@@ -322,4 +322,36 @@ class UserProfile {
     $this->facebook_username = $value;
   }
 
+  public function setGitHubUsername($value) {
+    $this->github_username = $value;
+  }
+
+  public function setInstagramUsername($value) {
+    $this->instagram_username = $value;
+  }
+
+  public function setPhone($value) {
+    $this->phone = $value;
+  }
+
+  public function setRedditUsername($value) {
+    $this->reddit_username = $value;
+  }
+
+  public function setSkypeUsername($value) {
+    $this->skype_username = $value;
+  }
+
+  public function setSteamId($value) {
+    $this->steam_id = $value;
+  }
+
+  public function setTwitterUsername($value) {
+    $this->twitter_username = $value;
+  }
+
+  public function setWebsite($value) {
+    $this->website = $value;
+  }
+
 }
