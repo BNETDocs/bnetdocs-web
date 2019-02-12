@@ -93,11 +93,12 @@ require('./header.inc.phtml');
         </section>
         <section>
           <p>These packets are also available as constants in
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.cpp'); ?>">C++</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.java'); ?>">Java</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.json'); ?>">JSON</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.php'); ?>">PHP</a>, and
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.vb'); ?>">VB6</a>.
+<?php $q = getenv('QUERY_STRING'); if (!empty($q)) { $q = '?' . $q; } ?>
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.cpp' . $q); ?>">C++</a>,
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.java' . $q); ?>">Java</a>,
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.json' . $q); ?>">JSON</a>,
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.php' . $q); ?>">PHP</a>, and
+            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.vb' . $q); ?>">VB6</a>.
           </p>
         </section>
       </article>
