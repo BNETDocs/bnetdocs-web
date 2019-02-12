@@ -158,7 +158,12 @@ require('./header.inc.phtml');
             } ?>>
             <hr/>
             <label for="biography">Biography:</label>
-            <textarea maxlength="<?php echo $this->getContext()->biography_max_len; ?>" name="biography" id="biography"><?php echo filter_var($this->getContext()->biography, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></textarea>
+            <textarea tabindex="5"
+              maxlength="<?php echo $this->getContext()->biography_max_len; ?>"
+              name="biography" id="biography"><?php echo filter_var(
+                $this->getContext()->biography,
+                FILTER_SANITIZE_FULL_SPECIAL_CHARS
+              ); ?></textarea>
             <?php if ($biography_error) {
               echo '<p>' . $biography_error . '</p>';
             } ?>
