@@ -81,7 +81,7 @@ however is preferred.
 The following software will need to be installed to run this project:
 
 * [Nginx](https://www.nginx.com/resources/wiki/start/topics/tutorials/install/)
-* [Remi's PHP 7.2 repository](https://blog.remirepo.net/post/2017/12/04/Install-PHP-7.2-on-CentOS-RHEL-or-Fedora)
+* [Remi's PHP 7.3 repository](https://blog.remirepo.net/post/2018/12/10/Install-PHP-7.3-on-CentOS-RHEL-or-Fedora)
 * [MariaDB](https://mariadb.com/kb/en/library/yum/)
 * [Composer](https://getcomposer.org/)
 * [Memcached](https://memcached.org/)
