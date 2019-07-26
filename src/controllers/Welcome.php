@@ -14,7 +14,8 @@ class Welcome extends Controller {
 
     $model = new WelcomeModel();
 
-    $model->discord_url = Common::$config->bnetdocs->discord_url;
+    $model->discord_url = 'https://discord.gg/';
+    $model->discord_url .= Common::$config->bnetdocs->discord->invite_code;
 
     $view->render( $model );
 
