@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Donate as DonateModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
