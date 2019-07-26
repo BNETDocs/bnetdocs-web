@@ -96,6 +96,9 @@ function main() {
     $router->addRoute( // URL: /credits
       "#^/credits/?$#", "Credits", "CreditsHtml"
     );
+    $router->addRoute( // URL: /discord
+      "#^/discord/?$#", "Discord", "DiscordHtml"
+    );
     $router->addRoute( // URL: /document/:id.txt
       "#^/document/(\d+)\.txt#", "Document\\View", "Document\\ViewPlain"
     );

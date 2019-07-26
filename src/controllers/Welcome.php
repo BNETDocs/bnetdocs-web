@@ -14,8 +14,6 @@ class Welcome extends Controller {
 
     $model = new WelcomeModel();
 
-    $model->discord_url = Common::$config->bnetdocs->discord_url;
-
     $view->render( $model );
 
     $model->_responseCode = 200;

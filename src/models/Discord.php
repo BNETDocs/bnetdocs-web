@@ -4,4 +4,8 @@ namespace BNETDocs\Models;
 
 use \CarlBennett\MVC\Libraries\Model;
 
-class Welcome extends Model {}
+class Discord extends Model {
+
+  public $discord_url;
+
+}

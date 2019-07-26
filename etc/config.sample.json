@@ -5,7 +5,10 @@
       "battleforthenet": "",
       "vultr": ""
     },
-    "discord_url": "https://discord.gg/u87WVeu",
+    "discord": {
+      "invite_code": "u87WVeu",
+      "server_id": 405789880749260820
+    },
     "donations": {
       "btc_address": "",
       "paypal_url": ""
