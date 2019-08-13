@@ -70,6 +70,10 @@ switch ($this->getContext()->error) {
     $af      = "email";
     $message = "The email address is already in use, use another.";
     break;
+  case "USERNAME_TAKEN":
+    $af      = "username";
+    $message = "That username is taken, try another.";
+    break;
   case "INTERNAL_ERROR":
     $af      = null;
     $message = "An internal error occurred while processing your request. "

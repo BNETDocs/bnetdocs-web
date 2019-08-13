@@ -136,6 +136,13 @@ class Register extends Controller {
         return;
       }
     } catch (UserNotFoundException $e) {}
+    
+    try {
+      if (User::findIdByUsername($username)) {
+        $model->error = "USERNAME_TAKEN";
+        return;
+      }
+    } catch (UserNotFoundException $e) {}
 
     try {
 
