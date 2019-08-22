@@ -40,6 +40,12 @@
       "username_length_min": 3
     }
   },
+  "email": {
+    "smtp_host": "smtp.example.com",
+    "smtp_password": "",
+    "smtp_port": 587,
+    "smtp_user": ""
+  },
   "memcache": {
     "connect_timeout": 1.0,
     "tcp_nodelay": true,
