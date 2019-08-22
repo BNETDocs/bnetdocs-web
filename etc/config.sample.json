@@ -42,9 +42,9 @@
   },
   "email": {
     "smtp_host": "smtp.example.com",
+    "smtp_password": "",
     "smtp_port": 587,
-    "smtp_user": "",
-    "smtp_password": ""
+    "smtp_user": ""
   },
   "memcache": {
     "connect_timeout": 1.0,
