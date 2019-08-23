@@ -158,8 +158,8 @@ class Register extends Controller {
       );
 
       if ($success) {
-        $user = User::findIdByUsername($username);
-        $user_id = $user->getId();
+        $user_id = User::findIdByUsername($username);
+        $user = new User( $user_id );
       }
 
     } catch (QueryException $e) {
