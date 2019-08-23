@@ -30,7 +30,6 @@
     "user_password_pepper": "bnetdocs-INSERTRANDOMVALUEHERE",
     "user_register_disabled": false,
     "user_register_requirements": {
-      "email_duplicate_allowed": false,
       "email_validate_quick": true,
       "password_allow_email": false,
       "password_allow_username": false,

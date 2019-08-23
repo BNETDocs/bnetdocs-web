@@ -137,7 +137,7 @@ class Register extends Controller {
     }
 
     try {
-      if (!$req->email_duplicate_allowed && User::findIdByEmail($email)) {
+      if (User::findIdByEmail($email)) {
         $model->error = "EMAIL_ALREADY_USED";
         return;
       }
