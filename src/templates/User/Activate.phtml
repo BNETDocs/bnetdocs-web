@@ -13,6 +13,10 @@ switch ( $this->getContext()->error ) {
   case 'INVALID_TOKEN':
     $message = 'The token is expired or invalid and therefore cannot be used.';
     break;
+  case 'INTERNAL_ERROR':
+    $message = 'An internal error occurred while processing your request. '
+      . 'Our staff has been notified of the issue. Try again later.';
+    break;
   default:
     $message = $this->getContext()->error;
 }

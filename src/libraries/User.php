@@ -279,7 +279,7 @@ class User implements JsonSerializable {
   public static function createPassword($password, &$hash, &$salt) {
     $pepper = Common::$config->bnetdocs->user_password_pepper;
 
-    $gmp  = gmp_init(microtime(true)*10000);
+    $gmp  = gmp_init(time());
     $gmp  = gmp_mul($gmp, mt_rand());
     $gmp  = gmp_mul($gmp, gmp_random_bits(64));
     $salt = strtoupper(gmp_strval($gmp, 36));
@@ -506,7 +506,7 @@ class User implements JsonSerializable {
     $value = Common::$cache->get($key);
 
     if ($value === false) {
-      $gmp = gmp_init(microtime(true)*10000);
+      $gmp = gmp_init(time());
       $gmp = gmp_mul($gmp, mt_rand());
       $gmp = gmp_mul($gmp, gmp_random_bits(64));
 
@@ -681,6 +681,60 @@ class User implements JsonSerializable {
       $this->options_bitmask |= $acl;
     } else {
       $this->options_bitmask &= ~$acl;
+    }
+  }
+
+  public function setVerified() {
+    $this->invalidateVerificationToken();
+
+    $tz = new DateTimeZone( 'Etc/UTC' );
+    $dt = new DateTime($this->created_datetime);
+    $dt->setTimezone($tz);
+
+    $verified_datetime = $dt;
+    $options_bitmask = $this->options_bitmask | self::OPTION_VERIFIED;
+
+    if ( !isset( Common::$database )) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $successful = false;
+
+    try {
+
+      $stmt = Common::$database->prepare('
+        UPDATE `users` SET
+          `options_bitmask` = :bits,
+          `verified_datetime` = :dt
+        WHERE `id` = :user_id;
+      ');
+      $stmt->bindParam(
+        ':dt', $verified_datetime->format( 'Y-m-d H:i:s' ), PDO::PARAM_STR
+      );
+      $stmt->bindParam(':bits', $options_bitmask, PDO::PARAM_INT);
+      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
+      $successful = $stmt->execute();
+      $stmt->closeCursor();
+      if ($successful) {
+        $this->verified_datetime = $verified_datetime;
+        $this->options_bitmask = $options_bitmask;
+        $key = 'bnetdocs-user-' . $this->id;
+        $obj = Common::$cache->get($key);
+        if ($obj !== false) {
+          $obj = unserialize($obj);
+          $obj->verified_datetime = $this->verified_datetime;
+          $obj->options_bitmask = $this->options_bitmask;
+          $obj = serialize($obj);
+          Common::$cache->set($key, $obj, 300);
+        }
+      }
+
+    } catch (PDOException $e) {
+
+      throw new QueryException('Cannot set user as verified', $e);
+
+    } finally {
+      return $successful;
     }
   }
 

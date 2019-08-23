@@ -180,6 +180,7 @@ class Register extends Controller {
 
       $state->mail &= $mail;
       $state->token = ( $user ? $user->getVerificationToken() : null );
+      $state->user_id = $user_id;
 
       try {
         //Server settings
