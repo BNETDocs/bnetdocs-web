@@ -234,6 +234,9 @@ function main() {
     $router->addRoute( // URL: /user/:id
       "#^/user/(\d+)/?#", "User\\View", "User\\ViewHtml"
     );
+    $router->addRoute( // URL: /user/activate
+      "#^/user/activate/?$#", "User\\Activate", "User\\ActivateHtml"
+    );
     $router->addRoute( // URL: /user/changepassword
       "#^/user/changepassword/?$#",
       "User\\ChangePassword", "User\\ChangePasswordHtml"
