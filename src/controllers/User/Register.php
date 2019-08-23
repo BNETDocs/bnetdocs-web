@@ -196,7 +196,7 @@ class Register extends Controller {
       $mail = new PHPMailer( true ); // true enables exceptions
       $mail_config = Common::$config->email;
 
-      $state->mail &= $mail;
+      $state->mail = &$mail;
       $state->token = ( $user ? $user->getVerificationToken() : null );
       $state->user_id = $user_id;
 

@@ -111,7 +111,7 @@ class ResetPassword extends Controller {
       $mail = new PHPMailer( true ); // true enables exceptions
       $mail_config = Common::$config->email;
 
-      $state->mail &= $mail;
+      $state->mail = &$mail;
       $state->token = $model->user->getVerificationToken();
       $state->user = $model->user;
 
