@@ -279,7 +279,7 @@ class User implements JsonSerializable {
   public static function createPassword($password, &$hash, &$salt) {
     $pepper = Common::$config->bnetdocs->user_password_pepper;
 
-    $gmp  = gmp_init(time());
+    $gmp  = gmp_init(microtime(true)*10000);
     $gmp  = gmp_mul($gmp, mt_rand());
     $gmp  = gmp_mul($gmp, gmp_random_bits(64));
     $salt = strtoupper(gmp_strval($gmp, 36));
