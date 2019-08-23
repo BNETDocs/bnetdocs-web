@@ -210,11 +210,11 @@ class Register extends Controller {
         $mail->CharSet = PHPMailer::CHARSET_UTF8;
 
         ob_start();
-        (new Template($mail, 'Email/User/Register.rich'))->render();
+        (new Template($state, 'Email/User/Register.rich'))->render();
         $mail->Body = ob_get_clean();
 
         ob_start();
-        (new Template($mail, 'Email/User/Register.plain'))->render();
+        (new Template($state, 'Email/User/Register.plain'))->render();
         $mail->AltBody = ob_get_clean();
 
         $mail->send();
