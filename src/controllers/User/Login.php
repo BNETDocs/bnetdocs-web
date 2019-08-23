@@ -47,10 +47,10 @@ class Login extends Controller {
     $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
     $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    $username   = (isset($data["username"  ]) ? $data["username"  ] : null);
+    $email      = (isset($data["email"     ]) ? $data["email"     ] : null);
     $password   = (isset($data["password"  ]) ? $data["password"  ] : null);
 
-    $model->username = $username;
+    $model->email = $email;
 
     if (!$csrf_valid) {
       $model->error = "INVALID_CSRF";
@@ -60,8 +60,8 @@ class Login extends Controller {
 
     if ( isset( Authentication::$user )) {
       $model->error = "ALREADY_LOGGED_IN";
-    } else if (empty($username)) {
-      $model->error = "EMPTY_USERNAME";
+    } else if (empty($email)) {
+      $model->error = "EMPTY_EMAIL";
     } else if (Common::$config->bnetdocs->user_login_disabled) {
       $model->error = "LOGIN_DISABLED";
     }
@@ -69,7 +69,7 @@ class Login extends Controller {
     if ($model->error) return;
 
     try {
-      $user = new User(User::findIdByUsername($username));
+      $user = new User(User::findIdByEmail($email));
     } catch (UserNotFoundException $e) {
       $user = null;
     }
@@ -95,7 +95,7 @@ class Login extends Controller {
       getenv("REMOTE_ADDR"),
       json_encode([
         "error" => $model->error,
-        "username" => $username,
+        "email" => $model->email,
       ])
     );
   }

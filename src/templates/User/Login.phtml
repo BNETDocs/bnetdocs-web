@@ -16,12 +16,12 @@ switch ($this->getContext()->error) {
   case "ALREADY_LOGGED_IN":
     $message = "You are already logged in, you must log out first.";
     break;
-  case "EMPTY_USERNAME":
-    $message = "The username was left blank.";
+  case "EMPTY_EMAIL":
+    $message = "The email address was left blank.";
     break;
   case "USER_NOT_FOUND":
   case "PASSWORD_INCORRECT":
-    $message = "Incorrect username or password.";
+    $message = "Incorrect email address or password.";
     break;
   case "USER_DISABLED":
     $message = "The account has been administratively disabled.";
@@ -56,15 +56,15 @@ require("./header.inc.phtml");
               <tbody>
                 <tr>
                   <td>
-                    <label for="username">Username:</label><br/>
+                    <label for="email">Email address:</label><br/>
                     <input
-                      type="text"
-                      name="username"
-                      id="username"
-                      value="<?=filter_var($this->getContext()->username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"
+                      type="email"
+                      name="email"
+                      id="email"
+                      value="<?=filter_var($this->getContext()->email, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"
                       tabindex="1"
                       required
-                      autocomplete="username"
+                      autocomplete="email"
                       autofocus="autofocus"
                     />
                   </td><td>
