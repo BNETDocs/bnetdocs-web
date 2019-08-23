@@ -198,7 +198,7 @@ class Register extends Controller {
           $mail->setFrom($mail_config->recipient_from, 'BNETDocs');
         }
 
-        $mail->addAddress($email);
+        $mail->addAddress($email, $username);
 
         if (!empty($mail_config->recipient_reply_to)) {
           $mail->addReplyTo($mail_config->recipient_reply_to);
