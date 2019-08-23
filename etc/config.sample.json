@@ -41,12 +41,18 @@
     }
   },
   "email": {
-    "recipient_from": "",
-    "recipient_reply_to": "",
-    "smtp_host": "smtp.example.com",
+    "recipient_from": [
+      "root@localhost",
+      "BNETDocs"
+    ],
+    "recipient_reply_to": [
+      "root@localhost",
+      "root"
+    ],
+    "smtp_host": "localhost",
     "smtp_password": "",
-    "smtp_port": 587,
-    "smtp_tls": true,
+    "smtp_port": 25,
+    "smtp_tls": false,
     "smtp_user": ""
   },
   "memcache": {

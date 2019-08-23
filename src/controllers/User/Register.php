@@ -172,7 +172,25 @@ class Register extends Controller {
 
     }
 
-    if ($success) {
+    if (!$success) {
+      $model->error = 'INTERNAL_ERROR';
+    } else {
+      $model->error = false;
+
+      Logger::logEvent(
+        EventTypes::USER_CREATED,
+        $user_id,
+        getenv("REMOTE_ADDR"),
+        json_encode([
+          "error"           => $model->error,
+          "requirements"    => $req,
+          "email"           => $email,
+          "username"        => $username,
+          "display_name"    => null,
+          "options_bitmask" => 0,
+        ])
+      );
+
       $state = new StdClass();
 
       $mail = new PHPMailer( true ); // true enables exceptions
@@ -195,14 +213,20 @@ class Register extends Controller {
         $mail->Port       = $mail_config->smtp_port;
 
         //Recipients
-        if (!empty($mail_config->recipient_from)) {
-          $mail->setFrom($mail_config->recipient_from, 'BNETDocs');
+        if (isset($mail_config->recipient_from[0])) {
+          $mail->setFrom(
+            $mail_config->recipient_from[0],
+            $mail_config->recipient_from[1]
+          );
         }
 
         $mail->addAddress($email, $username);
 
-        if (!empty($mail_config->recipient_reply_to)) {
-          $mail->addReplyTo($mail_config->recipient_reply_to);
+        if (isset($mail_config->recipient_reply_to[0])) {
+          $mail->addReplyTo(
+            $mail_config->recipient_reply_to[0],
+            $mail_config->recipient_reply_to[1]
+          );
         }
 
         // Content
@@ -239,25 +263,6 @@ class Register extends Controller {
         $model->error = "EMAIL_FAILURE";
       }
     }
-
-    if (!$success) {
-      $model->error = "INTERNAL_ERROR";
-    } else {
-      $model->error = false;
-    }
-    Logger::logEvent(
-      EventTypes::USER_CREATED,
-      $user_id,
-      getenv("REMOTE_ADDR"),
-      json_encode([
-        "error"           => $model->error,
-        "requirements"    => $req,
-        "email"           => $email,
-        "username"        => $username,
-        "display_name"    => null,
-        "options_bitmask" => 0,
-      ])
-    );
   }
 
 }

@@ -1,11 +1,11 @@
 <?php
 namespace BNETDocs\Templates\Email\User;
 use \CarlBennett\MVC\Libraries\Common;
-require("./Email/header.rich.inc.phtml");
+require('./Email/header.rich.inc.phtml');
 $url = Common::relativeUrlToAbsolute('/user/activate?u=' . rawurlencode($this->getContext()->user_id) . '&t=' . rawurlencode($this->getContext()->token));
 ?>
 <p style="font-family:sans-serif;font-weight:bold;">Welcome to BNETDocs!</p>
 <p style="font-family:sans-serif;">Your account requires activation before being able to use this service. Click or copy and paste the link below into your browser to activate your account.</p>
 <p style="font-family:sans-serif;"><a href="<?=$url?>" rel="external"><?=filter_var($url, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></p>
 <p style="font-family:sans-serif;"><strong>Note:</strong> This link will only be available for 24 hours after registering. If you wait until it expires, you will need to complete a password reset.</p>
-<?php require("./Email/footer.rich.inc.phtml"); ?>
+<?php require('./Email/footer.rich.inc.phtml'); ?>

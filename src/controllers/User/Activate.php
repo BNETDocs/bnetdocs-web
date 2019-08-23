@@ -41,14 +41,16 @@ class Activate extends Controller {
     }
 
     if ( $model->user ) {
-      $model->user->invalidateVerificationToken();
       $user_token = $model->user->getVerificationToken();
 
       if ( $user_token === $model->token ) {
+        $model->user->invalidateVerificationToken();
+
         if (!$model->user->setVerified()) {
           $model->error = 'INTERNAL_ERROR';
         } else {
           $model->error = false;
+
           Logger::logEvent(
             EventTypes::USER_VERIFIED,
             $model->user_id,

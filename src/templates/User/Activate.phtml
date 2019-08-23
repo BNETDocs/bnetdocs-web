@@ -34,13 +34,22 @@ require('./header.inc.phtml');
 <?php } ?>
         <form method="GET" action="?">
           <section>
+            <label for="u">User Id:</label><br/>
+            <input
+              type="text"
+              name="u"
+              id="user_id"
+              value="<?php echo filter_var($this->getContext()->user_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"
+              tabindex="1"
+              required
+            /><br/>
             <label for="t">Token:</label><br/>
             <input
               type="text"
               name="t"
               id="token"
               value="<?php echo filter_var($this->getContext()->token, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"
-              tabindex="1"
+              tabindex="2"
               required
               autofocus="autofocus"
             />
@@ -49,7 +58,7 @@ require('./header.inc.phtml');
             <input
               type="submit"
               value="Activate Account"
-              tabindex="2"
+              tabindex="3"
             />
           </section>
         </form>
