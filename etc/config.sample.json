@@ -41,9 +41,12 @@
     }
   },
   "email": {
+    "recipient_from": "",
+    "recipient_reply_to": "",
     "smtp_host": "smtp.example.com",
     "smtp_password": "",
     "smtp_port": 587,
+    "smtp_tls": true,
     "smtp_user": ""
   },
   "memcache": {

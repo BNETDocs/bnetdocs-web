@@ -74,6 +74,10 @@ switch ($this->getContext()->error) {
     $af      = "username";
     $message = "That username is taken, try another.";
     break;
+  case "EMAIL_FAILURE":
+    $af      = "email";
+    $message = "Your account was created, but the email failed to send.";
+    break;
   case "INTERNAL_ERROR":
     $af      = null;
     $message = "An internal error occurred while processing your request. "

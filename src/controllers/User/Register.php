@@ -16,7 +16,13 @@ use \BNETDocs\Models\User\Register as UserRegisterModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
+
+use \PHPMailer\PHPMailer\Exception;
+use \PHPMailer\PHPMailer\PHPMailer;
+
+use \StdClass;
 
 class Register extends Controller {
 
@@ -136,7 +142,7 @@ class Register extends Controller {
         return;
       }
     } catch (UserNotFoundException $e) {}
-    
+
     try {
       if (User::findIdByUsername($username)) {
         $model->error = "USERNAME_TAKEN";
@@ -144,11 +150,19 @@ class Register extends Controller {
       }
     } catch (UserNotFoundException $e) {}
 
+    $user = null;
+    $user_id = null;
+
     try {
 
       $success = User::create(
         $email, $username, null, $pw1, User::DEFAULT_OPTION
       );
+
+      if ($success) {
+        $user_id = User::findIdByUsername($username);
+        $user = new User( $user_id );
+      }
 
     } catch (QueryException $e) {
 
@@ -158,6 +172,74 @@ class Register extends Controller {
 
     }
 
+    if ($success) {
+      $state = new StdClass();
+
+      $mail = new PHPMailer( true ); // true enables exceptions
+      $mail_config = Common::$config->email;
+
+      $state->mail &= $mail;
+      $state->token = ( $user ? $user->getVerificationToken() : null );
+      $state->user_id = $user_id;
+
+      try {
+        //Server settings
+        $mail->Timeout = 10; // default is 300 per RFC2821 $ 4.5.3.2
+        $mail->SMTPDebug = 0;
+        $mail->isSMTP();
+        $mail->Host       = $mail_config->smtp_host;
+        $mail->SMTPAuth   = !empty($mail_config->smtp_user);
+        $mail->Username   = $mail_config->smtp_user;
+        $mail->Password   = $mail_config->smtp_password;
+        $mail->SMTPSecure = $mail_config->smtp_tls ? 'tls' : '';
+        $mail->Port       = $mail_config->smtp_port;
+
+        //Recipients
+        if (!empty($mail_config->recipient_from)) {
+          $mail->setFrom($mail_config->recipient_from, 'BNETDocs');
+        }
+
+        $mail->addAddress($email, $username);
+
+        if (!empty($mail_config->recipient_reply_to)) {
+          $mail->addReplyTo($mail_config->recipient_reply_to);
+        }
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = 'Account Activation';
+        $mail->CharSet = PHPMailer::CHARSET_UTF8;
+
+        ob_start();
+        (new Template($state, 'Email/User/Register.rich'))->render();
+        $mail->Body = ob_get_clean();
+
+        ob_start();
+        (new Template($state, 'Email/User/Register.plain'))->render();
+        $mail->AltBody = ob_get_clean();
+
+        $mail->send();
+
+        Logger::logEvent(
+          EventTypes::EMAIL_SENT,
+          $user_id,
+          getenv('REMOTE_ADDR'),
+          json_encode([
+            'from' => $mail->From,
+            'to' => $mail->getToAddresses(),
+            'reply_to' => $mail->getReplyToAddresses(),
+            'subject' => $mail->Subject,
+            'content_type' => $mail->ContentType,
+            'body' => $mail->Body,
+            'alt_body' => $mail->AltBody,
+          ])
+        );
+
+      } catch (\Exception $e) {
+        $model->error = "EMAIL_FAILURE";
+      }
+    }
+
     if (!$success) {
       $model->error = "INTERNAL_ERROR";
     } else {
@@ -165,7 +247,7 @@ class Register extends Controller {
     }
     Logger::logEvent(
       EventTypes::USER_CREATED,
-      null,
+      $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([
         "error"           => $model->error,
