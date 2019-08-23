@@ -1,0 +1,60 @@
+<?php
+
+namespace BNETDocs\Templates\User;
+
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title       = 'Activate Account';
+$description = 'This form allows an individual to activate their account with a token.';
+$this->opengraph->attach( new Pair( 'url', '/user/activate' ));
+
+switch ( $this->getContext()->error ) {
+  case 'INVALID_TOKEN':
+    $message = 'The token is expired or invalid and therefore cannot be used.';
+    break;
+  default:
+    $message = $this->getContext()->error;
+}
+
+$this->additional_css[] = '/a/forms.css';
+require('./header.inc.phtml');
+?>
+      <article>
+<?php if ($this->getContext()->error !== false) { ?>
+        <header>Activate Account</header>
+<?php if (!empty($message)) { ?>
+        <section class="red">
+          <p><?php echo $message; ?></p>
+        </section>
+<?php } ?>
+        <form method="GET" action="?">
+          <section>
+            <label for="t">Token:</label><br/>
+            <input
+              type="text"
+              name="t"
+              id="token"
+              value="<?php echo filter_var($this->getContext()->token, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"
+              tabindex="1"
+              required
+              autofocus="autofocus"
+            />
+          </section>
+          <section>
+            <input
+              type="submit"
+              value="Activate Account"
+              tabindex="2"
+            />
+          </section>
+        </form>
+<?php } else { ?>
+        <header class="green">Account Activated</header>
+        <section class="green">
+          <p>Your account has been activated successfully!</p>
+          <p>Use the navigation to the left to move to another page.</p>
+        </section>
+<?php } ?>
+      </article>
+<?php require('./footer.inc.phtml'); ?>
