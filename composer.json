@@ -49,7 +49,7 @@
         "ext-mcrypt": "*",
         "ext-memcached": "*",
         "ext-pdo": "*",
-        "php-64bit": ">=5.5.0",
+        "php-64bit": "^7.2",
         "phpmailer/phpmailer": "^6.0"
     }
 }
