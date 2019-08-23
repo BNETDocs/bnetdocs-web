@@ -19,7 +19,7 @@
         "engineer"
     ],
     "homepage": "https://github.com/BNETDocs/bnetdocs-web",
-    "license": "AGPLv3",
+    "license": "AGPL-3.0-or-later",
     "authors": [
         {
             "name": "Carl Bennett",
