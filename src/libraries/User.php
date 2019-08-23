@@ -708,9 +708,8 @@ class User implements JsonSerializable {
           `verified_datetime` = :dt
         WHERE `id` = :user_id;
       ');
-      $stmt->bindParam(
-        ':dt', $verified_datetime->format( 'Y-m-d H:i:s' ), PDO::PARAM_STR
-      );
+      $dt = $verified_datetime->format( 'Y-m-d H:i:s' );
+      $stmt->bindParam(':dt', $dt, PDO::PARAM_STR); // must be byref
       $stmt->bindParam(':bits', $options_bitmask, PDO::PARAM_INT);
       $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
       $successful = $stmt->execute();
