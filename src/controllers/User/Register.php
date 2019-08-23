@@ -172,7 +172,25 @@ class Register extends Controller {
 
     }
 
-    if ($success) {
+    if (!$success) {
+      $model->error = 'INTERNAL_ERROR';
+    } else {
+      $model->error = false;
+
+      Logger::logEvent(
+        EventTypes::USER_CREATED,
+        $user_id,
+        getenv("REMOTE_ADDR"),
+        json_encode([
+          "error"           => $model->error,
+          "requirements"    => $req,
+          "email"           => $email,
+          "username"        => $username,
+          "display_name"    => null,
+          "options_bitmask" => 0,
+        ])
+      );
+
       $state = new StdClass();
 
       $mail = new PHPMailer( true ); // true enables exceptions
@@ -239,25 +257,6 @@ class Register extends Controller {
         $model->error = "EMAIL_FAILURE";
       }
     }
-
-    if (!$success) {
-      $model->error = "INTERNAL_ERROR";
-    } else {
-      $model->error = false;
-    }
-    Logger::logEvent(
-      EventTypes::USER_CREATED,
-      $user_id,
-      getenv("REMOTE_ADDR"),
-      json_encode([
-        "error"           => $model->error,
-        "requirements"    => $req,
-        "email"           => $email,
-        "username"        => $username,
-        "display_name"    => null,
-        "options_bitmask" => 0,
-      ])
-    );
   }
 
 }
