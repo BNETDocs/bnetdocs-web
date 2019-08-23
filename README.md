@@ -1,6 +1,8 @@
 # BNETDocs
 
 [![Build Status](https://travis-ci.org/BNETDocs/bnetdocs-web.svg?branch=phoenix)](https://travis-ci.org/BNETDocs/bnetdocs-web)
+![PHP ^7.2](https://img.shields.io/badge/php-%5E7.2-blue)
+![License Badge](https://img.shields.io/github/license/BNETDocs/bnetdocs-web)
 
 BNETDocs is a documentation and discussion website for Blizzard Entertainment's
 Battle.net&trade; and in-game protocols.
