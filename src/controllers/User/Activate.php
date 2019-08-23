@@ -2,17 +2,19 @@
 
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Models\User\Activate as UserActivateModel;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
 
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
+use \BNETDocs\Models\User\Activate as UserActivateModel;
+
+use \InvalidArgumentException;
 
 class Activate extends Controller {
 
@@ -33,6 +35,8 @@ class Activate extends Controller {
     try {
       $model->user = new User( $model->user_id );
     } catch ( UserNotFoundException $ex ) {
+      $model->user = null;
+    } catch ( InvalidArgumentException $ex ) {
       $model->user = null;
     }
 
