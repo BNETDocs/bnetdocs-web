@@ -22,6 +22,8 @@ use \CarlBennett\MVC\Libraries\View;
 use \PHPMailer\PHPMailer\Exception;
 use \PHPMailer\PHPMailer\PHPMailer;
 
+use \StdClass;
+
 class Register extends Controller {
 
   public function &run(Router &$router, View &$view, array &$args) {
