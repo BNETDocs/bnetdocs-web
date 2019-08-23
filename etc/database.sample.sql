@@ -712,7 +712,7 @@ CREATE TABLE `users` (
   `timezone` varchar(191) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
-  KEY `email` (`email`)
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=100003 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='User metadata for the BNETDocs website';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
