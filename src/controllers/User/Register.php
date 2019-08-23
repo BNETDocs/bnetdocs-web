@@ -213,14 +213,20 @@ class Register extends Controller {
         $mail->Port       = $mail_config->smtp_port;
 
         //Recipients
-        if (!empty($mail_config->recipient_from)) {
-          $mail->setFrom($mail_config->recipient_from, 'BNETDocs');
+        if (isset($mail_config->recipient_from[0])) {
+          $mail->setFrom(
+            $mail_config->recipient_from[0],
+            $mail_config->recipient_from[1]
+          );
         }
 
         $mail->addAddress($email, $username);
 
-        if (!empty($mail_config->recipient_reply_to)) {
-          $mail->addReplyTo($mail_config->recipient_reply_to);
+        if (isset($mail_config->recipient_reply_to[0])) {
+          $mail->addReplyTo(
+            $mail_config->recipient_reply_to[0],
+            $mail_config->recipient_reply_to[1]
+          );
         }
 
         // Content
