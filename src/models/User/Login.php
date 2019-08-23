@@ -6,9 +6,9 @@ use \CarlBennett\MVC\Libraries\Model;
 
 class Login extends Model {
 
-  public $bad_email;
-  public $bad_password;
-  public $email;
-  public $password;
+  public $csrf_id;
+  public $csrf_token;
+  public $error;
+  public $username;
 
 }

@@ -16,12 +16,12 @@ switch ($this->getContext()->error) {
   case "ALREADY_LOGGED_IN":
     $message = "You are already logged in, you must log out first.";
     break;
-  case "EMPTY_EMAIL":
-    $message = "The email address was left blank.";
+  case "EMPTY_USERNAME":
+    $message = "The username was left blank.";
     break;
   case "USER_NOT_FOUND":
   case "PASSWORD_INCORRECT":
-    $message = "Incorrect email address or password.";
+    $message = "Incorrect username or password.";
     break;
   case "USER_DISABLED":
     $message = "The account has been administratively disabled.";
@@ -48,23 +48,23 @@ require("./header.inc.phtml");
         </section>
 <?php } ?>
         <form method="POST" action="?">
-          <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
-          <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
+          <input type="hidden" name="csrf_id" value="<?=filter_var($this->getContext()->csrf_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+          <input type="hidden" name="csrf_token" value="<?=filter_var($this->getContext()->csrf_token, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
           <section>
             <table>
               <thead></thead>
               <tbody>
                 <tr>
                   <td>
-                    <label for="email">Email address:</label><br/>
+                    <label for="username">Username:</label><br/>
                     <input
-                      type="email"
-                      name="email"
-                      id="email"
-                      value=""
+                      type="text"
+                      name="username"
+                      id="username"
+                      value="<?=filter_var($this->getContext()->username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"
                       tabindex="1"
                       required
-                      autocomplete="email"
+                      autocomplete="username"
                       autofocus="autofocus"
                     />
                   </td><td>
