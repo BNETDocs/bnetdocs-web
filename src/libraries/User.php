@@ -45,6 +45,8 @@ class User implements JsonSerializable {
   const OPTION_ACL_USER_MODIFY      = 0x00200000;
   const OPTION_ACL_USER_DELETE      = 0x00400000;
 
+  const VERIFICATION_TOKEN_TTL = 86400;
+
   protected $created_datetime;
   protected $display_name;
   protected $email;
@@ -499,6 +501,23 @@ class User implements JsonSerializable {
     return $this->username;
   }
 
+  public function getVerificationToken() {
+    $key = 'bnetdocs-userverify-' . $this->id;
+    $value = Common::$cache->get($key);
+
+    if ($value === false) {
+      $gmp = gmp_init(microtime(true)*10000);
+      $gmp = gmp_mul($gmp, mt_rand());
+      $gmp = gmp_mul($gmp, gmp_random_bits(64));
+
+      $value = hash('sha256', gmp_strval($gmp, 36));
+
+      Common::$cache->set($key, $value, self::VERIFICATION_TOKEN_TTL);
+    }
+
+    return $value;
+  }
+
   public function getVerifiedDateTime() {
     if (is_null($this->verified_datetime)) {
       return $this->verified_datetime;
@@ -508,6 +527,11 @@ class User implements JsonSerializable {
       $dt->setTimezone($tz);
       return $dt;
     }
+  }
+
+  public function invalidateVerificationToken() {
+    $key = 'bnetdocs-userverify-' . $this->id;
+    return Common::$cache->delete($key);
   }
 
   public function isStaff() {
