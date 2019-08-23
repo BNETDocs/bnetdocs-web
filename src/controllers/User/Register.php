@@ -148,11 +148,19 @@ class Register extends Controller {
       }
     } catch (UserNotFoundException $e) {}
 
+    $user = null;
+    $user_id = null;
+
     try {
 
       $success = User::create(
         $email, $username, null, $pw1, User::DEFAULT_OPTION
       );
+
+      if ($success) {
+        $user = User::findIdByUsername($username);
+        $user_id = $user->getId();
+      }
 
     } catch (QueryException $e) {
 
@@ -163,8 +171,13 @@ class Register extends Controller {
     }
 
     if ($success) {
+      $state = new StdClass();
+
       $mail = new PHPMailer( true ); // true enables exceptions
       $mail_config = Common::$config->email;
+
+      $state->mail &= $mail;
+      $state->token = ( $user ? $user->getVerificationToken() : null );
 
       try {
         //Server settings
@@ -206,7 +219,7 @@ class Register extends Controller {
 
         Logger::logEvent(
           EventTypes::EMAIL_SENT,
-          null,
+          $user_id,
           getenv('REMOTE_ADDR'),
           json_encode([
             'from' => $mail->From,
@@ -231,7 +244,7 @@ class Register extends Controller {
     }
     Logger::logEvent(
       EventTypes::USER_CREATED,
-      null,
+      $user_id,
       getenv("REMOTE_ADDR"),
       json_encode([
         "error"           => $model->error,
