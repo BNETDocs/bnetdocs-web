@@ -2,7 +2,7 @@
 namespace BNETDocs\Templates\Email\User;
 use \CarlBennett\MVC\Libraries\Common;
 $name = $this->getContext()->name;
-$url = Common::relativeUrlToAbsolute('/user/activate?u=' . rawurlencode($this->getContext()->user_id) . '&t=' . rawurlencode($this->getContext()->token));
+$url = Common::relativeUrlToAbsolute('/user/verify?u=' . rawurlencode($this->getContext()->user_id) . '&t=' . rawurlencode($this->getContext()->token));
 require('./Email/header.plain.inc.phtml');
 ?>
 Hello <?=$name?>,

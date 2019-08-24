@@ -12,17 +12,17 @@ use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 
-use \BNETDocs\Models\User\Activate as UserActivateModel;
+use \BNETDocs\Models\User\Verify as UserVerifyModel;
 
 use \InvalidArgumentException;
 
-class Activate extends Controller {
+class Verify extends Controller {
 
   public function &run( Router &$router, View &$view, array &$args ) {
 
     $data = $router->getRequestQueryArray();
 
-    $model = new UserActivateModel();
+    $model = new UserVerifyModel();
 
     $model->error   = 'INVALID_TOKEN';
     $model->token   = isset( $data[ 't' ]) ? $data[ 't' ] : null;

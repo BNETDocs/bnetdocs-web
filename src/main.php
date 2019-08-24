@@ -234,9 +234,6 @@ function main() {
     $router->addRoute( // URL: /user/:id
       "#^/user/(\d+)/?#", "User\\View", "User\\ViewHtml"
     );
-    $router->addRoute( // URL: /user/activate
-      "#^/user/activate/?$#", "User\\Activate", "User\\ActivateHtml"
-    );
     $router->addRoute( // URL: /user/changepassword
       "#^/user/changepassword/?$#",
       "User\\ChangePassword", "User\\ChangePasswordHtml"
@@ -263,6 +260,9 @@ function main() {
     );
     $router->addRoute( // URL: /user/update
       "#^/user/update/?$#", "User\\Update", "User\\UpdateHtml"
+    );
+    $router->addRoute( // URL: /user/verify
+      "#^/user/verify/?$#", "User\\Verify", "User\\VerifyHtml"
     );
     $router->addRoute( // URL: /welcome
       "#^/welcome/?$#", "Welcome", "WelcomeHtml"

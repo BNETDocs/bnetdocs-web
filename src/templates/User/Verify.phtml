@@ -5,9 +5,9 @@ namespace BNETDocs\Templates\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
-$title       = 'Activate Account';
-$description = 'This form allows an individual to activate their account with a token.';
-$this->opengraph->attach( new Pair( 'url', '/user/activate' ));
+$title       = 'Verify Account';
+$description = 'This form allows an individual to verify their account with a token.';
+$this->opengraph->attach( new Pair( 'url', '/user/verify' ));
 
 switch ( $this->getContext()->error ) {
   case 'INVALID_TOKEN':
@@ -26,7 +26,7 @@ require('./header.inc.phtml');
 ?>
       <article>
 <?php if ($this->getContext()->error !== false) { ?>
-        <header>Activate Account</header>
+        <header>Verify Account</header>
 <?php if (!empty($message)) { ?>
         <section class="red">
           <p><?php echo $message; ?></p>
@@ -57,15 +57,15 @@ require('./header.inc.phtml');
           <section>
             <input
               type="submit"
-              value="Activate Account"
+              value="Verify Account"
               tabindex="3"
             />
           </section>
         </form>
 <?php } else { ?>
-        <header class="green">Account Activated</header>
+        <header class="green">Account Verified</header>
         <section class="green">
-          <p>Your account has been activated successfully!</p>
+          <p>Your account has been verified successfully!</p>
           <p>Use the navigation to the left to move to another page.</p>
         </section>
 <?php } ?>

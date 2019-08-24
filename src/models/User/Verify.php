@@ -4,7 +4,7 @@ namespace BNETDocs\Models\User;
 
 use \CarlBennett\MVC\Libraries\Model;
 
-class Activate extends Model {
+class Verify extends Model {
 
   public $error;
   public $token;
