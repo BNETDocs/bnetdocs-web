@@ -197,6 +197,7 @@ class Register extends Controller {
       $mail_config = Common::$config->email;
 
       $state->mail = &$mail;
+      $state->name = ( $user ? $user->getName() : $username );
       $state->token = ( $user ? $user->getVerificationToken() : null );
       $state->user_id = $user_id;
 

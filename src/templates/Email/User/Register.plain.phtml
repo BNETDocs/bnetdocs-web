@@ -1,16 +1,23 @@
 <?php
 namespace BNETDocs\Templates\Email\User;
 use \CarlBennett\MVC\Libraries\Common;
+$name = $this->getContext()->name;
+$url = Common::relativeUrlToAbsolute('/user/activate?u=' . rawurlencode($this->getContext()->user_id) . '&t=' . rawurlencode($this->getContext()->token));
 require('./Email/header.plain.inc.phtml');
 ?>
+Hello <?=$name?>,
+
 Welcome to BNETDocs!
 
-Your account requires activation before being able to use this service. Click
-or copy and paste the link below into your browser to activate your account.
+Your account requires verification before being able to use this service. Click
+or copy and paste the link below into your web browser to verify your account.
 
-<?php echo Common::relativeUrlToAbsolute('/user/activate?u=' . rawurlencode($this->getContext()->user_id) . '&t=' . rawurlencode($this->getContext()->token)); ?>
+<?=$url?>
 
 
 Note: This link will only be available for 24 hours after registering. If you
-wait until it expires, you will need to complete a password reset.
+wait until it expires, you will need to complete a password reset to verify your
+account.
+
+You may also reply to this email if you believe there is an issue.
 <?php require('./Email/footer.plain.inc.phtml'); ?>
