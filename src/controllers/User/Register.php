@@ -232,7 +232,7 @@ class Register extends Controller {
 
         // Content
         $mail->isHTML(true);
-        $mail->Subject = 'Account Activation';
+        $mail->Subject = 'Account Verification';
         $mail->CharSet = PHPMailer::CHARSET_UTF8;
 
         ob_start();
