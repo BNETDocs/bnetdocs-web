@@ -78,10 +78,10 @@ class Login extends Controller {
       $model->error = "USER_NOT_FOUND";
     } else if ($user->isDisabled()) {
       $model->error = "USER_DISABLED";
-    } else if (!$user->isVerified()) {
-      $model->error = "USER_NOT_VERIFIED";
     } else if (!$user->checkPassword($password)) {
       $model->error = "PASSWORD_INCORRECT";
+    } else if (!$user->isVerified()) {
+      $model->error = "USER_NOT_VERIFIED";
     }
 
     if ($model->error) return;
