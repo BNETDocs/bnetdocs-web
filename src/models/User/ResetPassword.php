@@ -8,9 +8,9 @@ class ResetPassword extends Model {
 
   public $csrf_id;
   public $csrf_token;
+  public $email;
   public $error;
   public $token;
   public $user;
-  public $username;
 
 }

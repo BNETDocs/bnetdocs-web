@@ -40,11 +40,11 @@ class ResetPassword extends Controller {
     $model->error = null;
     $model->csrf_id = mt_rand();
     $model->csrf_token = CSRF::generate( $model->csrf_id );
+    $model->email = isset( $data[ 'email' ]) ? $data[ 'email' ] : null;
     $model->pw1 = isset( $data[ 'pw1' ]) ? $data[ 'pw1' ] : null;
     $model->pw2 = isset( $data[ 'pw2' ]) ? $data[ 'pw2' ] : null;
     $model->token = isset( $data[ 't' ]) ? $data[ 't' ] : null;
     $model->user = null;
-    $model->username = isset( $data[ 'username' ]) ? $data[ 'username' ] : null;
 
     if ( $router->getRequestMethod() == 'POST' ) {
       $ret = $this->doPasswordReset( $model, $data );
@@ -55,8 +55,8 @@ class ResetPassword extends Controller {
           getenv( 'REMOTE_ADDR' ),
           json_encode([
             'error' => $model->error,
+            'email' => $model->email,
             'user' => ( $model->user ? true : false ),
-            'username' => $model->username,
           ])
         );
       }
@@ -87,13 +87,13 @@ class ResetPassword extends Controller {
     }
     CSRF::invalidate( $csrf_id );
 
-    if ( empty( $model->username )) {
-      $model->error = 'EMPTY_USERNAME';
+    if ( empty( $model->email )) {
+      $model->error = 'EMPTY_EMAIL';
       return self::RET_FAILURE;
     }
 
     try {
-      $model->user = new User( User::findIdByUsername( $model->username ));
+      $model->user = new User( User::findIdByEmail( $model->email ));
     } catch ( UserNotFoundException $e ) {
       $model->user = null;
     } catch ( InvalidArgumentException $e ) {
