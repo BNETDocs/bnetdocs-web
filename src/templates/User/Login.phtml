@@ -27,7 +27,8 @@ switch ($this->getContext()->error) {
     $message = "The account has been administratively disabled.";
     break;
   case "USER_NOT_VERIFIED":
-    $message = "The account's identity has not been verified yet.";
+    $message = "The account's identity has not been verified yet. "
+      . "No email yet? Use the Recover Password button.";
     break;
   case "LOGIN_DISABLED":
     $message = "Logging in has been administratively disabled indefinitely.";
