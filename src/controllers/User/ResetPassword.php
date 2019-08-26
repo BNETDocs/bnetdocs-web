@@ -234,6 +234,8 @@ class ResetPassword extends Controller {
       return self::RET_FAILURE;
     }
 
+    $model->user->setVerified();
+
     $model->error = false;
     return self::RET_SUCCESS;
   }
