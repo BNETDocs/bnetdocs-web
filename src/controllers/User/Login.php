@@ -76,9 +76,9 @@ class Login extends Controller {
 
     if (!$user) {
       $model->error = "USER_NOT_FOUND";
-    } else if ($user->getOptionsBitmask() & User::OPTION_DISABLED) {
+    } else if ($user->isDisabled()) {
       $model->error = "USER_DISABLED";
-    } else if (!$user->getOptionsBitmask() & User::OPTION_VERIFIED) {
+    } else if (!$user->isVerified()) {
       $model->error = "USER_NOT_VERIFIED";
     } else if (!$user->checkPassword($password)) {
       $model->error = "PASSWORD_INCORRECT";

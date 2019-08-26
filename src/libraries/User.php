@@ -534,6 +534,10 @@ class User implements JsonSerializable {
     return Common::$cache->delete($key);
   }
 
+  public function isDisabled() {
+    return ($this->options_bitmask & self::OPTION_DISABLED);
+  }
+
   public function isStaff() {
     return ($this->options_bitmask & (
       self::OPTION_ACL_DOCUMENT_CREATE  |
@@ -558,6 +562,10 @@ class User implements JsonSerializable {
       self::OPTION_ACL_USER_MODIFY      |
       self::OPTION_ACL_USER_DELETE
     ));
+  }
+
+  public function isVerified() {
+    return ($this->options_bitmask & self::OPTION_VERIFIED);
   }
 
   public function jsonSerialize() {

@@ -224,7 +224,7 @@ class ResetPassword extends Controller {
     $model->user->invalidateVerificationToken();
     // --
 
-    if ( $model->user->getAcl( User::OPTION_DISABLED )) {
+    if ( $model->user->isDisabled() ) {
       $model->error = 'USER_DISABLED';
       return self::RET_FAILURE;
     }
