@@ -26,7 +26,9 @@ class BlizzardChecker {
   }
 
   public static function logIfBlizzard() {
-    $user_id = (isset(Authentication::$user) ? Authentication::$user : null);
+    $user_id = (
+      isset(Authentication::$user) ? Authentication::$user->getId() : null
+    );
     if (self::checkIfBlizzard()) {
       Logger::logEvent(
         EventTypes::BLIZZARD_VISIT,
