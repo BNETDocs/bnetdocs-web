@@ -2,8 +2,12 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Common as CommonMVCLib;
+use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\IP;
+
+use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\EventTypes;
+use \BNETDocs\Libraries\Logger;
 
 class BlizzardChecker {
 
@@ -13,12 +17,29 @@ class BlizzardChecker {
   private function __construct() {}
 
   public static function checkIfBlizzard() {
-    $IP    = getenv("REMOTE_ADDR");
-    $CIDRs = file_get_contents(getcwd() . "/static/a/Blizzard-CIDRs.txt");
-    $CIDRs = preg_replace("/^#.*?\n/sm", "", $CIDRs);
-    $CIDRs = CommonMVCLib::stripLinesWith($CIDRs, "\n");
+    $IP    = getenv('REMOTE_ADDR');
+    $CIDRs = file_get_contents(getcwd() . '/static/a/Blizzard-CIDRs.txt');
+    $CIDRs = preg_replace("/^#.*?\n/sm", '', $CIDRs);
+    $CIDRs = Common::stripLinesWith($CIDRs, "\n");
     $CIDRs = explode("\n", $CIDRs);
     return IP::checkCIDRArray($IP, $CIDRs);
+  }
+
+  public static function logIfBlizzard() {
+    $user_id = (isset(Authentication::$user) ? Authentication::$user : null);
+    if (BlizzardChecker::checkIfBlizzard()) {
+      Logger::logEvent(
+        EventTypes::BLIZZARD_VISIT,
+        $user_id,
+        getenv('REMOTE_ADDR'),
+        json_encode([
+          'method'  => getenv('REQUEST_METHOD'),
+          'referer' => getenv('HTTP_REFERER'),
+          'uri'     => getenv('REQUEST_URI'),
+          'version' => VersionInfo::get(),
+        ])
+      );
+    }
   }
 
 }

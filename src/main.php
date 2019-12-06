@@ -21,6 +21,7 @@
 namespace BNETDocs;
 
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\BlizzardChecker;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Cache;
@@ -69,6 +70,8 @@ function main() {
   DatabaseDriver::$username      = Common::$config->mysql->username;
 
   Authentication::verify();
+
+  BlizzardChecker::logIfBlizzard();
 
   $router = new Router(
     "BNETDocs\\Controllers\\",
