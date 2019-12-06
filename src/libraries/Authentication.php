@@ -21,8 +21,14 @@ class Authentication {
   const COOKIE_NAME = 'sid';
   const TTL         = 2592000; // 1 month
 
+  /**
+   * @var string $key
+   */
   private static $key;
 
+  /**
+   * @var User $user
+   */
   public static $user;
 
   /**
