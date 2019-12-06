@@ -2,12 +2,12 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\IP;
-
 use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
+
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\IP;
 
 class BlizzardChecker {
 
@@ -27,7 +27,7 @@ class BlizzardChecker {
 
   public static function logIfBlizzard() {
     $user_id = (isset(Authentication::$user) ? Authentication::$user : null);
-    if (BlizzardChecker::checkIfBlizzard()) {
+    if (self::checkIfBlizzard()) {
       Logger::logEvent(
         EventTypes::BLIZZARD_VISIT,
         $user_id,
