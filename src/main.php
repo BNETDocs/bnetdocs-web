@@ -165,6 +165,9 @@ function main() {
     $router->addRoute( // URL: /news/delete
       "#^/news/delete/?$#", "News\\Delete", "News\\DeleteHtml"
     );
+    $router->addRoute( // URL: /packet/:id.json
+      "#^/packet/(\d+)/?.*\.json$#", "Packet\\View", "Packet\\ViewJSON"
+    );
     $router->addRoute( // URL: /packet/:id.txt
       "#^/packet/(\d+)\.txt#", "Packet\\View", "Packet\\ViewPlain"
     );
