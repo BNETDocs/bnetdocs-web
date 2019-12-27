@@ -47,13 +47,13 @@ while ($row = $rows->fetch_object()) {
   }
 
   $link2->query(sprintf(
-    'UPDATE `packets` SET `status_bitmask` = (`status_bitmask` & ~%d) WHERE `id` = %d LIMIT 1;',
+    'UPDATE `packets` SET `options_bitmask` = (`options_bitmask` & ~%d) WHERE `id` = %d LIMIT 1;',
     (NEW_STATUS_RESEARCH | NEW_STATUS_DEPRECATED), $id
   ));
 
   if ($new_status == NEW_STATUS_DEPRECATED || $new_status == NEW_STATUS_RESEARCH) {
     $link2->query(sprintf(
-      'UPDATE `packets` SET `status_bitmask` = (`status_bitmask` | %d) WHERE `id` = %d LIMIT 1;',
+      'UPDATE `packets` SET `options_bitmask` = (`options_bitmask` | %d) WHERE `id` = %d LIMIT 1;',
       $new_status, $id
     ));
   }
