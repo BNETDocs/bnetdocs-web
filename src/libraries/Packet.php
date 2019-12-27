@@ -29,8 +29,10 @@ class Packet implements JsonSerializable {
   const DIRECTION_SERVER_CLIENT = 2;
   const DIRECTION_PEER_TO_PEER  = 3;
 
-  const OPTION_MARKDOWN  = 0x00000001;
-  const OPTION_PUBLISHED = 0x00000002;
+  const OPTION_MARKDOWN   = 0x00000001;
+  const OPTION_PUBLISHED  = 0x00000002;
+  const OPTION_DEPRECATED = 0x00000004;
+  const OPTION_RESEARCH   = 0x00000008;
 
   protected $created_datetime;
   protected $edited_count;
@@ -557,6 +559,18 @@ class Packet implements JsonSerializable {
 
   public function getUserId() {
     return $this->user_id;
+  }
+
+  public function isDeprecated() {
+    return ($this->options_bitmask & self::OPTION_DEPRECATED);
+  }
+
+  public function isInResearch() {
+    return ($this->options_bitmask & self::OPTION_RESEARCH);
+  }
+
+  public function isPublished() {
+    return ($this->options_bitmask & self::OPTION_PUBLISHED);
   }
 
   public function jsonSerialize() {
