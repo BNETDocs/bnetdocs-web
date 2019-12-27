@@ -706,12 +706,28 @@ class Packet implements JsonSerializable {
     return false;
   }
 
+  public function setDeprecated( $value ) {
+    if ( $value ) {
+      $this->options_bitmask |= self::OPTION_DEPRECATED;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_DEPRECATED;
+    }
+  }
+
   public function setEditedCount( $value ) {
     $this->edited_count = $value;
   }
 
   public function setEditedDateTime( DateTime $value ) {
     $this->edited_datetime = $value->format( 'Y-m-d H:i:s' );
+  }
+
+  public function setInResearch( $value ) {
+    if ( $value ) {
+      $this->options_bitmask |= self::OPTION_RESEARCH;
+    } else {
+      $this->options_bitmask &= ~self::OPTION_RESEARCH;
+    }
   }
 
   public function setMarkdown( $value ) {
@@ -745,7 +761,7 @@ class Packet implements JsonSerializable {
       $this->options_bitmask &= ~self::OPTION_PUBLISHED;
     }
   }
-  
+
   public function setUsedBy( $value ) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
