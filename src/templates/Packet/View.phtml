@@ -48,6 +48,10 @@ if ($object) {
     $user_avatar = null;
   }
 
+  $deprecated = $object->isDeprecated();
+  $research   = $object->isInResearch();
+  $published  = $object->isPublished();
+
 }
 
 $this->opengraph->attach(new Pair("url", $url));
@@ -80,6 +84,13 @@ require("./header.inc.phtml");
             <tr><th style="width:20%;">Message Id:</th><td><?php echo $packet_id; ?></td></tr>
             <tr><th>Message Name:</th><td><?php echo filter_var($object->getPacketName(), FILTER_SANITIZE_STRING); ?></td></tr>
             <tr><th>Direction:</th><td><?php echo filter_var($object->getPacketDirectionLabel(), FILTER_SANITIZE_STRING); ?></td></tr>
+<?php if ($deprecated || $research || !$published) { ?>
+            <tr><th>Flags:</th><td>
+              <? if ($deprecated) require('./Deprecated.inc.phtml'); ?>
+              <? if ($research) require('./InResearch.inc.phtml'); ?>
+              <? if (!$published) require('./Draft.inc.phtml'); ?>
+            </td></tr>
+<?php } ?>
             <tr><th>Used By:</th><td><?php
               $products = $this->getContext()->used_by;
               if (count($products) == 0) {
