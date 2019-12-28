@@ -87,10 +87,12 @@ class Logger extends LoggerMVCLib {
     $embed->setTimestamp($event->getEventDateTime());
 
     $user = $event->getUser();
-    $author = new DiscordEmbedAuthor(
-      $user->getName(), $user->getURI(), $user->getAvatarURI(null)
-    );
-    $embed->setAuthor($author);
+    if (!is_null($user)) {
+      $author = new DiscordEmbedAuthor(
+        $user->getName(), $user->getURI(), $user->getAvatarURI(null)
+      );
+      $embed->setAuthor($author);
+    }
 
     $data = json_decode($event->getMetadata(), true);
     if (is_scalar($data)) {
@@ -101,10 +103,31 @@ class Logger extends LoggerMVCLib {
     } else {
 
       foreach ($data as $key => $value) {
+
+        $f_key = substr($key, 0, DiscordEmbedField::MAX_NAME - 3);
+        if (strlen($key) > DiscordEmbedField::MAX_NAME - 3)
+          $f_key .= '...';
+
         if (is_scalar($value)) {
-          $field = new DiscordEmbedField($key, $value, true);
-          $embed->addField($field);
+
+          if (is_string($value)) {
+            $f_value = substr($value, 0, DiscordEmbedField::MAX_VALUE - 3);
+            if (strlen($value) > DiscordEmbedField::MAX_VALUE - 3)
+              $f_value .= '...';
+          } else {
+            $f_value = $value;
+          }
+
+          $field = new DiscordEmbedField($f_key, $f_value, true);
+
+        } else {
+
+          $field = new DiscordEmbedField($f_key, gettype($value), true);
+
         }
+        $embed->addField($field);
+
+        if ($embed->fieldCount() >= DiscordEmbed::MAX_FIELDS) break;
       }
 
     }
