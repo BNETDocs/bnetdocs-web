@@ -30,6 +30,7 @@ class Edit extends Controller {
     $model             = new PacketEditModel();
     $model->csrf_id    = mt_rand();
     $model->csrf_token = CSRF::generate($model->csrf_id, 7200); // 2 hours
+    $model->deprecated = null;
     $model->error      = null;
     $model->format     = null;
     $model->id         = null;
@@ -40,6 +41,7 @@ class Edit extends Controller {
     $model->products   = Product::getAllProducts();
     $model->published  = null;
     $model->remarks    = null;
+    $model->research   = null;
     $model->used_by    = null;
     $model->user       = Authentication::$user;
 
@@ -54,15 +56,15 @@ class Edit extends Controller {
     if ($model->packet === null) {
       $model->error = "NOT_FOUND";
     } else {
-      $flags = $model->packet->getOptionsBitmask();
-
-      $model->id        = $model->packet->getPacketId();
-      $model->name      = $model->packet->getPacketName();
-      $model->format    = $model->packet->getPacketFormat();
-      $model->remarks   = $model->packet->getPacketRemarks(false);
-      $model->markdown  = ($flags & Packet::OPTION_MARKDOWN);
-      $model->published = ($flags & Packet::OPTION_PUBLISHED);
-      $model->used_by   = $this->getUsedBy($model->packet);
+      $model->deprecated = $model->packet->isDeprecated();
+      $model->id         = $model->packet->getPacketId();
+      $model->name       = $model->packet->getPacketName();
+      $model->format     = $model->packet->getPacketFormat();
+      $model->remarks    = $model->packet->getPacketRemarks(false);
+      $model->research   = $model->packet->isInResearch();
+      $model->markdown   = $model->packet->isMarkdown();
+      $model->published  = $model->packet->isPublished();
+      $model->used_by    = $this->getUsedBy($model->packet);
 
       if ($router->getRequestMethod() == "POST") {
         $this->handlePost($router, $model);
@@ -98,16 +100,20 @@ class Edit extends Controller {
     $remarks    = (isset($data["remarks"   ]) ? $data["remarks"   ] : null);
     $markdown   = (isset($data["markdown"  ]) ? $data["markdown"  ] : null);
     $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
-    $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
-    $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
+    $deprecated = (isset($data["deprecated"]) ? $data["deprecated"] : null);
+    $research   = (isset($data["research"  ]) ? $data["research"  ] : null);
+    $published  = (isset($data["published" ]) ? $data["published" ] : null);
     $used_by    = (isset($data["used_by"   ]) ? $data["used_by"   ] : null);
 
-    $model->id       = $id;
-    $model->name     = $name;
-    $model->format   = $format;
-    $model->remarks  = $remarks;
-    $model->markdown = $markdown;
-    $model->content  = $content;
+    $model->id         = $id;
+    $model->name       = $name;
+    $model->format     = $format;
+    $model->remarks    = $remarks;
+    $model->markdown   = $markdown;
+    $model->content    = $content;
+    $model->deprecated = $deprecated;
+    $model->research   = $research;
+    $model->published  = $published;
 
     if (!$csrf_valid) {
       $model->error = "INVALID_CSRF";
@@ -132,7 +138,9 @@ class Edit extends Controller {
       $model->packet->setPacketFormat($model->format);
       $model->packet->setPacketRemarks($model->remarks);
       $model->packet->setMarkdown($model->markdown);
-      $model->packet->setPublished($publish);
+      $model->packet->setDeprecated($model->deprecated);
+      $model->packet->setInResearch($model->research);
+      $model->packet->setPublished($model->published);
 
       $model->packet->setEditedCount(
         $model->packet->getEditedCount() + 1

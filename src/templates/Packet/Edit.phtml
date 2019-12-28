@@ -40,8 +40,6 @@ switch ($this->getContext()->error) {
     $message = $this->getContext()->error;
 }
 
-$tpl_markdown = ( $this->getContext()->markdown ? ' checked="checked"' : '' );
-
 $this->additional_css[] = '/a/forms.css';
 require('./header.inc.phtml');
 ?>
@@ -83,7 +81,7 @@ require('./header.inc.phtml');
               ?></textarea>
           </section>
           <section>
-            <label for="usedby">Used by:</label>
+            <label>Used by:</label>
             <table>
               <thead></thead><tbody>
 <?php function add_product_checkbox( $id, $name, $checked ) { ?>
@@ -112,7 +110,7 @@ for ( $product_i = 0; $product_i < $product_ubound; ++$product_i ) { ?>
             <span style="float:right;">
               <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
               <input type="checkbox" name="markdown" id="markdown" tabindex="5"
-                title="Use markdown or use raw HTML" value="1"<?php echo $tpl_markdown; ?>/>
+                title="Use markdown or use raw HTML" value="1"<?=($this->getContext()->markdown?' checked="checked"':'')?>/>
             </span>
             <textarea name="remarks" id="remarks" tabindex="4" required
               style="height:200px;"><?php echo
@@ -120,8 +118,19 @@ for ( $product_i = 0; $product_i < $product_ubound; ++$product_i ) { ?>
               ?></textarea>
           </section>
           <section>
-            <input type="submit" name="publish" value="Publish" tabindex="6"/>
-            <input type="submit" name="save" value="Unpublish" tabindex="7"/>
+            <label>Flags:</label>
+            <table>
+              <thead></thead><tbody>
+                <tr>
+                  <td><input type="checkbox" id="deprecated" name="deprecated" value="1"<?=($this->getContext()->deprecated?' checked="checked"':'')?> tabindex="6"/> <label for="deprecated">Deprecated</label></td>
+                  <td><input type="checkbox" id="research" name="research" value="1"<?=($this->getContext()->research?' checked="checked"':'')?> tabindex="7"/> <label for="research">In Research</label></td>
+                  <td><input type="checkbox" id="published" name="published" value="1"<?=($this->getContext()->published?' checked="checked"':'')?> tabindex="8"/> <label for="published">Published</label></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <section style="text-align:center;">
+            <input type="submit" value="Save" tabindex="9"/>
           </section>
         </form>
 <?php } ?>
