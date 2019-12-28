@@ -35,10 +35,11 @@ class BlizzardChecker {
         $user_id,
         getenv('REMOTE_ADDR'),
         json_encode([
-          'method'  => getenv('REQUEST_METHOD'),
-          'referer' => getenv('HTTP_REFERER'),
-          'uri'     => getenv('REQUEST_URI'),
-          'version' => VersionInfo::get(),
+          'method'     => getenv('REQUEST_METHOD'),
+          'referer'    => getenv('HTTP_REFERER'),
+          'uri'        => getenv('REQUEST_URI'),
+          'user_agent' => getenv('HTTP_USER_AGENT'),
+          'version'    => VersionInfo::get(),
         ])
       );
     }
