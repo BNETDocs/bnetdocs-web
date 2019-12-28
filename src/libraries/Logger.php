@@ -2,12 +2,19 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\Discord\Embed as DiscordEmbed;
+use \BNETDocs\Libraries\Discord\EmbedAuthor as DiscordEmbedAuthor;
+use \BNETDocs\Libraries\Discord\EmbedField as DiscordEmbedField;
+use \BNETDocs\Libraries\Discord\Webhook as DiscordWebhook;
+use \BNETDocs\Libraries\Event;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\VersionInfo;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Logger as LoggerMVCLib;
+
 use \Exception;
 use \InvalidArgumentException;
 use \PDO;
@@ -50,12 +57,44 @@ class Logger extends LoggerMVCLib {
       $successful = $stmt->execute();
       $stmt->closeCursor();
 
+      if ($successful) {
+        self::dispatchDiscordWebhook((int) Common::$database->lastInsertId());
+      }
+
     } catch (PDOException $e) {
       throw new QueryException('Cannot log event', $e);
 
     } finally {
       return $successful;
     }
+  }
+
+  protected static function dispatchDiscordWebhook($event_id) {
+    $c = Common::$config->bnetdocs->discord->forward_event_log;
+    if (!$c->enabled) return;
+
+    $event   = new Event($event_id);
+    $webhook = new DiscordWebhook($c->webhook);
+    $embed   = new DiscordEmbed();
+
+    $embed->setUrl(Common::relativeUrlToAbsolute(sprintf(
+      '/eventlog/view?id=%d', $event_id
+    )));
+
+    $embed->setTitle($event->getEventTypeName());
+    $embed->setTimestamp($event->getEventDateTime());
+
+    $user = $event->getUser();
+    $author = new DiscordEmbedAuthor(
+      $user->getName(), $user->getURI(), $user->getAvatarURI(null)
+    );
+    $embed->setAuthor($author);
+
+    //$ip_field = new DiscordEmbedField('IP Address', $event->getIPAddress());
+    //$embed->addField($ip_field);
+
+    $webhook->addEmbed($embed);
+    $webhook->send();
   }
 
 }

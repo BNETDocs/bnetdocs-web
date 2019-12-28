@@ -6,6 +6,10 @@
       "vultr": ""
     },
     "discord": {
+      "forward_event_log": {
+        "enabled": false,
+        "webhook": null
+      },
       "invite_code": "u87WVeu",
       "server_id": 405789880749260820
     },
