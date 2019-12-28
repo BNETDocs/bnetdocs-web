@@ -67,6 +67,7 @@ function main() {
   DatabaseDriver::$password      = Common::$config->mysql->password;
   DatabaseDriver::$servers       = Common::$config->mysql->servers;
   DatabaseDriver::$timeout       = Common::$config->mysql->timeout;
+  DatabaseDriver::$timezone      = Common::$config->mysql->timezone;
   DatabaseDriver::$username      = Common::$config->mysql->username;
 
   Authentication::verify();

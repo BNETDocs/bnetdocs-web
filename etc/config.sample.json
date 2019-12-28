@@ -94,6 +94,7 @@
       }
     ],
     "timeout": 3,
+    "timezone": "+00:00",
     "username": "bnetdocs"
   },
   "recaptcha": {
