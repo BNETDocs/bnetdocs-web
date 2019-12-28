@@ -73,7 +73,9 @@ class Logger extends LoggerMVCLib {
     $c = Common::$config->bnetdocs->discord->forward_event_log;
     if (!$c->enabled) return;
 
-    $event   = new Event($event_id);
+    $event = new Event($event_id);
+    if (in_array($event->getEventTypeId(), $c->ignore_event_types)) return;
+
     $webhook = new DiscordWebhook($c->webhook);
     $embed   = new DiscordEmbed();
 

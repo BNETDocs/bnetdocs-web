@@ -8,6 +8,7 @@
     "discord": {
       "forward_event_log": {
         "enabled": false,
+        "ignore_event_types": [3,5,7,8,9,10,11],
         "webhook": null
       },
       "invite_code": "u87WVeu",
