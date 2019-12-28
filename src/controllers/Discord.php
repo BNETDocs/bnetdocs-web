@@ -19,8 +19,8 @@ class Discord extends Controller {
     $model = new DiscordModel();
 
     $model->discord_url = 'https://discord.gg/';
-    $model->discord_url .= Common::$config->bnetdocs->discord->invite_code;
-    $model->discord_server_id = Common::$config->bnetdocs->discord->server_id;
+    $model->discord_url .= Common::$config->discord->invite_code;
+    $model->discord_server_id = Common::$config->discord->server_id;
 
     $view->render( $model );
 

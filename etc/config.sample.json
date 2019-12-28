@@ -5,15 +5,6 @@
       "battleforthenet": "",
       "vultr": ""
     },
-    "discord": {
-      "forward_event_log": {
-        "enabled": false,
-        "ignore_event_types": [3,5,7,8,9,10,11],
-        "webhook": null
-      },
-      "invite_code": "u87WVeu",
-      "server_id": 405789880749260820
-    },
     "donations": {
       "btc_address": "",
       "paypal_url": ""
@@ -57,6 +48,16 @@
       "username_length_max": 64,
       "username_length_min": 3
     }
+  },
+  "discord": {
+    "forward_event_log": {
+      "enabled": false,
+      "exclude_meta_data": false,
+      "ignore_event_types": [3,5,7,8,9,10,11],
+      "webhook": null
+    },
+    "invite_code": "u87WVeu",
+    "server_id": 405789880749260820
   },
   "email": {
     "recipient_from": [

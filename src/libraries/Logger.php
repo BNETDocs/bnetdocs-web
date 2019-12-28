@@ -70,7 +70,7 @@ class Logger extends LoggerMVCLib {
   }
 
   protected static function dispatchDiscordWebhook($event_id) {
-    $c = Common::$config->bnetdocs->discord->forward_event_log;
+    $c = Common::$config->discord->forward_event_log;
     if (!$c->enabled) return;
 
     $event = new Event($event_id);
@@ -94,50 +94,52 @@ class Logger extends LoggerMVCLib {
       $embed->setAuthor($author);
     }
 
-    $data = json_decode($event->getMetadata(), true);
-    if (is_scalar($data)) {
+    if (!$c->exclude_meta_data) {
+      $data = json_decode($event->getMetadata(), true);
+      if (is_scalar($data)) {
 
-      if (is_string($data)) {
-        $f_value = substr($data, 0, DiscordEmbedField::MAX_VALUE - 3);
-        if (strlen($data) > DiscordEmbedField::MAX_VALUE - 3)
-          $f_value .= '...';
-      } else {
-        $f_value = $data;
-      }
-
-      $field = new DiscordEmbedField('Meta Data', $f_value, true);
-      $embed->addField($field);
-
-    } else {
-
-      foreach ($data as $key => $value) {
-
-        $f_key = substr($key, 0, DiscordEmbedField::MAX_NAME - 3);
-        if (strlen($key) > DiscordEmbedField::MAX_NAME - 3)
-          $f_key .= '...';
-
-        if (is_scalar($value)) {
-
-          if (is_string($value)) {
-            $f_value = substr($value, 0, DiscordEmbedField::MAX_VALUE - 3);
-            if (strlen($value) > DiscordEmbedField::MAX_VALUE - 3)
-              $f_value .= '...';
-          } else {
-            $f_value = $value;
-          }
-
-          $field = new DiscordEmbedField($f_key, $f_value, true);
-
+        if (is_string($data)) {
+          $f_value = substr($data, 0, DiscordEmbedField::MAX_VALUE - 3);
+          if (strlen($data) > DiscordEmbedField::MAX_VALUE - 3)
+            $f_value .= '...';
         } else {
-
-          $field = new DiscordEmbedField($f_key, gettype($value), true);
-
+          $f_value = $data;
         }
+
+        $field = new DiscordEmbedField('Meta Data', $f_value, true);
         $embed->addField($field);
 
-        if ($embed->fieldCount() >= DiscordEmbed::MAX_FIELDS) break;
-      }
+      } else {
 
+        foreach ($data as $key => $value) {
+
+          $f_key = substr($key, 0, DiscordEmbedField::MAX_NAME - 3);
+          if (strlen($key) > DiscordEmbedField::MAX_NAME - 3)
+            $f_key .= '...';
+
+          if (is_scalar($value)) {
+
+            if (is_string($value)) {
+              $f_value = substr($value, 0, DiscordEmbedField::MAX_VALUE - 3);
+              if (strlen($value) > DiscordEmbedField::MAX_VALUE - 3)
+                $f_value .= '...';
+            } else {
+              $f_value = $value;
+            }
+
+            $field = new DiscordEmbedField($f_key, $f_value, true);
+
+          } else {
+
+            $field = new DiscordEmbedField($f_key, gettype($value), true);
+
+          }
+          $embed->addField($field);
+
+          if ($embed->fieldCount() >= DiscordEmbed::MAX_FIELDS) break;
+        }
+
+      }
     }
 
     $webhook->addEmbed($embed);
