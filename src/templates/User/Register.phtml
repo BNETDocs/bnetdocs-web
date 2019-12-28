@@ -61,6 +61,11 @@ switch ($this->getContext()->error) {
     $af      = "pw1";
     $message = "The password is too short, use a better password.";
     break;
+  case "PASSWORD_BLACKLIST":
+    $af      = "pw1";
+    $message = $this->getContext()->error_extra;
+    if (empty($message)) $message = "The password is blacklisted.";
+    break;
   case "REGISTER_DISABLED":
     $af      = null;
     $message = "Creating accounts has been administratively disabled "

@@ -64,6 +64,14 @@ class ChangePassword extends Controller {
       $model->error = "PASSWORD_INCORRECT";
       return;
     }
+    $blacklist = Common::$config->bnetdocs->user_password_blacklist;
+    foreach ($blacklist as $blacklist_pw) {
+      if (strtolower($blacklist_pw->password) == strtolower($pw2)) {
+        $model->error = "PASSWORD_BLACKLIST";
+        $model->error_extra = $blacklist_pw->reason;
+        return;
+      }
+    }
     $old_password_hash = Authentication::$user->getPasswordHash();
     $old_password_salt = Authentication::$user->getPasswordSalt();
     try {

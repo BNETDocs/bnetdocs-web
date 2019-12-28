@@ -131,6 +131,14 @@ class Register extends Controller {
       $model->error = "PASSWORD_TOO_SHORT";
       return;
     }
+    $blacklist = Common::$config->bnetdocs->user_password_blacklist;
+    foreach ($blacklist as $blacklist_pw) {
+      if (strtolower($blacklist_pw->password) == strtolower($pw1)) {
+        $model->error = "PASSWORD_BLACKLIST";
+        $model->error_extra = $blacklist_pw->reason;
+        return;
+      }
+    }
     if (Common::$config->bnetdocs->user_register_disabled) {
       $model->error = "REGISTER_DISABLED";
       return;
@@ -180,14 +188,15 @@ class Register extends Controller {
       Logger::logEvent(
         EventTypes::USER_CREATED,
         $user_id,
-        getenv("REMOTE_ADDR"),
+        getenv('REMOTE_ADDR'),
         json_encode([
-          "error"           => $model->error,
-          "requirements"    => $req,
-          "email"           => $email,
-          "username"        => $username,
-          "display_name"    => null,
-          "options_bitmask" => 0,
+          'error'           => $model->error,
+          'error_extra'     => $model->error_extra,
+          'requirements'    => $req,
+          'email'           => $email,
+          'username'        => $username,
+          'display_name'    => null,
+          'options_bitmask' => 0,
         ])
       );
 

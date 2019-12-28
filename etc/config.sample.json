@@ -27,6 +27,20 @@
     },
     "server_update_job_token": null,
     "user_login_disabled": false,
+    "user_password_blacklist": [
+      {
+        "password": "123456",
+        "reason": "This password is too simple and well known."
+      },
+      {
+        "password": "correcthorsebatterystaple",
+        "reason": "This is a bad password because it's well known. Don't take advice from a web comic too seriously."
+      },
+      {
+        "password": "password",
+        "reason": "This password is too simple and well known."
+      }
+    ],
     "user_password_pepper": "bnetdocs-INSERTRANDOMVALUEHERE",
     "user_register_disabled": false,
     "user_register_requirements": {
