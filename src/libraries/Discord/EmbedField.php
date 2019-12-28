@@ -16,7 +16,7 @@ class EmbedField implements JsonSerializable {
   protected $name;
   protected $value;
 
-  public function __construct(string $name, string $value, bool $inline) {
+  public function __construct(string $name, $value, bool $inline) {
     $this->setInline($inline);
     $this->setName($name);
     $this->setValue($value);
@@ -24,12 +24,11 @@ class EmbedField implements JsonSerializable {
 
   public function jsonSerialize() {
     // part of JsonSerializable interface
-    $r = array();
-
-    if (!empty($this->name)) $r['name'] = $this->name;
-    if (!empty($this->value)) $r['value'] = $this->value;
-
-    $r['inline'] = $this->inline;
+    $r = array(
+      'name' => $this->name,
+      'value' => $this->value,
+      'inline' => $this->inline,
+    );
 
     return $r;
   }
@@ -48,7 +47,13 @@ class EmbedField implements JsonSerializable {
     $this->name = $name;
   }
 
-  public function setValue(string $value) {
+  public function setValue($value) {
+    if (!is_scalar($value)) {
+      throw new UnexpectedValueException(
+        'Expected integer, float, string, or boolean (scalar type) for value'
+      );
+    }
+
     if (strlen($value) > self::MAX_VALUE) {
       throw new LengthException(sprintf(
         'Discord forbids value longer than %d characters', self::MAX_VALUE

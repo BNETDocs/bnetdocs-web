@@ -92,8 +92,22 @@ class Logger extends LoggerMVCLib {
     );
     $embed->setAuthor($author);
 
-    //$ip_field = new DiscordEmbedField('IP Address', $event->getIPAddress());
-    //$embed->addField($ip_field);
+    $data = json_decode($event->getMetadata(), true);
+    if (is_scalar($data)) {
+
+      $field = new DiscordEmbedField('Meta Data', $data, true);
+      $embed->addField($field);
+
+    } else {
+
+      foreach ($data as $key => $value) {
+        if (is_scalar($value)) {
+          $field = new DiscordEmbedField($key, $value, true);
+          $embed->addField($field);
+        }
+      }
+
+    }
 
     $webhook->addEmbed($embed);
     $webhook->send();
