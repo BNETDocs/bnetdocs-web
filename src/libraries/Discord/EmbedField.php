@@ -4,6 +4,7 @@ namespace BNETDocs\Libraries\Discord;
 
 use \JsonSerializable;
 use \LengthException;
+use \UnexpectedValueException;
 
 // <https://discordapp.com/developers/docs/resources/channel#embed-object-embed-field-structure>
 
