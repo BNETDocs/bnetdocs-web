@@ -64,6 +64,28 @@ class ChangePassword extends Controller {
       $model->error = "PASSWORD_INCORRECT";
       return;
     }
+    $pwlen = strlen($pw2);
+    $req = &Common::$config->bnetdocs->user_register_requirements;
+    $email = Authentication::$user->getEmail();
+    $username = Authentication::$user->getUsername();
+    if (!$req->password_allow_email && stripos($pw2, $email)) {
+      $model->error = "PASSWORD_CONTAINS_EMAIL";
+      return;
+    }
+    if (!$req->password_allow_username && stripos($pw2, $username)) {
+      $model->error = "PASSWORD_CONTAINS_USERNAME";
+      return;
+    }
+    if (is_numeric($req->password_length_max)
+      && $pwlen > $req->password_length_max) {
+      $model->error = "PASSWORD_TOO_LONG";
+      return;
+    }
+    if (is_numeric($req->password_length_min)
+      && $pwlen < $req->password_length_min) {
+      $model->error = "PASSWORD_TOO_SHORT";
+      return;
+    }
     $blacklist = Common::$config->bnetdocs->user_password_blacklist;
     foreach ($blacklist as $blacklist_pw) {
       if (strtolower($blacklist_pw->password) == strtolower($pw2)) {
