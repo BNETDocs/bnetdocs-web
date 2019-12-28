@@ -97,7 +97,15 @@ class Logger extends LoggerMVCLib {
     $data = json_decode($event->getMetadata(), true);
     if (is_scalar($data)) {
 
-      $field = new DiscordEmbedField('Meta Data', $data, true);
+      if (is_string($data)) {
+        $f_value = substr($data, 0, DiscordEmbedField::MAX_VALUE - 3);
+        if (strlen($data) > DiscordEmbedField::MAX_VALUE - 3)
+          $f_value .= '...';
+      } else {
+        $f_value = $data;
+      }
+
+      $field = new DiscordEmbedField('Meta Data', $f_value, true);
       $embed->addField($field);
 
     } else {
