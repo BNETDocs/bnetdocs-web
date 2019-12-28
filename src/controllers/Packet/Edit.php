@@ -174,16 +174,16 @@ class Edit extends Controller {
     Logger::logEvent(
       EventTypes::PACKET_EDITED,
       $user_id,
-      getenv("REMOTE_ADDR"),
+      getenv('REMOTE_ADDR'),
       json_encode([
-        "error"           => $model->error,
-        "packet_id"       => $model->packet_id,
-        "options_bitmask" => $model->packet->getOptionsBitmask(),
-        "id"              => $model->packet->getPacketId(),
-        "name"            => $model->packet->getPacketName(),
-        "format"          => $model->packet->getPacketFormat(),
-        "remarks"         => $model->packet->getPacketRemarks(false),
-        "used_by"         => $used_by
+        'error'           => $model->error,
+        'id'              => $model->packet->getId(),
+        'packet_id'       => $model->packet->getPacketId(true),
+        'name'            => $model->packet->getPacketName(),
+        'options_bitmask' => $model->packet->getOptionsBitmask(),
+        'format'          => $model->packet->getPacketFormat(),
+        'remarks'         => $model->packet->getPacketRemarks(false),
+        'used_by'         => $used_by
       ])
     );
   }
