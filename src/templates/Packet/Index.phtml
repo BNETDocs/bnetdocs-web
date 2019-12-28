@@ -82,10 +82,20 @@ require('./header.inc.phtml');
           $user_url   = $user->getURI();
           $avatar_url = $user->getAvatarURI(22);
         }
-        $packet_id = $packet->getPacketId(true);
+        $packet_id  = $packet->getPacketId(true);
+        $deprecated = $packet->isDeprecated();
+        $research   = $packet->isInResearch();
+        $published  = $packet->isPublished();
+
+        ob_start();
+        if ($deprecated) require('./Deprecated.inc.phtml');
+        if ($research) require('./InResearch.inc.phtml');
+        if (!$published) require('./Draft.inc.phtml');
+        $tpl_packet_flags = ob_get_clean();
+        if (!empty($tpl_packet_flags)) $tpl_packet_flags = ' ' . $tpl_packet_flags;
 ?>
               <tr>
-                <td><strong><a href="<?php echo $packet->getURI(); ?>"><?php echo filter_var($packet->getPacketDirectionTag() . " " . $packet_id . " " . $packet->getPacketName(), FILTER_SANITIZE_STRING); ?></a></strong><br/><span style="color:#aaa;"><?php echo rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($packet->getPacketRemarks(true), FILTER_SANITIZE_STRING)), "\n", 90), ". ", 90), "."); ?></span></td>
+                <td><strong><a href="<?php echo $packet->getURI(); ?>"><?php echo filter_var($packet->getPacketDirectionTag() . " " . $packet_id . " " . $packet->getPacketName(), FILTER_SANITIZE_STRING); ?></a></strong><?=$tpl_packet_flags?><br/><span style="color:#aaa;"><?php echo rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($packet->getPacketRemarks(true), FILTER_SANITIZE_STRING)), "\n", 90), ". ", 90), "."); ?></span></td>
                 <td><?php if ($user) { ?><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/>&nbsp;<?php echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><?php } else { ?>Anonymous<?php } ?></td>
               </tr>
 <?php } ?>
