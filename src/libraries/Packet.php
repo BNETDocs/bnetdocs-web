@@ -521,10 +521,13 @@ class Packet implements JsonSerializable {
 
       $stmt = Common::$database->prepare('
         SELECT
-          `bnet_product_id`
-        FROM `packet_used_by`
-        WHERE `id` = :id
-        ORDER BY `id` ASC;
+          `used`.`bnet_product_id`
+        FROM `packet_used_by` AS `used`
+        INNER JOIN
+          `products` AS `prods`
+        ON `used`.`bnet_product_id` = `prods`.`bnet_product_id`
+        WHERE `used`.`id` = :id
+        ORDER BY `prods`.`sort` ASC;
       ');
 
       $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
