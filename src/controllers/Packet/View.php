@@ -32,7 +32,9 @@ class View extends Controller {
         Comment::PARENT_TYPE_PACKET,
         $model->packet_id
       );
-      $model->used_by = $this->getUsedBy($model->packet);
+      $model->used_by = Product::getProductsFromIds(
+        $model->packet->getUsedBy()
+      );
     } else {
       $model->used_by = null;
     }
@@ -45,11 +47,6 @@ class View extends Controller {
 
     return $model;
 
-  }
-
-  protected function getUsedBy(Packet &$packet) {
-    if (is_null($packet)) return null;
-    return Product::getProductsFromIds($packet->getUsedBy());
   }
 
 }
