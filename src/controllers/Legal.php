@@ -13,16 +13,26 @@ use \DateTimeZone;
 
 class Legal extends Controller {
 
+  const LICENSE_FILE = '../LICENSE.txt';
+
   public function &run( Router &$router, View &$view, array &$args ) {
 
     $model                  = new LegalModel();
-    $model->license         = file_get_contents( '../LICENSE.txt' );
+    $model->license         = file_get_contents(self::LICENSE_FILE);
     $model->license_version = VersionInfo::$version->bnetdocs[3];
-    $model->license_version = explode( ' ', $model->license_version );
 
-    $model->license_version[1] = new DateTime(
-      $model->license_version[1], new DateTimeZone( 'Etc/UTC' )
-    );
+    if (!is_null($model->license_version)) {
+      $model->license_version = explode( ' ', $model->license_version );
+      $model->license_version[1] = new DateTime(
+        $model->license_version[1], new DateTimeZone( 'Etc/UTC' )
+      );
+    } else {
+      $model->license_version = array();
+      $model->license_version[0] = null;
+      $model->license_version[1] = new DateTime(
+        '@' . filemtime(self::LICENSE_FILE), new DateTimeZone( 'Etc/Utc' )
+      );
+    }
 
     $view->render( $model );
 
