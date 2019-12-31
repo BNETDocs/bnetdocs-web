@@ -6,10 +6,13 @@ use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;
 
 use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 
+use \DateTime;
+use \DateTimeZone;
+use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
-use \UnexpectedValueException;
 
 /**
  * Authentication
@@ -17,9 +20,10 @@ use \UnexpectedValueException;
  */
 class Authentication {
 
-  const CACHE_KEY   = 'bnetdocs-auth-%s';
-  const COOKIE_NAME = 'sid';
-  const TTL         = 2592000; // 1 month
+  const COOKIE_NAME    = 'sid';
+  const DATE_SQL       = 'Y-m-d H:i:s';
+  const MAX_USER_AGENT = 255;
+  const TTL            = 2592000; // 1 month
 
   /**
    * @var string $key
@@ -47,8 +51,26 @@ class Authentication {
    *
    * @return bool Indicates if the operation succeeded.
    */
-  protected static function discard( $key ) {
-    return Common::$cache->delete( sprintf( self::CACHE_KEY, $key ));
+  protected static function discard(string $key) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    try {
+      $stmt = Common::$database->prepare('
+        DELETE FROM `user_sessions` WHERE `id` = :id LIMIT 1;
+      ');
+
+      $stmt->bindParam(':id', $key, PDO::PARAM_STR);
+
+      $r = $stmt->execute();
+      $stmt->closeCursor();
+
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot delete user session key', $e);
+    } finally {
+      return $r;
+    }
   }
 
   /**
@@ -59,13 +81,13 @@ class Authentication {
    *
    * @return array The fingerprint details.
    */
-  protected static function getFingerprint( User &$user ) {
+  protected static function getFingerprint(User &$user) {
     $fingerprint = array();
 
-    $fingerprint['ip_address'] = getenv( 'REMOTE_ADDR' );
-
-    $fingerprint['user_id'] = (
-      isset( self::$user ) ? self::$user->getId() : null
+    $fingerprint['ip_address'] = getenv('REMOTE_ADDR');
+    $fingerprint['user_id']    = (is_null($user) ? null : $user->getId());
+    $fingerprint['user_agent'] = substr(
+      getenv('HTTP_USER_AGENT'), 0, self::MAX_USER_AGENT
     );
 
     return $fingerprint;
@@ -79,9 +101,12 @@ class Authentication {
    *
    * @return string The unique string.
    */
-  protected static function getUniqueKey( User &$user ) {
+  protected static function getUniqueKey(User &$user) {
+    if (!$user instanceof User) {
+      throw new InvalidArgumentException('$user is not instance of User');
+    }
     return hash( 'sha1',
-      mt_rand() . getenv( 'REMOTE_ADDR' ) .
+      mt_rand() . getenv('REMOTE_ADDR') .
       $user->getId() . $user->getEmail() . $user->getUsername() .
       $user->getPasswordHash() . $user->getPasswordSalt() .
       Common::$config->bnetdocs->user_password_pepper
@@ -97,16 +122,16 @@ class Authentication {
    *
    * @return bool Indicates if the browser cookie was sent.
    */
-  public static function login( User &$user ) {
-    if ( !$user instanceof User ) {
-      throw new UnexpectedValueException( '$user is not instance of User' );
+  public static function login(User &$user) {
+    if (!$user instanceof User) {
+      throw new InvalidArgumentException('$user is not instance of User');
     }
 
-    self::$key  = self::getUniqueKey( $user );
+    self::$key  = self::getUniqueKey($user);
     self::$user = $user;
 
-    $fingerprint = self::getFingerprint( $user );
-    self::store( self::$key, $fingerprint );
+    $fingerprint = self::getFingerprint($user);
+    self::store(self::$key, $fingerprint);
 
     // 'domain' is an empty string to only allow this specific http host to
     // authenticate, excluding any subdomains. If we were to specify our
@@ -130,7 +155,7 @@ class Authentication {
    * @return bool Indicates if the browser cookie was sent.
    */
   public static function logout() {
-    self::discard( self::$key );
+    self::discard(self::$key);
 
     self::$key  = '';
     self::$user = null;
@@ -156,31 +181,92 @@ class Authentication {
    *
    * @param string $key The secret key, typically from the client.
    *
-   * @return string The fingerprint details, or false if not found.
+   * @return array The fingerprint details, or false if not found.
    */
-  protected static function lookup( $key ) {
-    $fingerprint = Common::$cache->get( sprintf( self::CACHE_KEY, $key ));
-
-    if ( $fingerprint !== false ) {
-      $fingerprint = unserialize( $fingerprint );
+  protected static function lookup(string $key) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    return $fingerprint;
+    $fingerprint = false;
+
+    try {
+      $stmt = Common::$database->prepare('
+        SELECT `user_id`, `ip_address`, `user_agent`
+        FROM `user_sessions` WHERE `id` = :id LIMIT 1;
+      ');
+
+      $stmt->bindParam(':id', $key, PDO::PARAM_STR);
+
+      $r = $stmt->execute();
+
+      if ($r) {
+        $fingerprint = $stmt->fetch(PDO::FETCH_ASSOC);
+      }
+
+      $stmt->closeCursor();
+
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot lookup user session key', $e);
+    } finally {
+      return $fingerprint;
+    }
   }
 
   /**
    * store()
    * Stores authentication info server-side for lookup later.
    *
-   * @param string $key   The secret key.
-   * @param string $value The fingerprint details.
+   * @param string $key         The secret key.
+   * @param array  $fingerprint The fingerprint details.
    *
    * @return bool Indicates if the operation succeeded.
    */
-  protected static function store( $key, &$fingerprint ) {
-    return Common::$cache->set(
-      sprintf( self::CACHE_KEY, $key ), serialize( $fingerprint ), self::TTL
+  protected static function store(string $key, array &$fingerprint) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $tz = new DateTimeZone('Etc/UTC');
+
+    $user_id     = $fingerprint['user_id'];
+    $ip_address  = $fingerprint['ip_address'];
+    $user_agent  = $fingerprint['user_agent'];
+    $created_dt  = new DateTime('now', $tz);
+    $created_str = $created_dt->format(self::DATE_SQL);
+    $expires_dt = new DateTime(
+      '@' . ($created_dt->getTimestamp() + self::TTL), $tz
     );
+    $expires_str = $expires_dt->format(self::DATE_SQL);
+
+    $r = false;
+
+    try {
+      $stmt = Common::$database->prepare('
+        INSERT INTO `user_sessions` (
+          `id`, `user_id`, `ip_address`, `user_agent`,
+          `created_datetime`, `expires_datetime`
+        ) VALUES (
+          :id, :user_id, :ip_address, :user_agent,
+          :created_dt, :expires_dt
+        );
+      ');
+
+      $stmt->bindParam(':id', $key, PDO::PARAM_STR);
+      $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+      $stmt->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
+      $stmt->bindParam(':user_agent', $user_agent, PDO::PARAM_STR);
+      $stmt->bindParam(':created_dt', $created_str, PDO::PARAM_STR);
+      $stmt->bindParam(':expires_dt', $expires_str, PDO::PARAM_STR);
+
+      $r = $stmt->execute();
+      $stmt->closeCursor();
+
+    } catch (PDOException $e) {
+      throw new QueryException('Cannot store user session key', $e);
+    } finally {
+      return $r;
+    }
   }
 
   /**
@@ -192,33 +278,39 @@ class Authentication {
   public static function verify() {
     // get client's lookup key
     self::$key = (
-      isset( $_COOKIE[self::COOKIE_NAME] ) ? $_COOKIE[self::COOKIE_NAME] : ''
+      isset($_COOKIE[self::COOKIE_NAME]) ? $_COOKIE[self::COOKIE_NAME] : ''
     );
 
     // no user yet
     self::$user = null;
 
     // return if cookie is empty or not set
-    if ( empty( self::$key )) { return false; }
+    if (empty(self::$key)) { return false; }
 
     // lookup key in our store
-    $lookup = self::lookup( self::$key );
+    $lookup = self::lookup(self::$key);
 
     // logout and return if we could not verify their info
-    if ( !$lookup ) {
+    if (!$lookup) {
       self::logout();
       return false;
     }
 
     // logout and return if their fingerprint ip address does not match
-    if ( $lookup['ip_address'] !== getenv( 'REMOTE_ADDR' )) {
+    if ($lookup['ip_address'] !== getenv('REMOTE_ADDR')) {
+      self::logout();
+      return false;
+    }
+
+    // logout and return if their fingerprint user agent does not match
+    if ($lookup['user_agent'] !== getenv('HTTP_USER_AGENT')) {
       self::logout();
       return false;
     }
 
     // verified info, let's get the user object
-    if ( isset( $lookup['user_id'] )) {
-      self::$user = new User( $lookup['user_id'] );
+    if (isset($lookup['user_id'])) {
+      self::$user = new User($lookup['user_id']);
     }
 
     return true;
