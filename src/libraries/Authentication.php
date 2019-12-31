@@ -188,15 +188,24 @@ class Authentication {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
+    $dt_now_str = (new DateTime(
+      'now', new DateTimeZone('Etc/UTC')
+    ))->format(self::DATE_SQL);
+
     $fingerprint = false;
 
     try {
       $stmt = Common::$database->prepare('
         SELECT `user_id`, `ip_address`, `user_agent`
-        FROM `user_sessions` WHERE `id` = :id LIMIT 1;
+        FROM `user_sessions`
+        WHERE `id` = :id AND (
+          `expires_datetime` = NULL OR
+          :dt < `expires_datetime`
+        ) LIMIT 1;
       ');
 
       $stmt->bindParam(':id', $key, PDO::PARAM_STR);
+      $stmt->bindParam(':dt', $dt_now_str, PDO::PARAM_STR);
 
       $r = $stmt->execute();
 
