@@ -41,13 +41,13 @@ and could even lead directly to a code change in the best scenario.
 The project is structured such that it can support tools, sample configurations,
 documentation, and of course the actual code, all in the same repository.
 
-| Path  | Description                                                         |
-|-------|---------------------------------------------------------------------|
-| /bin/ | Miscellaneous scripts and utilities for working with this project.  |
-| /etc/ | Sample configurations and other configuration-related files.        |
-| /lib/ | Vendor files from composer.                                         |
-| /src/ | The project itself.                                                 |
-| /tmp/ | An intentionally empty directory for use with scripts.              |
+| Path  | Description                                                          |
+|-------|----------------------------------------------------------------------|
+| /bin/ | Binaries, scripts, and utilities for working with this project.      |
+| /etc/ | Configuration files.                                                 |
+| /lib/ | Vendor files from composer.                                          |
+| /src/ | The project source code.                                             |
+| /tmp/ | An intentionally empty directory for use with scripts.               |
 
 Any file in the root of this repository is used by Git, GitHub, or otherwise
 serves a very specific purpose such as licensing and the read me.
