@@ -3,7 +3,7 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\PacketApplicationLayer as PktAppLayer;
+use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
 use \BNETDocs\Models\Packet\Index as PacketIndexModel;
 use \BNETDocs\Views\Packet\IndexHtml as PacketIndexHtmlView;
 use \BNETDocs\Views\Packet\IndexJSON as PacketIndexJSONView;
@@ -62,7 +62,7 @@ class Index extends Controller {
         $order = null;
     }
 
-    $model->application_layers = PktAppLayer::getAllPacketApplicationLayers();
+    $model->application_layers = ApplicationLayer::getAllAsObjects();
 
     if ( empty( $model->pktapplayer )) {
       foreach ( $model->application_layers as $layer ) {

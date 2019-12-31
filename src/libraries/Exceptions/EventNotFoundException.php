@@ -9,7 +9,7 @@ use \Exception;
 class EventNotFoundException extends BNETDocsException {
 
   public function __construct($id, Exception &$prev_ex = null) {
-    parent::__construct('Event not found', 22, $prev_ex);
+    parent::__construct('Event not found', 19, $prev_ex);
     Logger::logMetric('event_id', $id);
   }
 

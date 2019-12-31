@@ -21,9 +21,6 @@ All of the following errors are subclassed from the `BNETDocsException` class.
 | 14         | `PacketNotFoundException`                 | Packet not found                                     |
 | 15         | `DocumentNotFoundException`               | Document not found                                   |
 | 16         | `RecaptchaException`                      | `$message`                                           |
-| 17         | `PacketApplicationLayerNotFoundException` | Packet application layer not found                   |
-| 18         | `PacketTransportLayerNotFoundException`   | Packet transport layer not found                     |
-| 19         | `PacketDirectionInvalidException`         | Packet direction is invalid                          |
-| 20         | `ProductNotFoundException`                | Product not found                                    |
-| 21         | `CommentNotFoundException`                | Comment not found                                    |
-| 22         | `EventNotFoundException`                  | Event not found                                      |
+| 17         | `ProductNotFoundException`                | Product not found                                    |
+| 18         | `CommentNotFoundException`                | Comment not found                                    |
+| 19         | `EventNotFoundException`                  | Event not found                                      |

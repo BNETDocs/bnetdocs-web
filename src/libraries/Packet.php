@@ -2,11 +2,10 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Exceptions\PacketDirectionInvalidException;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\PacketApplicationLayer;
-use \BNETDocs\Libraries\PacketTransportLayer;
+use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
+use \BNETDocs\Libraries\Packet\Transport as TransportLayer;
 use \BNETDocs\Libraries\User;
 
 use \CarlBennett\MVC\Libraries\Common;
@@ -20,6 +19,7 @@ use \JsonSerializable;
 use \PDO;
 use \PDOException;
 use \StdClass;
+use \UnexpectedValueException;
 
 class Packet implements JsonSerializable {
 
@@ -332,7 +332,7 @@ class Packet implements JsonSerializable {
   }
 
   public function getPacketApplicationLayer() {
-    return new PacketApplicationLayer( $this->packet_application_layer );
+    return new ApplicationLayer( $this->packet_application_layer );
   }
 
   public function getPacketApplicationLayerId() {
@@ -349,7 +349,9 @@ class Packet implements JsonSerializable {
       case self::DIRECTION_SERVER_CLIENT: return 'Server to Client';
       case self::DIRECTION_PEER_TO_PEER:  return 'Peer to Peer';
       default:
-        throw new PacketDirectionInvalidException( $this->packet_direction_id );
+        throw new UnexpectedValueException(sprintf(
+          'packet direction: %d is invalid', $this->packet_direction_id
+        ));
     }
   }
 
@@ -359,7 +361,9 @@ class Packet implements JsonSerializable {
       case self::DIRECTION_SERVER_CLIENT: return 'S>C';
       case self::DIRECTION_PEER_TO_PEER:  return 'P2P';
       default:
-        throw new PacketDirectionInvalidException( $this->packet_direction_id );
+        throw new UnexpectedValueException(sprintf(
+          'packet direction: %d is invalid', $this->packet_direction_id
+        ));
     }
   }
 
@@ -393,7 +397,7 @@ class Packet implements JsonSerializable {
   }
 
   public function getPacketTransportLayer() {
-    return new PacketTransportLayer( $this->packet_transport_layer_id );
+    return new TransportLayer( $this->packet_transport_layer_id );
   }
 
   public function getPacketTransportLayerId() {
