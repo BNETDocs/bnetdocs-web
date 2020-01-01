@@ -32,7 +32,6 @@ class Login extends Controller {
 
     $model->_responseCode = 200;
     $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-    $model->_responseTTL = 0;
 
     return $model;
 

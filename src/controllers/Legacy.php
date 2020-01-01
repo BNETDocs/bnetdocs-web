@@ -61,7 +61,6 @@ class Legacy extends Controller {
     $model->_responseCode = $code;
     $model->_responseHeaders['Content-Type'] = $view->getMimeType();
     $model->_responseHeaders['Location'] = $model->url;
-    $model->_responseTTL = 0;
 
     return $model;
 

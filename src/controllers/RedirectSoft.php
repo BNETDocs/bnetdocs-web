@@ -20,7 +20,6 @@ class RedirectSoft extends Controller {
     $model->_responseCode                    = 302;
     $model->_responseHeaders["Content-Type"] = $view->getMimeType();
     $model->_responseHeaders["Location"]     = $model->location;
-    $model->_responseTTL                     = 0;
 
     return $model;
 

@@ -45,7 +45,6 @@ class Create extends Controller {
 
     $model->_responseCode = $code;
     $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-    $model->_responseTTL = 0;
 
     if (!empty($model->origin) && $code >= 300 && $code <= 399) {
       $model->_responseHeaders['Location'] = $model->origin;

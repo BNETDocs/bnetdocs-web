@@ -459,7 +459,6 @@ class Update extends Controller {
     $view->render($model);
 
     $model->_responseHeaders['Content-Type'] = $view->getMimeType();
-    $model->_responseTTL = 0;
 
     return $model;
   }

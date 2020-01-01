@@ -85,7 +85,6 @@ class Index extends Controller {
 
     $model->_responseCode = ($model->acl_allowed ? 200 : 403);
     $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-    $model->_responseTTL = 0;
 
     return $model;
 

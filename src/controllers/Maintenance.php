@@ -18,7 +18,6 @@ class Maintenance extends Controller {
 
     $model->_responseCode = 503;
     $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-    $model->_responseTTL = 0;
 
     return $model;
 

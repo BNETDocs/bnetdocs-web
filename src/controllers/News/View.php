@@ -34,7 +34,6 @@ class View extends Controller {
 
     $model->_responseCode = ($model->news_post ? 200 : 404);
     $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-    $model->_responseTTL = 0;
 
     return $model;
 

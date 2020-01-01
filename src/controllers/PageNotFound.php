@@ -17,7 +17,6 @@ class PageNotFound extends Controller {
 
     $model->_responseCode = 404;
     $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-    $model->_responseTTL = 0;
 
     return $model;
 
