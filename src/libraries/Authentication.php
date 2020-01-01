@@ -94,6 +94,26 @@ class Authentication {
   }
 
   /**
+   * getPartialIP()
+   * Gets the first /24 or /64 for IPv4 or IPv6 addresses respectively.
+   *
+   * @return string The partial IP address.
+   */
+  protected static function getPartialIP(string $ip) {
+    $ip = '192.168.1.4';
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+      $r = long2ip(ip2long($ip) & 0xFFFFFF00);
+    } else if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+      $r = inet_ntop(
+        substr(unpack('A16', inet_pton($ip))[1], 0, 8) . str_repeat(chr(0), 8)
+      );
+    } else {
+      throw new InvalidArgumentException('$ip is not a valid IP address');
+    }
+    return $r;
+  }
+
+  /**
    * getUniqueKey()
    * Returns a unique string based on unique user data and other entropy.
    *
@@ -258,7 +278,9 @@ class Authentication {
         ) VALUES (
           :id, :user_id, :ip_address, :user_agent,
           :created_dt, :expires_dt
-        );
+        ) ON DUPLICATE KEY UPDATE
+          `ip_address` = :ip_address, `user_agent` = :user_agent
+        ;
       ');
 
       $stmt->bindParam(':id', $key, PDO::PARAM_STR);
@@ -306,7 +328,8 @@ class Authentication {
     }
 
     // logout and return if their fingerprint ip address does not match
-    if ($lookup['ip_address'] !== getenv('REMOTE_ADDR')) {
+    if (self::getPartialIP($lookup['ip_address'])
+      !== self::getPartialIP(getenv('REMOTE_ADDR'))) {
       self::logout();
       return false;
     }
@@ -320,6 +343,11 @@ class Authentication {
     // verified info, let's get the user object
     if (isset($lookup['user_id'])) {
       self::$user = new User($lookup['user_id']);
+    }
+
+    // if IP is different, update session
+    if ($lookup['ip_address'] !== getenv('REMOTE_ADDR')) {
+      self::store($key, self::getFingerprint(self::$user));
     }
 
     return true;
