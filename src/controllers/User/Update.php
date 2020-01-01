@@ -15,6 +15,8 @@ use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 
+use \StdClass;
+
 class Update extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $model = new UserUpdateModel();
@@ -63,6 +65,25 @@ class Update extends Controller {
         $model->steam_id           = $model->profile->getSteamId();
         $model->twitter_username   = $model->profile->getTwitterUsername();
         $model->website            = $model->profile->getWebsite(false);
+
+      } else {
+
+        $profile = new StdClass();
+
+        $profile->biography          = $model->biography;
+        $profile->discord_username   = $model->discord_username;
+        $profile->facebook_username  = $model->facebook_username;
+        $profile->github_username    = $model->github_username;
+        $profile->instagram_username = $model->instagram_username;
+        $profile->phone              = $model->phone;
+        $profile->reddit_username    = $model->reddit_username;
+        $profile->skype_username     = $model->skype_username;
+        $profile->steam_id           = $model->steam_id;
+        $profile->twitter_username   = $model->twitter_username;
+        $profile->user_id            = Authentication::$user->getId();
+        $profile->website            = $model->website;
+
+        $model->profile = new UserProfile($profile);
 
       }
 
