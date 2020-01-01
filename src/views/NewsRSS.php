@@ -11,14 +11,15 @@ use \CarlBennett\MVC\Libraries\View;
 class NewsRSS extends View {
 
   public function getMimeType() {
-    return "application/rss+xml;charset=utf-8";
+    return 'application/rss+xml;charset=utf-8';
   }
 
   public function render(Model &$model) {
     if (!$model instanceof NewsModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "News.rss"))->render();
+    (new Template($model, 'News.rss'))->render();
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 
 }

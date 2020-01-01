@@ -11,14 +11,15 @@ use \CarlBennett\MVC\Libraries\View;
 class LegalHtml extends View {
 
   public function getMimeType() {
-    return "text/html;charset=utf-8";
+    return 'text/html;charset=utf-8';
   }
 
   public function render(Model &$model) {
     if (!$model instanceof LegalModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Legal"))->render();
+    (new Template($model, 'Legal'))->render();
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 
 }

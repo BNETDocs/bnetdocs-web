@@ -25,9 +25,7 @@ use \PHPMailer\PHPMailer\PHPMailer;
 use \StdClass;
 
 class Register extends Controller {
-
   public function &run(Router &$router, View &$view, array &$args) {
-
     $conf = &Common::$config; // local variable for accessing config.
 
     $model               = new UserRegisterModel();
@@ -43,55 +41,51 @@ class Register extends Controller {
     $model->username_max_len =
       $conf->bnetdocs->user_register_requirements->username_length_max;
 
-    if ($router->getRequestMethod() == "POST") {
+    if ($router->getRequestMethod() == 'POST') {
       $this->tryRegister($router, $model);
     }
 
     $view->render($model);
-
     $model->_responseCode = 200;
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function tryRegister(Router &$router, UserRegisterModel &$model) {
     $data = $router->getRequestBodyArray();
-    $model->email    = (isset($data["email"   ]) ? $data["email"   ] : null);
-    $model->username = (isset($data["username"]) ? $data["username"] : null);
+    $model->email    = (isset($data['email'   ]) ? $data['email'   ] : null);
+    $model->username = (isset($data['username']) ? $data['username'] : null);
     if ( isset( Authentication::$user )) {
-      $model->error = "ALREADY_LOGGED_IN";
+      $model->error = 'ALREADY_LOGGED_IN';
       return;
     }
-    $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
-    $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
+    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
+    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
     if (!$csrf_valid) {
-      $model->error = "INVALID_CSRF";
+      $model->error = 'INVALID_CSRF';
       return;
     }
     CSRF::invalidate($csrf_id);
     $email    = $model->email;
     $username = $model->username;
-    $pw1      = (isset($data["pw1"]) ? $data["pw1"] : null);
-    $pw2      = (isset($data["pw2"]) ? $data["pw2"] : null);
+    $pw1      = (isset($data['pw1']) ? $data['pw1'] : null);
+    $pw2      = (isset($data['pw2']) ? $data['pw2'] : null);
     $captcha  = (
-      isset($data["g-recaptcha-response"]) ?
-      $data["g-recaptcha-response"]        :
+      isset($data['g-recaptcha-response']) ?
+      $data['g-recaptcha-response']        :
       null
     );
     try {
-      if (!$model->recaptcha->verify($captcha, getenv("REMOTE_ADDR"))) {
-        $model->error = "INVALID_CAPTCHA";
+      if (!$model->recaptcha->verify($captcha, getenv('REMOTE_ADDR'))) {
+        $model->error = 'INVALID_CAPTCHA';
         return;
       }
     } catch (RecaptchaException $e) {
-      $model->error = "INVALID_CAPTCHA";
+      $model->error = 'INVALID_CAPTCHA';
       return;
     }
     if ($pw1 !== $pw2) {
-      $model->error = "NONMATCHING_PASSWORD";
+      $model->error = 'NONMATCHING_PASSWORD';
       return;
     }
     $pwlen       = strlen($pw1);
@@ -99,60 +93,60 @@ class Register extends Controller {
     $req = &Common::$config->bnetdocs->user_register_requirements;
     if ($req->email_validate_quick
       && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $model->error = "INVALID_EMAIL";
+      $model->error = 'INVALID_EMAIL';
       return;
     }
     if (!$req->password_allow_email && stripos($pw1, $email)) {
-      $model->error = "PASSWORD_CONTAINS_EMAIL";
+      $model->error = 'PASSWORD_CONTAINS_EMAIL';
       return;
     }
     if (!$req->password_allow_username && stripos($pw1, $username)) {
-      $model->error = "PASSWORD_CONTAINS_USERNAME";
+      $model->error = 'PASSWORD_CONTAINS_USERNAME';
       return;
     }
     if (is_numeric($req->username_length_max)
       && $usernamelen > $req->username_length_max) {
-      $model->error = "USERNAME_TOO_LONG";
+      $model->error = 'USERNAME_TOO_LONG';
       return;
     }
     if (is_numeric($req->username_length_min)
       && $usernamelen < $req->username_length_min) {
-      $model->error = "USERNAME_TOO_SHORT";
+      $model->error = 'USERNAME_TOO_SHORT';
       return;
     }
     if (is_numeric($req->password_length_max)
       && $pwlen > $req->password_length_max) {
-      $model->error = "PASSWORD_TOO_LONG";
+      $model->error = 'PASSWORD_TOO_LONG';
       return;
     }
     if (is_numeric($req->password_length_min)
       && $pwlen < $req->password_length_min) {
-      $model->error = "PASSWORD_TOO_SHORT";
+      $model->error = 'PASSWORD_TOO_SHORT';
       return;
     }
     $blacklist = Common::$config->bnetdocs->user_password_blacklist;
     foreach ($blacklist as $blacklist_pw) {
       if (strtolower($blacklist_pw->password) == strtolower($pw1)) {
-        $model->error = "PASSWORD_BLACKLIST";
+        $model->error = 'PASSWORD_BLACKLIST';
         $model->error_extra = $blacklist_pw->reason;
         return;
       }
     }
     if (Common::$config->bnetdocs->user_register_disabled) {
-      $model->error = "REGISTER_DISABLED";
+      $model->error = 'REGISTER_DISABLED';
       return;
     }
 
     try {
       if (User::findIdByEmail($email)) {
-        $model->error = "EMAIL_ALREADY_USED";
+        $model->error = 'EMAIL_ALREADY_USED';
         return;
       }
     } catch (UserNotFoundException $e) {}
 
     try {
       if (User::findIdByUsername($username)) {
-        $model->error = "USERNAME_TAKEN";
+        $model->error = 'USERNAME_TAKEN';
         return;
       }
     } catch (UserNotFoundException $e) {}
@@ -269,9 +263,8 @@ class Register extends Controller {
         );
 
       } catch (\Exception $e) {
-        $model->error = "EMAIL_FAILURE";
+        $model->error = 'EMAIL_FAILURE';
       }
     }
   }
-
 }

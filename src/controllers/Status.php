@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Status as StatusModel;
+
 use \CarlBennett\MVC\Libraries\Cache;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
@@ -13,6 +14,7 @@ use \CarlBennett\MVC\Libraries\DateTime;
 use \CarlBennett\MVC\Libraries\GeoIP;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \DateTimeZone;
 use \StdClass;
 
@@ -24,17 +26,12 @@ class Status extends Controller {
    * @return Model The model with data that can be rendered by a view.
    */
   public function &run( Router &$router, View &$view, array &$args ) {
-
     $model = new StatusModel();
     $code  = ( self::getStatus( $model ) ? 200 : 500 );
 
     $view->render( $model );
-
     $model->_responseCode = $code;
-    $model->_responseHeaders['Content-Type'] = $view->getMimeType();
-
     return $model;
-
   }
 
   /**
@@ -74,5 +71,4 @@ class Status extends Controller {
 
     return true;
   }
-
 }

@@ -11,30 +11,27 @@ use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\User as UserLib;
 use \BNETDocs\Libraries\UserProfile;
+
 use \BNETDocs\Models\User\View as UserViewModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View as ViewLib;
+
 use \DateTime;
 use \DateTimeZone;
 
 class View extends Controller {
-
   public function &run(Router &$router, ViewLib &$view, array &$args) {
-
     $model          = new UserViewModel();
     $model->user_id = array_shift($args);
 
     $this->getUserInfo($model);
 
     $view->render($model);
-
     $model->_responseCode = ($model->user ? 200 : 404);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function getUserInfo(UserViewModel &$model) {
@@ -100,7 +97,7 @@ class View extends Controller {
         new DateTime( 'now', new DateTimeZone( 'Etc/UTC' ))
       )
     );
-    $user_est_comma = strpos($model->user_est, ",");
+    $user_est_comma = strpos($model->user_est, ',');
     if ($user_est_comma !== false)
       $model->user_est = substr($model->user_est, 0, $user_est_comma);
 
@@ -214,5 +211,4 @@ class View extends Controller {
     }
 
   }
-
 }

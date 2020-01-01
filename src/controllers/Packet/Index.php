@@ -18,9 +18,7 @@ use \DateTime;
 use \DateTimeZone;
 
 class Index extends Controller {
-
   public function &run( Router &$router, View &$view, array &$args ) {
-
     $model = new PacketIndexModel();
 
     $query = $router->getRequestQueryArray();
@@ -88,12 +86,8 @@ class Index extends Controller {
     }
 
     $view->render($model);
-
     $model->_responseCode = 200;
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   private static function &disambiguify( &$packets ) {
@@ -106,5 +100,4 @@ class Index extends Controller {
 
     return $pkts;
   }
-
 }

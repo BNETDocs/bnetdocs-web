@@ -15,9 +15,7 @@ use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View as ViewLib;
 
 class View extends Controller {
-
   public function &run(Router &$router, ViewLib &$view, array &$args) {
-
     $model = new NewsViewModel();
     $model->news_post_id = array_shift($args);
     $model->user = Authentication::$user;
@@ -31,12 +29,8 @@ class View extends Controller {
     $this->getNewsPost($model);
 
     $view->render($model);
-
     $model->_responseCode = ($model->news_post ? 200 : 404);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function getNewsPost(NewsViewModel &$model) {
@@ -60,5 +54,4 @@ class View extends Controller {
       );
     }
   }
-
 }

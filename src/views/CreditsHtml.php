@@ -11,14 +11,15 @@ use \CarlBennett\MVC\Libraries\View;
 class CreditsHtml extends View {
 
   public function getMimeType() {
-    return "text/html;charset=utf-8";
+    return 'text/html;charset=utf-8';
   }
 
   public function render(Model &$model) {
     if (!$model instanceof CreditsModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Credits"))->render();
+    (new Template($model, 'Credits'))->render();
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 
 }

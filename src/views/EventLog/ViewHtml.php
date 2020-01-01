@@ -9,16 +9,15 @@ use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
 
 class ViewHtml extends View {
-
   public function getMimeType() {
     return 'text/html;charset=utf-8';
   }
 
-  public function render( Model &$model ) {
-    if ( !$model instanceof EventLogViewModel ) {
+  public function render(Model &$model) {
+    if (!$model instanceof EventLogViewModel) {
       throw new IncorrectModelException();
     }
-    ( new Template( $model, 'EventLog/View' ))->render();
+    (new Template($model, 'EventLog/View'))->render();
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
-
 }

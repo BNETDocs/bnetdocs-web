@@ -86,10 +86,7 @@ class Edit extends Controller {
     }
 
     $view->render( $model );
-
     $model->_responseCode = ( $model->acl_allowed ? 200 : 403 );
-    $model->_responseHeaders[ 'Content-Type' ] = $view->getMimeType();
-
     return $model;
   }
 

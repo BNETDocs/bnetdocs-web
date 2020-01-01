@@ -13,7 +13,7 @@ use \CarlBennett\MVC\Libraries\View;
 class ServersJSON extends View {
 
   public function getMimeType() {
-    return "application/json;charset=utf-8";
+    return 'application/json;charset=utf-8';
   }
 
   public function render(Model &$model) {
@@ -23,19 +23,20 @@ class ServersJSON extends View {
     $content = [];
 
     foreach ($model->server_types as $server_type) {
-      $content["server_types"][] = [
-        "id"    => (int) $server_type->getId(),
-        "label" =>       $server_type->getLabel()
+      $content['server_types'][] = [
+        'id'    => (int) $server_type->getId(),
+        'label' =>       $server_type->getLabel()
       ];
     }
 
     foreach ($model->servers as $server) {
-      $content["servers"][] = $server;
+      $content['servers'][] = $server;
     }
 
-    $content["status_bitmasks"] = $model->status_bitmasks;
+    $content['status_bitmasks'] = $model->status_bitmasks;
 
     echo json_encode($content, Common::prettyJSONIfBrowser());
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 
 }

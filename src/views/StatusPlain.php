@@ -19,6 +19,7 @@ class StatusPlain extends View {
       throw new IncorrectModelException();
     }
     echo ArrayFlattener::flatten( $model->status );
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 
 }

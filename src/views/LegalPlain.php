@@ -10,7 +10,7 @@ use \CarlBennett\MVC\Libraries\View;
 class LegalPlain extends View {
 
   public function getMimeType() {
-    return "text/plain;charset=utf-8";
+    return 'text/plain;charset=utf-8';
   }
 
   public function render(Model &$model) {
@@ -18,6 +18,7 @@ class LegalPlain extends View {
       throw new IncorrectModelException();
     }
     echo $model->license;
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 
 }

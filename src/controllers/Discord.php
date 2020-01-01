@@ -13,22 +13,15 @@ use \DateTime;
 use \DateTimeZone;
 
 class Discord extends Controller {
-
-  public function &run( Router &$router, View &$view, array &$args ) {
-
+  public function &run(Router &$router, View &$view, array &$args) {
     $model = new DiscordModel();
 
     $model->discord_url = 'https://discord.gg/';
     $model->discord_url .= Common::$config->discord->invite_code;
     $model->discord_server_id = Common::$config->discord->server_id;
 
-    $view->render( $model );
-
+    $view->render($model);
     $model->_responseCode = 200;
-    $model->_responseHeaders[ 'Content-Type' ] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

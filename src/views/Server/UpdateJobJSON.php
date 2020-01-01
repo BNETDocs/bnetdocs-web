@@ -10,17 +10,15 @@ use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\View;
 
 class UpdateJobJSON extends View {
-
   public function getMimeType() {
     return 'application/json;charset=utf-8';
   }
 
-  public function render( Model &$model ) {
-    if ( !$model instanceof UpdateJobModel ) {
+  public function render(Model &$model) {
+    if (!$model instanceof UpdateJobModel) {
       throw new IncorrectModelException();
     }
-
-    echo json_encode( $model, Common::prettyJSONIfBrowser() );
+    echo json_encode($model, Common::prettyJSONIfBrowser());
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
-
 }

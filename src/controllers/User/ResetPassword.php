@@ -23,12 +23,12 @@ use \InvalidArgumentException;
 use \StdClass;
 
 class ResetPassword extends Controller {
+
   const RET_FAILURE = 0;
   const RET_SUCCESS = 1;
   const RET_EMAIL   = 2;
 
   public function &run( Router &$router, View &$view, array &$args ) {
-
     if ( $router->getRequestMethod() == 'GET' ) {
       $data = $router->getRequestQueryArray();
     } else {
@@ -63,12 +63,8 @@ class ResetPassword extends Controller {
     }
 
     $view->render( $model );
-
     $model->_responseCode = 200;
-    $model->_responseHeaders[ 'Content-Type' ] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function doPasswordReset( UserResetPasswordModel &$model, &$data ) {

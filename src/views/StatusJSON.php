@@ -19,6 +19,7 @@ class StatusJSON extends View {
       throw new IncorrectModelException();
     }
     echo json_encode( $model->status, Common::prettyJSONIfBrowser() );
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 
 }

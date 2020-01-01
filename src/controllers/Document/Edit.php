@@ -22,16 +22,14 @@ use \DateTimeZone;
 use \InvalidArgumentException;
 
 class Edit extends Controller {
-
   public function &run(Router &$router, View &$view, array &$args) {
-
     $data                = $router->getRequestQueryArray();
     $model               = new DocumentEditModel();
     $model->content      = null;
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->document     = null;
-    $model->document_id  = (isset($data["id"]) ? $data["id"] : null);
+    $model->document_id  = (isset($data['id']) ? $data['id'] : null);
     $model->error        = null;
     $model->markdown     = null;
     $model->published    = null;
@@ -47,7 +45,7 @@ class Edit extends Controller {
     catch (InvalidArgumentException $e) { $model->document = null; }
 
     if ($model->document === null) {
-      $model->error = "NOT_FOUND";
+      $model->error = 'NOT_FOUND';
     } else {
       $flags = $model->document->getOptionsBitmask();
 
@@ -56,23 +54,19 @@ class Edit extends Controller {
       $model->published = ($flags & Document::OPTION_PUBLISHED);
       $model->title     = $model->document->getTitle();
 
-      if ($router->getRequestMethod() == "POST") {
+      if ($router->getRequestMethod() == 'POST') {
         $this->handlePost($router, $model);
       }
     }
 
     $view->render($model);
-
     $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function handlePost(Router &$router, DocumentEditModel &$model) {
     if (!$model->acl_allowed) {
-      $model->error = "ACL_NOT_SET";
+      $model->error = 'ACL_NOT_SET';
       return;
     }
     if (!isset(Common::$database)) {
@@ -80,15 +74,15 @@ class Edit extends Controller {
     }
 
     $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
-    $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
+    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
+    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    $category   = (isset($data["category"  ]) ? $data["category"  ] : null);
-    $title      = (isset($data["title"     ]) ? $data["title"     ] : null);
-    $markdown   = (isset($data["markdown"  ]) ? $data["markdown"  ] : null);
-    $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
-    $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
-    $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
+    $category   = (isset($data['category'  ]) ? $data['category'  ] : null);
+    $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
+    $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
+    $content    = (isset($data['content'   ]) ? $data['content'   ] : null);
+    $publish    = (isset($data['publish'   ]) ? $data['publish'   ] : null);
+    $save       = (isset($data['save'      ]) ? $data['save'      ] : null);
 
     $model->category = $category;
     $model->title    = $title;
@@ -96,15 +90,15 @@ class Edit extends Controller {
     $model->content  = $content;
 
     if (!$csrf_valid) {
-      $model->error = "INVALID_CSRF";
+      $model->error = 'INVALID_CSRF';
       return;
     }
     CSRF::invalidate($csrf_id);
 
     if (empty($title)) {
-      $model->error = "EMPTY_TITLE";
+      $model->error = 'EMPTY_TITLE';
     } else if (empty($content)) {
-      $model->error = "EMPTY_CONTENT";
+      $model->error = 'EMPTY_CONTENT';
     }
 
     $user_id = $model->user->getId();
@@ -136,7 +130,7 @@ class Edit extends Controller {
     }
 
     if (!$success) {
-      $model->error = "INTERNAL_ERROR";
+      $model->error = 'INTERNAL_ERROR';
     } else {
       $model->error = false;
     }
@@ -144,15 +138,14 @@ class Edit extends Controller {
     Logger::logEvent(
       EventTypes::DOCUMENT_EDITED,
       $user_id,
-      getenv("REMOTE_ADDR"),
+      getenv('REMOTE_ADDR'),
       json_encode([
-        "error"           => $model->error,
-        "document_id"     => $model->document_id,
-        "options_bitmask" => $model->document->getOptionsBitmask(),
-        "title"           => $model->document->getTitle(),
-        "content"         => $model->document->getContent(false),
+        'error'           => $model->error,
+        'document_id'     => $model->document_id,
+        'options_bitmask' => $model->document->getOptionsBitmask(),
+        'title'           => $model->document->getTitle(),
+        'content'         => $model->document->getContent(false),
       ])
     );
   }
-
 }

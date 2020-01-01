@@ -4,26 +4,21 @@ namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\Credits as CreditsLib;
 use \BNETDocs\Models\Credits as CreditsModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 
 class Credits extends Controller {
-
   public function &run(Router &$router, View &$view, array &$args) {
-
     $model = new CreditsModel();
 
     $this->getCredits($model);
 
     $view->render($model);
-
     $model->_responseCode = 200;
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function getCredits(CreditsModel &$model) {
@@ -38,5 +33,4 @@ class Credits extends Controller {
     $model->top_contributors_by_servers
       = &$credits->getTopContributorsByServers();
   }
-
 }

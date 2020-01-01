@@ -16,9 +16,7 @@ use \DateTime;
 use \DateTimeZone;
 
 class UpdateJob extends Controller {
-
   public function &run( Router &$router, ViewLib &$view, array &$args ) {
-
     $model = new UpdateJobModel();
     $action = $router->getRequestMethod();
 
@@ -83,11 +81,6 @@ class UpdateJob extends Controller {
     }
 
     $view->render( $model );
-
-    $model->_responseHeaders[ 'Content-Type' ] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

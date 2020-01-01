@@ -19,9 +19,7 @@ use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 
 class Create extends Controller {
-
   public function &run(Router &$router, View &$view, array &$args) {
-
     $model                  = new NewsCreateModel();
     $model->csrf_id         = mt_rand();
     $model->csrf_token      = CSRF::generate($model->csrf_id, 7200); // 2 hours
@@ -41,41 +39,37 @@ class Create extends Controller {
       return ($oA < $oB) ? -1 : 1;
     });
 
-    if ($router->getRequestMethod() == "POST") {
+    if ($router->getRequestMethod() == 'POST') {
       $this->handlePost($router, $model);
-    } else if ($router->getRequestMethod() == "GET") {
+    } else if ($router->getRequestMethod() == 'GET') {
       $model->markdown   = true;
       $model->rss_exempt = false;
     }
 
     $view->render($model);
-
     $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function handlePost(Router &$router, NewsCreateModel &$model) {
     if (!$model->acl_allowed) {
-      $model->error = "ACL_NOT_SET";
+      $model->error = 'ACL_NOT_SET';
       return;
     }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
     $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
-    $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
+    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
+    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    $category   = (isset($data["category"  ]) ? $data["category"  ] : null);
-    $title      = (isset($data["title"     ]) ? $data["title"     ] : null);
-    $markdown   = (isset($data["markdown"  ]) ? $data["markdown"  ] : null);
-    $content    = (isset($data["content"   ]) ? $data["content"   ] : null);
-    $rss_exempt = (isset($data["rss_exempt"]) ? $data["rss_exempt"] : null);
-    $publish    = (isset($data["publish"   ]) ? $data["publish"   ] : null);
-    $save       = (isset($data["save"      ]) ? $data["save"      ] : null);
+    $category   = (isset($data['category'  ]) ? $data['category'  ] : null);
+    $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
+    $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
+    $content    = (isset($data['content'   ]) ? $data['content'   ] : null);
+    $rss_exempt = (isset($data['rss_exempt']) ? $data['rss_exempt'] : null);
+    $publish    = (isset($data['publish'   ]) ? $data['publish'   ] : null);
+    $save       = (isset($data['save'      ]) ? $data['save'      ] : null);
 
     $model->category   = $category;
     $model->title      = $title;
@@ -84,15 +78,15 @@ class Create extends Controller {
     $model->rss_exempt = $rss_exempt;
 
     if (!$csrf_valid) {
-      $model->error = "INVALID_CSRF";
+      $model->error = 'INVALID_CSRF';
       return;
     }
     CSRF::invalidate($csrf_id);
 
     if (empty($title)) {
-      $model->error = "EMPTY_TITLE";
+      $model->error = 'EMPTY_TITLE';
     } else if (empty($content)) {
-      $model->error = "EMPTY_CONTENT";
+      $model->error = 'EMPTY_CONTENT';
     }
 
     $options_bitmask = 0;
@@ -115,7 +109,7 @@ class Create extends Controller {
     }
 
     if (!$success) {
-      $model->error = "INTERNAL_ERROR";
+      $model->error = 'INTERNAL_ERROR';
     } else {
       $model->error = false;
     }
@@ -123,15 +117,14 @@ class Create extends Controller {
     Logger::logEvent(
       EventTypes::NEWS_CREATED,
       $model->user->getId(),
-      getenv("REMOTE_ADDR"),
+      getenv('REMOTE_ADDR'),
       json_encode([
-        "error"           => $model->error,
-        "category_id"     => $category,
-        "options_bitmask" => $options_bitmask,
-        "title"           => $title,
-        "content"         => $content,
+        'error'           => $model->error,
+        'category_id'     => $category,
+        'options_bitmask' => $options_bitmask,
+        'title'           => $title,
+        'content'         => $content,
       ])
     );
   }
-
 }

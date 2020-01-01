@@ -23,7 +23,6 @@ class News extends Controller {
   const NEWS_PER_PAGE = 5;
 
   public function &run(Router &$router, View &$view, array &$args) {
-
     $model = new NewsModel();
 
     $model->user = Authentication::$user;
@@ -43,12 +42,8 @@ class News extends Controller {
     );
 
     $view->render($model);
-
     $model->_responseCode = 200;
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function getNews(NewsModel &$model, $rss, $paginate, $page) {
@@ -78,7 +73,5 @@ class News extends Controller {
     } else {
       $model->pagination = null;
     }
-
   }
-
 }

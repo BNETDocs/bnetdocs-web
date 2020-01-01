@@ -3,15 +3,14 @@
 namespace BNETDocs\Controllers;
 
 use \BNETDocs\Models\Legacy as LegacyModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 
 class Legacy extends Controller {
-
   public function &run(Router &$router, View &$view, array &$args) {
-
     $data        = $router->getRequestQueryArray();
     $model       = new LegacyModel();
     $model->did  = (isset($data['did' ]) ? $data['did' ] : null);
@@ -59,11 +58,8 @@ class Legacy extends Controller {
     $view->render($model);
 
     $model->_responseCode = $code;
-    $model->_responseHeaders['Content-Type'] = $view->getMimeType();
     $model->_responseHeaders['Location'] = $model->url;
 
     return $model;
-
   }
-
 }

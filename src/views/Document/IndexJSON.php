@@ -9,7 +9,6 @@ use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\View;
 
 class IndexJSON extends View {
-
   public function getMimeType() {
     return 'application/json;charset=utf-8';
   }
@@ -21,6 +20,6 @@ class IndexJSON extends View {
     echo json_encode([
       'documents' => $model->documents
     ], Common::prettyJSONIfBrowser());
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
-
 }

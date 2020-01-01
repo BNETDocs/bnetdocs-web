@@ -16,7 +16,6 @@ use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 
 class Update extends Controller {
-
   public function &run(Router &$router, View &$view, array &$args) {
     $model = new UserUpdateModel();
 
@@ -457,10 +456,6 @@ class Update extends Controller {
     }
 
     $view->render($model);
-
-    $model->_responseHeaders['Content-Type'] = $view->getMimeType();
-
     return $model;
   }
-
 }

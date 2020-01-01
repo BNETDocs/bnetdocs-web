@@ -19,6 +19,7 @@ class LegacyHtml extends View {
       throw new IncorrectModelException();
     }
     (new Template($model, 'Legacy'))->render();
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 
 }

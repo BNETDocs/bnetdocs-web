@@ -14,9 +14,7 @@ use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View as ViewMVC;
 
 class View extends Controller {
-
   public function &run( Router &$router, ViewMVC &$view, array &$args ) {
-
     $model = new EventLogViewModel();
 
     $model->user = Authentication::$user;
@@ -50,10 +48,6 @@ class View extends Controller {
       ) : 403
     );
 
-    $model->_responseHeaders['Content-Type'] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

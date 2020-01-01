@@ -8,9 +8,8 @@ use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\View;
 
 class ViewPlain extends View {
-
   public function getMimeType() {
-    return "text/plain;charset=utf-8";
+    return 'text/plain;charset=utf-8';
   }
 
   public function render(Model &$model) {
@@ -18,8 +17,8 @@ class ViewPlain extends View {
       throw new IncorrectModelException();
     }
     echo $model->packet->getPacketName() . "\n";
-    echo str_repeat("=", strlen($model->packet->getPacketName())) . "\n\n";
+    echo str_repeat('=', strlen($model->packet->getPacketName())) . "\n\n";
     echo $model->packet->getPacketRemarks(false);
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
-
 }

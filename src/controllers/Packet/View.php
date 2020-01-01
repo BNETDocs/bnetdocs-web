@@ -17,9 +17,7 @@ use \DateTime;
 use \DateTimeZone;
 
 class View extends Controller {
-
   public function &run(Router &$router, ViewLib &$view, array &$args) {
-
     $model            = new PacketViewModel();
     $model->packet_id = array_shift($args);
 
@@ -42,12 +40,7 @@ class View extends Controller {
     }
 
     $view->render($model);
-
     $model->_responseCode = ($model->packet ? 200 : 404);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

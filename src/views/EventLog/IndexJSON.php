@@ -9,9 +9,8 @@ use \CarlBennett\MVC\Libraries\View;
 use \BNETDocs\Models\EventLog\Index as EventLogIndexModel;
 
 class IndexJSON extends View {
-
   public function getMimeType() {
-    return "application/json;charset=utf-8";
+    return 'application/json;charset=utf-8';
   }
 
   public function render(Model &$model) {
@@ -19,8 +18,8 @@ class IndexJSON extends View {
       throw new IncorrectModelException();
     }
     echo json_encode([
-      "event_log" => $model->event_log
+      'event_log' => $model->event_log
     ], Common::prettyJSONIfBrowser());
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
-
 }

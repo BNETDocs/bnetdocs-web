@@ -19,7 +19,6 @@ class Index extends Controller {
   const PAGINATION_LIMIT_MAX = 250; // The most amount of items per page.
 
   public function &run(Router &$router, View &$view, array &$args) {
-
     $model = new EventLogIndexModel();
 
     $model->user = Authentication::$user;
@@ -82,12 +81,7 @@ class Index extends Controller {
     }
 
     $view->render($model);
-
     $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

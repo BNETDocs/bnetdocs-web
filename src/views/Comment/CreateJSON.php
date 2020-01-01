@@ -9,9 +9,8 @@ use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\View;
 
 class CreateJSON extends View {
-
   public function getMimeType() {
-    return "application/json;charset=utf-8";
+    return 'application/json;charset=utf-8';
   }
 
   public function render(Model &$model) {
@@ -19,6 +18,6 @@ class CreateJSON extends View {
       throw new IncorrectModelException();
     }
     echo json_encode($model->response, Common::prettyJSONIfBrowser());
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
-
 }

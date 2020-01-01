@@ -8,17 +8,17 @@ use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\ServerMetric;
 use \BNETDocs\Libraries\ServerType;
 use \BNETDocs\Models\Server\View as ServerViewModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View as ViewLib;
+
 use \DateTime;
 use \DateTimeZone;
 
 class View extends Controller {
-
   public function &run( Router &$router, ViewLib &$view, array &$args ) {
-
     $model               = new ServerViewModel();
     $model->server_id    = array_shift( $args );
 
@@ -32,12 +32,7 @@ class View extends Controller {
     }
 
     $view->render( $model );
-
     $model->_responseCode = ( $model->server ? 200 : 404 );
-    $model->_responseHeaders['Content-Type'] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

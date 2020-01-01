@@ -6,18 +6,18 @@ use \BNETDocs\Libraries\Document;
 use \BNETDocs\Models\Document\Index as DocumentIndexModel;
 use \BNETDocs\Views\Document\IndexHtml as DocumentIndexHtmlView;
 use \BNETDocs\Views\Document\IndexJSON as DocumentIndexJSONView;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Gravatar;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+
 use \DateTime;
 use \DateTimeZone;
 
 class Index extends Controller {
-
   public function &run(Router &$router, View &$view, array &$args) {
-
     $model = new DocumentIndexModel();
 
     $query = $router->getRequestQueryArray();
@@ -71,18 +71,18 @@ class Index extends Controller {
       $documents = [];
       foreach ($model->documents as $document) {
         $documents[] = [
-          "content"          => $document->getContent(false),
-          "created_datetime" => self::renderDateTime(
+          'content'          => $document->getContent(false),
+          'created_datetime' => self::renderDateTime(
                                   $document->getCreatedDateTime()
                                 ),
-          "edited_count"     => $document->getEditedCount(),
-          "edited_datetime"  => self::renderDateTime(
+          'edited_count'     => $document->getEditedCount(),
+          'edited_datetime'  => self::renderDateTime(
                                   $document->getEditedDateTime()
                                 ),
-          "id"               => $document->getId(),
-          "options_bitmask"  => $document->getOptionsBitmask(),
-          "title"            => $document->getTitle(),
-          "user"             => $document->getUser(),
+          'id'               => $document->getId(),
+          'options_bitmask'  => $document->getOptionsBitmask(),
+          'title'            => $document->getTitle(),
+          'user'             => $document->getUser(),
         ];
       }
       $model->documents = $documents;
@@ -92,17 +92,12 @@ class Index extends Controller {
     $model->sum_documents = count($model->documents);
 
     $view->render($model);
-
     $model->_responseCode = 200;
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected static function renderDateTime($obj) {
     if (!$obj instanceof DateTime) return $obj;
-    return $obj->format("r");
+    return $obj->format('r');
   }
-
 }

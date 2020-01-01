@@ -9,16 +9,15 @@ use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
 
 class SearchHtml extends View {
-
   public function getMimeType() {
-    return "text/html;charset=utf-8";
+    return 'text/html;charset=utf-8';
   }
 
   public function render(Model &$model) {
     if (!$model instanceof PacketSearchModel) {
       throw new IncorrectModelException();
     }
-    (new Template($model, "Packet/Search"))->render();
+    (new Template($model, 'Packet/Search'))->render();
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
-
 }

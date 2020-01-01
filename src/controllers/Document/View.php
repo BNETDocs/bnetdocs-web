@@ -6,17 +6,17 @@ use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Models\Document\View as DocumentViewModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View as ViewLib;
+
 use \DateTime;
 use \DateTimeZone;
 
 class View extends Controller {
-
   public function &run(Router &$router, ViewLib &$view, array &$args) {
-
     $model              = new DocumentViewModel();
     $model->document_id = array_shift($args);
 
@@ -34,12 +34,7 @@ class View extends Controller {
     }
 
     $view->render($model);
-
     $model->_responseCode = ($model->document ? 200 : 404);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

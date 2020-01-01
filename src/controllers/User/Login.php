@@ -24,17 +24,13 @@ class Login extends Controller {
     $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->error        = null;
 
-    if ($router->getRequestMethod() == "POST") {
+    if ($router->getRequestMethod() == 'POST') {
       $this->tryLogin($router, $model);
     }
 
     $view->render($model);
-
     $model->_responseCode = 200;
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function tryLogin(Router &$router, UserLoginModel &$model) {
@@ -43,26 +39,26 @@ class Login extends Controller {
     }
 
     $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
-    $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
+    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
+    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    $email      = (isset($data["email"     ]) ? $data["email"     ] : null);
-    $password   = (isset($data["password"  ]) ? $data["password"  ] : null);
+    $email      = (isset($data['email'     ]) ? $data['email'     ] : null);
+    $password   = (isset($data['password'  ]) ? $data['password'  ] : null);
 
     $model->email = $email;
 
     if (!$csrf_valid) {
-      $model->error = "INVALID_CSRF";
+      $model->error = 'INVALID_CSRF';
       return;
     }
     CSRF::invalidate($csrf_id);
 
     if ( isset( Authentication::$user )) {
-      $model->error = "ALREADY_LOGGED_IN";
+      $model->error = 'ALREADY_LOGGED_IN';
     } else if (empty($email)) {
-      $model->error = "EMPTY_EMAIL";
+      $model->error = 'EMPTY_EMAIL';
     } else if (Common::$config->bnetdocs->user_login_disabled) {
-      $model->error = "LOGIN_DISABLED";
+      $model->error = 'LOGIN_DISABLED';
     }
 
     if ($model->error) return;
@@ -74,13 +70,13 @@ class Login extends Controller {
     }
 
     if (!$user) {
-      $model->error = "USER_NOT_FOUND";
+      $model->error = 'USER_NOT_FOUND';
     } else if ($user->isDisabled()) {
-      $model->error = "USER_DISABLED";
+      $model->error = 'USER_DISABLED';
     } else if (!$user->checkPassword($password)) {
-      $model->error = "PASSWORD_INCORRECT";
+      $model->error = 'PASSWORD_INCORRECT';
     } else if (!$user->isVerified()) {
-      $model->error = "USER_NOT_VERIFIED";
+      $model->error = 'USER_NOT_VERIFIED';
     }
 
     if ($model->error) return;
@@ -91,10 +87,10 @@ class Login extends Controller {
     Logger::logEvent(
       EventTypes::USER_LOGIN,
       ($user ? $user->getId() : null),
-      getenv("REMOTE_ADDR"),
+      getenv('REMOTE_ADDR'),
       json_encode([
-        "error" => $model->error,
-        "email" => $model->email,
+        'error' => $model->error,
+        'email' => $model->email,
       ])
     );
   }

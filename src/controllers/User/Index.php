@@ -4,6 +4,7 @@ namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Index as UserIndexModel;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
@@ -16,7 +17,6 @@ class Index extends Controller {
   const PAGINATION_LIMIT_MAX = 250; // The most amount of items per page.
 
   public function &run(Router &$router, View &$view, array &$args) {
-
     $model = new UserIndexModel();
 
     $query = $router->getRequestQueryArray();
@@ -85,12 +85,7 @@ class Index extends Controller {
     $model->sum_users = count($model->users);
 
     $view->render($model);
-
     $model->_responseCode = 200;
-    $model->_responseHeaders['Content-Type'] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

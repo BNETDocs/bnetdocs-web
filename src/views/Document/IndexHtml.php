@@ -9,7 +9,6 @@ use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
 
 class IndexHtml extends View {
-
   public function getMimeType() {
     return 'text/html;charset=utf-8';
   }
@@ -19,6 +18,6 @@ class IndexHtml extends View {
       throw new IncorrectModelException();
     }
     (new Template($model, 'Document/Index'))->render();
+    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
-
 }

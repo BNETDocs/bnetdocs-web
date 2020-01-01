@@ -2,11 +2,6 @@
 
 namespace BNETDocs\Controllers\User;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
@@ -14,12 +9,15 @@ use \BNETDocs\Libraries\User;
 
 use \BNETDocs\Models\User\Verify as UserVerifyModel;
 
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Controller;
+use \CarlBennett\MVC\Libraries\Router;
+use \CarlBennett\MVC\Libraries\View;
+
 use \InvalidArgumentException;
 
 class Verify extends Controller {
-
   public function &run( Router &$router, View &$view, array &$args ) {
-
     $data = $router->getRequestQueryArray();
 
     $model = new UserVerifyModel();
@@ -62,12 +60,7 @@ class Verify extends Controller {
     }
 
     $view->render( $model );
-
     $model->_responseCode = 200;
-    $model->_responseHeaders[ 'Content-Type' ] = $view->getMimeType();
-
     return $model;
-
   }
-
 }

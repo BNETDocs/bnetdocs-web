@@ -19,16 +19,14 @@ use \CarlBennett\MVC\Libraries\View;
 use \InvalidArgumentException;
 
 class Delete extends Controller {
-
   public function &run(Router &$router, View &$view, array &$args) {
-
     $data                = $router->getRequestQueryArray();
     $model               = new DocumentDeleteModel();
     $model->csrf_id      = mt_rand();
     $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->document     = null;
     $model->error        = null;
-    $model->id           = (isset($data["id"]) ? $data["id"] : null);
+    $model->id           = (isset($data['id']) ? $data['id'] : null);
     $model->title        = null;
     $model->user         = Authentication::$user;
 
@@ -41,43 +39,39 @@ class Delete extends Controller {
     catch (InvalidArgumentException $e) { $model->document = null; }
 
     if ($model->document === null) {
-      $model->error = "NOT_FOUND";
+      $model->error = 'NOT_FOUND';
     } else {
       $model->title = $model->document->getTitle();
 
-      if ($router->getRequestMethod() == "POST") {
+      if ($router->getRequestMethod() == 'POST') {
         $this->tryDelete($router, $model);
       }
     }
 
     $view->render($model);
-
     $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    $model->_responseHeaders["Content-Type"] = $view->getMimeType();
-
     return $model;
-
   }
 
   protected function tryDelete(Router &$router, DocumentDeleteModel &$model) {
     if (!isset($model->user)) {
-      $model->error = "NOT_LOGGED_IN";
+      $model->error = 'NOT_LOGGED_IN';
       return;
     }
 
     $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data["csrf_id"   ]) ? $data["csrf_id"   ] : null);
-    $csrf_token = (isset($data["csrf_token"]) ? $data["csrf_token"] : null);
+    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
+    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
     $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
 
     if (!$csrf_valid) {
-      $model->error = "INVALID_CSRF";
+      $model->error = 'INVALID_CSRF';
       return;
     }
     CSRF::invalidate($csrf_id);
 
     if (!$model->acl_allowed) {
-      $model->error = "ACL_NOT_SET";
+      $model->error = 'ACL_NOT_SET';
       return;
     }
 
@@ -101,7 +95,7 @@ class Delete extends Controller {
     }
 
     if (!$success) {
-      $model->error = "INTERNAL_ERROR";
+      $model->error = 'INTERNAL_ERROR';
     } else {
       $model->error = false;
     }
@@ -109,12 +103,11 @@ class Delete extends Controller {
     Logger::logEvent(
       EventTypes::DOCUMENT_DELETED,
       $user_id,
-      getenv("REMOTE_ADDR"),
+      getenv('REMOTE_ADDR'),
       json_encode([
-        "error"       => $model->error,
-        "document_id" => $id,
+        'error'       => $model->error,
+        'document_id' => $id,
       ])
     );
   }
-
 }
