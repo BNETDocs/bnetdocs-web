@@ -101,15 +101,12 @@ class Authentication {
    */
   protected static function getPartialIP(string $ip) {
     if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-      $r = long2ip(ip2long($ip) & 0xFFFFFF00);
+      return long2ip(ip2long($ip) & 0xFFFFFF00);
     } else if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-      $r = inet_ntop(
-        substr(unpack('A16', inet_pton($ip))[1], 0, 8) . str_repeat(chr(0), 8)
-      );
+      return inet_ntop(substr(inet_pton($ip), 0, 8) . str_repeat(chr(0), 8));
     } else {
       throw new InvalidArgumentException('$ip is not a valid IP address');
     }
-    return $r;
   }
 
   /**
