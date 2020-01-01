@@ -1,6 +1,6 @@
 /**
  *  BNETDocs, the documentation and discussion website for Blizzard protocols
- *  Copyright (C) 2003-2018  "Arta", Don Cullen "Kyro", Carl Bennett, others
+ *  Copyright (C) 2003-2020  "Arta", Don Cullen "Kyro", Carl Bennett, others
  *  This file is part of BNETDocs.
  *
  *  BNETDocs is free software: you can redistribute it and/or modify
