@@ -100,7 +100,6 @@ class Authentication {
    * @return string The partial IP address.
    */
   protected static function getPartialIP(string $ip) {
-    $ip = '192.168.1.4';
     if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
       $r = long2ip(ip2long($ip) & 0xFFFFFF00);
     } else if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
