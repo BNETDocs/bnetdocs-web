@@ -1,0 +1,25 @@
+# vim: set colorcolumn=:
+name: bnetdocs-web
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Update apt cache
+        run: sudo apt-get update
+
+      - name: Install php 7.4
+        run: sudo apt-get install php7.4-cli
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install composer/vendor dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --ignore-platform-reqs
+
+      - name: Validate PHP syntax
+        run: bash -c 'set -e;for file in $(find ./src -type f -regex .*\.php -print); do php -e -l -f "$file"; done'
