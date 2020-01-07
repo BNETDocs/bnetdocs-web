@@ -343,7 +343,7 @@ class Authentication {
 
     // if IP is different, update session
     if ($lookup['ip_address'] !== getenv('REMOTE_ADDR')) {
-      self::store($key, self::getFingerprint(self::$user));
+      self::store(self::$key, self::getFingerprint(self::$user));
     }
 
     return true;
