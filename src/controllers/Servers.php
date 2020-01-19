@@ -41,7 +41,6 @@ class Servers extends Controller {
 
     // collect filter queries
 
-    $sort = (isset($q['sort']) ? $q['sort'] : null);
     $status = (isset($q['status']) ? $q['status'] : null);
     $type_id = (isset($q['type_id']) ? $q['type_id'] : null);
     $user_id = (isset($q['user_id']) ? $q['user_id'] : null);
