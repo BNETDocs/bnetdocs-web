@@ -365,14 +365,16 @@ class Server implements JsonSerializable {
       $stmt->bindParam( ':status', $this->status_bitmask, PDO::PARAM_INT );
       $stmt->bindParam( ':type_id', $this->type_id, PDO::PARAM_INT );
       if ( is_null( $this->updated_datetime )) {
-        $stmt->bindParam( ':updated_dt', null, PDO::PARAM_NULL );
+        $stmt->bindParam(
+          ':updated_dt', $this->updated_datetime, PDO::PARAM_NULL
+        );
       } else {
         $stmt->bindParam(
           ':updated_dt', $this->updated_datetime, PDO::PARAM_STR
         );
       }
       if ( is_null( $this->user_id )) {
-        $stmt->bindParam( ':user_id', null, PDO::PARAM_NULL );
+        $stmt->bindParam( ':user_id', $this->user_id, PDO::PARAM_NULL );
       } else {
         $stmt->bindParam( ':user_id', $this->user_id, PDO::PARAM_INT );
       }
