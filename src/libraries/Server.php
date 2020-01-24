@@ -369,7 +369,7 @@ class Server implements JsonSerializable {
         is_null( $this->updated_datetime ) ? PDO::PARAM_NULL : PDO::PARAM_STR
       ));
 
-      $stmt->bindParam( ':user_dt', $this->user_id, (
+      $stmt->bindParam( ':user_id', $this->user_id, (
         is_null( $this->user_id ) ? PDO::PARAM_NULL : PDO::PARAM_INT
       ));
 
