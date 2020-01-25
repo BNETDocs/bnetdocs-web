@@ -848,11 +848,9 @@ class Packet implements JsonSerializable {
       $stmt->bindParam(':dt1', $this->created_datetime, PDO::PARAM_STR);
       $stmt->bindParam(':edit_count', $this->edited_count, PDO::PARAM_INT);
 
-      if ( is_null( $this->edited_datetime )) {
-        $stmt->bindParam( ':dt2', null, PDO::PARAM_NULL );
-      } else {
-        $stmt->bindParam( ':dt2', $this->edited_datetime, PDO::PARAM_STR );
-      }
+      $stmt->bindParam(':dt2', $this->edited_datetime, (
+        is_null($this->edited_datetime) ? PDO::PARAM_NULL : PDO::PARAM_STR
+      ));
 
       $stmt->bindParam(
         ':direction', $this->packet_direction_id, PDO::PARAM_INT
