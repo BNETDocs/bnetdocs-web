@@ -2,11 +2,14 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\Exceptions\ServerNotFoundException;
+use \BNETDocs\Libraries\ServerType;
+
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Exceptions\ServerNotFoundException;
+
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
@@ -192,6 +195,10 @@ class Server implements JsonSerializable {
     return $this->status_bitmask;
   }
 
+  public function getType() {
+    return new ServerType($this->type_id);
+  }
+
   public function getTypeId() {
     return $this->type_id;
   }
@@ -223,6 +230,18 @@ class Server implements JsonSerializable {
 
   public function getUserId() {
     return $this->user_id;
+  }
+
+  public function isDisabled() {
+    return ($this->status_bitmask & self::STATUS_DISABLED);
+  }
+
+  public function isOffline() {
+    return (!$this->isOnline());
+  }
+
+  public function isOnline() {
+    return ($this->status_bitmask & self::STATUS_ONLINE);
   }
 
   public function jsonSerialize() {

@@ -56,6 +56,11 @@
       "ignore_event_types": [3,5,7,8,9,10,11],
       "webhook": null
     },
+    "forward_server_updates": {
+      "enabled": false,
+      "ignore_server_ids": [],
+      "webhook": null
+    },
     "invite_code": "u87WVeu",
     "server_id": 405789880749260820
   },
