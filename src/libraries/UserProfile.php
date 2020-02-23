@@ -148,7 +148,9 @@ class UserProfile {
   }
 
   public function getWebsite($clean = true) {
-    if (!is_string($this->website) || !$clean) return $this->website;
+    if (empty($this->website) || !$clean) {
+      return $this->website;
+    }
     $value = strtolower($this->website);
     if (substr($value, 0, 7) == "http://") {
       return substr($value, 7);
