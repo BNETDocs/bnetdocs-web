@@ -6,8 +6,10 @@
       "vultr": ""
     },
     "donations": {
-      "btc_address": "",
-      "paypal_url": ""
+      "btc_address": null,
+      "email_address": null,
+      "paypal_url": null,
+      "user_id": null
     },
     "maintenance": [
       false,

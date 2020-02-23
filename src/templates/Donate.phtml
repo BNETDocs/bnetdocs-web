@@ -5,24 +5,45 @@ namespace BNETDocs\Templates;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
+use \BNETDocs\Libraries\User;
+
 $title       = 'Donate';
 $description = 'Donate to BNETDocs to show your support for this project!';
 
 $this->opengraph->attach(new Pair('url', '/donate'));
 $this->opengraph->attach(new Pair('type', 'article'));
 
-$btc_address = $this->getContext()->donations->btc_address;
-$paypal_url  = $this->getContext()->donations->paypal_url;
+$btc_address   = $this->getContext()->donations->btc_address;
+$email_address = $this->getContext()->donations->email_address;
+$paypal_url    = $this->getContext()->donations->paypal_url;
+$user_id       = $this->getContext()->donations->user_id;
+
+if (!empty($user_id)) {
+  $user = new User($user_id);
+}
 
 require('./header.inc.phtml');
 ?>
       <article>
         <header>Support Us</header>
         <section>
-          <p><ul>
+          <p>
+            The following are the methods available for supporting us:
+            <ul type="circle">
+<?php if ($user) { ?>
+            <li>Contact: <a href="<?=$user->getURI()?>"><?=filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
+<?php } ?>
+<?php if (!empty($paypal_url)) { ?>
             <li>PayPal: <a href="<?php echo filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"><?php echo filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></li>
+<?php } ?>
+<?php if (!empty($btc_address)) { ?>
             <li>BTC: <code><?php echo $btc_address; ?></code></li>
-          </ul></p>
+<?php } ?>
+<?php if (!empty($email_address)) { ?>
+            <li>Email us: <a href="mailto:<?=rawurlencode($email_address)?>"><?=filter_var($email_address, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
+<?php } ?>
+            </ul>
+          </p>
         </section>
         <header>Disclaimer</header>
         <section>
