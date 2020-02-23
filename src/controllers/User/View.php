@@ -86,9 +86,10 @@ class View extends Controller {
 
     // Should we display profile data at all?
     $model->profiledata = (
-      $model->github  || $model->facebook  ||
-      $model->twitter || $model->instagram ||
-      $model->skype   || $model->website
+      $model->discord   || $model->facebook  || $model->github  ||
+      $model->instagram || $model->phone     || $model->reddit  ||
+      $model->skype     || $model->steam_id  || $model->twitter ||
+      $model->website
     );
 
     // How long have they been a member?
