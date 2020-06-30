@@ -90,10 +90,6 @@ function BNETDocs() {
     }
   };
 
-  this.isNumeric = function(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-  }
-
   window.onload = function() {
     self.fHookExternalAnchors();
     self.fHookNavigationMenu();
