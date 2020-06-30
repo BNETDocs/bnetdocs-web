@@ -26,35 +26,9 @@ function BNETDocs() {
 
   var self = this;
 
-  this.dateToString = function(x) {
-    var y = '';
-    switch (x.getDay()) {
-      case 0: y += 'Sun'; break;
-      case 1: y += 'Mon'; break;
-      case 2: y += 'Tue'; break;
-      case 3: y += 'Wed'; break;
-      case 4: y += 'Thu'; break;
-      case 5: y += 'Fri'; break;
-      case 6: y += 'Sat'; break;
-    }
-    y += ', ';
-    switch (x.getMonth()) {
-      case 0:  y += 'Jan'; break;
-      case 1:  y += 'Feb'; break;
-      case 2:  y += 'Mar'; break;
-      case 3:  y += 'Apr'; break;
-      case 4:  y += 'May'; break;
-      case 5:  y += 'Jun'; break;
-      case 6:  y += 'Jul'; break;
-      case 7:  y += 'Aug'; break;
-      case 8:  y += 'Sep'; break;
-      case 9:  y += 'Oct'; break;
-      case 10: y += 'Nov'; break;
-      case 11: y += 'Dec'; break;
-    }
-    y += ' ' + x.getDate() + ' ' + x.getFullYear();
-    y += ' at ' + x.toLocaleTimeString();
-    return y;
+  this.dateToString = function(date) {    
+    let options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', time: 'long' };
+    return date.toLocaleTimeString(undefined, options);
   };
 
   this.fHookExternalAnchors = function() {
