@@ -31,7 +31,8 @@
 
 		# Stripslashes as shown on http://php.net/get_magic_quotes_gpc
 		# Used to prevent remote code injection via post, get, cookie. Also contributes to prevent remote code injection via SQL since input is cleaned prior to inserting to SQL DB.
-		if (get_magic_quotes_gpc()) {
+		#if (get_magic_quotes_gpc()) { ### DEPRECATED AND REMOVED IN PHP 7.4.0 ###
+		if (ini_get('magic_quotes_gpc')) {
 		   function stripslashes_deep($value) {
 		       $value = is_array($value) ?
 		                   array_map('stripslashes_deep', $value) :
