@@ -1,13 +1,12 @@
+---
 language: php
 os:
   - linux
 sudo: false
 php:
-# - 5.3 (doesn't recognize $var=[], only recognizes $var=array())
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
+  - 7.2
+  - 7.3
+  - 7.4
   - nightly
 matrix:
   allow_failures:
@@ -17,4 +16,5 @@ services:
 before_script:
   - cp etc/config.sample.json etc/config.redux.json
 script:
-  - bash -c 'set -e;for file in $(find . -type f -regextype posix-extended -regex .*\.\(php\|dm\) -print); do php -e -l -f "$file"; done'
+  - bash -c 'set -e;for file in $(find . -type f -regextype posix-extended
+    -regex .*\.\(php\|dm\) -print); do php -e -l -f "$file"; done'
