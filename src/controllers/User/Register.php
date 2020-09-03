@@ -91,10 +91,19 @@ class Register extends Controller {
     $pwlen       = strlen($pw1);
     $usernamelen = strlen($username);
     $req = &Common::$config->bnetdocs->user_register_requirements;
+    $email_denylist = &Common::$config->email->recipient_denylist_regexp;
     if ($req->email_validate_quick
       && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
       $model->error = 'INVALID_EMAIL';
       return;
+    }
+    if ($req->email_enable_denylist) {
+      foreach ($email_denylist as $_bad_email) {
+        if (preg_match($_bad_email, $email)) {
+          $model->error = 'EMAIL_NOT_ALLOWED';
+          return;
+        }
+      }
     }
     if (!$req->password_allow_email && stripos($pw1, $email)) {
       $model->error = 'PASSWORD_CONTAINS_EMAIL';

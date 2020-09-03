@@ -199,6 +199,18 @@ class Update extends Controller {
 
           // email change request
 
+          // email denylist check
+          $email_not_allowed = false;
+          if ($req->email_enable_denylist) {
+            $email_denylist = &Common::$config->email->recipient_denylist_regexp;
+            foreach ($email_denylist as $_bad_email) {
+              if (preg_match($_bad_email, $email)) {
+                $email_not_allowed = true;
+                break;
+              }
+            }
+          }
+
           if (strtolower($model->email_1) !== strtolower($model->email_2)) {
 
             // email mismatch
@@ -209,10 +221,16 @@ class Update extends Controller {
             // email is empty
             $model->email_error = ['red', 'EMPTY'];
 
-          } else if (!filter_var($model->email_2, FILTER_VALIDATE_EMAIL)) {
+          } else if ($req->email_validate_quick
+            && !filter_var($model->email_2, FILTER_VALIDATE_EMAIL)) {
 
             // email is invalid; it doesn't meet RFC 822 requirements
             $model->email_error = ['red', 'INVALID'];
+
+          } else if ($email_not_allowed) {
+
+            // email is not allowed; it matches a denylist regular expression
+            $model->email_error = ['red', 'NOT_ALLOWED'];
 
           } else {
 

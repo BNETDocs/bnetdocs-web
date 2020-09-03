@@ -42,12 +42,13 @@
     "user_password_pepper": "bnetdocs-INSERTRANDOMVALUEHERE",
     "user_register_disabled": false,
     "user_register_requirements": {
+      "email_enable_denylist": true,
       "email_validate_quick": true,
       "password_allow_email": false,
       "password_allow_username": false,
       "password_length_max": null,
       "password_length_min": 6,
-      "username_length_max": 64,
+      "username_length_max": 28,
       "username_length_min": 3
     }
   },
@@ -67,6 +68,9 @@
     "server_id": 405789880749260820
   },
   "email": {
+    "recipient_denylist_regexp": [
+      "/@mailinator\\.com$/i"
+    ],
     "recipient_from": [
       "root@localhost",
       "BNETDocs"

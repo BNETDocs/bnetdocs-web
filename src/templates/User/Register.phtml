@@ -36,6 +36,10 @@ switch ($this->getContext()->error) {
     $af      = "email";
     $message = "The email address is invalid.";
     break;
+  case "EMAIL_NOT_ALLOWED":
+    $af      = "email";
+    $message = "The email address is not allowed, use a different one.";
+    break;
   case "PASSWORD_CONTAINS_EMAIL":
     $af      = "pw1";
     $message = "The password contains the email address, "

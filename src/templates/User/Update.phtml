@@ -34,6 +34,9 @@ switch ($this->getContext()->email_error[1]) {
     $email_error = 'Your new email address cannot be blank.'; break;
   case 'INVALID':
     $email_error = 'Your new email address uses invalid formatting.'; break;
+  case 'NOT_ALLOWED':
+    $email_error = 'Your new email address is not allowed, use a different '
+      . 'one.'; break;
   case 'CHANGE_FAILED':
     $email_error = 'Failed to change email due to an internal error.'; break;
   case 'CHANGE_SUCCESS':
