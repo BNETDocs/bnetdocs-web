@@ -19,6 +19,8 @@ class View extends Model {
   public $news_posts;
   public $packets;
   public $profiledata;
+  public $phone;
+  public $phone_uri;
   public $reddit;
   public $reddit_uri;
   public $servers;
