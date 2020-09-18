@@ -15,6 +15,10 @@ $this->additional_css[] = "/a/forms.css";
 require( './header.inc.phtml' );
 ?>
       <article>
+<?php if (!$this->getContext()->enabled) { ?>
+        <header class="red">Discord</header>
+        <section class="red"><p>Sorry, but this page is currently not available. Try again later.</p></section>
+<?php } else { ?>
         <header>Discord</header>
         <section>
           <h2>Who's Online</h2><br/>
@@ -27,5 +31,6 @@ require( './header.inc.phtml' );
           <p style="text-align:center;"><a class="button" href="<?php echo Common::relativeUrlToAbsolute( $this->getContext()->discord_url ); ?>">Click this invite link</a></p>
           <p><strong><a href="<?php echo Common::relativeUrlToAbsolute( $this->getContext()->discord_url ); ?>">Join our Discord</a></strong> and chat with other gamers like you! Our community is open to the public and we welcome new users.</p>
         </section>
+<?php } ?>
       </article>
 <?php require( './footer.inc.phtml' ); ?>

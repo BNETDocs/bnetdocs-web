@@ -105,7 +105,9 @@ $_campaign_vultr = (
       <a>Info Hub</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/welcome"); ?>">Welcome</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/credits"); ?>">Contributors</a>
+<?php if (Common::$config->discord->enabled) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/discord"); ?>">Discord</a>
+<?php } ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/donate"); ?>">Donate</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/index"); ?>">Members</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/news"); ?>">News</a>

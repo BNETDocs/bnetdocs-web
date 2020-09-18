@@ -3,6 +3,7 @@
 namespace BNETDocs\Views;
 
 use \BNETDocs\Models\Discord as DiscordModel;
+
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\Template;

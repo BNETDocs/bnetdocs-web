@@ -53,6 +53,7 @@
     }
   },
   "discord": {
+    "enabled": true,
     "forward_event_log": {
       "enabled": false,
       "exclude_meta_data": false,

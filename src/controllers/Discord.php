@@ -19,9 +19,10 @@ class Discord extends Controller {
     $model->discord_url = 'https://discord.gg/';
     $model->discord_url .= Common::$config->discord->invite_code;
     $model->discord_server_id = Common::$config->discord->server_id;
+    $model->enabled = Common::$config->discord->enabled;
 
     $view->render($model);
-    $model->_responseCode = 200;
+    $model->_responseCode = ($model->enabled ? 200 : 503);
     return $model;
   }
 }
