@@ -1,4 +1,7 @@
 {
+  "analytics": {
+    "cloudflare": null,
+  },
   "bnetdocs": {
     "asset_versioning": true,
     "campaigns": {
