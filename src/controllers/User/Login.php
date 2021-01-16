@@ -82,6 +82,11 @@ class Login extends Controller {
     if ($model->error) return;
     $model->error = false;
 
+    // Upgrade old password (we checked it matches earlier above)
+    if (substr($user->getPasswordHash(), 0, 1) !== '$') {
+      $user->changePassword($password);
+    }
+
     Authentication::login( $user );
 
     Logger::logEvent(
