@@ -159,33 +159,29 @@ class User implements JsonSerializable {
   }
 
   public function changePassword($new_password) {
-    $password_hash = null; $password_salt = null;
-    self::createPassword($new_password, $password_hash, $password_salt);
+    $password_hash = self::createPassword($new_password);
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
     $successful = false;
     try {
-      $stmt = Common::$database->prepare("
+      $stmt = Common::$database->prepare('
         UPDATE `users` SET
-          `password_hash` = :password_hash,
-          `password_salt` = :password_salt
+          `password_hash` = :password_hash, `password_salt` = NULL
         WHERE `id` = :user_id;
-      ");
+      ');
       $stmt->bindParam(":user_id", $this->id, PDO::PARAM_INT);
       $stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);
-      $stmt->bindParam(":password_salt", $password_salt, PDO::PARAM_STR);
       $successful = $stmt->execute();
       $stmt->closeCursor();
       if ($successful) {
         $this->password_hash = (string) $password_hash;
-        $this->password_salt = (string) $password_salt;
         $key = "bnetdocs-user-" . $this->id;
         $obj = Common::$cache->get($key);
         if ($obj !== false) {
           $obj = unserialize($obj);
           $obj->password_hash = $this->password_hash;
-          $obj->password_salt = $this->password_salt;
+          $obj->password_salt = null;
           $obj = serialize($obj);
           Common::$cache->set($key, $obj, 300);
         }
@@ -229,13 +225,31 @@ class User implements JsonSerializable {
   }
 
   public function checkPassword($password) {
-    if (is_null($this->password_hash)
-      || is_null($this->password_salt))
+    if (is_null($this->password_hash)) {
+      // no password set
       return false;
-    $pepper = Common::$config->bnetdocs->user_password_pepper;
-    $salt   = $this->password_salt;
-    $hash   = strtoupper(hash("sha256", $password.$salt.$pepper));
-    return ($hash === strtoupper($this->password_hash));
+    }
+
+    if (substr($this->password_hash, 0, 1) == '$') {
+      // new style bcrypt password
+
+      $cost = Common::$config->bnetdocs->user_password_bcrypt_cost;
+      $match = password_verify($password, $this->password_hash);
+      $rehash = password_needs_rehash(
+        $this->password_hash, PASSWORD_BCRYPT, array('cost' => $cost)
+      );
+
+      return ($match && !$rehash); // will deny if not match or needs rehash
+
+    } else {
+      // old style sha256 password
+
+      $pepper = Common::$config->bnetdocs->user_password_pepper;
+      $salt = $this->password_salt;
+      $hash = strtoupper(hash('sha256', $password.$salt.$pepper));
+
+      return ($hash === strtoupper($this->password_hash));
+    }
   }
 
   public static function create(
@@ -244,8 +258,7 @@ class User implements JsonSerializable {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $password_hash = null; $password_salt = null;
-    self::createPassword($password, $password_hash, $password_salt);
+    $password_hash = self::createPassword($password);
     $successful = false;
     try {
       $stmt = Common::$database->prepare("
@@ -255,15 +268,13 @@ class User implements JsonSerializable {
           `options_bitmask`, `timezone`
         ) VALUES (
           NULL, :email, :username, :display_name, NOW(),
-          NULL, :password_hash, :password_salt,
-          :options_bitmask, NULL
+          NULL, :password_hash, NULL, :options_bitmask, NULL
         );
       ");
       $stmt->bindParam(":email", $email, PDO::PARAM_STR);
       $stmt->bindParam(":username", $username, PDO::PARAM_STR);
       $stmt->bindParam(":display_name", $display_name, PDO::PARAM_STR);
       $stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);
-      $stmt->bindParam(":password_salt", $password_salt, PDO::PARAM_STR);
       $stmt->bindParam(":options_bitmask", $options_bitmask, PDO::PARAM_INT);
       $successful = $stmt->execute();
       $stmt->closeCursor();
@@ -276,15 +287,9 @@ class User implements JsonSerializable {
     }
   }
 
-  public static function createPassword($password, &$hash, &$salt) {
-    $pepper = Common::$config->bnetdocs->user_password_pepper;
-
-    $gmp  = gmp_init(time());
-    $gmp  = gmp_mul($gmp, mt_rand());
-    $gmp  = gmp_mul($gmp, gmp_random_bits(64));
-    $salt = strtoupper(gmp_strval($gmp, 36));
-
-    $hash = strtoupper(hash("sha256", $password.$salt.$pepper));
+  public static function createPassword($password) {
+    $cost = Common::$config->bnetdocs->user_password_bcrypt_cost;
+    return password_hash($password, PASSWORD_BCRYPT, array('cost' => $cost));
   }
 
   public static function findIdByEmail($email) {

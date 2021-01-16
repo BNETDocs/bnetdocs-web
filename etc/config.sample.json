@@ -42,6 +42,7 @@
         "reason": "This password is too simple and well known."
       }
     ],
+    "user_password_bcrypt_cost": 12,
     "user_password_pepper": "bnetdocs-INSERTRANDOMVALUEHERE",
     "user_register_disabled": false,
     "user_register_requirements": {
