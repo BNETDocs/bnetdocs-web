@@ -92,6 +92,7 @@ class Register extends Controller {
     $usernamelen = strlen($username);
     $req = &Common::$config->bnetdocs->user_register_requirements;
     $email_denylist = &Common::$config->email->recipient_denylist_regexp;
+    $countrycode_denylist = &$req->geoip_countrycode_denylist;
     if ($req->email_validate_quick
       && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
       $model->error = 'INVALID_EMAIL';
@@ -139,6 +140,16 @@ class Register extends Controller {
         $model->error = 'PASSWORD_BLACKLIST';
         $model->error_extra = $blacklist_pw->reason;
         return;
+      }
+    }
+    if (function_exists('geoip_country_code_by_name')) {
+      $their_country = geoip_country_code_by_name(getenv('REMOTE_ADDR'));
+      foreach ($countrycode_denylist as $bad_country => $reason) {
+        if (strtoupper($their_country) == strtoupper($bad_country)) {
+          $model->error = 'COUNTRY_DENIED';
+          $model->error_extra = $reason;
+          return;
+        }
       }
     }
     if (Common::$config->bnetdocs->user_register_disabled) {

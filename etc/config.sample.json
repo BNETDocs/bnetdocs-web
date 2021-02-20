@@ -48,6 +48,11 @@
     "user_register_requirements": {
       "email_enable_denylist": true,
       "email_validate_quick": true,
+      "geoip_countrycode_denylist": {
+        "CN": "China is banned from this site for spamming and registering fake accounts",
+        "RU": "Russia is banned from this site for spamming and registering fake accounts",
+        "UA": "Ukraine is banned from this site for association with Russia and spamming and registering fake accounts"
+      },
       "password_allow_email": false,
       "password_allow_username": false,
       "password_length_max": null,
@@ -74,6 +79,9 @@
   },
   "email": {
     "recipient_denylist_regexp": [
+      "/@.+\\\\.cn$/i",
+      "/@.+\\\\.ru$/i",
+      "/@.+\\\\.ua$/i",
       "/@mailinator\\.com$/i"
     ],
     "recipient_from": [

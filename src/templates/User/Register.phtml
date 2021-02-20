@@ -70,6 +70,11 @@ switch ($this->getContext()->error) {
     $message = $this->getContext()->error_extra;
     if (empty($message)) $message = "The password is blacklisted.";
     break;
+  case "COUNTRY_DENIED":
+    $af      = null;
+    $message = $this->getContext()->error_extra;
+    if (empty($message)) $message = "Your country is blacklisted.";
+    break;
   case "REGISTER_DISABLED":
     $af      = null;
     $message = "Creating accounts has been administratively disabled "
