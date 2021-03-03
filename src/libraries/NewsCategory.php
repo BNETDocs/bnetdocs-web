@@ -42,16 +42,6 @@ class NewsCategory {
   }
 
   public static function getAll() {
-    $cache_key = "bnetdocs-newscategories";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false && !empty($cache_val)) {
-      $ids     = explode(",", $cache_val);
-      $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
-      }
-      return $objects;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -68,17 +58,11 @@ class NewsCategory {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh news categories");
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          "bnetdocs-newscategory-" . $row->id, serialize($row), 300
-        );
       }
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(",", $ids), 300);
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh news categories", $e);
@@ -112,15 +96,6 @@ class NewsCategory {
   }
 
   public function refresh() {
-    $cache_key = "bnetdocs-newscategory-" . $this->id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      $this->filename = $cache_val->filename;
-      $this->label    = $cache_val->label;
-      $this->sort_id  = $cache_val->sort_id;
-      return true;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -147,7 +122,6 @@ class NewsCategory {
       $this->filename = $row->filename;
       $this->label    = $row->label;
       $this->sort_id  = $row->sort_id;
-      Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh news category", $e);
