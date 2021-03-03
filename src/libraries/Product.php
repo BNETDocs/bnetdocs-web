@@ -44,16 +44,6 @@ class Product {
   }
 
   public static function getAllProducts() {
-    $cache_key = "bnetdocs-products";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false && !empty($cache_val)) {
-      $ids     = explode(",", $cache_val);
-      $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
-      }
-      return $objects;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -72,17 +62,11 @@ class Product {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh products");
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->bnet_product_id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          "bnetdocs-product-" . $row->bnet_product_id, serialize($row), 300
-        );
       }
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(",", $ids), 300);
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh products", $e);
@@ -136,18 +120,6 @@ class Product {
   }
 
   public function refresh() {
-    $cache_key = "bnetdocs-product-" . $this->bnet_product_id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      $this->bnet_product_id  = $cache_val->bnet_product_id;
-      $this->bnet_product_raw = $cache_val->bnet_product_raw;
-      $this->bnls_product_id  = $cache_val->bnls_product_id;
-      $this->label            = $cache_val->label;
-      $this->sort             = $cache_val->sort;
-      $this->version_byte     = $cache_val->version_byte;
-      return true;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -179,7 +151,6 @@ class Product {
       $this->label            = $row->label;
       $this->sort             = $row->sort;
       $this->version_byte     = $row->version_byte;
-      Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh product", $e);
