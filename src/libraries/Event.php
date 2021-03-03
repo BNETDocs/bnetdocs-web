@@ -55,26 +55,6 @@ class Event {
       $limit_clause = 'LIMIT ' . (int) $index . ',' . (int) $limit;
     }
 
-    if (empty($limit_clause)) {
-
-      $cache_key = 'bnetdocs-events-' . hash( 'md5', $where_clause );
-      $cache_val = Common::$cache->get( $cache_key );
-
-      if ( $cache_val !== false && !empty( $cache_val ) ) {
-
-        $ids     = explode( ',', $cache_val );
-        $objects = [];
-
-        foreach ( $ids as $id ) {
-          $objects[] = new self($id);
-        }
-
-        return $objects;
-
-      }
-
-    }
-
     if ( !isset(Common::$database) ) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -99,23 +79,12 @@ class Event {
         throw new QueryException( 'Cannot refresh all events' );
       }
 
-      $ids     = [];
       $objects = [];
-
       while ( $row = $stmt->fetch( PDO::FETCH_OBJ ) ) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self( $row );
-        Common::$cache->set(
-          'bnetdocs-event-' . $row->id, serialize( $row ), 300
-        );
       }
 
       $stmt->closeCursor();
-
-      if ( empty( $limit_clause ) ) {
-        Common::$cache->set( $cache_key, implode( ',', $ids ), 300 );
-      }
-
       return $objects;
 
     } catch ( PDOException $e ) {
@@ -235,14 +204,6 @@ class Event {
 
   public function refresh() {
 
-    $cache_key = 'bnetdocs-event-' . $this->id;
-    $cache_val = Common::$cache->get( $cache_key );
-
-    if ( $cache_val !== false ) {
-      $cache_val = unserialize( $cache_val );
-      return self::normalize( $cache_val , $this );
-    }
-
     if ( !isset( Common::$database ) ) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -272,18 +233,13 @@ class Event {
       $stmt->closeCursor();
       self::normalize( $row, $this );
 
-      Common::$cache->set( $cache_key, serialize( $row ), 300 );
-
       return true;
 
     } catch ( PDOException $e ) {
-
       throw new QueryException( 'Cannot refresh event', $e );
-
     }
 
     return false;
-
   }
 
 }
