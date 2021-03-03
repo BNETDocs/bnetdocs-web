@@ -98,16 +98,6 @@
     "smtp_tls": false,
     "smtp_user": ""
   },
-  "memcache": {
-    "connect_timeout": 1.0,
-    "tcp_nodelay": true,
-    "servers": [
-      {
-        "hostname": "localhost",
-        "port": 11211
-      }
-    ]
-  },
   "mysql": {
     "character_set": "utf8",
     "database": "bnetdocs_phoenix",

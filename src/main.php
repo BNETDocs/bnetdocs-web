@@ -24,7 +24,6 @@ use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\BlizzardChecker;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\VersionInfo;
-use \CarlBennett\MVC\Libraries\Cache;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\GlobalErrorHandler;
@@ -53,12 +52,6 @@ function main() {
   // Monitoring (APM) purposes. This must also come after assignment of
   // Common::$config because we may need access tokens from the config.
   Logger::initialize();
-
-  Common::$cache = new Cache(
-    Common::$config->memcache->servers,
-    Common::$config->memcache->connect_timeout,
-    Common::$config->memcache->tcp_nodelay
-  );
 
   Common::$database = null;
 
