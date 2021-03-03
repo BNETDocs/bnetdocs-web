@@ -10,13 +10,7 @@ use \PDOException;
 
 class Credits {
 
-  public static function &getTotalUsers($no_cache = false) {
-    $cache_key = "bnetdocs-credits-totalusers";
-    $cache_val = Common::$cache->get($cache_key);
-    if (!$no_cache && $cache_val !== false) {
-      $cache_val = (int) $cache_val;
-      return $cache_val;
-    }
+  public static function &getTotalUsers() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -26,18 +20,10 @@ class Credits {
     $stmt->execute();
     $obj = $stmt->fetch(PDO::FETCH_OBJ);
     $stmt->closeCursor();
-    $sum = (int) $obj->sum;
-    Common::$cache->set($cache_key, $sum, 300);
-    return $sum;
+    return (int) $obj->sum;
   }
 
   public function &getTopContributorsByDocuments() {
-    $cache_key = "bnetdocs-credits-documents";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      return $cache_val;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -66,17 +52,10 @@ class Credits {
       $result->attach($obj);
     }
     $stmt->closeCursor();
-    Common::$cache->set($cache_key, serialize($result), 300);
     return $result;
   }
 
   public function &getTopContributorsByNewsPosts() {
-    $cache_key = "bnetdocs-credits-newsposts";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      return $cache_val;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -105,17 +84,10 @@ class Credits {
       $result->attach($obj);
     }
     $stmt->closeCursor();
-    Common::$cache->set($cache_key, serialize($result), 300);
     return $result;
   }
 
   public function &getTopContributorsByPackets() {
-    $cache_key = "bnetdocs-credits-packets";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      return $cache_val;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -144,17 +116,10 @@ class Credits {
       $result->attach($obj);
     }
     $stmt->closeCursor();
-    Common::$cache->set($cache_key, serialize($result), 300);
     return $result;
   }
 
   public function &getTopContributorsByServers() {
-    $cache_key = "bnetdocs-credits-servers";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      return $cache_val;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -183,17 +148,10 @@ class Credits {
       $result->attach($obj);
     }
     $stmt->closeCursor();
-    Common::$cache->set($cache_key, serialize($result), 300);
     return $result;
   }
 
   public static function getTotalDocumentsByUserId($user_id) {
-    $cache_key = "bnetdocs-credits-documentsbyuserid-" . (int) $user_id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = (int) $cache_val;
-      return $cache_val;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -204,17 +162,10 @@ class Credits {
     $stmt->execute();
     $obj = $stmt->fetch(PDO::FETCH_OBJ);
     $stmt->closeCursor();
-    Common::$cache->set($cache_key, $obj->sum, 300);
     return (int) $obj->sum;
   }
 
   public static function getTotalNewsPostsByUserId($user_id) {
-    $cache_key = "bnetdocs-credits-newspostsbyuserid-" . (int) $user_id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = (int) $cache_val;
-      return $cache_val;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -225,17 +176,10 @@ class Credits {
     $stmt->execute();
     $obj = $stmt->fetch(PDO::FETCH_OBJ);
     $stmt->closeCursor();
-    Common::$cache->set($cache_key, $obj->sum, 300);
     return (int) $obj->sum;
   }
 
   public static function getTotalPacketsByUserId($user_id) {
-    $cache_key = "bnetdocs-credits-packetsbyuserid-" . (int) $user_id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = (int) $cache_val;
-      return $cache_val;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -246,17 +190,10 @@ class Credits {
     $stmt->execute();
     $obj = $stmt->fetch(PDO::FETCH_OBJ);
     $stmt->closeCursor();
-    Common::$cache->set($cache_key, $obj->sum, 300);
     return (int) $obj->sum;
   }
 
   public static function getTotalServersByUserId($user_id) {
-    $cache_key = "bnetdocs-credits-serversbyuserid-" . (int) $user_id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = (int) $cache_val;
-      return $cache_val;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -267,7 +204,6 @@ class Credits {
     $stmt->execute();
     $obj = $stmt->fetch(PDO::FETCH_OBJ);
     $stmt->closeCursor();
-    Common::$cache->set($cache_key, $obj->sum, 300);
     return (int) $obj->sum;
   }
 

@@ -282,7 +282,6 @@ class User implements JsonSerializable {
     } catch (PDOException $e) {
       throw new QueryException("Cannot create user", $e);
     } finally {
-      Credits::getTotalUsers(true); // Refresh statistics
       return $successful;
     }
   }
