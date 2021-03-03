@@ -10,7 +10,7 @@ use \PDOException;
 
 class Credits {
 
-  public static function &getTotalUsers() {
+  public static function getTotalUsers() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -23,7 +23,7 @@ class Credits {
     return (int) $obj->sum;
   }
 
-  public function &getTopContributorsByDocuments() {
+  public function getTopContributorsByDocuments() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -55,7 +55,7 @@ class Credits {
     return $result;
   }
 
-  public function &getTopContributorsByNewsPosts() {
+  public function getTopContributorsByNewsPosts() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -87,7 +87,7 @@ class Credits {
     return $result;
   }
 
-  public function &getTopContributorsByPackets() {
+  public function getTopContributorsByPackets() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -119,7 +119,7 @@ class Credits {
     return $result;
   }
 
-  public function &getTopContributorsByServers() {
+  public function getTopContributorsByServers() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
