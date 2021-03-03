@@ -18,12 +18,6 @@ switch ($this->getContext()->error) {
     $af      = null;
     $message = "You are already logged in, you must log out first.";
     break;
-  case "INVALID_CSRF":
-    $af      = null;
-    $message = "The Cross-Site Request Forgery token was invalid. "
-      . "Either the account creation form expired, or "
-      . "this may have been a malicious attempt to create an account.";
-    break;
   case "INVALID_CAPTCHA":
     $af      = "";
     $message = "The captcha code did not successfully verify, try again.";
@@ -118,8 +112,6 @@ require("./header.inc.phtml");
         </section>
 <?php } ?>
         <form method="POST" action="?">
-          <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
-          <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
           <section>
             <table><tbody><tr>
               <td>

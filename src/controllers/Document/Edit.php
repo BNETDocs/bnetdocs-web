@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
@@ -26,8 +25,6 @@ class Edit extends Controller {
     $data                = $router->getRequestQueryArray();
     $model               = new DocumentEditModel();
     $model->content      = null;
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->document     = null;
     $model->document_id  = (isset($data['id']) ? $data['id'] : null);
     $model->error        = null;
@@ -74,9 +71,6 @@ class Edit extends Controller {
     }
 
     $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
     $category   = (isset($data['category'  ]) ? $data['category'  ] : null);
     $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
     $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
@@ -88,12 +82,6 @@ class Edit extends Controller {
     $model->title    = $title;
     $model->markdown = $markdown;
     $model->content  = $content;
-
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
 
     if (empty($title)) {
       $model->error = 'EMPTY_TITLE';

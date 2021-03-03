@@ -18,11 +18,6 @@ switch ($this->getContext()->error) {
   case "NOT_FOUND":
     $message = "Cannot find news post by that id.";
     break;
-  case "INVALID_CSRF":
-    $message = "The Cross-Site Request Forgery token was invalid. "
-      . "Either the edit news post form expired, or "
-      . "this may have been a malicious attempt to create a news post.";
-    break;
   case "EMPTY_TITLE":
     $message = "The title of the news post is required.";
     break;
@@ -49,12 +44,6 @@ require("./header.inc.phtml");
 <?php if ($this->getContext()->error != "NOT_FOUND") { ?>
         <form method="POST" action="?id=<?php echo
             htmlspecialchars($this->getContext()->news_post_id, ENT_HTML5, "UTF-8"); ?>">
-          <input type="hidden" name="csrf_id" value="<?php echo
-            htmlspecialchars($this->getContext()->csrf_id, ENT_HTML5, "UTF-8");
-          ?>"/>
-          <input type="hidden" name="csrf_token" value="<?php echo
-            htmlspecialchars($this->getContext()->csrf_token, ENT_HTML5, "UTF-8");
-          ?>"/>
           <section>
             <label for="category">Category:</label><br/>
             <select name="category" id="category" tabindex="1" required

@@ -7,8 +7,6 @@ use \CarlBennett\MVC\Libraries\Model;
 class Edit extends Model {
 
   public $acl_allowed;
-  public $csrf_id;
-  public $csrf_token;
   public $error;
   public $format;
   public $id;

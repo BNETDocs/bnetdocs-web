@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Comment;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
@@ -30,14 +29,8 @@ class Edit extends Controller {
     $post_data = $router->getRequestBodyArray();
 
     $model = new CommentEditModel();
-
-    $model->csrf_id     = mt_rand();
-    $model->csrf_token  = CSRF::generate( $model->csrf_id );
-    $model->user        = Authentication::$user;
-
-    $model->id          = (
-      isset( $query_data[ 'id' ]) ? $query_data[ 'id' ] : null
-    );
+    $model->user = Authentication::$user;
+    $model->id = (isset( $query_data[ 'id' ]) ? $query_data[ 'id' ] : null);
     $model->content = (
       isset( $post_data[ 'content' ]) ? $post_data[ 'content' ] : null
     );
@@ -99,23 +92,6 @@ class Edit extends Controller {
       $model->error = 'ACL_NOT_SET';
       return;
     }
-
-    $post_data = $router->getRequestBodyArray();
-
-    $csrf_id = (
-      isset( $post_data[ 'csrf_id' ]) ? $post_data[ 'csrf_id' ] : null
-    );
-    $csrf_token = (
-      isset( $post_data[ 'csrf_token' ]) ? $post_data[ 'csrf_token' ] : null
-    );
-    $csrf_valid = CSRF::validate( $csrf_id, $csrf_token );
-
-    if ( !$csrf_valid ) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-
-    CSRF::invalidate( $csrf_id );
 
     $model->error = false;
 

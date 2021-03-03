@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\RecaptchaException;
@@ -29,8 +28,6 @@ class Register extends Controller {
     $conf = &Common::$config; // local variable for accessing config.
 
     $model               = new UserRegisterModel();
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->error        = null;
     $model->recaptcha    = new Recaptcha(
       $conf->recaptcha->secret,
@@ -58,14 +55,6 @@ class Register extends Controller {
       $model->error = 'ALREADY_LOGGED_IN';
       return;
     }
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
     $email    = $model->email;
     $username = $model->username;
     $pw1      = (isset($data['pw1']) ? $data['pw1'] : null);

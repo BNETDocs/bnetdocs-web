@@ -8,11 +8,6 @@ $description = "This form allows an individual to log in to their account on BNE
 $this->opengraph->attach(new Pair("url", "/user/login"));
 
 switch ($this->getContext()->error) {
-  case "INVALID_CSRF":
-    $message = "The Cross-Site Request Forgery token was invalid. "
-      . "Either the log in form expired, or "
-      . "this may have been a malicious attempt to log you in.";
-    break;
   case "ALREADY_LOGGED_IN":
     $message = "You are already logged in, you must log out first.";
     break;
@@ -49,8 +44,6 @@ require("./header.inc.phtml");
         </section>
 <?php } ?>
         <form method="POST" action="?">
-          <input type="hidden" name="csrf_id" value="<?=filter_var($this->getContext()->csrf_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-          <input type="hidden" name="csrf_token" value="<?=filter_var($this->getContext()->csrf_token, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
           <section>
             <table>
               <thead></thead>

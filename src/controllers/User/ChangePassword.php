@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
@@ -16,10 +15,8 @@ use \CarlBennett\MVC\Libraries\View;
 
 class ChangePassword extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
-    $model               = new UserChangePasswordModel();
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id);
-    $model->error        = null;
+    $model = new UserChangePasswordModel();
+    $model->error = null;
 
     if ($router->getRequestMethod() == 'POST') {
       $this->tryChangePassword($router, $model);
@@ -37,15 +34,7 @@ class ChangePassword extends Controller {
       $model->error = 'NOT_LOGGED_IN';
       return;
     }
-    $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
+    $data = $router->getRequestBodyArray();
     $pw1 = (isset($data['pw1']) ? $data['pw1'] : null);
     $pw2 = (isset($data['pw2']) ? $data['pw2'] : null);
     $pw3 = (isset($data['pw3']) ? $data['pw3'] : null);

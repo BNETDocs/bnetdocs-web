@@ -20,11 +20,6 @@ switch ($this->getContext()->error) {
   case "NOT_LOGGED_IN":
     $message = "You must be logged in to delete comments.";
     break;
-  case "INVALID_CSRF":
-    $message = "The Cross-Site Request Forgery token was invalid. Either the "
-      . "delete comment form expired, or this may have been a malicious "
-      . "attempt to delete a comment.";
-    break;
   case "INTERNAL_ERROR":
     $message = "An internal error occurred while processing your request. "
       . "Our staff have been notified of the issue. Try again later.";
@@ -51,8 +46,6 @@ require("./header.inc.phtml");
 <?php if (is_null($this->getContext()->error)) { ?>
         <header>Delete Comment</header>
         <form method="POST" action="?id=<?php echo $this->getContext()->id; ?>">
-          <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
-          <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
           <section>
             <p>Are you sure you wish to delete this comment?</p>
             <hr/><table class="comments"><tbody>

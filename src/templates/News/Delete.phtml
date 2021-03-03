@@ -20,11 +20,6 @@ switch ($this->getContext()->error) {
   case "NOT_LOGGED_IN":
     $message = "You must be logged in to delete news posts.";
     break;
-  case "INVALID_CSRF":
-    $message = "The Cross-Site Request Forgery token was invalid. "
-      . "Either the delete news post form expired, or "
-      . "this may have been a malicious attempt to delete a news post.";
-    break;
   case "INTERNAL_ERROR":
     $message = "An internal error occurred while processing your request. "
       . "Our staff have been notified of the issue. Try again later.";
@@ -41,8 +36,6 @@ require("./header.inc.phtml");
         <header>Delete News Post</header>
         <form method="POST" action="?id=<?php echo
             htmlspecialchars($this->getContext()->id, ENT_HTML5, "UTF-8"); ?>">
-          <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
-          <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
           <section>
             <p>Are you sure you wish to delete this news post?</p>
             <p><input type="text" readonly="readonly" value="<?php echo filter_var($this->getContext()->title, FILTER_SANITIZE_STRING); ?>" tabindex="1"/></p>

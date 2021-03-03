@@ -21,11 +21,6 @@ switch ($this->getContext()->error) {
   case "NOT_LOGGED_IN":
     $message = "You must be logged in to edit comments.";
     break;
-  case "INVALID_CSRF":
-    $message = "The Cross-Site Request Forgery token was invalid. Either the "
-      . "edit comment form expired, or this may have been a malicious "
-      . "attempt to edit a comment.";
-    break;
   case "INTERNAL_ERROR":
     $message = "An internal error occurred while processing your request. "
       . "Our staff have been notified of the issue. Try again later.";
@@ -52,8 +47,6 @@ require("./header.inc.phtml");
 <?php if (is_null($this->getContext()->error) && !is_null($c)) { ?>
         <header>Edit Comment</header>
         <form method="POST" action="<?php echo Common::relativeUrlToAbsolute( '/comment/edit?id=' . $c_id ); ?>">
-          <input type="hidden" name="csrf_id" value="<?php echo $this->getContext()->csrf_id; ?>"/>
-          <input type="hidden" name="csrf_token" value="<?php echo $this->getContext()->csrf_token; ?>"/>
           <section>
             <table class="comments"><tbody>
               <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><textarea id="comment-content" name="content" cols="80" rows="5" tabindex="1" autofocus="autofocus"><?php echo filter_var( $c->getContent( false ), FILTER_SANITIZE_FULL_SPECIAL_CHARS ); ?></textarea></td></tr>

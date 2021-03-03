@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Comment;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
@@ -24,8 +23,6 @@ class Delete extends Controller {
     $data                = $router->getRequestQueryArray();
     $model               = new CommentDeleteModel();
     $model->comment      = null;
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->error        = null;
     $model->id           = (isset($data['id']) ? $data['id'] : null);
     $model->parent_id    = null;
@@ -68,19 +65,7 @@ class Delete extends Controller {
       return;
     }
 
-    $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
-
     $model->error = false;
-
     $id           = (int) $model->id;
     $parent_type  = (int) $model->parent_type;
     $parent_id    = (int) $model->parent_id;

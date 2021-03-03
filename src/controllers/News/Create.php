@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
@@ -21,8 +20,6 @@ use \CarlBennett\MVC\Libraries\View;
 class Create extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $model                  = new NewsCreateModel();
-    $model->csrf_id         = mt_rand();
-    $model->csrf_token      = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->error           = null;
     $model->news_categories = null;
     $model->user            = Authentication::$user;
@@ -60,9 +57,6 @@ class Create extends Controller {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
     $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
     $category   = (isset($data['category'  ]) ? $data['category'  ] : null);
     $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
     $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
@@ -76,12 +70,6 @@ class Create extends Controller {
     $model->markdown   = $markdown;
     $model->content    = $content;
     $model->rss_exempt = $rss_exempt;
-
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
 
     if (empty($title)) {
       $model->error = 'EMPTY_TITLE';

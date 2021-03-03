@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Logger;
@@ -26,8 +25,6 @@ class Edit extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $data              = $router->getRequestQueryArray();
     $model             = new PacketEditModel();
-    $model->csrf_id    = mt_rand();
-    $model->csrf_token = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->deprecated = null;
     $model->error      = null;
     $model->format     = null;
@@ -84,9 +81,6 @@ class Edit extends Controller {
     }
 
     $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
     $id         = (isset($data['id'        ]) ? $data['id'        ] : null);
     $name       = (isset($data['name'      ]) ? $data['name'      ] : null);
     $format     = (isset($data['format'    ]) ? $data['format'    ] : null);
@@ -107,12 +101,6 @@ class Edit extends Controller {
     $model->deprecated = $deprecated;
     $model->research   = $research;
     $model->published  = $published;
-
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
 
     if (empty($name)) {
       $model->error = 'EMPTY_NAME';

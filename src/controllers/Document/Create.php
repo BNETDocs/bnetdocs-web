@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
@@ -19,8 +18,6 @@ use \CarlBennett\MVC\Libraries\View;
 class Create extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $model               = new DocumentCreateModel();
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id, 7200); // 2 hours
     $model->error        = null;
     $model->user         = Authentication::$user;
 
@@ -48,9 +45,6 @@ class Create extends Controller {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
     $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
     $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
     $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
     $content    = (isset($data['content'   ]) ? $data['content'   ] : null);
@@ -60,12 +54,6 @@ class Create extends Controller {
     $model->title    = $title;
     $model->markdown = $markdown;
     $model->content  = $content;
-
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
 
     if (empty($title)) {
       $model->error = 'EMPTY_TITLE';

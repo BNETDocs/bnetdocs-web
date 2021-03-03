@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
@@ -19,10 +18,7 @@ use \CarlBennett\MVC\Libraries\View;
 class Login extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $model = new UserLoginModel();
-
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id);
-    $model->error        = null;
+    $model->error = null;
 
     if ($router->getRequestMethod() == 'POST') {
       $this->tryLogin($router, $model);
@@ -38,20 +34,11 @@ class Login extends Controller {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    $email      = (isset($data['email'     ]) ? $data['email'     ] : null);
-    $password   = (isset($data['password'  ]) ? $data['password'  ] : null);
+    $data = $router->getRequestBodyArray();
+    $email = (isset($data['email'     ]) ? $data['email'     ] : null);
+    $password = (isset($data['password'  ]) ? $data['password'  ] : null);
 
     $model->email = $email;
-
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
 
     if ( isset( Authentication::$user )) {
       $model->error = 'ALREADY_LOGGED_IN';

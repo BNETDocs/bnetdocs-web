@@ -8,7 +8,6 @@ use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
 
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
@@ -38,8 +37,6 @@ class ResetPassword extends Controller {
     $model = new UserResetPasswordModel();
 
     $model->error = null;
-    $model->csrf_id = mt_rand();
-    $model->csrf_token = CSRF::generate( $model->csrf_id );
     $model->email = isset( $data[ 'email' ]) ? $data[ 'email' ] : null;
     $model->pw1 = isset( $data[ 'pw1' ]) ? $data[ 'pw1' ] : null;
     $model->pw2 = isset( $data[ 'pw2' ]) ? $data[ 'pw2' ] : null;
@@ -69,18 +66,6 @@ class ResetPassword extends Controller {
 
   protected function doPasswordReset( UserResetPasswordModel &$model, &$data ) {
     $model->error = 'INTERNAL_ERROR';
-
-    $csrf_id = isset( $data[ 'csrf_id' ]) ? $data[ 'csrf_id' ] : null;
-    $csrf_token = (
-      isset( $data[ 'csrf_token' ]) ? $data[ 'csrf_token' ] : null
-    );
-    $csrf_valid = CSRF::validate( $csrf_id, $csrf_token );
-
-    if ( !$csrf_valid ) {
-      $model->error = 'INVALID_CSRF';
-      return self::RET_FAILURE;
-    }
-    CSRF::invalidate( $csrf_id );
 
     if ( empty( $model->email )) {
       $model->error = 'EMPTY_EMAIL';

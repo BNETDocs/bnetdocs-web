@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Logger;
@@ -22,8 +21,6 @@ class Delete extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $data                = $router->getRequestQueryArray();
     $model               = new NewsDeleteModel();
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id);
     $model->error        = null;
     $model->id           = (isset($data['id']) ? $data['id'] : null);
     $model->news_post    = null;
@@ -58,17 +55,6 @@ class Delete extends Controller {
       $model->error = 'NOT_LOGGED_IN';
       return;
     }
-
-    $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
 
     if (!$model->acl_allowed) {
       $model->error = 'ACL_NOT_SET';

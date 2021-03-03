@@ -8,8 +8,6 @@ class Delete extends Model {
 
   public $acl_allowed;
   public $comment;
-  public $csrf_id;
-  public $csrf_token;
   public $error;
   public $id;
   public $parent_id;

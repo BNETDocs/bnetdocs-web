@@ -3,7 +3,6 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\CSRF;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Models\User\Logout as UserLogoutModel;
@@ -15,10 +14,8 @@ use \CarlBennett\MVC\Libraries\View;
 
 class Logout extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
-    $model               = new UserLogoutModel();
-    $model->csrf_id      = mt_rand();
-    $model->csrf_token   = CSRF::generate($model->csrf_id);
-    $model->error        = null;
+    $model = new UserLogoutModel();
+    $model->error = null;
 
     if ($router->getRequestMethod() == 'POST') {
       $this->tryLogout($router, $model);
@@ -34,15 +31,7 @@ class Logout extends Controller {
       $model->error = 'NOT_LOGGED_IN';
       return;
     }
-    $data       = $router->getRequestBodyArray();
-    $csrf_id    = (isset($data['csrf_id'   ]) ? $data['csrf_id'   ] : null);
-    $csrf_token = (isset($data['csrf_token']) ? $data['csrf_token'] : null);
-    $csrf_valid = CSRF::validate($csrf_id, $csrf_token);
-    if (!$csrf_valid) {
-      $model->error = 'INVALID_CSRF';
-      return;
-    }
-    CSRF::invalidate($csrf_id);
+    $data = $router->getRequestBodyArray();
     $model->error = false;
     $user_id = Authentication::$user->getId();
     Authentication::logout();
