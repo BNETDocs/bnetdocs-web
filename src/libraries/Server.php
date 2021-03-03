@@ -66,16 +66,6 @@ class Server implements JsonSerializable {
   }
 
   public static function getAllServers() {
-    $cache_key = "bnetdocs-servers";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false && !empty($cache_val)) {
-      $ids     = explode(",", $cache_val);
-      $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
-      }
-      return $objects;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -102,17 +92,11 @@ class Server implements JsonSerializable {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh servers");
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          "bnetdocs-server-" . $row->id, serialize($row), 300
-        );
       }
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(",", $ids), 300);
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh servers", $e);
@@ -174,14 +158,9 @@ class Server implements JsonSerializable {
       if (!$stmt->execute()) {
         throw new QueryException('Cannot query servers by user id');
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          'bnetdocs-server-' . $row->id, serialize($row), 300
-        );
       }
       $stmt->closeCursor();
       return $objects;
@@ -292,20 +271,6 @@ class Server implements JsonSerializable {
   }
 
   public function refresh() {
-    $cache_key = "bnetdocs-server-" . $this->id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      $this->address          = $cache_val->address;
-      $this->created_datetime = $cache_val->created_datetime;
-      $this->label            = $cache_val->label;
-      $this->port             = $cache_val->port;
-      $this->status_bitmask   = $cache_val->status_bitmask;
-      $this->type_id          = $cache_val->type_id;
-      $this->updated_datetime = $cache_val->updated_datetime;
-      $this->user_id          = $cache_val->user_id;
-      return true;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -342,7 +307,6 @@ class Server implements JsonSerializable {
       $this->type_id          = $row->type_id;
       $this->updated_datetime = $row->updated_datetime;
       $this->user_id          = $row->user_id;
-      Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh server", $e);
@@ -396,22 +360,6 @@ class Server implements JsonSerializable {
         throw new QueryException( 'Cannot save server' );
       }
       $stmt->closeCursor();
-
-      $object                   = new StdClass();
-      $object->address          = $this->address;
-      $object->created_datetime = $this->created_datetime;
-      $object->id               = $this->id;
-      $object->label            = $this->label;
-      $object->port             = $this->port;
-      $object->status_bitmask   = $this->status_bitmask;
-      $object->type_id          = $this->type_id;
-      $object->updated_datetime = $this->updated_datetime;
-      $object->user_id          = $this->user_id;
-
-      $cache_key = 'bnetdocs-server-' . $this->id;
-      Common::$cache->set( $cache_key, serialize( $object ), 300 );
-      Common::$cache->delete( 'bnetdocs-servers' );
-
       return true;
 
     } catch ( PDOException $e ) {
