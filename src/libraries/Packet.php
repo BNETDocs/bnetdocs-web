@@ -23,8 +23,6 @@ use \UnexpectedValueException;
 
 class Packet implements JsonSerializable {
 
-  const CACHE_TTL = 300;
-
   const DIRECTION_CLIENT_SERVER = 1;
   const DIRECTION_SERVER_CLIENT = 2;
   const DIRECTION_PEER_TO_PEER  = 3;
@@ -103,10 +101,6 @@ class Packet implements JsonSerializable {
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $successful = $stmt->execute();
       $stmt->closeCursor();
-      if ($successful) {
-        Common::$cache->delete("bnetdocs-packet-" . (int) $id);
-        Common::$cache->delete("bnetdocs-packets");
-      }
     } catch (PDOException $e) {
       throw new QueryException("Cannot delete packet");
     } finally {
@@ -128,28 +122,6 @@ class Packet implements JsonSerializable {
       $limit_clause = 'LIMIT ' . (int) $limit;
     } else {
       $limit_clause = 'LIMIT ' . (int) $index . ',' . (int) $limit;
-    }
-
-    if ( empty( $limit_clause )) {
-
-      $ckey = 'bnetdocs-packets-' . $where_clause
-        . hash('md5', $order[0] . $order[1])
-      ;
-      $cval = Common::$cache->get( $ckey );
-
-      if ( $cval !== false && !empty( $cval )) {
-
-        $ids     = explode(',', $cval);
-        $objects = [];
-
-        foreach ( $ids as $id ) {
-          $objects[] = new self( $id );
-        }
-
-        return $objects;
-
-      }
-
     }
 
     $order_clause =
@@ -187,50 +159,22 @@ class Packet implements JsonSerializable {
         throw new QueryException( 'Cannot refresh all packets' );
       }
 
-      $ids     = [];
       $objects = [];
-
       while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self( $row );
-
-        Common::$cache->set(
-          'bnetdocs-packet-' . $row->id, serialize( $row ), self::CACHE_TTL
-        );
       }
 
       $stmt->closeCursor();
-
-      if ( empty( $limit_clause )) {
-        Common::$cache->set( $ckey, implode( ',', $ids ), self::CACHE_TTL );
-      }
-
       return $objects;
 
     } catch ( PDOException $e ) {
-
       throw new QueryException( 'Cannot refresh packets', $e );
-
     }
 
     return null;
   }
 
   public static function getAllPacketsBySearch($query) {
-
-    $cache_key = 'bnetdocs-packetsearch-' . hash( 'md5', $query );
-    $cache_val = Common::$cache->get( $cache_key );
-
-    if ( $cache_val !== false && !empty( $cache_val )) {
-      $ids     = explode( ',', $cache_val );
-      $objects = [];
-
-      foreach ( $ids as $id ) {
-        $objects[] = new self( $id );
-      }
-
-      return $objects;
-    }
 
     if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
@@ -266,28 +210,16 @@ class Packet implements JsonSerializable {
         throw new QueryException( 'Cannot search packets' );
       }
 
-      $ids     = [];
       $objects = [];
-
       while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self( $row );
-
-        Common::$cache->set(
-          'bnetdocs-packet-' . $row->id, serialize( $row ), self::CACHE_TTL
-        );
       }
 
       $stmt->closeCursor();
-
-      Common::$cache->set( $cache_key, implode( ',', $ids ), self::CACHE_TTL );
-
       return $objects;
 
     } catch ( PDOException $e ) {
-
       throw new QueryException( 'Cannot search packets', $e );
-
     }
 
     return null;
@@ -438,23 +370,15 @@ class Packet implements JsonSerializable {
       }
 
       $packets = [];
-
       while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
         $packets[] = new self( $row );
-
-        Common::$cache->set(
-          'bnetdocs-packet-' . $row->id, serialize( $row ), self::CACHE_TTL
-        );
       }
 
       $stmt->closeCursor();
-
       return $packets;
 
     } catch ( PDOException $e ) {
-
       throw new QueryException( 'Cannot query packets by user id', $e );
-
     }
 
     return null;
@@ -510,13 +434,6 @@ class Packet implements JsonSerializable {
 
   public function getUsedBy() {
 
-    $ckey = 'bnetdocs-packetusedby-' . $this->id;
-    $cval = Common::$cache->get($ckey);
-
-    if ( $cval !== false ) {
-      return unserialize( $cval );
-    }
-
     if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -546,15 +463,10 @@ class Packet implements JsonSerializable {
       }
 
       $stmt->closeCursor();
-
-      Common::$cache->set( $ckey, serialize( $values ), self::CACHE_TTL );
-
       return $values;
 
     } catch ( PDOException $e ) {
-
       throw new QueryException( 'Cannot query packet used by', $e );
-
     }
 
     return null;
@@ -627,29 +539,6 @@ class Packet implements JsonSerializable {
 
   public function refresh() {
 
-    $ckey = 'bnetdocs-packet-' . $this->id;
-    $cval = Common::$cache->get( $ckey );
-
-    if ( $cval !== false ) {
-      $cval = unserialize( $cval );
-
-      $this->created_datetime            = $cval->created_datetime;
-      $this->edited_count                = $cval->edited_count;
-      $this->edited_datetime             = $cval->edited_datetime;
-      $this->id                          = $cval->id;
-      $this->options_bitmask             = $cval->options_bitmask;
-      $this->packet_application_layer_id = $cval->packet_application_layer_id;
-      $this->packet_direction_id         = $cval->packet_direction_id;
-      $this->packet_format               = $cval->packet_format;
-      $this->packet_id                   = $cval->packet_id;
-      $this->packet_name                 = $cval->packet_name;
-      $this->packet_remarks              = $cval->packet_remarks;
-      $this->packet_transport_layer_id   = $cval->packet_transport_layer_id;
-      $this->user_id                     = $cval->user_id;
-
-      return true;
-    }
-
     if ( !isset( Common::$database )) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -703,8 +592,6 @@ class Packet implements JsonSerializable {
       $this->packet_remarks              = $row->packet_remarks;
       $this->packet_transport_layer_id   = $row->packet_transport_layer_id;
       $this->user_id                     = $row->user_id;
-
-      Common::$cache->set( $ckey, serialize( $row ), self::CACHE_TTL );
 
       return true;
 
@@ -807,9 +694,6 @@ class Packet implements JsonSerializable {
       }
 
       Common::$database->commit();
-
-      $cache_key = 'bnetdocs-packetusedby-' . $this->id;
-      Common::$cache->set($cache_key, serialize($value), self::CACHE_TTL);
     } catch (PDOException $e) {
       Common::$database->rollBack();
       throw new QueryException('Cannot update packet used by', $e);
@@ -877,32 +761,10 @@ class Packet implements JsonSerializable {
       }
 
       $stmt->closeCursor();
-
-      $object                              = new StdClass();
-      $object->created_datetime            = $this->created_datetime;
-      $object->edited_count                = $this->edited_count;
-      $object->edited_datetime             = $this->edited_datetime;
-      $object->id                          = $this->id;
-      $object->options_bitmask             = $this->options_bitmask;
-      $object->packet_application_layer_id = $this->packet_application_layer_id;
-      $object->packet_direction_id         = $this->packet_direction_id;
-      $object->packet_format               = $this->packet_format;
-      $object->packet_id                   = $this->packet_id;
-      $object->packet_name                 = $this->packet_name;
-      $object->packet_remarks              = $this->packet_remarks;
-      $object->packet_transport_layer_id   = $this->packet_transport_layer_id;
-      $object->user_id                     = $this->user_id;
-
-      $cache_key = 'bnetdocs-packet-' . $this->id;
-      Common::$cache->set( $cache_key, serialize( $object ), self::CACHE_TTL );
-      Common::$cache->delete( 'bnetdocs-packets' );
-
       return true;
 
     } catch ( PDOException $e ) {
-
       throw new QueryException( 'Cannot update packet', $e );
-
     }
     return false;
   }

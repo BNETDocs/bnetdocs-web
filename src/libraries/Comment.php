@@ -19,8 +19,6 @@ use \StdClass;
 
 class Comment implements JsonSerializable {
 
-  const CACHE_TTL = 300;
-
   const PARENT_TYPE_DOCUMENT  = 0;
   const PARENT_TYPE_COMMENT   = 1;
   const PARENT_TYPE_NEWS_POST = 2;
