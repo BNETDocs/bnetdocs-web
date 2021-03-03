@@ -86,8 +86,6 @@ class Comment implements JsonSerializable {
     } catch (PDOException $e) {
       throw new QueryException("Cannot create comment", $e);
     } finally {
-      $ck = "bnetdocs-comment-" . $parent_type . "-" . $parent_id;
-      Common::$cache->delete($ck);
       return $successful;
     }
   }
@@ -104,12 +102,6 @@ class Comment implements JsonSerializable {
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $successful = $stmt->execute();
       $stmt->closeCursor();
-      if ($successful) {
-        Common::$cache->delete("bnetdocs-comment-" . (int) $id);
-        Common::$cache->delete(
-          "bnetdocs-comment-" . (int) $parent_type . "-" . (int) $parent_id
-        );
-      }
     } catch (PDOException $e) {
       throw new QueryException("Cannot delete comment", $e);
     } finally {
@@ -118,16 +110,6 @@ class Comment implements JsonSerializable {
   }
 
   public static function getAll($parent_type, $parent_id) {
-    $ck = "bnetdocs-comment-" . $parent_type . "-" . $parent_id;
-    $cv = Common::$cache->get($ck);
-    if ($cv !== false && !empty($cv)) {
-      $ids     = explode(",", $cv);
-      $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
-      }
-      return $objects;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -156,17 +138,11 @@ class Comment implements JsonSerializable {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh comment");
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          "bnetdocs-comment-" . $row->id, serialize($row), self::CACHE_TTL
-        );
       }
       $stmt->closeCursor();
-      Common::$cache->set($ck, implode(",", $ids), self::CACHE_TTL);
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh comment", $e);
@@ -267,20 +243,6 @@ class Comment implements JsonSerializable {
   }
 
   public function refresh() {
-    $ck = "bnetdocs-comment-" . $this->id;
-    $cv = Common::$cache->get($ck);
-    if ($cv !== false) {
-      $cv = unserialize($cv);
-      $this->content          = $cv->content;
-      $this->created_datetime = $cv->created_datetime;
-      $this->edited_count     = $cv->edited_count;
-      $this->edited_datetime  = $cv->edited_datetime;
-      $this->id               = $cv->id;
-      $this->parent_id        = $cv->parent_id;
-      $this->parent_type      = $cv->parent_type;
-      $this->user_id          = $cv->user_id;
-      return true;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -316,7 +278,6 @@ class Comment implements JsonSerializable {
       $this->parent_id        = $row->parent_id;
       $this->parent_type      = $row->parent_type;
       $this->user_id          = $row->user_id;
-      Common::$cache->set($ck, serialize($row), self::CACHE_TTL);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh comment", $e);
@@ -356,25 +317,6 @@ class Comment implements JsonSerializable {
         throw new QueryException( 'Cannot save comment' );
       }
       $stmt->closeCursor();
-
-      $object                   = new StdClass();
-      $object->content          = $this->content;
-      $object->created_datetime = $this->created_datetime;
-      $object->edited_count     = $this->edited_count;
-      $object->edited_datetime  = $this->edited_datetime;
-      $object->id               = $this->id;
-      $object->parent_id        = $this->parent_id;
-      $object->parent_type      = $this->parent_type;
-      $object->user_id          = $this->user_id;
-
-      Common::$cache->set(
-        'bnetdocs-comment-' . $this->id, serialize( $object ), self::CACHE_TTL
-      );
-
-      Common::$cache->delete(
-        'bnetdocs-comment-' . $this->parent_type . '-' . $this->parent_id
-      );
-
       return true;
     } catch ( PDOException $e ) {
       throw new QueryException( 'Cannot save comment', $e );
