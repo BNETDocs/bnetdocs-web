@@ -10,7 +10,7 @@ $description = 'This form allows an individual to update their account '
   . 'information.';
 $this->opengraph->attach(new Pair('url', '/user/update'));
 
-switch ($this->getContext()->username_error[1]) {
+switch ($this->getContext()->username_error[1] ?? null) {
   case null: case '': $username_error = ''; break;
   case 'USERNAME_LONG':
     $username_error = 'Your chosen username is too long.'; break;
@@ -26,7 +26,7 @@ switch ($this->getContext()->username_error[1]) {
       . $this->getContext()->username_error[1];
 }
 
-switch ($this->getContext()->email_error[1]) {
+switch ($this->getContext()->email_error[1] ?? null) {
   case null: case '': $email_error = ''; break;
   case 'MISMATCH':
     $email_error = 'Emails do not match, check for typos.'; break;
@@ -46,7 +46,7 @@ switch ($this->getContext()->email_error[1]) {
       . $this->getContext()->email_error[1];
 }
 
-switch ($this->getContext()->display_name_error[1]) {
+switch ($this->getContext()->display_name_error[1] ?? null) {
   case null: case '': $display_name_error = ''; break;
   case 'CHANGE_FAILED':
     $display_name_error = 'Failed to change display name.'; break;
@@ -61,7 +61,7 @@ switch ($this->getContext()->display_name_error[1]) {
       . $this->getContext()->display_name_error[1];
 }
 
-switch ($this->getContext()->biography_error[1]) {
+switch ($this->getContext()->biography_error[1] ?? null) {
   case null: case '': $biography_error = ''; break;
   case 'TOO_LONG':
     $biography_error = 'Your biography is too long.'; break;
@@ -72,7 +72,7 @@ switch ($this->getContext()->biography_error[1]) {
       . $this->getContext()->biography_error[1];
 }
 
-switch ($this->getContext()->discord_username_error[1]) {
+switch ($this->getContext()->discord_username_error[1] ?? null) {
   case null: case '': $discord_username_error = ''; break;
   case 'TOO_LONG':
     $discord_username_error = 'Your Discord username is too long.'; break;
@@ -83,7 +83,7 @@ switch ($this->getContext()->discord_username_error[1]) {
       . $this->getContext()->discord_username_error[1];
 }
 
-switch ($this->getContext()->facebook_username_error[1]) {
+switch ($this->getContext()->facebook_username_error[1] ?? null) {
   case null: case '': $facebook_username_error = ''; break;
   case 'TOO_LONG':
     $facebook_username_error = 'Your Facebook username is too long.'; break;
@@ -94,7 +94,7 @@ switch ($this->getContext()->facebook_username_error[1]) {
       . $this->getContext()->facebook_username_error[1];
 }
 
-switch ($this->getContext()->github_username_error[1]) {
+switch ($this->getContext()->github_username_error[1] ?? null) {
   case null: case '': $github_username_error = ''; break;
   case 'TOO_LONG':
     $github_username_error = 'Your Github username is too long.'; break;
@@ -105,7 +105,7 @@ switch ($this->getContext()->github_username_error[1]) {
       . $this->getContext()->github_username_error[1];
 }
 
-switch ($this->getContext()->instagram_username_error[1]) {
+switch ($this->getContext()->instagram_username_error[1] ?? null) {
   case null: case '': $instagram_username_error = ''; break;
   case 'TOO_LONG':
     $instagram_username_error = 'Your Instagram username is too long.'; break;
@@ -116,7 +116,7 @@ switch ($this->getContext()->instagram_username_error[1]) {
       . $this->getContext()->instagram_username_error[1];
 }
 
-switch ($this->getContext()->phone_error[1]) {
+switch ($this->getContext()->phone_error[1] ?? null) {
   case null: case '': $phone_error = ''; break;
   case 'TOO_LONG':
     $phone_error = 'Your phone number is too long.'; break;
@@ -127,7 +127,7 @@ switch ($this->getContext()->phone_error[1]) {
       . $this->getContext()->phone_error[1];
 }
 
-switch ($this->getContext()->reddit_username_error[1]) {
+switch ($this->getContext()->reddit_username_error[1] ?? null) {
   case null: case '': $reddit_username_error = ''; break;
   case 'TOO_LONG':
     $reddit_username_error = 'Your Reddit username is too long.'; break;
@@ -138,7 +138,7 @@ switch ($this->getContext()->reddit_username_error[1]) {
       . $this->getContext()->reddit_username_error[1];
 }
 
-switch ($this->getContext()->skype_username_error[1]) {
+switch ($this->getContext()->skype_username_error[1] ?? null) {
   case null: case '': $skype_username_error = ''; break;
   case 'TOO_LONG':
     $skype_username_error = 'Your Skype username is too long.'; break;
@@ -149,7 +149,7 @@ switch ($this->getContext()->skype_username_error[1]) {
       . $this->getContext()->skype_username_error[1];
 }
 
-switch ($this->getContext()->steam_id_error[1]) {
+switch ($this->getContext()->steam_id_error[1] ?? null) {
   case null: case '': $steam_id_error = ''; break;
   case 'TOO_LONG':
     $steam_id_error = 'Your Steam Id is too long.'; break;
@@ -160,7 +160,7 @@ switch ($this->getContext()->steam_id_error[1]) {
       . $this->getContext()->steam_id_error[1];
 }
 
-switch ($this->getContext()->twitter_username_error[1]) {
+switch ($this->getContext()->twitter_username_error[1] ?? null) {
   case null: case '': $twitter_username_error = ''; break;
   case 'TOO_LONG':
     $twitter_username_error = 'Your Twitter username is too long.'; break;
@@ -171,7 +171,7 @@ switch ($this->getContext()->twitter_username_error[1]) {
       . $this->getContext()->twitter_username_error[1];
 }
 
-switch ($this->getContext()->website_error[1]) {
+switch ($this->getContext()->website_error[1] ?? null) {
   case null: case '': $website_error = ''; break;
   case 'TOO_LONG':
     $website_error = 'Your website url is too long.'; break;
