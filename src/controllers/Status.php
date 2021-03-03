@@ -5,7 +5,6 @@ namespace BNETDocs\Controllers;
 use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Status as StatusModel;
 
-use \CarlBennett\MVC\Libraries\Cache;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Database;
@@ -48,7 +47,6 @@ class Status extends Controller {
 
     $healthcheck           = new StdClass();
     $healthcheck->database = ( Common::$database instanceof Database );
-    $healthcheck->memcache = ( Common::$cache instanceof Cache );
 
     $utc = new DateTimeZone( 'Etc/UTC' );
 
