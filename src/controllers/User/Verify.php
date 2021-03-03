@@ -39,7 +39,7 @@ class Verify extends Controller {
     }
 
     if ( $model->user ) {
-      $user_token = $model->user->getVerificationToken();
+      $user_token = $model->user->getVerifierToken();
 
       if ( $user_token === $model->token ) {
         $model->user->invalidateVerificationToken();

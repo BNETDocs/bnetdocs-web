@@ -45,8 +45,6 @@ class User implements JsonSerializable {
   const OPTION_ACL_USER_MODIFY      = 0x00200000;
   const OPTION_ACL_USER_DELETE      = 0x00400000;
 
-  const VERIFICATION_TOKEN_TTL = 86400;
-
   protected $created_datetime;
   protected $display_name;
   protected $email;
@@ -70,6 +68,7 @@ class User implements JsonSerializable {
       $this->timezone          = null;
       $this->username          = null;
       $this->verified_datetime = null;
+      $this->verifier_token    = null;
       $this->refresh();
     } else if ($data instanceof StdClass) {
       self::normalize($data);
@@ -83,6 +82,7 @@ class User implements JsonSerializable {
       $this->timezone          = $data->timezone;
       $this->username          = $data->username;
       $this->verified_datetime = $data->verified_datetime;
+      $this->verifier_token    = $data->verifier_token;
     } else {
       throw new InvalidArgumentException("Cannot use data argument");
     }
@@ -111,14 +111,6 @@ class User implements JsonSerializable {
         } else {
           $this->display_name = (string) $new_display_name;
         }
-        $key = 'bnetdocs-user-' . $this->id;
-        $obj = Common::$cache->get($key);
-        if ($obj !== false) {
-          $obj = unserialize($obj);
-          $obj->display_name = $this->display_name;
-          $obj = serialize($obj);
-          Common::$cache->set($key, $obj, 300);
-        }
       }
     } catch (PDOException $e) {
       throw new QueryException('Cannot change user display name', $e);
@@ -142,14 +134,6 @@ class User implements JsonSerializable {
       $stmt->closeCursor();
       if ($successful) {
         $this->email = (string) $new_email;
-        $key = 'bnetdocs-user-' . $this->id;
-        $obj = Common::$cache->get($key);
-        if ($obj !== false) {
-          $obj = unserialize($obj);
-          $obj->email = $this->email;
-          $obj = serialize($obj);
-          Common::$cache->set($key, $obj, 300);
-        }
       }
     } catch (PDOException $e) {
       throw new QueryException('Cannot change user email', $e);
@@ -176,15 +160,6 @@ class User implements JsonSerializable {
       $stmt->closeCursor();
       if ($successful) {
         $this->password_hash = (string) $password_hash;
-        $key = "bnetdocs-user-" . $this->id;
-        $obj = Common::$cache->get($key);
-        if ($obj !== false) {
-          $obj = unserialize($obj);
-          $obj->password_hash = $this->password_hash;
-          $obj->password_salt = null;
-          $obj = serialize($obj);
-          Common::$cache->set($key, $obj, 300);
-        }
       }
     } catch (PDOException $e) {
       throw new QueryException("Cannot change user password", $e);
@@ -208,14 +183,6 @@ class User implements JsonSerializable {
       $stmt->closeCursor();
       if ($successful) {
         $this->username = (string) $new_username;
-        $key = 'bnetdocs-user-' . $this->id;
-        $obj = Common::$cache->get($key);
-        if ($obj !== false) {
-          $obj = unserialize($obj);
-          $obj->username = $this->username;
-          $obj = serialize($obj);
-          Common::$cache->set($key, $obj, 300);
-        }
       }
     } catch (PDOException $e) {
       throw new QueryException('Cannot change username of user', $e);
@@ -258,27 +225,28 @@ class User implements JsonSerializable {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
+    $verifier_token = self::generateVerifierToken($username, $email);
     $password_hash = self::createPassword($password);
     $successful = false;
     try {
       $stmt = Common::$database->prepare("
         INSERT INTO `users` (
           `id`, `email`, `username`, `display_name`, `created_datetime`,
-          `verified_datetime`, `password_hash`, `password_salt`,
-          `options_bitmask`, `timezone`
+          `verified_datetime`, `verifier_token`, `password_hash`,
+          `password_salt`, `options_bitmask`, `timezone`
         ) VALUES (
           NULL, :email, :username, :display_name, NOW(),
-          NULL, :password_hash, NULL, :options_bitmask, NULL
+          NULL, :verifier, :password_hash, NULL, :options_bitmask, NULL
         );
       ");
       $stmt->bindParam(":email", $email, PDO::PARAM_STR);
       $stmt->bindParam(":username", $username, PDO::PARAM_STR);
       $stmt->bindParam(":display_name", $display_name, PDO::PARAM_STR);
+      $stmt->bindParam(":verifier", $verifier_token, PDO::PARAM_STR);
       $stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);
       $stmt->bindParam(":options_bitmask", $options_bitmask, PDO::PARAM_INT);
       $successful = $stmt->execute();
       $stmt->closeCursor();
-      Common::$cache->delete('bnetdocs-users');
     } catch (PDOException $e) {
       throw new QueryException("Cannot create user", $e);
     } finally {
@@ -343,6 +311,12 @@ class User implements JsonSerializable {
     return null;
   }
 
+  public static function generateVerifierToken($username, $email) {
+    // entropy
+    $digest = sprintf('%s%s%s', mt_rand(), $username, $email);
+    return hash('sha256', $digest);
+  }
+
   public function getAcl($acl) {
     return ($this->options_bitmask & $acl);
   }
@@ -367,18 +341,6 @@ class User implements JsonSerializable {
     } else {
       $limit_clause = 'LIMIT ' . (int) $index . ',' . (int) $limit;
     }
-    if (empty($limit_clause)) {
-      $cache_key = 'bnetdocs-users';
-      $cache_val = Common::$cache->get($cache_key);
-      if ($cache_val !== false && !empty($cache_val)) {
-        $ids     = explode(',', $cache_val);
-        $objects = [];
-        foreach ($ids as $id) {
-          $objects[] = new self($id);
-        }
-        return $objects;
-      }
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -394,7 +356,8 @@ class User implements JsonSerializable {
           `password_salt`,
           `timezone`,
           `username`,
-          `verified_datetime`
+          `verified_datetime`,
+          `verifier_token`
         FROM `users`
         ORDER BY
           ' . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
@@ -403,19 +366,11 @@ class User implements JsonSerializable {
       if (!$stmt->execute()) {
         throw new QueryException('Cannot refresh all users');
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          'bnetdocs-user-' . $row->id, serialize($row), 300
-        );
       }
       $stmt->closeCursor();
-      if (empty($limit_clause)) {
-        Common::$cache->set($cache_key, implode(',', $ids), 300);
-      }
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException('Cannot refresh all users', $e);
@@ -505,23 +460,6 @@ class User implements JsonSerializable {
     return $this->username;
   }
 
-  public function getVerificationToken() {
-    $key = 'bnetdocs-userverify-' . $this->id;
-    $value = Common::$cache->get($key);
-
-    if ($value === false) {
-      $gmp = gmp_init(time());
-      $gmp = gmp_mul($gmp, mt_rand());
-      $gmp = gmp_mul($gmp, gmp_random_bits(64));
-
-      $value = hash('sha256', gmp_strval($gmp, 36));
-
-      Common::$cache->set($key, $value, self::VERIFICATION_TOKEN_TTL);
-    }
-
-    return $value;
-  }
-
   public function getVerifiedDateTime() {
     if (is_null($this->verified_datetime)) {
       return $this->verified_datetime;
@@ -533,9 +471,8 @@ class User implements JsonSerializable {
     }
   }
 
-  public function invalidateVerificationToken() {
-    $key = 'bnetdocs-userverify-' . $this->id;
-    return Common::$cache->delete($key);
+  public function getVerifierToken() {
+    return $this->verifier_token;
   }
 
   public function isDisabled() {
@@ -622,25 +559,13 @@ class User implements JsonSerializable {
     if (!is_null($data->verified_datetime))
       $data->verified_datetime = (string) $data->verified_datetime;
 
+    if (!is_null($data->verifier_token))
+      $data->verifier_token = (string) $data->verifier_token;
+
     return true;
   }
 
   public function refresh() {
-    $cache_key = "bnetdocs-user-" . $this->id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      $this->created_datetime  = $cache_val->created_datetime;
-      $this->display_name      = $cache_val->display_name;
-      $this->email             = $cache_val->email;
-      $this->options_bitmask   = $cache_val->options_bitmask;
-      $this->password_hash     = $cache_val->password_hash;
-      $this->password_salt     = $cache_val->password_salt;
-      $this->timezone          = $cache_val->timezone;
-      $this->username          = $cache_val->username;
-      $this->verified_datetime = $cache_val->verified_datetime;
-      return true;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -656,7 +581,8 @@ class User implements JsonSerializable {
           `password_salt`,
           `timezone`,
           `username`,
-          `verified_datetime`
+          `verified_datetime`,
+          `verifier_token`
         FROM `users`
         WHERE `id` = :id
         LIMIT 1;
@@ -679,7 +605,7 @@ class User implements JsonSerializable {
       $this->timezone          = $row->timezone;
       $this->username          = $row->username;
       $this->verified_datetime = $row->verified_datetime;
-      Common::$cache->set($cache_key, serialize($row), 300);
+      $this->verifier_token    = $row->verifier_token;
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh user", $e);
@@ -716,7 +642,8 @@ class User implements JsonSerializable {
       $stmt = Common::$database->prepare('
         UPDATE `users` SET
           `options_bitmask` = :bits,
-          `verified_datetime` = :dt
+          `verified_datetime` = :dt,
+          `verifier_token` = NULL
         WHERE `id` = :user_id;
       ');
       $dt = $verified_datetime->format( 'Y-m-d H:i:s' );
@@ -726,23 +653,13 @@ class User implements JsonSerializable {
       $successful = $stmt->execute();
       $stmt->closeCursor();
       if ($successful) {
-        $this->verified_datetime = $verified_datetime;
         $this->options_bitmask = $options_bitmask;
-        $key = 'bnetdocs-user-' . $this->id;
-        $obj = Common::$cache->get($key);
-        if ($obj !== false) {
-          $obj = unserialize($obj);
-          $obj->verified_datetime = $this->verified_datetime;
-          $obj->options_bitmask = $this->options_bitmask;
-          $obj = serialize($obj);
-          Common::$cache->set($key, $obj, 300);
-        }
+        $this->verified_datetime = $verified_datetime;
+        $this->verifier_token = null;
       }
 
     } catch (PDOException $e) {
-
       throw new QueryException('Cannot set user as verified', $e);
-
     } finally {
       return $successful;
     }

@@ -92,7 +92,7 @@ class ResetPassword extends Controller {
       $mail_config = Common::$config->email;
 
       $state->mail = &$mail;
-      $state->token = $model->user->getVerificationToken();
+      $state->token = $model->user->getVerifierToken();
       $state->user = $model->user;
 
       try {
@@ -163,7 +163,7 @@ class ResetPassword extends Controller {
       return self::RET_EMAIL;
     }
 
-    if ( $model->token !== $model->user->getVerificationToken() ) {
+    if ( $model->token !== $model->user->getVerifierToken() ) {
       $model->error = 'INVALID_TOKEN';
       return self::RET_FAILURE;
     }

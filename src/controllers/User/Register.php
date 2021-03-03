@@ -209,7 +209,7 @@ class Register extends Controller {
 
       $state->mail = &$mail;
       $state->name = ( $user ? $user->getName() : $username );
-      $state->token = ( $user ? $user->getVerificationToken() : null );
+      $state->token = ( $user ? $user->getVerifierToken() : null );
       $state->user_id = $user_id;
 
       try {
