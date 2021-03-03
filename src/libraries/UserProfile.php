@@ -212,23 +212,6 @@ class UserProfile {
   }
 
   public function refresh() {
-    $cache_key = "bnetdocs-userprofile-" . $this->user_id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      $this->biography          = $cache_val->biography;
-      $this->discord_username   = $cache_val->discord_username;
-      $this->facebook_username  = $cache_val->facebook_username;
-      $this->github_username    = $cache_val->github_username;
-      $this->instagram_username = $cache_val->instagram_username;
-      $this->phone              = $cache_val->phone;
-      $this->reddit_username    = $cache_val->reddit_username;
-      $this->skype_username     = $cache_val->skype_username;
-      $this->steam_id           = $cache_val->steam_id;
-      $this->twitter_username   = $cache_val->twitter_username;
-      $this->website            = $cache_val->website;
-      return true;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -271,7 +254,6 @@ class UserProfile {
       $this->steam_id           = $row->steam_id;
       $this->twitter_username   = $row->twitter_username;
       $this->website            = $row->website;
-      Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh user profile", $e);
@@ -399,26 +381,6 @@ class UserProfile {
       }
 
       $stmt->closeCursor();
-
-      $object                     = new StdClass();
-      $object->biography          = $this->biography;
-      $object->discord_username   = $this->discord_username;
-      $object->facebook_username  = $this->facebook_username;
-      $object->github_username    = $this->github_username;
-      $object->instagram_username = $this->instagram_username;
-      $object->phone              = $this->phone;
-      $object->reddit_username    = $this->reddit_username;
-      $object->skype_username     = $this->skype_username;
-      $object->steam_id           = $this->steam_id;
-      $object->twitter_username   = $this->twitter_username;
-      $object->user_id            = $this->user_id;
-      $object->website            = $this->website;
-
-      self::normalize($object);
-
-      $cache_key = 'bnetdocs-userprofile-' . $this->user_id;
-      Common::$cache->set($cache_key, serialize($object), 300);
-
       return true;
     } catch (PDOException $e) {
       throw new QueryException('Cannot save user profile', $e);
