@@ -86,7 +86,6 @@ class NewsPost {
       $stmt->bindParam(":content", $content, PDO::PARAM_STR);
       $successful = $stmt->execute();
       $stmt->closeCursor();
-      if ($successful) Common::$cache->delete("bnetdocs-newsposts");
     } catch (PDOException $e) {
       throw new QueryException("Cannot create news post", $e);
     } finally {
@@ -107,10 +106,6 @@ class NewsPost {
       $stmt->bindParam(":id", $id, PDO::PARAM_INT);
       $successful = $stmt->execute();
       $stmt->closeCursor();
-      if ($successful) {
-        Common::$cache->delete("bnetdocs-newspost-" . (int) $id);
-        Common::$cache->delete("bnetdocs-newsposts");
-      }
     } catch (PDOException $e) {
       throw new QueryException("Cannot delete news post", $e);
     } finally {
@@ -120,16 +115,6 @@ class NewsPost {
   }
 
   public static function getAllNews($reverse) {
-    $cache_key = "bnetdocs-newsposts";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false && !empty($cache_val)) {
-      $ids     = explode(",", $cache_val);
-      $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
-      }
-      return $objects;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -156,17 +141,11 @@ class NewsPost {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh news post");
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          "bnetdocs-newspost-" . $row->id, serialize($row), 300
-        );
       }
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(",", $ids), 300);
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh news post", $e);
@@ -198,14 +177,9 @@ class NewsPost {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot query news posts by user id");
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          "bnetdocs-newspost-" . $row->id, serialize($row), 300
-        );
       }
       $stmt->closeCursor();
       return $objects;
@@ -328,20 +302,6 @@ class NewsPost {
   }
 
   public function refresh() {
-    $cache_key = "bnetdocs-newspost-" . $this->id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      $this->category_id      = $cache_val->category_id;
-      $this->content          = $cache_val->content;
-      $this->created_datetime = $cache_val->created_datetime;
-      $this->edited_count     = $cache_val->edited_count;
-      $this->edited_datetime  = $cache_val->edited_datetime;
-      $this->options_bitmask  = $cache_val->options_bitmask;
-      $this->title            = $cache_val->title;
-      $this->user_id          = $cache_val->user_id;
-      return true;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -378,7 +338,6 @@ class NewsPost {
       $this->options_bitmask  = $row->options_bitmask;
       $this->title            = $row->title;
       $this->user_id          = $row->user_id;
-      Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh news post", $e);
@@ -428,22 +387,6 @@ class NewsPost {
         throw new QueryException("Cannot save news post");
       }
       $stmt->closeCursor();
-
-      $object                   = new StdClass();
-      $object->category_id      = $this->category_id;
-      $object->content          = $this->content;
-      $object->created_datetime = $this->created_datetime;
-      $object->edited_count     = $this->edited_count;
-      $object->edited_datetime  = $this->edited_datetime;
-      $object->id               = $this->id;
-      $object->options_bitmask  = $this->options_bitmask;
-      $object->title            = $this->title;
-      $object->user_id          = $this->user_id;
-
-      $cache_key = "bnetdocs-newspost-" . $this->id;
-      Common::$cache->set($cache_key, serialize($object), 300);
-      Common::$cache->delete("bnetdocs-newsposts");
-
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot save news post", $e);
