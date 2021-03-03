@@ -35,16 +35,6 @@ class ServerType implements JsonSerializable {
   }
 
   public static function getAllServerTypes() {
-    $cache_key = "bnetdocs-servertypes";
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false && !empty($cache_val)) {
-      $ids     = explode(",", $cache_val);
-      $objects = [];
-      foreach ($ids as $id) {
-        $objects[] = new self($id);
-      }
-      return $objects;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -59,17 +49,11 @@ class ServerType implements JsonSerializable {
       if (!$stmt->execute()) {
         throw new QueryException("Cannot refresh server types");
       }
-      $ids     = [];
       $objects = [];
       while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $ids[]     = (int) $row->id;
         $objects[] = new self($row);
-        Common::$cache->set(
-          "bnetdocs-servertype-" . $row->id, serialize($row), 300
-        );
       }
       $stmt->closeCursor();
-      Common::$cache->set($cache_key, implode(",", $ids), 300);
       return $objects;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh server types", $e);
@@ -100,13 +84,6 @@ class ServerType implements JsonSerializable {
   }
 
   public function refresh() {
-    $cache_key = "bnetdocs-servertype-" . $this->id;
-    $cache_val = Common::$cache->get($cache_key);
-    if ($cache_val !== false) {
-      $cache_val = unserialize($cache_val);
-      $this->label = $cache_val->label;
-      return true;
-    }
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -129,7 +106,6 @@ class ServerType implements JsonSerializable {
       $stmt->closeCursor();
       self::normalize($row);
       $this->label = $row->label;
-      Common::$cache->set($cache_key, serialize($row), 300);
       return true;
     } catch (PDOException $e) {
       throw new QueryException("Cannot refresh server type", $e);
