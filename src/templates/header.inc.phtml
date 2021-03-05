@@ -20,6 +20,7 @@ if ( isset( Authentication::$user  )) {
 }
 
 $_header_navigation_config = Common::$config->bnetdocs->navigation;
+$_header_user_register_disabled = Common::$config->bnetdocs->user_register_disabled;
 
 if ( !Common::$config->bnetdocs->asset_versioning ) {
   $_unique_asset = '';
@@ -120,7 +121,9 @@ $_campaign_vultr = (
       <a href="<?php echo Common::relativeUrlToAbsolute($_header_user_url); ?>">View Profile</a>
 <?php } else { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/login"); ?>">Log In</a>
+<?php if (!$_header_user_register_disabled) { ?>
       <a href="<?php echo Common::relativeUrlToAbsolute("/user/register"); ?>">Create</a>
+<?php } ?>
 <?php } ?>
       <a>The Docs</a>
       <a href="<?php echo Common::relativeUrlToAbsolute("/document/index"); ?>">Document Index</a>
