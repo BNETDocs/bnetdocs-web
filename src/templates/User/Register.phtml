@@ -71,8 +71,7 @@ switch ($this->getContext()->error) {
     break;
   case "REGISTER_DISABLED":
     $af      = null;
-    $message = "Creating accounts has been administratively disabled "
-      . "indefinitely.";
+    $message = "Creating accounts is currently administratively disabled.";
     break;
   case "EMAIL_ALREADY_USED":
     $af      = "email";
@@ -96,6 +95,8 @@ switch ($this->getContext()->error) {
     $message = $this->getContext()->error;
 }
 
+$register_disabled = ($this->getContext()->error == 'REGISTER_DISABLED');
+
 $safe_email    = htmlentities($this->getContext()->email   , ENT_HTML5, "UTF-8");
 $safe_username = htmlentities($this->getContext()->username, ENT_HTML5, "UTF-8");
 
@@ -105,12 +106,13 @@ require("./header.inc.phtml");
       <article>
 <?php if ($this->getContext()->error !== false) { ?>
         <script async defer="defer" src="https://www.google.com/recaptcha/api.js"><![CDATA[]]></script>
-        <header>Create Account</header>
+        <header<?=($register_disabled ? ' class="red"' : '')?>>Create Account</header>
 <?php if (!empty($message)) { ?>
         <section class="red">
           <p><?php echo $message; ?></p>
         </section>
 <?php } ?>
+<?php if (!$register_disabled) { ?>
         <form method="POST" action="?">
           <section>
             <table><tbody><tr>
@@ -138,6 +140,7 @@ require("./header.inc.phtml");
             </tr></tbody></table>
           </section>
         </form>
+<?php } ?>
 <?php } else { ?>
         <header class="green">Account Created</header>
         <section class="green">

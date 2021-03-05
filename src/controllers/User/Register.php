@@ -38,7 +38,9 @@ class Register extends Controller {
     $model->username_max_len =
       $conf->bnetdocs->user_register_requirements->username_length_max;
 
-    if ($router->getRequestMethod() == 'POST') {
+    if (Common::$config->bnetdocs->user_register_disabled) {
+      $model->error = 'REGISTER_DISABLED';
+    } else if ($router->getRequestMethod() == 'POST') {
       $this->tryRegister($router, $model);
     }
 
