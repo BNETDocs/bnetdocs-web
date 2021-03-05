@@ -475,6 +475,22 @@ class User implements JsonSerializable {
     return $this->verifier_token;
   }
 
+  public static function invalidateVerificationToken() {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $stmt = Common::$database->prepare(
+      'UPDATE `users` SET `verifier_token` = NULL WHERE `id` = :id LIMIT 1;'
+    );
+
+    $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+    $successful = $stmt->execute();
+
+    $stmt->closeCursor();
+    return $successful;
+  }
+
   public function isDisabled() {
     return ($this->options_bitmask & self::OPTION_DISABLED);
   }
