@@ -475,7 +475,7 @@ class User implements JsonSerializable {
     return $this->verifier_token;
   }
 
-  public static function invalidateVerificationToken() {
+  public function invalidateVerificationToken() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
