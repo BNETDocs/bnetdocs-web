@@ -28,9 +28,13 @@ $object_user_id = (
   $object instanceof Event ? $object->getUserId() : null
 );
 
-$object_user = (
-  !is_null( $object_user_id ) ? new User( $object_user_id ) : null
-);
+try {
+  $object_user = (
+    !is_null( $object_user_id ) ? new User( $object_user_id ) : null
+  );
+} catch (UserNotFoundException $e) {
+  $object_user = null;
+}
 
 if ( !$object instanceof Event ) {
   $title = 'Event Not Found';
