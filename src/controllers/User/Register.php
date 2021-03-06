@@ -126,7 +126,7 @@ class Register extends Controller {
       return;
     }
     $denylist = Common::$config->bnetdocs->user_password_denylist_map;
-    $denylist = json_decode(file_get_contents(__DIR__ . '/' . $denylist));
+    $denylist = json_decode(file_get_contents('./' . $denylist));
     foreach ($denylist as $denylist_pw) {
       if (strtolower($denylist_pw->password) == strtolower($pw1)) {
         $model->error = 'PASSWORD_BLACKLIST';
