@@ -68,11 +68,12 @@ class ChangePassword extends Controller {
       $model->error = 'PASSWORD_TOO_SHORT';
       return;
     }
-    $blacklist = Common::$config->bnetdocs->user_password_blacklist;
-    foreach ($blacklist as $blacklist_pw) {
-      if (strtolower($blacklist_pw->password) == strtolower($pw2)) {
+    $denylist = Common::$config->bnetdocs->user_password_denylist_map;
+    $denylist = json_decode(file_get_contents(__DIR__ . '/' . $denylist));
+    foreach ($denylist as $denylist_pw) {
+      if (strtolower($denylist_pw->password) == strtolower($pw2)) {
         $model->error = 'PASSWORD_BLACKLIST';
-        $model->error_extra = $blacklist_pw->reason;
+        $model->error_extra = $denylist_pw->reason;
         return;
       }
     }
