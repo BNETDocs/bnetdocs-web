@@ -1,11 +1,13 @@
 #!/bin/bash
 
-printf "This script will download sensitive material to this machine.\n" 1>&2
+printf "This script will transmit sensitive material to and from this machine.\n" 1>&2
 read -p "Is this ok [y/N]: " PROMPT
 if [ "${PROMPT}" != "Y" ] && [ "${PROMPT}" != "y" ]; then
   printf "Operation aborted.\n" 1>&2
   exit 1
 fi
+
+SRCDIR="$(git rev-parse --show-toplevel)"
 
 MYSQLHOST="$1"
 if [ -z "${MYSQLHOST}" ]; then
@@ -36,14 +38,11 @@ fi
 
 set -e
 
-printf "[1/4] Getting path of current project...\n"
-SRCDIR="$(git rev-parse --show-toplevel)"
-
-printf "[2/4] Creating new backup directory...\n"
+printf "[1/3] Creating new backup directory...\n"
 BKUPDIR="${SRCDIR}/tmp/sql-backups/$(date +%Y%m%d-%H%M)"
 mkdir -v -p "${BKUPDIR}"
 
-printf "[3/4] Dumping BNETDocs Redux database...\n"
+printf "[2/3] Dumping BNETDocs Redux database...\n"
 mysqldump --host="${MYSQLHOST}" --user="${MYSQLUSER}" \
   --password="${MYSQLPASS}" \
   --opt --order-by-primary \
@@ -52,7 +51,7 @@ mysqldump --host="${MYSQLHOST}" --user="${MYSQLUSER}" \
   --result-file "${BKUPDIR}/database.redux.sql" \
   --databases bnetdocs_botdev
 
-printf "[4/4] Dumping BNETDocs Phoenix database...\n"
+printf "[3/3] Dumping BNETDocs Phoenix database...\n"
 mysqldump --host="${MYSQLHOST}" --user="${MYSQLUSER}" \
   --password="${MYSQLPASS}" \
   --opt --order-by-primary \
