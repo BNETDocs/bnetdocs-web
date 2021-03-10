@@ -1,6 +1,6 @@
 #!/bin/bash
 
-printf "This script uses the MySQL root user and will create/drop temporary databases.\n" 1>&2
+printf "This script will transmit sensitive material to and from this machine, and will create and drop temporary databases.\n" 1>&2
 read -p "Is this ok [y/N]: " PROMPT
 if [ "${PROMPT}" != "Y" ] && [ "${PROMPT}" != "y" ]; then
   printf "Operation aborted.\n" 1>&2
@@ -18,66 +18,93 @@ if [ -z "${MYSQLHOST}" ]; then
   MYSQLHOST="localhost"
 fi
 
-MYSQLPASS="$2"
+MYSQLUSER="$2"
+if [ -z "${MYSQLUSER}" ]; then
+  read -p "Enter the MySQL user: " MYSQLUSER
+fi
+if [ -z "${MYSQLUSER}" ]; then
+  printf "MySQL user not provided, assuming root...\n" 1>&2
+  MYSQLUSER="root"
+fi
+
+MYSQLPASS="$3"
 if [ -z "${MYSQLPASS}" ]; then
-  read -s -p "Enter the MySQL root user password: " MYSQLPASS
+  read -s -p "Enter the MySQL password for ${MYSQLUSER}: " MYSQLPASS
   echo
 fi
 if [ -z "${MYSQLPASS}" ]; then
-  printf "MySQL root user password not provided, assuming it's not set...\n" 1>&2
+  printf "MySQL password not provided, assuming it's not set...\n" 1>&2
+  MYSQLPASS=''
+fi
+
+MYSQLSCHEMA="$4"
+if [ -z "${MYSQLSCHEMA}" ]; then
+  read -p "Enter the MySQL database schema: " MYSQLSCHEMA
+  echo
+fi
+if [ -z "${MYSQLSCHEMA}" ]; then
+  printf "MySQL database schema not provided, assuming bnetdocs_phoenix_dev...\n" 1>&2
+  MYSQLSCHEMA='bnetdocs_phoenix_dev'
 fi
 
 set -e
 
-printf "[1/8] Dumping the database...\n"
-mysqldump --host="${MYSQLHOST}" --user="root" --password="${MYSQLPASS}" \
+printf "[1/7] Dumping the database...\n"
+mysqldump --host="${MYSQLHOST}" --user="${MYSQLUSER}" --password="${MYSQLPASS}" \
   --opt --order-by-primary \
   --complete-insert --single-transaction --triggers --routines \
   --hex-blob --add-drop-database --result-file /tmp/.database.sample.sql \
-  --databases bnetdocs_phoenix
+  --databases "${MYSQLSCHEMA}"
 
-printf "[2/8] Renaming the database locally...\n"
-sed -i 's/bnetdocs_phoenix/bnetdocs_phoenix_backup/g' /tmp/.database.sample.sql
+printf "[2/7] Performing local pattern replacements...\n"
+sed -i 's#Current Database: `'"${MYSQLSCHEMA}"'`#Current Database: `'"${MYSQLSCHEMA}_backup"'`#' /tmp/.database.sample.sql
+sed -i 's#DROP DATABASE IF EXISTS `'"${MYSQLSCHEMA}"'`#DROP DATABASE IF EXISTS `'"${MYSQLSCHEMA}_backup"'`#' /tmp/.database.sample.sql
+sed -i 's#CREATE DATABASE /\*!32312 IF NOT EXISTS\*/ `'"${MYSQLSCHEMA}"'`#CREATE DATABASE /*!32312 IF NOT EXISTS*/ `'"${MYSQLSCHEMA}_backup"'`#' /tmp/.database.sample.sql
+sed -i 's#USE `'"${MYSQLSCHEMA}"'`#USE `'"${MYSQLSCHEMA}_backup"'`#' /tmp/.database.sample.sql
 
-printf "[3/8] Uploading the renamed database so we can redact info from it...\n"
-mysql --host="${MYSQLHOST}" --user="root" --password="${MYSQLPASS}" < /tmp/.database.sample.sql
+printf "[3/7] Uploading modified database so queries can be performed...\n"
+mysql --host="${MYSQLHOST}" --user="${MYSQLUSER}" --password="${MYSQLPASS}" --database='' < /tmp/.database.sample.sql
 
-printf "[4/8] Redacting private user information...\n"
-mysql --host="${MYSQLHOST}" --user="root" --password="${MYSQLPASS}" << EOF
+printf "[4/7] Redacting private user information...\n"
+mysql --host="${MYSQLHOST}" --user="${MYSQLUSER}" --password="${MYSQLPASS}" --database="${MYSQLSCHEMA}_backup" << EOF
   START TRANSACTION;
-  USE bnetdocs_phoenix_backup;
+  USE ${MYSQLSCHEMA}_backup;
+  TRUNCATE TABLE comments;
+  TRUNCATE TABLE documents;
   TRUNCATE TABLE event_log;
   INSERT INTO event_log (id, event_type_id, event_datetime, user_id, ip_address, meta_data)
-    VALUES (0,0,NOW(),NULL,NULL,'Redacted event log');
+    VALUES (0,0,NOW(),NULL,NULL,'Initial event log');
+  TRUNCATE TABLE news_posts;
+  TRUNCATE TABLE packet_used_by;
+  TRUNCATE TABLE packets;
+  TRUNCATE TABLE servers;
   TRUNCATE TABLE user_profiles;
-  UPDATE users SET
-    username = CONCAT('redacted.username.', id),
-    email = CONCAT('redacted.email.', id, '@example.com'),
-    display_name = NULL,
-    password_hash = NULL,
-    password_salt = NULL,
-    options_bitmask = 0;
+  TRUNCATE TABLE user_sessions;
+  TRUNCATE TABLE users;
+  INSERT INTO users
+    (id, email, username, display_name, created_datetime, verified_datetime,
+      verifier_token, password_hash, password_salt, options_bitmask, timezone)
+    VALUES (NULL, 'nobody@example.com', 'nobody', NULL, NOW(), NULL, NULL, NULL, NULL, 0, NULL);
   COMMIT;
 EOF
 
-printf "[5/8] Dumping the redacted database...\n"
-mysqldump --host="${MYSQLHOST}" --user="root" --password="${MYSQLPASS}" \
+printf "[5/7] Dumping the redacted database...\n"
+mysqldump --host="${MYSQLHOST}" --user="${MYSQLUSER}" --password="${MYSQLPASS}" \
   --opt --order-by-primary \
   --complete-insert --single-transaction --triggers --routines \
   --skip-extended-insert --hex-blob --add-drop-database \
   --result-file /tmp/.database.sample.sql \
-  --databases bnetdocs_phoenix_backup
+  --databases "${MYSQLSCHEMA}_backup"
 
-printf "[6/8] Deleting the redacted database from the server...\n"
-mysql --host="${MYSQLHOST}" --user="root" --password="${MYSQLPASS}" << EOF
-  DROP DATABASE bnetdocs_phoenix_backup;
+printf "[6/7] Deleting the redacted database from the server...\n"
+mysql --host="${MYSQLHOST}" --user="${MYSQLUSER}" --password="${MYSQLPASS}" --database="${MYSQLSCHEMA}_backup" << EOF
+  DROP DATABASE IF EXISTS ${MYSQLSCHEMA}_backup;
 EOF
 
-printf "[7/8] Renaming the redacted database locally...\n"
-sed -i 's/bnetdocs_phoenix_backup/bnetdocs_phoenix/g' /tmp/.database.sample.sql
-
-printf "[8/8] Moving database into current working directory...\n"
+printf "[7/7] Copying database into current working directory...\n"
 pushd "$(git rev-parse --git-dir)"
-mv /tmp/.database.sample.sql ${SRCDIR}/etc/database.sample.sql
+cp /tmp/.database.sample.sql ${SRCDIR}/etc/database.sample.sql
+popd
+rm /tmp/.database.sample.sql
 
 printf "Operation complete!\n"
