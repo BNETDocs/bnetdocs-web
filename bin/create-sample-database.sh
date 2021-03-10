@@ -69,12 +69,9 @@ printf "[4/7] Redacting private user information...\n"
 mysql --host="${MYSQLHOST}" --user="${MYSQLUSER}" --password="${MYSQLPASS}" --database="${MYSQLSCHEMA}_backup" << EOF
   START TRANSACTION;
   USE ${MYSQLSCHEMA}_backup;
-  TRUNCATE TABLE comments;
-  TRUNCATE TABLE documents;
   TRUNCATE TABLE event_log;
   INSERT INTO event_log (id, event_type_id, event_datetime, user_id, ip_address, meta_data)
     VALUES (0,0,NOW(),NULL,NULL,'Initial event log');
-  TRUNCATE TABLE news_posts;
   TRUNCATE TABLE packet_used_by;
   TRUNCATE TABLE packets;
   TRUNCATE TABLE servers;
