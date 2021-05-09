@@ -26,6 +26,9 @@
       "hide_popular_documents": false,
       "hide_popular_packets": false
     },
+    "robotstxt": {
+      "*": [{"Disallow": "/"}]
+    },
     "server_update_job_token": null,
     "user_login_disabled": false,
     "user_password_bcrypt_cost": 12,
