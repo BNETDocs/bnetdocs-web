@@ -127,11 +127,13 @@ class Register extends Controller {
     }
     $denylist = Common::$config->bnetdocs->user_password_denylist_map;
     $denylist = json_decode(file_get_contents('./' . $denylist));
-    foreach ($denylist as $denylist_pw) {
-      if (strtolower($denylist_pw->password) == strtolower($pw1)) {
-        $model->error = 'PASSWORD_BLACKLIST';
-        $model->error_extra = $denylist_pw->reason;
-        return;
+    if ($denylist) {
+      foreach ($denylist as $denylist_pw) {
+        if (strtolower($denylist_pw->password) == strtolower($pw1)) {
+          $model->error = 'PASSWORD_BLACKLIST';
+          $model->error_extra = $denylist_pw->reason;
+          return;
+        }
       }
     }
     if (function_exists('geoip_country_code_by_name')) {
