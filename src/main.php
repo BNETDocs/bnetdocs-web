@@ -201,6 +201,9 @@ function main() {
     $router->addRoute( // URL: /packet/search
       "#^/packet/search/?$#", "Packet\\Search", "Packet\\SearchHtml"
     );
+    $router->addRoute( // URL: /privacy
+      '#^/privacy/?$#', 'PrivacyNotice', 'PrivacyNoticeHtml'
+    );
     $router->addRoute( // URL: /robots.txt
       "#^/robots.txt/?$#", "Robotstxt", "Robotstxt"
     );

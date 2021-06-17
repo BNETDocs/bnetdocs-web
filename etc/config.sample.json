@@ -26,6 +26,14 @@
       "hide_popular_documents": false,
       "hide_popular_packets": false
     },
+    "privacy": {
+      "contact": {
+        "email_domain": "example.com",
+        "email_mailbox": "nobody"
+      },
+      "data_location": "Hello World",
+      "organization": "{example org}"
+    },
     "robotstxt": {
       "*": [{"Disallow": "/"}]
     },

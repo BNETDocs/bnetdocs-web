@@ -1,0 +1,104 @@
+<?php /* vim: set colorcolumn=0: */
+namespace BNETDocs\Templates;
+use \BNETDocs\Libraries\User;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title = 'Privacy Notice';
+$description = 'BNETDocs Site Privacy Notice';
+$this->opengraph->attach(new Pair('url', '/privacy'));
+$this->opengraph->attach(new Pair('type', 'article'));
+
+$data_location = $this->getContext()->data_location;
+$email_domain = $this->getContext()->email_domain;
+$email_mailbox = $this->getContext()->email_mailbox;
+$org = $this->getContext()->organization;
+
+require('./header.inc.phtml'); ?>
+<article>
+  <header><?=$title?></header>
+  <section>
+      <p><?=$org?> is committed to privacy and security for all of its Users. This privacy notice will explain how <?=$org?> uses the personal data collected from you when you use the site.</p>
+      <p><h2>Topics:</h2><ul>
+        <li><a href="#what-data-is-collected">What data is collected?</a></li>
+        <li><a href="#how-is-your-data-collected">How is your data collected?</a></li>
+        <li><a href="#how-will-your-data-be-used">How will your data be used?</a></li>
+        <li><a href="#how-is-your-data-stored">How is your data stored?</a></li>
+        <li><a href="#what-are-your-data-protection-rights">What are your data protection rights?</a></li>
+        <li><a href="#what-are-cookies">What are cookies?</a></li>
+        <li><a href="#how-are-cookies-used">How are cookies used?</a></li>
+        <li><a href="#what-types-of-cookies-are-used">What types of cookies are used?</a></li>
+        <li><a href="#how-to-manage-your-cookies">How to manage your cookies</a></li>
+        <li><a href="#privacy-policies-of-other-websites">Privacy policies of other websites</a></li>
+        <li><a href="#changes-to-the-privacy-notice">Changes to the privacy notice</a></li>
+        <li><a href="#how-to-contact">How to contact</a></li>
+      </ul></p>
+
+      <h2><a id="what-data-is-collected"><strong>What data is collected?</strong></a></h2>
+      <p>The following private data is collected:<ul>
+        <li>The IP address, user agent, and requested Url of all clients accessing the site, used for logging and tracking of actions on the site.</li>
+        <li>A person's email address, used for User account identification on the site and for authentication.</li>
+        <li>A User account password, used for authentication.</li>
+        <li>Social media information, optionally given by the User and not necessary for the function of the site.</li>
+      </ul></p>
+
+      <h2><a id="how-is-your-data-collected"><strong>How is your data collected?</strong></a></h2>
+      <p>You directly provide <?=$org?> with most of the data that is collected. <?=$org?> collects data and processes data when you:</p>
+      <p><ul>
+        <li>Create a User account on the site, or modify your User profile on the site.</li>
+        <li>Submit, post, or upload media and/or content to the site.</li>
+      </ul></p>
+
+      <h2><a id="how-will-your-data-be-used"><strong>How will your data be used?</strong></a></h2>
+      <p><?=$org?> collects your data for the following purposes:</p>
+      <p><ul>
+        <li>To process your requests in cooperation with site features.</li>
+        <li>To track actions taken on the site by a User.</li>
+      </ul></p>
+
+      <h2><a id="how-is-your-data-stored"><strong>How is your data stored?</strong></a></h2>
+      <p><?=$org?> uses a relational database schema hosted in <?=filter_var($data_location, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>. The full system is backed up via machine snapshots, and the data is not accessible without two-factor authentication. A firewall exists between the online database and the rest of the Internet, which by its nature prevents any unknown traffic from reaching the data. Database backups are created at regular intervals via cronjob or similar automated processes, and the backups are uploaded to an authenticated third-party redundant location.</p>
+
+      <h2><a id="what-are-your-data-protection-rights"><strong>What are your data protection rights?</strong></a></h2>
+      <p><?=$org?> would like to make sure you are fully aware of all of your data protection rights. Every user is entitled to the following:</p>
+      <p><ul>
+        <li>The right to access – You have the right to request <?=$org?> for copies of your personal data.</li>
+        <li>The right to rectification – You have the right to request that <?=$org?> correct any information you believe is inaccurate. You also have the right to request <?=$org?> to complete the information you believe is incomplete.</li>
+        <li>The right to erasure – You have the right to request that <?=$org?> erase your personal data, under certain conditions.</li>
+        <li>The right to restrict processing – You have the right to request that <?=$org?> restrict the processing of your personal data, under certain conditions.</li>
+        <li>The right to object to processing – You have the right to object to <?=$org?>'s processing of your personal data, under certain conditions.</li>
+        <li>The right to data portability – You have the right to request that <?=$org?> transfer the data that we have collected to another organization, or directly to you, under certain conditions.</li>
+      </ul></p>
+      <p>If you make a request, we have one month to respond to you. If you would like to exercise any of these rights, please <a href="#how-to-contact">make contact</a> using the information below.</p>
+
+      <h2><a id="what-are-cookies"><strong>What are cookies?</strong></a></h2>
+      <p>Cookies are text files placed on your computer to collect standard Internet log information and visitor behavior information. When you visit the site, some information from you may be collected automatically through cookies or similar technology.</p>
+      <p>For further information, visit <a href="https://allaboutcookies.org/">allaboutcookies.org</a>.</p>
+
+      <h2><a id="how-are-cookies-used"><strong>How are cookies used?</strong></a></h2>
+      <p><?=$org?> uses cookies for the following purposes:</p>
+      <p><ul>
+        <li>To record cookie preferences for the site.</li>
+        <li>To keep you logged in as a returning User of the site.</li>
+      </ul></p>
+
+      <h2><a id="what-types-of-cookies-are-used"><strong>What types of cookies are used?</strong></a></h2>
+      <p><?=$org?> uses functional cookies so that the site will recognize you and remember your previously selected preferences. All important cookies are first-party cookies, any and all third-party cookies may be allowed as desired.</p>
+
+      <h2><a id="how-to-manage-your-cookies"><strong>How to manage your cookies</strong></a></h2>
+      <p>You can set your browser not to accept cookies, and the website <a href="https://allaboutcookies.org/">allaboutcookies.org</a> tells you how to remove cookies from your browser. However, some of the site features may not function as a result.</p>
+
+      <h2><a id="privacy-policies-of-other-websites"><strong>Privacy policies of other websites</strong></a></h2>
+      <p>The website may contain links to other websites. This privacy notice applies only to this site, so if you click on a link to another website, you should read their privacy policy or notice.</p>
+
+      <h2><a id="changes-to-the-privacy-notice"><strong>Changes to the privacy notice</strong></a></h2>
+      <p>If you have any questions about this privacy notice, the data held on you, or you would like to exercise one of your data protection rights, please do not hesitate to get in contact.</p>
+
+      <h2><a id="how-to-contact"><strong>How to contact</strong></a></h2>
+      <p>You may send an email message to the site owner. Please write to <code><?=filter_var($email_mailbox, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code> <span>at</span> <code><?=filter_var($email_domain, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code>, it will reach the appropriate person.</p>
+<?php if (Common::$config->discord->enabled) { ?>
+      <p>Alternatively, you may try reaching <?=$org?> staff via <a href="<?=Common::relativeUrlToAbsolute('/discord')?>">Discord</a>.</p>
+<?php } ?>
+  </section>
+</article>
+<?php require('./footer.inc.phtml'); ?>
