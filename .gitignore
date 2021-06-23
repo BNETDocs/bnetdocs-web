@@ -18,10 +18,11 @@
 *.vi
 *.vim
 *.zip
+*tmp.sh
 .DS_Store
 .Spotlight-V100
 .Trashes
 ._*
-/composer.phar
 Desktop.ini
 Thumbs.db
+composer.phar
