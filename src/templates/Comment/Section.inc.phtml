@@ -12,7 +12,7 @@ $c_delete_visible_admin = ($logged_in && ($logged_in->getOptionsBitmask() & User
 <? if (!$comments) { ?>
     <div class="border border-secondary rounded-pill p-2"><p class="text-center mb-0"><em>no one has commented yet.</em></p></div>
 <? } else { ?>
-    <table class="table table-striped"><tbody>
+    <table class="table table-striped text-white-50"><tbody>
 <?    foreach ($comments as $c) {
         $c_created_dt  = $c->getCreatedDateTime();
         $c_id          = rawurlencode($c->getId());
