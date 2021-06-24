@@ -124,7 +124,9 @@ $_campaign_vultr = (
           <li class="nav-item<?=_header_active('/document/', false)?> dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarObjectsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documents</a>
             <div class="dropdown-menu" aria-labelledby="navbarObjectsDropdown">
-<? if ($_header_staff) { ?>
+              <a class="dropdown-item<?=_header_active('/document/index', false)?> text-info" href="<?=Common::relativeUrlToAbsolute('/document/index')?>">All Documents<?=_header_active('/document/index', true)?></a>
+<?            if ($_header_staff) { ?>
+              <div class="dropdown-divider"></div>
               <a class="dropdown-item<?=_header_active('/document/create', false)?> text-success" href="<?=Common::relativeUrlToAbsolute('/document/create')?>">Create Document<?=_header_active('/document/create', true)?></a>
               <div class="dropdown-divider"></div>
 <?            }
@@ -134,12 +136,15 @@ $_campaign_vultr = (
             </div>
           </li>
         </ul>
-        <a class="btn btn-sm btn-outline-success my-2 my-sm-0" tabindex="-1" href="<?=Common::relativeUrlToAbsolute('/user/login?return=' . rawurlencode(getenv('REQUEST_URI')))?>">Log in</a>
+<?      if (!$_header_user) { ?>
+        <a class="btn btn-sm btn-outline-success my-2 my-sm-0" tabindex="-1" href="<?=Common::relativeUrlToAbsolute('/user/login?return=' . rawurlencode((getenv('REQUEST_URI') == '/user/logout' ? '/tools' : getenv('REQUEST_URI'))))?>">Log in</a>
+<?      } else { ?>
+        <span class="nav-item navbar-text mx-3"><a href="<?=$_header_user->getURI()?>"><?=$_header_user->getName()?></a><?=($_header_user->isDisabled() ? ' <span class="font-weight-bold text-danger">(Disabled)</span>' : '')?></span>
+        <a class="btn btn-sm btn-outline my-2 my-sm-0" tabindex="-1" href="<?=Common::relativeUrlToAbsolute('/user/logout')?>">Log out</a>
+<?      } ?>
       </div>
     </nav>
 <!--
-      <a>Info Hub</a>
-      <a href="<?=Common::relativeUrlToAbsolute('/welcome')?>">Welcome</a>
       <a href="<?=Common::relativeUrlToAbsolute('/credits')?>">Contributors</a>
 <?php if (Common::$config->discord->enabled) { ?>
       <a href="<?=Common::relativeUrlToAbsolute('/discord')?>">Discord</a>
@@ -161,20 +166,7 @@ $_campaign_vultr = (
 <?php } ?>
 <?php } ?>
       <a>The Docs</a>
-      <a href="<?=Common::relativeUrlToAbsolute('/document/index')?>">Document Index</a>
-<?php if (!$_header_navigation_config->hide_search_documents) { ?>
-      <a href="<?=Common::relativeUrlToAbsolute('/document/search')?>">Search Documents</a>
-<?php } ?>
-<?php if (!$_header_navigation_config->hide_popular_documents) { ?>
-      <a href="<?=Common::relativeUrlToAbsolute('/document/popular')?>">Popular Documents</a>
-<?php } ?>
       <a href="<?=Common::relativeUrlToAbsolute('/packet/index')?>">Packet Index</a>
-<?php if (!$_header_navigation_config->hide_search_packets) { ?>
-      <a href="<?=Common::relativeUrlToAbsolute('/packet/search')?>">Search Packets</a>
-<?php } ?>
-<?php if (!$_header_navigation_config->hide_popular_packets) { ?>
-      <a href="<?=Common::relativeUrlToAbsolute('/packet/popular')?>">Popular Packets</a>
-<?php } ?>
       <a>Other Pages</a>
       <a href="<?=Common::relativeUrlToAbsolute('//files.bnetdocs.org/')?>">File Archive</a>
       <a href="<?=Common::relativeUrlToAbsolute('/privacy')?>">Privacy Notice</a>

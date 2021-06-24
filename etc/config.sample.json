@@ -19,11 +19,7 @@
       "BNETDocs has to take a brief moment to do some system maintenance. We'll be back shortly."
     ],
     "navigation": {
-      "front_page": "/welcome",
-      "hide_search_documents": false,
-      "hide_search_packets": false,
-      "hide_popular_documents": false,
-      "hide_popular_packets": false
+      "front_page": "/welcome"
     },
     "privacy": {
       "contact": {
