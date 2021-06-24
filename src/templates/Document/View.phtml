@@ -28,6 +28,7 @@ $edit_url = Common::relativeUrlToAbsolute('/document/edit?id=' . rawurlencode($o
 $delete_url = Common::relativeUrlToAbsolute('/document/delete?id=' . rawurlencode($object_id));
 $edit_visible = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY));
 $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE));
+require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container mb-3">
 <? if ($object) { ?>
@@ -36,11 +37,11 @@ require('./header.inc.phtml'); ?>
 <? if ($delete_visible) { ?>
   <span class="float-right ml-1"><a class="btn btn-sm btn-danger" href="<?=$delete_url?>" title="Delete">❌</a></span>
 <? } if ($edit_visible) { ?>
-  <span class="float-right ml-1"><a class="btn btn-sm btn-primary" href="<?=$edit_url?>" title="Edit">📝</a></span>
+  <span class="float-right ml-1"><a class="btn btn-sm btn-secondary" href="<?=$edit_url?>" title="Edit">📝</a></span>
 <? } ?>
 
   <h2><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h2>
-  <?=$object->getContent(true)?>
+  <?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getContent(true))?>
 
   <div class="card"><div class="card-body">
     <span class="float-right">
