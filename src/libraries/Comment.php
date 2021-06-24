@@ -194,6 +194,21 @@ class Comment implements JsonSerializable {
     return $this->parent_type;
   }
 
+  public function getParentUrl() {
+    if (!is_int($this->parent_type)) return false;
+    switch ($this->parent_type) {
+      case self::PARENT_TYPE_DOCUMENT: $page = 'document'; break;
+      case self::PARENT_TYPE_COMMENT: $page = 'comment'; break;
+      case self::PARENT_TYPE_NEWS_POST: $page = 'news'; break;
+      case self::PARENT_TYPE_PACKET: $page = 'packet'; break;
+      case self::PARENT_TYPE_SERVER: $page = 'server'; break;
+      case self::PARENT_TYPE_USER: $page = 'user'; break;
+      default: return false;
+    }
+    $page = '/' . $page . '/' . rawurlencode($this->parent_id);
+    return Common::relativeUrlToAbsolute($page);
+  }
+
   public function getUser() {
     return User::findUserById($this->user_id);
   }

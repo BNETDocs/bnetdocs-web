@@ -100,7 +100,6 @@ $register_disabled = ($this->getContext()->error == 'REGISTER_DISABLED');
 $safe_email    = htmlentities($this->getContext()->email   , ENT_HTML5, "UTF-8");
 $safe_username = htmlentities($this->getContext()->username, ENT_HTML5, "UTF-8");
 
-$this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
       <article>

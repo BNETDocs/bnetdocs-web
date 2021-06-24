@@ -18,7 +18,6 @@
       false,
       "BNETDocs has to take a brief moment to do some system maintenance. We'll be back shortly."
     ],
-    "mobile_site_enabled": true,
     "navigation": {
       "front_page": "/welcome",
       "hide_search_documents": false,

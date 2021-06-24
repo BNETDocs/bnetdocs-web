@@ -1,15 +1,34 @@
-<?php
-
+<?php /* vim: set colorcolumn=: */
 namespace BNETDocs\Templates;
-
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\VersionInfo;
-
 use \CarlBennett\MVC\Libraries\Common;
-
-if ( isset( Authentication::$user  )) {
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
+use \LogicException;
+$_header_user = Authentication::$user;
+if (!isset($title))
+{
+  throw new LogicException('template variable not set before include of header template: $title');
+}
+if (!isset($title_suffix)) /* this should be allowed to be empty, however */
+{
+  $title_suffix = ' &ndash; BNETDocs';
+}
+function _header_active($url, $sr)
+{
+  $current_url = parse_url(getenv('REQUEST_URI'), PHP_URL_PATH);
+  $match = (substr($current_url, 0, strlen($url)) == $url);
+  if (!$match) return '';
+  if ($sr)
+    return ' <span class="sr-only">(current)</span>';
+  else
+    return ' active';
+}
+if (isset(Authentication::$user))
+{
   $_header_user     = Authentication::$user;
   $_header_user_url = $_header_user->getURI();
   $_header_staff    = ($_header_user && $_header_user->isStaff());
@@ -18,19 +37,18 @@ if ( isset( Authentication::$user  )) {
   $_header_user_url = null;
   $_header_staff    = null;
 }
-
+$_header_documents = Document::getAllDocuments(['title', 'ASC']);
 $_header_navigation_config = Common::$config->bnetdocs->navigation;
 $_header_user_register_disabled = Common::$config->bnetdocs->user_register_disabled;
-
-if ( !Common::$config->bnetdocs->asset_versioning ) {
-  $_unique_asset = '';
-} else if ( !is_null( VersionInfo::$version->bnetdocs )) {
-  $_unique_asset = '?v=' . VersionInfo::$version->bnetdocs[1];
-} else {
-  $_unique_asset = '?v=' . date('YmdHis');
-}
-
-$_campaign_battleforthenet = (
+$_unique_asset = (
+  !Common::$config->bnetdocs->asset_versioning ? '' :
+  (
+    !is_null(VersionInfo::$version->bnetdocs) ?
+    '?v=' . VersionInfo::$version->bnetdocs[1] :
+    '?v=' . date('YmdHis')
+  )
+);
+/*$_campaign_battleforthenet = (
   !empty( Common::$config->bnetdocs->campaigns->battleforthenet ) ?
   '<script type="text/javascript" src="' .
   Common::relativeUrlToAbsolute(
@@ -44,117 +62,131 @@ $_campaign_vultr = (
   ) . '"><img id="vultr-campaign" src="' . Common::relativeUrlToAbsolute(
     '/a/vultr_logo_ondark.svg'
   ) . '"/></a>'  : ''
-);
-
+);*/
 ?><!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-US" class="h-100">
   <head>
-<?php echo Logger::getTimingHeader(); ?>
-    <title><?php echo $title; ?> - BNETDocs</title>
-<?php if (isset($url) && !empty($url)) { ?>
-    <link rel="canonical" href="<?php echo $url; ?>"/>
-<?php } ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<?php if (Common::$config->bnetdocs->mobile_site_enabled) { ?>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_asset); ?>" type="text/css" media="(min-width:1000px)"/>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main-mobile.css' . $_unique_asset); ?>" type="text/css" media="(max-width:999px)"/>
-<?php } else { ?>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_asset); ?>" type="text/css" media="all"/>
-<?php }
-      foreach ($this->additional_css as $path) { ?>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute($path . $_unique_asset); ?>" media="all"/>
-<?php } ?>
-    <link rel="icon" href="<?php echo Common::relativeUrlToAbsolute('/a/VSZX0bJ.png'); ?>" type="image/png" sizes="156x174"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute('/a/font/SourceSansPro-Regular-201508251844.css'); ?>"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute('/a/font/SourceCodePro-Regular-201508251844.css'); ?>"/>
-    <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute('/a/BNETDocs.js' . $_unique_asset); ?>" async><![CDATA[]]></script>
-    <?php echo $_campaign_battleforthenet; ?>
-    <link rel="alternate" href="<?php echo Common::relativeUrlToAbsolute('/news.rss'); ?>" type="application/rss+xml" title="BNETDocs News"/>
-    <link rel="license" href="<?php echo Common::relativeUrlToAbsolute('/legal'); ?>"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title><?=$title?> &ndash; BNETDocs</title>
+<?  if (isset($url) && !empty($url)) { ?>
+    <link rel="canonical" href="<?=$url?>"/>
+<?  } ?>
+<?=Logger::getTimingHeader()?>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/bootstrap-4.4.1-slate.min.css')?>" integrity="sha384-tfnMnZ6k273p3mDqSKikc9aXSvumltGq76Tbo+VMydpXeD5EDZwbQWo7nbZz+wc9" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/datatables.min.css' . $_unique_asset)?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/footer.css' . $_unique_asset)?>" type="text/css" media="all"/>
+<?  foreach ($this->additional_css as $css_path) {
+      echo '<link rel="stylesheet" type="text/css" href="' . Common::relativeUrlToAbsolute($css_path . $_unique_asset) . '" media="all"/>' . PHP_EOL;
+    } ?>
+    <link rel="icon" href="<?=Common::relativeUrlToAbsolute('/a/VSZX0bJ.png')?>" type="image/png" sizes="156x174"/>
+    <script type="text/javascript" src="<?=Common::relativeUrlToAbsolute('/a/BNETDocs.js' . $_unique_asset)?>" async><![CDATA[]]></script>
+    <link rel="alternate" href="<?=Common::relativeUrlToAbsolute('/news.rss')?>" type="application/rss+xml" title="BNETDocs News"/>
+    <link rel="license" href="<?=Common::relativeUrlToAbsolute('/legal')?>"/>
     <meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding"/>
-<?php if (!empty($description)) { ?>
-    <meta name="description" content="<?php echo $description; ?>"/>
-    <meta property="og:description" content="<?php echo $description; ?>"/>
-    <meta property="twitter:description" content="<?php echo $description; ?>"/>
-<?php } ?>
+<?  if (!empty($description)) { ?>
+    <meta name="description" content="<?=$description?>"/>
+    <meta property="og:description" content="<?=$description?>"/>
+    <meta property="twitter:description" content="<?=$description?>"/>
+<?  } ?>
     <meta property="og:site_name" content="BNETDocs"/>
     <meta property="og:locale" content="en_US"/>
     <meta property="twitter:card" content="summary"/>
     <meta property="twitter:site" content="@BNETDocs"/>
-    <meta property="og:title" content="<?php echo $title; ?>"/>
-    <meta property="twitter:title" content="<?php echo $title; ?>"/>
-<?php
-    $ogimage = false; $ogtype = false;
+    <meta property="og:title" content="<?=$title?>"/>
+    <meta property="twitter:title" content="<?=$title?>"/>
+<?  $ogimage = false; $ogtype = false;
     foreach ($this->opengraph as $og) {
       $ogkey = $og->getKey();
       $ogval = $og->getValue();
       if ($ogkey == "image") $ogimage = true;
       if ($ogkey == "type") $ogtype = true;
-      if ($ogkey == "url" || $ogkey == "image") $ogval = Common::relativeUrlToAbsolute($ogval);
-?>
-    <meta property="og:<?php echo $ogkey; ?>" content="<?php echo $ogval; ?>"/>
-<?php } if (!$ogimage) { ?>
-    <meta property="og:image" content="<?php echo Common::relativeUrlToAbsolute("/a/eNoi70A.png"); ?>"/>
-<?php } if (!$ogtype) { ?>
+      if ($ogkey == "url" || $ogkey == "image") $ogval = Common::relativeUrlToAbsolute($ogval); ?>
+    <meta property="og:<?=$ogkey?>" content="<?=$ogval?>"/>
+<?  } if (!$ogimage) { ?>
+    <meta property="og:image" content="<?=Common::relativeUrlToAbsolute('/a/eNoi70A.png')?>"/>
+<?  } if (!$ogtype) { ?>
     <meta property="og:type" content="website"/>
-<?php } ?>
+<?  } ?>
   </head>
-  <body>
-    <header class="main-page"><a href="<?php echo Common::relativeUrlToAbsolute($_header_navigation_config->front_page); ?>"><img src="<?php echo Common::relativeUrlToAbsolute("/a/VSZX0bJ.png"); ?>" style="float:left;margin-right:6px;height:32px;"/> BNETDocs</a> <span id="mobile-nav">&#9776;</span><?php echo $_campaign_vultr; ?></header>
-<?php if (!(isset($slim_ui) && $slim_ui)) { ?>
-    <nav>
+  <body class="d-flex flex-column h-100">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
+      <a class="navbar-brand" href="<?=Common::relativeUrlToAbsolute($_header_navigation_config->front_page)?>"><img src="<?=Common::relativeUrlToAbsolute('/a/VSZX0bJ.png')?>" style="float:left;margin-right:6px;height:32px;"/> BNETDocs</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item<?=_header_active('/welcome', false)?>">
+            <a class="nav-link" href="<?=Common::relativeUrlToAbsolute('/welcome')?>">Welcome<?=_header_active('/welcome', true)?></a>
+          </li>
+          <li class="nav-item<?=_header_active('/document/', false)?> dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarObjectsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documents</a>
+            <div class="dropdown-menu" aria-labelledby="navbarObjectsDropdown">
+<? if ($_header_staff) { ?>
+              <a class="dropdown-item<?=_header_active('/document/create', false)?> text-success" href="<?=Common::relativeUrlToAbsolute('/document/create')?>">Create Document<?=_header_active('/document/create', true)?></a>
+              <div class="dropdown-divider"></div>
+<?            }
+              foreach ($_header_documents as $doc) { $doc_url_part = '/document/' . $doc->getId(); ?>
+              <a class="dropdown-item<?=_header_active($doc_url_part, false)?>" href="<?=Common::relativeUrlToAbsolute($doc->getURI())?>"><?=filter_var($doc->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?><?=_header_active($doc_url_part, true)?></a>
+<?            } ?>
+            </div>
+          </li>
+        </ul>
+        <a class="btn btn-sm btn-outline-success my-2 my-sm-0" tabindex="-1" href="<?=Common::relativeUrlToAbsolute('/user/login?return=' . rawurlencode(getenv('REQUEST_URI')))?>">Log in</a>
+      </div>
+    </nav>
+<!--
       <a>Info Hub</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/welcome"); ?>">Welcome</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/credits"); ?>">Contributors</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/welcome')?>">Welcome</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/credits')?>">Contributors</a>
 <?php if (Common::$config->discord->enabled) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/discord"); ?>">Discord</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/discord')?>">Discord</a>
 <?php } ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/donate"); ?>">Donate</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/index"); ?>">Members</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/news"); ?>">News</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/servers"); ?>">Servers</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/donate')?>">Donate</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/user/index')?>">Members</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/news')?>">News</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/servers')?>">Servers</a>
       <a>Account</a>
 <?php if ($_header_user) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/logout"); ?>">Logout</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/changepassword"); ?>">Change Password</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/update"); ?>">Update Profile</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute($_header_user_url); ?>">View Profile</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/user/logout')?>">Logout</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/user/changepassword')?>">Change Password</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/user/update')?>">Update Profile</a>
+      <a href="<?=Common::relativeUrlToAbsolute($_header_user_url)?>">View Profile</a>
 <?php } else { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/login"); ?>">Log In</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/user/login?return=' . rawurlencode(getenv('REQUEST_URI')))?>">Log In</a>
 <?php if (!$_header_user_register_disabled) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/register"); ?>">Create</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/user/register')?>">Create</a>
 <?php } ?>
 <?php } ?>
       <a>The Docs</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/document/index"); ?>">Document Index</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/document/index')?>">Document Index</a>
 <?php if (!$_header_navigation_config->hide_search_documents) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/document/search"); ?>">Search Documents</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/document/search')?>">Search Documents</a>
 <?php } ?>
 <?php if (!$_header_navigation_config->hide_popular_documents) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/document/popular"); ?>">Popular Documents</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/document/popular')?>">Popular Documents</a>
 <?php } ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index"); ?>">Packet Index</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/packet/index')?>">Packet Index</a>
 <?php if (!$_header_navigation_config->hide_search_packets) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/search"); ?>">Search Packets</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/packet/search')?>">Search Packets</a>
 <?php } ?>
 <?php if (!$_header_navigation_config->hide_popular_packets) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/popular"); ?>">Popular Packets</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/packet/popular')?>">Popular Packets</a>
 <?php } ?>
       <a>Other Pages</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("//files.bnetdocs.org/"); ?>">File Archive</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/privacy"); ?>">Privacy Notice</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>">Legal Policies</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("//redux.bnetdocs.org/"); ?>">BNETDocs Redux</a>
+      <a href="<?=Common::relativeUrlToAbsolute('//files.bnetdocs.org/')?>">File Archive</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/privacy')?>">Privacy Notice</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/legal')?>">Legal Policies</a>
+      <a href="<?=Common::relativeUrlToAbsolute('//redux.bnetdocs.org/')?>">BNETDocs Redux</a>
 <?php if ($_header_staff) { ?>
       <a>Site Admin</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/document/create"); ?>">Create Document</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/news/create"); ?>">Create News Post</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/create"); ?>">Create Packet</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/server/create"); ?>">Create Server</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/eventlog/index"); ?>">Event Log</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/document/create')?>">Create Document</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/news/create')?>">Create News Post</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/packet/create')?>">Create Packet</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/server/create')?>">Create Server</a>
+      <a href="<?=Common::relativeUrlToAbsolute('/eventlog/index')?>">Event Log</a>
 <?php } ?>
-    </nav>
-    <main>
-<?php } else { ?>
-    <main class="slim">
-<?php } ?>
+-->
+<main>

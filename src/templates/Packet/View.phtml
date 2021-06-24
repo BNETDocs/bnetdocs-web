@@ -63,12 +63,9 @@ $edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
 $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
                 & User::OPTION_ACL_PACKET_DELETE));
 
-$this->additional_css[] = "/a/table-keypair.css";
-$this->additional_css[] = "/a/comments.css";
-if ($logged_in) $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
-      <article>
+      <div class="container">
 <?php if ($object) { ?>
         <a href="https://twitter.com/share?text=<?php echo urlencode($packet_id . " " . $object->getPacketName()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
@@ -139,5 +136,5 @@ require("./Comment/Section.inc.phtml");
         <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
         <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
 <?php } ?>
-      </article>
+      </div>
 <?php require("./footer.inc.phtml"); ?>

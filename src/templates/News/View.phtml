@@ -55,12 +55,9 @@ if ($object) {
   $user_avatar = $user->getAvatarURI(22);
 }
 
-$this->additional_css[] = "/a/news.css";
-$this->additional_css[] = "/a/comments.css";
-if ($logged_in) $this->additional_css[] = "/a/forms.css";
 require("./header.inc.phtml");
 ?>
-      <article>
+      <article class="container mb-3">
 <?php if ($object) { ?>
         <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
         <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
@@ -84,7 +81,7 @@ require("./header.inc.phtml");
           <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/>&nbsp;<?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
         </footer>
       </article>
-      <article>
+      <article class="container mb-3">
 <?php
 
 $comment_parent_type = Comment::PARENT_TYPE_NEWS_POST;

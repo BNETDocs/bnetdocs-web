@@ -1,72 +1,61 @@
-<?php
-
+<?php /* vim: set colorcolumn=: */
 namespace BNETDocs\Templates\Comment;
-
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Delete Comment";
-$description = "This form allows an individual to delete a comment.";
-
-$this->opengraph->attach(new Pair("url", "/comment/delete"));
-$this->opengraph->attach(new Pair("type", "article"));
-
-switch ($this->getContext()->error) {
-  case "ACL_NOT_SET":
-    $message = "You do not have the privilege to delete comments.";
-    break;
-  case "NOT_FOUND":
-    $message = "Cannot find comment by that id.";
-    break;
-  case "NOT_LOGGED_IN":
-    $message = "You must be logged in to delete comments.";
-    break;
-  case "INTERNAL_ERROR":
-    $message = "An internal error occurred while processing your request. "
-      . "Our staff have been notified of the issue. Try again later.";
-    break;
-  default:
-    $message = $this->getContext()->error;
+$title = 'Delete Comment';
+$description = 'This page confirms if the user wishes to delete a comment.';
+$this->opengraph->attach(new Pair('url', '/comment/delete'));
+$this->opengraph->attach(new Pair('type', 'article'));
+switch ($this->getContext()->error)
+{
+  case 'ACL_NOT_SET': $message = 'You do not have the privilege to delete comments.'; break;
+  case 'NOT_FOUND': $message = 'Cannot find comment by that id.'; break;
+  case 'NOT_LOGGED_IN': $message = 'You must be logged in to delete comments.'; break;
+  case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  default: $message = $this->getContext()->error;
 }
-
 $c = $this->getContext()->comment;
-if ($c) {
+if ($c)
+{
   $c_id          = $c->getId();
+  $c_parent_url  = $c->getParentUrl();
   $c_user        = $c->getUser();
+  $c_user_avatar = $c_user->getAvatarURI(22);
   $c_user_id     = $c->getUserId();
   $c_user_name   = $c_user->getName();
   $c_user_url    = $c_user->getURI();
-  $c_user_avatar = $c_user->getAvatarURI(22);
 }
-
-$this->additional_css[] = "/a/comments.css";
-$this->additional_css[] = "/a/forms.css";
-require("./header.inc.phtml");
-?>
-      <article>
+$id = $this->getContext()->id;
+require('./header.inc.phtml'); ?>
+<div class="container mb-3">
 <?php if (is_null($this->getContext()->error)) { ?>
-        <header>Delete Comment</header>
-        <form method="POST" action="?id=<?php echo $this->getContext()->id; ?>">
-          <section>
-            <p>Are you sure you wish to delete this comment?</p>
-            <hr/><table class="comments"><tbody>
-              <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><?php echo $c->getContent(true); ?></td></tr>
-            </tbody></table><hr/>
-            <p><input type="submit" value="Delete Comment" tabindex="1" autofocus="autofocus"/></p>
-          </section>
-        </form>
+
+  <h2 class="text-danger">Delete Comment</h2>
+  <p class="text-danger">Are you sure you wish to delete this comment?</p>
+  <form method="POST" action="?id=<?=rawurlencode($id)?>">
+    <table class="table table-striped"><tbody>
+      <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><?php echo $c->getContent(true); ?></td></tr>
+    </tbody></table>
+    <a class="btn btn-primary" href="javascript:history.go(-1);">Back</a>
+    <input class="btn btn-danger" type="submit" value="Delete" tabindex="1" autofocus="autofocus"/>
+  </form>
+
 <?php } else if ($this->getContext()->error === false) { ?>
-        <header class="green">Comment Deleted</header>
-        <section class="green">
-          <p>You have successfully deleted the comment!</p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
+
+  <h2 class="text-success">Delete Comment</h2>
+  <div class="alert alert-success">
+    <p class="mb-0"><strong>The comment was successfully deleted!</strong></p>
+  </div>
+  <a class="btn btn-primary" href="<?=$c_parent_url?>">Back</a>
+
 <?php } else { ?>
-        <header class="red">Delete Comment</header>
-        <section class="red">
-          <p>An error occurred while attempting to delete the comment.</p>
-          <p><?php echo $message; ?></p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
+
+  <h2 class="text-danger">Delete Comment</h2>
+  <div class="alert alert-danger">
+    <p class="mb-0"><strong>An error occurred while attempting to delete the comment:</strong></p>
+    <p class="mb-0"><?=$message?></p>
+  </div>
+  <a class="btn btn-primary" href="<?=$c_parent_url?>">Back</a>
+
 <?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+</div>
+<?php require('./footer.inc.phtml'); ?>

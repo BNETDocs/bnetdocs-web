@@ -1,89 +1,64 @@
-<?php
-
+<?php /* vim: set colorcolumn=: */
 namespace BNETDocs\Templates\Document;
-
 use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\User;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$comments     = $this->getContext()->comments;
-$object       = $this->getContext()->document;
-$object_id    = $this->getContext()->document_id;
-
-$logged_in    = Authentication::$user;
+$comments = $this->getContext()->comments;
+$object = $this->getContext()->document;
+$object_id = $this->getContext()->document_id;
+$logged_in = Authentication::$user;
 $logged_in_id = ($logged_in ? $logged_in->getId() : null);
-
-$title       = "Document Not Found";
-$description = "The requested document does not exist or could not be found.";
-
-$this->opengraph->attach(new Pair("type", "article"));
-
-$url = Common::relativeUrlToAbsolute("/document/" . urlencode($object_id));
-
-if ($object) {
-
-  $url         = $object->getURI();
-
-  $title       = $object->getTitle();
-  $description = Common::stripUpTo(trim(filter_var(
-    $object->getContent(true), FILTER_SANITIZE_STRING
-  )), "\n", 300);
-
+$title = 'Document Not Found';
+$description = 'The requested document does not exist or could not be found.';
+$this->opengraph->attach(new Pair('type', 'article'));
+$url = Common::relativeUrlToAbsolute('/document/' . rawurlencode($object_id));
+if ($object)
+{
+  $url = $object->getURI();
+  $title = $object->getTitle();
+  $description = Common::stripUpTo(trim(filter_var($object->getContent(true), FILTER_SANITIZE_STRING)), "\n", 300);
+  $created_dt = $object->getCreatedDateTime();
+  $edited_dt = $object->getEditedDateTime();
   $user = $object->getUser();
-
 }
+$this->opengraph->attach(new Pair('url', $url));
+$edit_url = Common::relativeUrlToAbsolute('/document/edit?id=' . rawurlencode($object_id));
+$delete_url = Common::relativeUrlToAbsolute('/document/delete?id=' . rawurlencode($object_id));
+$edit_visible = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY));
+$delete_visible = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE));
+require('./header.inc.phtml'); ?>
+<div class="container mb-3">
+<? if ($object) { ?>
+  <span class="float-right ml-1"><a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a></span>
+  <span class="float-right ml-1"><a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a></span>
+<? if ($delete_visible) { ?>
+  <span class="float-right ml-1"><a class="btn btn-sm btn-danger" href="<?=$delete_url?>" title="Delete">❌</a></span>
+<? } if ($edit_visible) { ?>
+  <span class="float-right ml-1"><a class="btn btn-sm btn-primary" href="<?=$edit_url?>" title="Edit">📝</a></span>
+<? } ?>
 
-$this->opengraph->attach(new Pair("url", $url));
+  <h2><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h2>
+  <?=$object->getContent(true)?>
 
-$edit_url       = Common::relativeUrlToAbsolute("/document/edit?id=" . urlencode($object_id));
-$delete_url     = Common::relativeUrlToAbsolute("/document/delete?id=" . urlencode($object_id));
-$edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
-                & User::OPTION_ACL_DOCUMENT_MODIFY));
-$delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
-                & User::OPTION_ACL_DOCUMENT_DELETE));
-
-$this->additional_css[] = "/a/comments.css";
-if ($logged_in) $this->additional_css[] = "/a/forms.css";
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if ($object) { ?>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-<?php if ($edit_visible) { ?>
-        <a href="<?php echo $edit_url; ?>" class="header-button float-right">Edit</a>
-<?php } ?>
-<?php if ($delete_visible) { ?>
-        <a href="<?php echo $delete_url; ?>" class="header-button float-right">Delete</a>
-<?php } ?>
-        <header><a href="<?php echo $url; ?>"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></a></header>
-        <section>
-<?php echo $object->getContent(true); ?>
-        </section>
-        <footer>
-<?php if ($object->getEditedDateTime() !== null) { ?>
-          <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<?php echo $object->getEditedDateTime()->format('c'); ?>"><?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>
-<?php } else { ?>
-          <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
-<?php } ?>
-<?php if ($user !== null) { ?>
-          <span><a href="<?php echo $user->getURI(); ?>"><img class="avatar" src="<?php echo $user->getAvatarURI(22); ?>"/> <?php echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a></span>
-<?php } ?>
-        </footer>
-      </article>
-      <article>
-<?php 
-
-$comment_parent_type = Comment::PARENT_TYPE_DOCUMENT;
-require("./Comment/Section.inc.phtml");
-
-      } else { ?>
-        <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
-        <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
-<?php } ?>
-      </article>
-
-<?php require("./footer.inc.phtml"); ?>
+  <div class="card"><div class="card-body">
+    <span class="float-right">
+      <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
+<? if ($edited_dt) { ?>
+      | Edited: <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
+<? } ?>
+    </span>
+<? if ($user !== null) { ?>
+    <span><a href="<?php echo $user->getURI(); ?>"><img class="avatar" src="<?php echo $user->getAvatarURI(22); ?>"/> <?php echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a></span>
+<? } ?>
+  </div></div>
+<? $comment_parent_type = Comment::PARENT_TYPE_DOCUMENT; require('./Comment/Section.inc.phtml');
+  } else { ?>
+  <div class="alert alert-danger">
+    <p><strong><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></strong></p>
+    <p class="mb-0"><?=filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></p>
+  </div>
+<? } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>
