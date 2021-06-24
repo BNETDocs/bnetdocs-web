@@ -1,82 +1,41 @@
-<?php
-
+<?php /* vim: set colorcolumn=: */
 namespace BNETDocs\Templates\Document;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Edit Document";
-$description = "This form allows an individual to edit a document.";
-
-$this->opengraph->attach(new Pair("url", "/document/edit"));
-$this->opengraph->attach(new Pair("type", "article"));
-
-switch ($this->getContext()->error) {
-  case "ACL_NOT_SET":
-    $message = "You do not have the privilege to edit documents.";
-    break;
-  case "NOT_FOUND":
-    $message = "Cannot find document by that id.";
-    break;
-  case "EMPTY_TITLE":
-    $message = "The title of the document is required.";
-    break;
-  case "EMPTY_CONTENT":
-    $message = "The content of the document is required.";
-    break;
-  case "INTERNAL_ERROR":
-    $message = "An internal error occurred while processing your request. "
-      . "Our staff have been notified of the issue. Try again later.";
-    break;
-  default:
-    $message = $this->getContext()->error;
+$title = 'Edit Document';
+$description = 'This form allows an individual to edit a document.';
+$this->opengraph->attach(new Pair('url', '/document/edit'));
+$this->opengraph->attach(new Pair('type', 'article'));
+$document_id = $this->getContext()->document_id;
+$document_url = ($this->getContext()->document ? $this->getContext()->document->getURI() : Common::relativeUrlToAbsolute('/document/' . rawurlencode($document_id)));
+$error = $this->getContext()->error;
+switch ($error)
+{
+  case 'ACL_NOT_SET': $message = 'You do not have the privilege to edit documents.'; break;
+  case 'NOT_FOUND': $message = 'Cannot find document by that id.'; break;
+  case 'EMPTY_TITLE': $message = 'The title of the document is required.'; break;
+  case 'EMPTY_CONTENT': $message = 'The content of the document is required.'; break;
+  case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  default: $message = $error;
 }
-
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if ($this->getContext()->error !== false) { ?>
-        <header>Edit Document</header>
-<?php if (!empty($message)) { ?>
-        <section class="red"><p><?php echo $message; ?></p></section>
-<?php } ?>
-<?php if ($this->getContext()->error != "NOT_FOUND") { ?>
-        <form method="POST" action="?id=<?php echo
-            htmlspecialchars($this->getContext()->document_id, ENT_HTML5, "UTF-8"); ?>">
-          <section>
-            <label for="title">Title:</label><br/>
-            <input type="text" name="title" id="title" tabindex="1" required
-              autofocus="autofocus" value="<?php echo
-                filter_var($this->getContext()->title, FILTER_SANITIZE_STRING);
-              ?>"/>
-          </section>
-          <section>
-            <label for="content">Content:</label>
-            <span style="float:right;">
-              <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
-              <input type="checkbox" name="markdown" id="markdown" tabindex="3"
-                title="Use markdown or use raw HTML" value="1"<?php
-                  if ($this->getContext()->markdown)
-                    echo " checked=\"checked\"";
-                ?>/>
-            </span>
-            <textarea name="content" id="content" tabindex="2" required
-              style="height:200px;"><?php echo
-                htmlspecialchars($this->getContext()->content, ENT_HTML5, "UTF-8");
-              ?></textarea>
-          </section>
-          <section>
-            <input type="submit" name="publish" value="Publish" tabindex="4"/>
-            <input type="submit" name="save" value="Unpublish" tabindex="5"/>
-          </section>
-        </form>
-<?php } ?>
-<?php } else { ?>
-        <header class="green">Edit Document</header>
-        <section class="green">
-          <p>Your document has been edited.</p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+$form_content = filter_var($this->getContext()->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$form_markdown = $this->getContext()->markdown;
+$form_title = filter_var($this->getContext()->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+require('./header.inc.phtml'); ?>
+<div class="container mb-3">
+  <h1><?=$title?></h1>
+  <p><?=$description?></p>
+<?  if (is_null($error) || $error == 'NOT_FOUND') {
+      require('./Document/Form.inc.phtml');
+    } else if ($error !== false) { ?>
+  <div class="alert alert-danger">
+    <p class="mb-0"><?=$message?></p>
+  </div>
+<?  } else { ?>
+  <div class="alert alert-success">
+    <p class="mb-0">The document was successfully edited!</p>
+  </div>
+  <a class="btn btn-primary" href="<?=Common::relativeUrlToAbsolute('/document/' . rawurlencode($document_id))?>">Back</a>
+<?  } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>

@@ -40,7 +40,7 @@ require('./header.inc.phtml'); ?>
   <span class="float-right ml-1"><a class="btn btn-sm btn-secondary" href="<?=$edit_url?>" title="Edit">📝</a></span>
 <? } ?>
 
-  <h2><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h2>
+  <h1 class="display-4"><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
   <?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getContent(true))?>
 
   <div class="card"><div class="card-body">

@@ -6,50 +6,35 @@ $title = 'Create Document';
 $description = 'This page enables a user to create documents on the site.';
 $this->opengraph->attach(new Pair('url', '/document/create'));
 $this->opengraph->attach(new Pair('type', 'article'));
-switch ($this->getContext()->error)
+$document_id = null;
+$document_url = null;
+$error = $this->getContext()->error;
+switch ($error)
 {
   case 'ACL_NOT_SET': $message = 'You do not have the privilege to create documents.'; break;
   case 'EMPTY_TITLE': $message = 'The title of the document is required.'; break;
   case 'EMPTY_CONTENT': $message = 'The content of the document is required.'; break;
   case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
-  default: $message = $this->getContext()->error;
+  default: $message = $error;
 }
 $form_content = filter_var($this->getContext()->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $form_markdown = $this->getContext()->markdown;
 $form_title = filter_var($this->getContext()->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 require('./header.inc.phtml'); ?>
 <div class="container mb-3">
-  <h2>Create Document</h2>
-<?  if ($this->getContext()->error !== false) { ?>
-<?    if (!empty($message)) { ?>
+  <h1><?=$title?></h1>
+  <p><?=$description?></p>
+<?  if ($error !== false) {
+      if (!empty($message)) { ?>
   <div class="alert alert-danger">
     <p class="mb-0"><?=$message?></p>
   </div>
-<?    } ?>
-  <form method="POST" action="?">
-    <div class="form-group">
-      <label class="font-weight-bold" class="form-label" for="title">Title:</label><br/>
-      <input class="form-control bg-dark text-light" type="text" name="title" id="title" tabindex="1" required autofocus="autofocus" value="<?=$form_title?>"/>
-    </div>
-    <div class="form-group">
-      <label class="font-weight-bold" for="content">Content:</label>
-      <div class="custom-control custom-switch float-right">
-        <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="3" title="Use markdown or use raw HTML" value="1"<?=($form_markdown ? ' checked="checked"' : '')?>/>
-        <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown</label>
-      </div>
-      <textarea class="border border-secondary form-control bg-dark text-light" name="content" id="content" tabindex="2" required style="height:200px;"><?=$form_content?></textarea>
-    </div>
-    <div class="form-group text-center">
-      <a class="btn btn-primary" href="javascript:history.go(-1);" tabindex="4">Back</a>
-      <span class="m-1"></span>
-      <input class="btn btn-secondary" type="submit" name="save" value="Save as Draft" tabindex="5"/>
-      <input class="btn btn-success" type="submit" name="publish" value="Publish" tabindex="6"/>
-    </div>
-  </form>
-<?  } else { ?>
+<?    }
+      require('./Document/Form.inc.phtml'); 
+    } else { ?>
   <div class="alert alert-success">
     <p class="mb-0">The document has been created.</p>
   </div>
 <?  } ?>
 </div>
-<? require("./footer.inc.phtml"); ?>
+<? require('./footer.inc.phtml'); ?>
