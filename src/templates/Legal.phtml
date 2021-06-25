@@ -1,22 +1,17 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Legal Policies";
-$description = "BNETDocs Disclaimer, Terms of Service, & License Agreement";
-
-$this->opengraph->attach(new Pair("url", "/legal"));
-$this->opengraph->attach(new Pair("type", "article"));
-
-require("./header.inc.phtml");
-?>
-      <article>
-        <header>Disclaimer &amp; Terms of Service</header>
-        <section>
-          <p>
+$title = 'Legal Policies';
+$description = 'BNETDocs Disclaimer, Terms of Service, & License Agreement';
+$this->opengraph->attach(new Pair('url', '/legal'));
+$this->opengraph->attach(new Pair('type', 'article'));
+$email_domain = $this->getContext()->email_domain;
+$email_mailbox = $this->getContext()->email_mailbox;
+require('./header.inc.phtml'); ?>
+<div class="container mb-3">
+  <h1>Disclaimer &amp; Terms of Service</h1>
+  <p>
 BNETDocs is a documentation and discussion website for Blizzard Entertainment's
 Battle.net&trade; and in-game protocols. You hereby acknowledge that BNETDocs
 content is offered as is and without warranty. BNETDocs content may be
@@ -25,65 +20,61 @@ affiliated or partnered with Blizzard Entertainment in absolutely any way.
 Battle.net&trade;, Starcraft&trade;, Warcraft&trade;, and Diablo&trade; are
 trademarks or registered trademarks of Blizzard Entertainment, Inc., in the U.S.
 and/or other countries.
-          </p>
-          <p>By using this website, you understand and/or agree to the following:</p>
-          <ol class="decimal">
-            <li>BNETDocs is in no way affiliated with or endorsed by Blizzard Entertainment or its brands, and is not intended to compete with or undermine Blizzard or Battle.net&trade;.</li>
-            <li>All aforementioned trademarks mentioned here and hereafter are the property of their respective owners.</li>
-            <li>The information provided at this website ("content") is collected knowledge from years of observations from multiple sources and may be inherently inaccurate or incomplete.</li>
-            <li>BNETDocs does not guarantee the safety or validity of its content.</li>
-            <li>BNETDocs disowns any and all responsibility and liability of its users' actions, performances, wrongdoing, or other matter executed by its users, including but not limited to:
-              <ol class="lower-alpha">
-                <li>knowingly or unknowingly violating any of Blizzard's Terms of Services,</li>
-                <li>monetary gains from or losses to Blizzard's brands,</li>
-                <li>or monetary gains from or losses to BNETDocs' users' brands.</li>
-              </ol>
-            </li>
-            <li>By registering an account at BNETDocs, the account is the sole relationship between BNETDocs and its user. No relationship exists outside of the account.</li>
-            <li>Account data stored with BNETDocs is privately secured and encrypted, hashed, or masked where possible.</li>
-            <li>Content made available to the general public via BNETDocs is owned by the general public and may be modified by registering an account with BNETDocs.</li>
-            <li>Accounts associated with content at BNETDocs are considered the author or owner of that content, with the knowledge that their content can be modified by other accounts.</li>
-            <li>Authors or owners of content do not have extra rights to that content.</li>
-            <li>Accounts may be disassociated from content in the event that an error in judgment or processing was found. In such an event, the content may be reassociated to the correct account.</li>
-            <li>BNETDocs reserves the right to deny anyone an account for any reason, including but not limited to:
-              <ol class="lower-alpha">
-                <li>if the user has shown attempts to harm or disrupt service,</li>
-                <li>if the user already has an account,</li>
-                <li>or if the identity of the user cannot be verified.</li>
-              </ol>
-            </li>
-            <li>If an account is banned from BNETDocs or otherwise is removed, all content authored or owned by the account may become disassociated depending on severity and outcome of the actions taken.</li>
-            <li>Accounts may be granted additional privileges to manage other accounts on behalf of BNETDocs. Any account with these kind of privileges are and will be labelled staff accounts.</li>
-            <li>Accounts do not have the authority to add, modify, or remove content until those privileges have been assigned by a staff account.</li>
-            <li>Accounts with the privileges to add, modify, or remove content are and will be labelled editor accounts. Editor accounts, or just simply "editors", may be referred to as maintainers of BNETDocs.</li>
-            <li>Staff accounts have the authority to act on behalf of BNETDocs and speak officially, including but not limited to:
-              <ol class="lower-alpha">
-                <li>the ability to add, modify, or remove BNETDocs news posts,</li>
-                <li>the ability to add, modify, or disable accounts,</li>
-                <li>and the ability to add, modify, or remove all other content.</li>
-              </ol>
-            </li>
-            <li>BNETDocs reserves the right to modify this legal page at its own discretion with or without notification to its users.</li>
-            <li>BNETDocs news posts are considered press articles and all content used within a news post or otherwise news article are considered governed under the United States first amendment and fair use rights.</li>
-            <li>A "Donation" as defined further in this document is a transaction of sending currency to BNETDocs.</li>
-            <li>Donations to BNETDocs are non-refundable and non-transferrable.</li>
-            <li>Donation's purpose is to pay for hosting of this website and all associated costs, and to further the development of open-source software (OSS).</li>
-            <li>Donations are not acceptable as payment for goods, products, or merchant items.</li>
-            <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net&trade;'s Terms of Service.</li>
-            <li>All questions and concerns related to material on this website or other matter should be communicated to <a href="mailto:staff@bnetdocs.org?subject=Legal%20Matter%20Attn.:%20BNETDocs">staff@bnetdocs.org</a>. Responses to this communication medium are not guaranteed due to the volume of emails that may be received.</li>
-          </ol>
-        </section>
-      </article>
-      <article>
-        <header>License Agreement</header>
-        <section>
-          <p>For a plaintext version of the document below, <a href="<?php echo Common::relativeUrlToAbsolute("/legal.txt"); ?>">click here</a>.</p>
-          <p><pre><code><?php
-            echo htmlentities($this->getContext()->license, ENT_HTML5, "UTF-8");
-            ?></code></pre></p>
-        </section>
-        <footer>
-          <time datetime="<?php echo $this->getContext()->license_version[1]->format('c'); ?>"><?php echo $this->getContext()->license_version[1]->format("l, F j, Y"); ?></time><? if ($this->getContext()->license_version[0]) { ?> (<a href="https://github.com/BNETDocs/bnetdocs-web/commit/<?php echo $this->getContext()->license_version[0]; ?>">version</a>)<? } ?>
-        </footer>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+  </p>
+  <p>By using this website, you understand and/or agree to the following:</p>
+  <ol class="decimal">
+    <li>BNETDocs is in no way affiliated with or endorsed by Blizzard Entertainment or its brands, and is not intended to compete with or undermine Blizzard or Battle.net&trade;.</li>
+    <li>All aforementioned trademarks mentioned here and hereafter are the property of their respective owners.</li>
+    <li>The information provided at this website ("content") is collected knowledge from years of observations from multiple sources and may be inherently inaccurate or incomplete.</li>
+    <li>BNETDocs does not guarantee the safety or validity of its content.</li>
+    <li>BNETDocs disowns any and all responsibility and liability of its users' actions, performances, wrongdoing, or other matter executed by its users, including but not limited to:
+      <ol class="lower-alpha">
+        <li>knowingly or unknowingly violating any of Blizzard's Terms of Services,</li>
+        <li>monetary gains from or losses to Blizzard's brands,</li>
+        <li>or monetary gains from or losses to BNETDocs' users' brands.</li>
+      </ol>
+    </li>
+    <li>By registering an account at BNETDocs, the account is the sole relationship between BNETDocs and its user. No relationship exists outside of the account.</li>
+    <li>Account data stored with BNETDocs is privately secured and encrypted, hashed, or masked where possible.</li>
+    <li>Content made available to the general public via BNETDocs is owned by the general public and may be modified by registering an account with BNETDocs.</li>
+    <li>Accounts associated with content at BNETDocs are considered the author or owner of that content, with the knowledge that their content can be modified by other accounts.</li>
+    <li>Authors or owners of content do not have extra rights to that content.</li>
+    <li>Accounts may be disassociated from content in the event that an error in judgment or processing was found. In such an event, the content may be reassociated to the correct account.</li>
+    <li>BNETDocs reserves the right to deny anyone an account for any reason, including but not limited to:
+      <ol class="lower-alpha">
+        <li>if the user has shown attempts to harm or disrupt service,</li>
+        <li>if the user already has an account,</li>
+        <li>or if the identity of the user cannot be verified.</li>
+      </ol>
+    </li>
+    <li>If an account is banned from BNETDocs or otherwise is removed, all content authored or owned by the account may become disassociated depending on severity and outcome of the actions taken.</li>
+    <li>Accounts may be granted additional privileges to manage other accounts on behalf of BNETDocs. Any account with these kind of privileges are and will be labelled staff accounts.</li>
+    <li>Accounts do not have the authority to add, modify, or remove content until those privileges have been assigned by a staff account.</li>
+    <li>Accounts with the privileges to add, modify, or remove content are and will be labelled editor accounts. Editor accounts, or just simply "editors", may be referred to as maintainers of BNETDocs.</li>
+    <li>Staff accounts have the authority to act on behalf of BNETDocs and speak officially, including but not limited to:
+      <ol class="lower-alpha">
+        <li>the ability to add, modify, or remove BNETDocs news posts,</li>
+        <li>the ability to add, modify, or disable accounts,</li>
+        <li>and the ability to add, modify, or remove all other content.</li>
+      </ol>
+    </li>
+    <li>BNETDocs reserves the right to modify this legal page at its own discretion with or without notification to its users.</li>
+    <li>BNETDocs news posts are considered press articles and all content used within a news post or otherwise news article are considered governed under the United States first amendment and fair use rights.</li>
+    <li>A "Donation" as defined further in this document is a transaction of sending currency to BNETDocs.</li>
+    <li>Donations to BNETDocs are non-refundable and non-transferrable.</li>
+    <li>Donation's purpose is to pay for hosting of this website and all associated costs, and to further the development of open-source software (OSS).</li>
+    <li>Donations are not acceptable as payment for goods, products, or merchant items.</li>
+    <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net&trade;'s Terms of Service.</li>
+    <li>All questions and concerns related to material on this website or other matter should be communicated to <code><?=filter_var($email_mailbox, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code> <span>at</span> <code><?=filter_var($email_domain, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code>, it will reach the appropriate person. Responses to this communication medium are not guaranteed due to the volume of emails that may be received.
+<? if (Common::$config->discord->enabled) { ?>
+    Alternatively, you may try reaching BNETDocs staff via <a href="<?=Common::relativeUrlToAbsolute('/discord')?>">Discord</a>.
+<? } ?></li>
+  </ol>
+</div>
+<div class="container mb-3">
+  <h1>License Agreement</h1>
+  <p>For a plaintext version of the document below, <a href="<?=Common::relativeUrlToAbsolute('/legal.txt')?>">click here</a>.</p>
+  <p>Last updated: <time datetime="<?=$this->getContext()->license_version[1]->format('c')?>"><?=$this->getContext()->license_version[1]->format('l, F j, Y')?></time><? if ($this->getContext()->license_version[0]) { ?> (<a href="https://github.com/BNETDocs/bnetdocs-web/commit/<?=$this->getContext()->license_version[0]?>">version</a>)<? } ?></p>
+  <pre class="border border-primary overflow-auto pre-scrollable rounded bg-dark text-light"><code class="language-plaintext"><?=filter_var($this->getContext()->license, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></pre>
+</div>
+<? require('./footer.inc.phtml'); ?>

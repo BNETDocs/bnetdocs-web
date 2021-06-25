@@ -1,15 +1,12 @@
 <?php
-
 namespace BNETDocs\Controllers;
 
 use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Legal as LegalModel;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
-
 use \DateTime;
 use \DateTimeZone;
 
@@ -19,6 +16,8 @@ class Legal extends Controller {
 
   public function &run(Router &$router, View &$view, array &$args) {
     $model                  = new LegalModel();
+    $model->email_domain    = Common::$config->bnetdocs->privacy->contact->email_domain;
+    $model->email_mailbox   = Common::$config->bnetdocs->privacy->contact->email_mailbox;
     $model->license         = file_get_contents(self::LICENSE_FILE);
     $model->license_version = VersionInfo::$version->bnetdocs[3];
 
