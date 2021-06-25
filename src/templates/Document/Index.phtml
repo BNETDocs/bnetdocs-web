@@ -16,66 +16,63 @@ require('./header.inc.phtml'); ?>
     <label for="order">Order by:</label>
     <select class="form-control form-control-sm" name="order" id="order" onchange="form.submit();"
       style="display:inline-block;width:200px;">
-      <option value="created-asc"<?php
+      <option value="created-asc"<?
         if ($order === 'created-asc') { echo ' selected="selected"';
         } ?>>Created (Ascending)</option>
-      <option value="created-desc"<?php
+      <option value="created-desc"<?
         if ($order === 'created-desc') { echo ' selected="selected"';
         } ?>>Created (Descending)</option>
-      <option value="id-asc"<?php
+      <option value="id-asc"<?
         if ($order === 'id-asc') { echo ' selected="selected"';
         } ?>>Id (Ascending)</option>
-      <option value="id-desc"<?php
+      <option value="id-desc"<?
         if ($order === 'id-desc') { echo ' selected="selected"';
         } ?>>Id (Descending)</option>
-      <option value="title-asc"<?php
+      <option value="title-asc"<?
         if ($order === 'title-asc') { echo ' selected="selected"';
         } ?>>Title (Ascending)</option>
-      <option value="title-desc"<?php
+      <option value="title-desc"<?
         if ($order === 'title-desc') { echo ' selected="selected"';
         } ?>>Title (Descending)</option>
-      <option value="updated-asc"<?php
+      <option value="updated-asc"<?
         if ($order === 'updated-asc') { echo ' selected="selected"';
         } ?>>Updated (Ascending)</option>
-      <option value="updated-desc"<?php
+      <option value="updated-desc"<?
         if ($order === 'updated-desc') { echo ' selected="selected"';
         } ?>>Updated (Descending)</option>
-      <option value="user-id-asc"<?php
+      <option value="user-id-asc"<?
         if ($order === 'user-id-asc') { echo ' selected="selected"';
         } ?>>User Id (Ascending)</option>
-      <option value="user-id-desc"<?php
+      <option value="user-id-desc"<?
         if ($order === 'user-id-desc') { echo ' selected="selected"';
         } ?>>User Id (Descending)</option>
     </select>
     <input class="btn btn-sm btn-secondary" type="submit" value="Reorder"/>
   </form>
   <table class="table table-hover table-striped" id="docs_tbl">
-    <thead>
-      <tr>
-        <th class="left">Found <?php echo number_format($this->getContext()->sum_documents); ?> document<?php echo ($this->getContext()->sum_documents != 1 ? "s" : ""); ?></th>
-        <th class="left">Author</th>
-      </tr>
-    </thead><tbody>
-<?php foreach ($this->getContext()->documents as $document) {
-$user       = $document->getUser();
-if ($user) {
-  $user_url   = $user->getURI();
-  $avatar_url = $user->getAvatarURI(22);
-}
-?>
-      <tr>
-        <td><strong><a href="<?php echo $document->getURI(); ?>"><?php echo filter_var($document->getTitle(), FILTER_SANITIZE_STRING); ?></a></strong><br/><span style="color:#aaa;"><?php echo rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($document->getContent(true), FILTER_SANITIZE_STRING)), "\n", 90), ". ", 90), "."); ?></span></td>
-        <td><?php if ($user) { ?><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/>&nbsp;<?php echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><?php } else { ?>Anonymous<?php } ?></td>
-      </tr>
-<?php } ?>
+    <thead><tr><th class="left">Document</th><th class="left">Author</th></tr></thead><tbody>
+<?  foreach ($this->getContext()->documents as $document)
+    {
+      $doc_title = filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+      $doc_brief = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($document->getContent(true), FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.');
+      $doc_user = $document->getUser();
+      $doc_user_string = ($doc_user ?
+        sprintf('<a href="%s"><img class="img-fluid rounded mr-2" src="%s"/>%s</a>',
+          $doc_user->getURI(), $doc_user->getAvatarURI(40), filter_var($doc_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+        ) : 'Anonymous'
+      );
+      echo '<tr><td><strong><a href="' . $document->getURI() . '">' . $doc_title . '</a></strong><br/>'
+        . '<span class="text-muted">' . $doc_brief . '</span></td><td>' . $doc_user_string . '</td></tr>';
+    } ?>
   </tbody></table>
 </div>
-<?php ob_start(); ?>
+<? ob_start(); ?>
   <script type="text/javascript">
     $(document).ready(function(){
       $('#order_by_form').hide();
       $('#docs_tbl').DataTable({
-        "responsive": true
+        "language": {"zeroRecords": "No matching documents found"},
+        "responsive": true,
       });
     });
   </script>

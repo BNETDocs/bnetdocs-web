@@ -1,59 +1,46 @@
-<?php
-
+<?php /* vim: set colorcolumn=: */
 namespace BNETDocs\Templates\Document;
-
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Delete Document";
-$description = "This form allows an individual to delete a document.";
-
-$this->opengraph->attach(new Pair("url", "/document/delete"));
-$this->opengraph->attach(new Pair("type", "article"));
-
-switch ($this->getContext()->error) {
-  case "ACL_NOT_SET":
-    $message = "You do not have the privilege to delete documents.";
-    break;
-  case "NOT_FOUND":
-    $message = "Cannot find document by that id.";
-    break;
-  case "NOT_LOGGED_IN":
-    $message = "You must be logged in to delete documents.";
-    break;
-  case "INTERNAL_ERROR":
-    $message = "An internal error occurred while processing your request. "
-      . "Our staff have been notified of the issue. Try again later.";
-    break;
-  default:
-    $message = $this->getContext()->error;
+$title = 'Delete Document';
+$description = 'This form allows an individual to delete a document.';
+$this->opengraph->attach(new Pair('url', '/document/delete'));
+$this->opengraph->attach(new Pair('type', 'article'));
+$error = $this->getContext()->error;
+$id = $this->getContext()->id;
+$doc_title = $this->getContext()->title;
+switch ($error)
+{
+  case 'ACL_NOT_SET': $message = 'You do not have the privilege to delete documents.'; break;
+  case 'NOT_FOUND': $message = 'Cannot find document by that id.'; break;
+  case 'NOT_LOGGED_IN': $message = 'You must be logged in to delete documents.'; break;
+  case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  default: $message = $error;
 }
-
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if (is_null($this->getContext()->error)) { ?>
-        <header>Delete Document</header>
-        <form method="POST" action="?id=<?php echo
-            htmlspecialchars($this->getContext()->id, ENT_HTML5, "UTF-8"); ?>">
-          <section>
-            <p>Are you sure you wish to delete this document?</p>
-            <p><input type="text" readonly="readonly" value="<?php echo filter_var($this->getContext()->title, FILTER_SANITIZE_STRING); ?>" tabindex="1"/></p>
-            <p><input type="submit" value="Delete Document" tabindex="2" autofocus="autofocus"/></p>
-          </section>
-        </form>
-<?php } else if ($this->getContext()->error === false) { ?>
-        <header class="green">Document Deleted</header>
-        <section class="green">
-          <p>You have successfully deleted the document!</p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } else { ?>
-        <header class="red">Delete Document</header>
-        <section class="red">
-          <p>An error occurred while attempting to delete the document.</p>
-          <p><?php echo $message; ?></p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+require('./header.inc.phtml'); ?>
+<div class="container mb-3">
+<? if (is_null($this->getContext()->error)) { ?>
+  <h1 class="text-danger">Delete Document</h1>
+  <form method="POST" action="?id=<?=filter_var($id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>">
+    <div class="form-group">
+      <p class="text-danger">Are you sure you wish to delete this document?</p>
+      <div class="card text-light"><div class="card-body"><?=filter_var($doc_title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></div></div>
+    </div>
+    <div class="form-group text-center">
+      <a class="btn btn-primary" href="javascript:history.go(-1);" tabindex="1">Back</a>
+      <input class="btn btn-danger" type="submit" value="Delete Document" tabindex="2" autofocus="autofocus"/>
+    </div>
+  </form>
+<? } else if ($this->getContext()->error === false) { ?>
+  <h1 class="text-success">Document Deleted</h1>
+  <div class="alert alert-success">
+    <p class="mb-0">You have successfully deleted the document!</p>
+  </div>
+<? } else { ?>
+  <h1 class="text-danger">Delete Document</h1>
+  <div class="alert alert-danger">
+    <p>An error occurred while attempting to delete the document.</p>
+    <p class="mb-0"><?=$message?></p>
+  </div>
+<? } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>

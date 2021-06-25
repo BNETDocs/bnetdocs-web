@@ -250,6 +250,14 @@ class Document {
     return $this->user_id;
   }
 
+  public function isMarkdown() {
+    return ($this->options_bitmask & self::OPTION_MARKDOWN);
+  }
+
+  public function isPublished() {
+    return ($this->options_bitmask & self::OPTION_PUBLISHED);
+  }
+
   protected static function normalize(StdClass &$data) {
     $data->content          = (string) $data->content;
     $data->created_datetime = (string) $data->created_datetime;

@@ -22,6 +22,7 @@ if ($object)
   $created_dt = $object->getCreatedDateTime();
   $edited_dt = $object->getEditedDateTime();
   $user = $object->getUser();
+  $draft = !$object->isPublished();
 }
 $this->opengraph->attach(new Pair('url', $url));
 $edit_url = Common::relativeUrlToAbsolute('/document/edit?id=' . rawurlencode($object_id));
@@ -31,7 +32,10 @@ $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION
 require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container mb-3">
-<? if ($object) { ?>
+<? if ($object) {
+    if ($draft) { ?>
+  <div class="alert alert-warning">This document is marked as <strong>draft</strong>. Edit the document to <strong>publish</strong> it.</div>
+<?  } ?>
   <span class="float-right ml-1"><a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a></span>
   <span class="float-right ml-1"><a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a></span>
 <? if ($delete_visible) { ?>
