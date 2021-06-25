@@ -1,6 +1,6 @@
 /**
  *  BNETDocs, the documentation and discussion website for Blizzard protocols
- *  Copyright (C) 2003-2020  "Arta", Don Cullen "Kyro", Carl Bennett, others
+ *  Copyright (C) 2003-2021 "Arta", Don Cullen "Kyro", Carl Bennett, others
  *  This file is part of BNETDocs.
  *
  *  BNETDocs is free software: you can redistribute it and/or modify
@@ -53,18 +53,6 @@ function BNETDocs() {
     }
   };
 
-  this.fHookNavigationMenu = function() {
-    var mobile_nav = document.getElementById("mobile-nav");
-    mobile_nav.onclick = function(e) {
-      var nav = document.getElementsByTagName("nav")[0];
-      if (nav.style.display != "block") {
-        nav.style.display = "block";
-      } else {
-        nav.style.display = "";
-      }
-    };
-  };
-
   this.fSelectText = function(obj) {
     // copied from <http://goo.gl/dDuR8U>
     // adapted from Denis Sadowski (via StackOverflow.com)
@@ -92,7 +80,6 @@ function BNETDocs() {
 
   window.onload = function() {
     self.fHookExternalAnchors();
-    self.fHookNavigationMenu();
     self.fTimeToLocale();
   };
 
