@@ -22,8 +22,8 @@
     "license": "AGPL-3.0-or-later",
     "authors": [
         {
-            "name": "Carl Bennett",
-            "email": "carl@carlbennett.me"
+            "name": "Caaaaarrrrlll",
+            "email": "carl@bnetdocs.org"
         }
     ],
     "config": {
@@ -48,7 +48,6 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-mcrypt": "*",
-        "ext-memcached": "*",
         "ext-pdo": "*",
         "php-64bit": "^7.2",
         "phpmailer/phpmailer": "^6.0"
