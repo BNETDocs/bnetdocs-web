@@ -48,15 +48,17 @@ require('./header.inc.phtml'); ?>
   <?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getContent(true))?>
 
   <div class="card"><div class="card-body">
-    <span class="float-right">
+    <span class="float-right text-muted">
       <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
 <? if ($edited_dt) { ?>
-      | Edited: <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
+      | <strong>Edited:</strong> <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
 <? } ?>
     </span>
-<? if ($user !== null) { ?>
-    <span><a href="<?php echo $user->getURI(); ?>"><img class="avatar" src="<?php echo $user->getAvatarURI(22); ?>"/> <?php echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a></span>
-<? } ?>
+<?  echo ($user ?
+      sprintf('<a href="%s"><img class="img-fluid rounded mr-2" src="%s"/>%s</a>',
+        $user->getURI(), $user->getAvatarURI(40), filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+      ) : 'Anonymous'
+    ); ?>
   </div></div>
 <? $comment_parent_type = Comment::PARENT_TYPE_DOCUMENT; require('./Comment/Section.inc.phtml');
   } else { ?>

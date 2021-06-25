@@ -5,47 +5,32 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'All Documents';
-$description = 'This page is an index for all of the document pages on BNETDocs';
+$description = 'The index for all of the document pages on BNETDocs';
 $this->opengraph->attach(new Pair('url', '/document/index'));
 $order = $this->getContext()->order;
+$form_order_by = [
+  'created-asc' => 'Created (Ascending)',
+  'created-desc' => 'Created (Descending)',
+  'id-asc' => 'Id (Ascending)',
+  'id-desc' => 'Id (Descending)',
+  'title-asc' => 'Title (Ascending)',
+  'title-desc' => 'Title (Descending)',
+  'updated-asc' => 'Updated (Ascending)',
+  'updated-desc' => 'Updated (Descending)',
+  'user-id-asc' => 'User Id (Ascending)',
+  'user-id-desc' => 'User Id (Descending)',
+];
 require('./header.inc.phtml'); ?>
 <div class="container mb-3">
   <h2><?=$title?></h2>
   <p><?=$description?></p>
   <form method="GET" class="m-2" id="order_by_form">
-    <label for="order">Order by:</label>
-    <select class="form-control form-control-sm" name="order" id="order" onchange="form.submit();"
-      style="display:inline-block;width:200px;">
-      <option value="created-asc"<?
-        if ($order === 'created-asc') { echo ' selected="selected"';
-        } ?>>Created (Ascending)</option>
-      <option value="created-desc"<?
-        if ($order === 'created-desc') { echo ' selected="selected"';
-        } ?>>Created (Descending)</option>
-      <option value="id-asc"<?
-        if ($order === 'id-asc') { echo ' selected="selected"';
-        } ?>>Id (Ascending)</option>
-      <option value="id-desc"<?
-        if ($order === 'id-desc') { echo ' selected="selected"';
-        } ?>>Id (Descending)</option>
-      <option value="title-asc"<?
-        if ($order === 'title-asc') { echo ' selected="selected"';
-        } ?>>Title (Ascending)</option>
-      <option value="title-desc"<?
-        if ($order === 'title-desc') { echo ' selected="selected"';
-        } ?>>Title (Descending)</option>
-      <option value="updated-asc"<?
-        if ($order === 'updated-asc') { echo ' selected="selected"';
-        } ?>>Updated (Ascending)</option>
-      <option value="updated-desc"<?
-        if ($order === 'updated-desc') { echo ' selected="selected"';
-        } ?>>Updated (Descending)</option>
-      <option value="user-id-asc"<?
-        if ($order === 'user-id-asc') { echo ' selected="selected"';
-        } ?>>User Id (Ascending)</option>
-      <option value="user-id-desc"<?
-        if ($order === 'user-id-desc') { echo ' selected="selected"';
-        } ?>>User Id (Descending)</option>
+    <label for="order" class="font-weight-bold m-1">Order by:</label>
+    <select class="form-control form-control-sm" name="order" id="order" onchange="form.submit();" style="display:inline-block;width:200px;">
+<?  foreach ($form_order_by as $item_value => $item_label) {
+      $item_selected = ($order === $item_value);
+      echo sprintf('<option value="%s"%s>%s</option>' . PHP_EOL, $item_value, $item_selected, $item_label);
+    } ?>
     </select>
     <input class="btn btn-sm btn-secondary" type="submit" value="Reorder"/>
   </form>

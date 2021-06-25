@@ -19,7 +19,7 @@ function MarkdownBootstrapFix(string $v)
   $v = str_replace('<code>', '<code class="language-plaintext">', $v);
 
   // Code Blocks
-  $v = str_replace('<pre><code', '<pre class="border border-primary overflow-auto pre-scrollable rounded text-light"><code', $v);
+  $v = str_replace('<pre><code', '<pre class="border border-primary overflow-auto pre-scrollable rounded bg-dark text-light"><code', $v);
 
   return $v;
 }

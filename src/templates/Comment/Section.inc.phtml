@@ -10,7 +10,7 @@ $c_delete_visible_admin = ($logged_in && ($logged_in->getOptionsBitmask() & User
   <div class="col">
     <h2><a name="comments">Comments</a></h2>
 <? if (!$comments) { ?>
-    <div class="border border-secondary rounded-pill p-2"><p class="text-center mb-0"><em>no one has commented yet.</em></p></div>
+    <div class="border border-secondary m-auto rounded-pill p-2" style="max-width:400px;"><p class="text-center mb-0"><em>no one has commented yet.</em></p></div>
 <? } else { ?>
     <table class="table table-striped text-white-50"><tbody>
 <?    foreach ($comments as $c) {
