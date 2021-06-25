@@ -13,7 +13,6 @@ $title       = "News";
 $description = "BNETDocs News";
 $this->opengraph->attach(new Pair("url", "/news"));
 
-$this->additional_css[] = "/a/news.css";
 require("./header.inc.phtml");
 
 $news_posts = $this->getContext()->news_posts;
