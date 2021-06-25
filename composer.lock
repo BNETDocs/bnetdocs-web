@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ee0f9e4fd60c67086defe9a10ec4a82",
+    "content-hash": "882b82e13206b3a952268edd0c3b3e29",
     "packages": [
         {
             "name": "carlbennett/php-mvc",
