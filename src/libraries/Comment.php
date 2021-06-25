@@ -2,19 +2,19 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Markdown;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \JsonSerializable;
 use \PDO;
 use \PDOException;
+use \Parsedown;
 use \StdClass;
 
 class Comment implements JsonSerializable {
@@ -152,7 +152,8 @@ class Comment implements JsonSerializable {
     if (!$prepare) {
       return $this->content;
     }
-    $md = new Markdown();
+    $md = new Parsedown();
+    $md->setSafeMode(true); // unsafe user-input
     return $md->text(filter_var($this->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
   }
 

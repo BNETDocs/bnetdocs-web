@@ -2,18 +2,18 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Markdown;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
+use \Parsedown;
 use \StdClass;
 
 class Document {
@@ -146,7 +146,7 @@ class Document {
       return $this->content;
     }
     if ($this->options_bitmask & self::OPTION_MARKDOWN) {
-      $md = new Markdown();
+      $md = new Parsedown();
       return $md->text($this->content);
     } else {
       return $this->content;

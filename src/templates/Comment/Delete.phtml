@@ -27,19 +27,19 @@ if ($c)
 $id = $this->getContext()->id;
 require('./header.inc.phtml'); ?>
 <div class="container mb-3">
-<?php if (is_null($this->getContext()->error)) { ?>
+<? if (is_null($this->getContext()->error)) { ?>
 
   <h2 class="text-danger">Delete Comment</h2>
   <p class="text-danger">Are you sure you wish to delete this comment?</p>
   <form method="POST" action="?id=<?=rawurlencode($id)?>">
-    <table class="table table-striped"><tbody>
-      <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><?php echo $c->getContent(true); ?></td></tr>
+    <table class="table table-striped text-white-50"><tbody>
+      <tr><td><a href="<?=$c_user_url?>"><img class="avatar" src="<?=$c_user_avatar?>"/> <?=filter_var($c_user_name, FILTER_SANITIZE_STRING)?></a><br/><time class="comment_timestamp" datetime="<?=$c->getCreatedDateTime()->format('c')?>"><?=$c->getCreatedDateTime()->format('D M j, Y g:ia T')?></time></td><td><?=$c->getContent(true)?></td></tr>
     </tbody></table>
     <a class="btn btn-primary" href="javascript:history.go(-1);">Back</a>
     <input class="btn btn-danger" type="submit" value="Delete" tabindex="1" autofocus="autofocus"/>
   </form>
 
-<?php } else if ($this->getContext()->error === false) { ?>
+<? } else if ($this->getContext()->error === false) { ?>
 
   <h2 class="text-success">Delete Comment</h2>
   <div class="alert alert-success">
@@ -47,7 +47,7 @@ require('./header.inc.phtml'); ?>
   </div>
   <a class="btn btn-primary" href="<?=$c_parent_url?>">Back</a>
 
-<?php } else { ?>
+<? } else { ?>
 
   <h2 class="text-danger">Delete Comment</h2>
   <div class="alert alert-danger">
@@ -56,6 +56,6 @@ require('./header.inc.phtml'); ?>
   </div>
   <a class="btn btn-primary" href="<?=$c_parent_url?>">Back</a>
 
-<?php } ?>
+<? } ?>
 </div>
-<?php require('./footer.inc.phtml'); ?>
+<? require('./footer.inc.phtml'); ?>

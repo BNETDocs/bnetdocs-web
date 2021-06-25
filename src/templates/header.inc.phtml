@@ -75,6 +75,7 @@ $_campaign_vultr = (
 <?=Logger::getTimingHeader()?>
     <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/bootstrap-4.4.1-slate.min.css')?>" integrity="sha384-tfnMnZ6k273p3mDqSKikc9aXSvumltGq76Tbo+VMydpXeD5EDZwbQWo7nbZz+wc9" crossorigin="anonymous"/>
     <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/datatables.min.css' . $_unique_asset)?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/highlight/styles/vs2015.min.css' . $_unique_asset)?>" type="text/css" media="all"/>
     <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/footer.css' . $_unique_asset)?>" type="text/css" media="all"/>
 <?  foreach ($this->additional_css as $css_path) {
       echo '<link rel="stylesheet" type="text/css" href="' . Common::relativeUrlToAbsolute($css_path . $_unique_asset) . '" media="all"/>' . PHP_EOL;
@@ -121,6 +122,11 @@ $_campaign_vultr = (
           <li class="nav-item<?=_header_active('/welcome', false)?>">
             <a class="nav-link" href="<?=Common::relativeUrlToAbsolute('/welcome')?>">Welcome<?=_header_active('/welcome', true)?></a>
           </li>
+<?        if (Common::$config->discord->enabled) { ?>
+          <li class="nav-item<?=_header_active('/discord', false)?>">
+            <a class="nav-link" href="<?=Common::relativeUrlToAbsolute('/discord')?>">Discord<?=_header_active('/discord', true)?></a>
+          </li>
+<?        } ?>
           <li class="nav-item<?=_header_active('/document/', false)?> dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarObjectsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documents</a>
             <div class="dropdown-menu" aria-labelledby="navbarObjectsDropdown">
@@ -133,6 +139,16 @@ $_campaign_vultr = (
               foreach ($_header_documents as $doc) { $doc_url_part = '/document/' . $doc->getId(); ?>
               <a class="dropdown-item<?=_header_active($doc_url_part, false)?>" href="<?=Common::relativeUrlToAbsolute($doc->getURI())?>"><?=filter_var($doc->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?><?=_header_active($doc_url_part, true)?></a>
 <?            } ?>
+            </div>
+          </li>
+          <li class="nav-item<?=_header_active('/packet/', false)?> dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarObjectsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Packets</a>
+            <div class="dropdown-menu" aria-labelledby="navbarObjectsDropdown">
+              <a class="dropdown-item<?=_header_active('/packet/index', false)?> text-info" href="<?=Common::relativeUrlToAbsolute('/packet/index')?>">All Packets<?=_header_active('/packet/index', true)?></a>
+<?            if ($_header_staff) { ?>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item<?=_header_active('/packet/create', false)?> text-success" href="<?=Common::relativeUrlToAbsolute('/packet/create')?>">Create Packet<?=_header_active('/packet/create', true)?></a>
+<?            }?>
             </div>
           </li>
         </ul>

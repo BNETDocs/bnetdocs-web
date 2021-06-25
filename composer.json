@@ -50,6 +50,7 @@
         "ext-memcached": "*",
         "ext-pdo": "*",
         "php-64bit": "^7.2",
-        "phpmailer/phpmailer": "^6.0"
+        "phpmailer/phpmailer": "^6.0",
+        "erusev/parsedown": "^1.7"
     }
 }

@@ -7,17 +7,15 @@ use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
 use \BNETDocs\Libraries\Packet\Transport as TransportLayer;
 use \BNETDocs\Libraries\User;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Markdown;
-
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \JsonSerializable;
 use \PDO;
 use \PDOException;
+use \Parsedown;
 use \StdClass;
 use \UnexpectedValueException;
 
@@ -321,7 +319,7 @@ class Packet implements JsonSerializable {
     }
 
     if ( $this->options_bitmask & self::OPTION_MARKDOWN ) {
-      $md = new Markdown();
+      $md = new Parsedown();
       return $md->text($this->packet_remarks);
     }
 

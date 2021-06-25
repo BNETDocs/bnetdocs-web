@@ -10,12 +10,12 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Markdown;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
+use \Parsedown;
 use \StdClass;
 
 class NewsPost {
@@ -202,7 +202,7 @@ class NewsPost {
       return $this->content;
     }
     if ($this->options_bitmask & self::OPTION_MARKDOWN) {
-      $md = new Markdown();
+      $md = new Parsedown();
       return $md->text($this->content);
     } else {
       return htmlspecialchars($this->content, ENT_HTML5, "UTF-8");
