@@ -94,10 +94,10 @@ require('./header.inc.phtml'); ?>
 <? ob_start(); ?>
   <script type="text/javascript">
     $(document).ready(function(){
-      $('#order_by_form').hide();
       $('#packets_tbl').DataTable({
-        "language": {"zeroRecords": "No matching packets found"},
-        "responsive": true,
+        'aaSorting': [],
+        'language': {'zeroRecords': 'No matching packets found'},
+        'responsive': true,
       });
     });
   </script>
