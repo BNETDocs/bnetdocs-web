@@ -54,8 +54,8 @@ require('./header.inc.phtml'); ?>
 <? ob_start(); ?>
   <script type="text/javascript">
     $(document).ready(function(){
-      $('#order_by_form').hide();
       $('#docs_tbl').DataTable({
+        'aaSorting': [],
         "language": {"zeroRecords": "No matching documents found"},
         "responsive": true,
       });
