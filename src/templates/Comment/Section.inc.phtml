@@ -1,10 +1,13 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Comment;
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-$c_edit_visible_admin = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
-$c_delete_visible_admin = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
+$active_user = $this->getContext()->active_user ?? Authentication::$user;
+$active_user_id = ($active_user ? $active_user->getId() : null);
+$c_edit_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
+$c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
 ?>
 <div class="row mt-3">
   <div class="col">
@@ -25,8 +28,8 @@ $c_delete_visible_admin = ($logged_in && ($logged_in->getOptionsBitmask() & User
 
         $c_user_string = ($c_user ? sprintf('<a href="%s"><img src="%s"/> %s</a>', $c_user_url, $c_user_avatar, $c_user_name) : $c_user_name);
 
-        $c_edit_visible = ($c_user_id == $logged_in_id || $c_edit_visible_admin);
-        $c_delete_visible = ($c_user_id == $logged_in_id || $c_delete_visible_admin); ?>
+        $c_edit_visible = ($c_user_id == $active_user_id || $c_edit_visible_admin);
+        $c_delete_visible = ($c_user_id == $active_user_id || $c_delete_visible_admin); ?>
       <tr><td>
         <?=$c_user_string?><br/>
         <time datetime="<?=$c_created_dt->format('c')?>"><?=$c_created_dt->format('D M j, Y g:ia T')?></time>
@@ -43,13 +46,13 @@ $c_delete_visible_admin = ($logged_in && ($logged_in->getOptionsBitmask() & User
 <? } ?>
   </div>
 </div>
-<? if ($logged_in) { ?>
+<? if ($active_user) { ?>
 <div class="row mt-3">
   <div class="col-2"></div>
   <div class="col-8">
     <form method="POST" action="<?=Common::relativeUrlToAbsolute('/comment/create')?>">
       <input type="hidden" name="parent_type" value="<?=$comment_parent_type?>"/>
-      <input type="hidden" name="parent_id" value="<?=$object_id?>"/>
+      <input type="hidden" name="parent_id" value="<?=$comment_parent_id?>"/>
       <div class="form-group">
         <label for="comment-content" class="font-weight-bold">Make a Comment:</label>
         <textarea id="comment-content" class="border border-secondary form-control bg-dark text-light" name="content"></textarea>

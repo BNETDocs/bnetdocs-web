@@ -60,7 +60,7 @@ require('./header.inc.phtml'); ?>
       ) : 'Anonymous'
     ); ?>
   </div></div>
-<? $comment_parent_type = Comment::PARENT_TYPE_DOCUMENT; require('./Comment/Section.inc.phtml');
+<? $comment_parent_type = Comment::PARENT_TYPE_DOCUMENT; $comment_parent_id = $object_id; require('./Comment/Section.inc.phtml');
   } else { ?>
   <div class="alert alert-danger">
     <p><strong><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></strong></p>

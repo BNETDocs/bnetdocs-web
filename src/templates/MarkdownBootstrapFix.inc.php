@@ -4,10 +4,10 @@ namespace BNETDocs\Templates;
 /**
  * Adds CSS classes to Markdown output
  */
-function MarkdownBootstrapFix(string $v)
+function MarkdownBootstrapFix(string $v, bool $sm = false)
 {
   // Tables
-  $v = str_replace('<table>', '<table class="table table-hover table-markdown table-striped">', $v);
+  $v = str_replace('<table>', '<table class="table table-hover table-markdown ' . ($sm ? 'table-sm ' : '') . 'table-striped">', $v);
 
   // Blockquotes
   $v = str_replace('<blockquote>', '<blockquote class="blockquote">', $v);

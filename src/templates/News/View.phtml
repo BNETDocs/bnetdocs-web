@@ -81,7 +81,7 @@ require('./header.inc.phtml'); ?>
 <div class="container mb-3">
 <?
 
-$comment_parent_type = Comment::PARENT_TYPE_NEWS_POST;
+$comment_parent_type = Comment::PARENT_TYPE_NEWS_POST; $comment_parent_id = $object_id;
 require("./Comment/Section.inc.phtml");
 
 } else { ?>

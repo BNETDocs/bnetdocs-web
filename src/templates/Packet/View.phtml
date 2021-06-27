@@ -54,6 +54,7 @@ $edit_visible = ($logged_in && ($logged_in->getOptionsBitmask()
 $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
                 & User::OPTION_ACL_PACKET_DELETE));
 
+require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container mb-3">
 <? if ($object) { ?>
@@ -102,8 +103,8 @@ require('./header.inc.phtml'); ?>
     </td></tr>
   </tbody></table>
 
-  <h2>Remarks</h2>
-  <div class="container"><? echo $object->getPacketRemarks(true); ?></div>
+  <h1>Remarks</h1>
+  <div class="container"><?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getPacketRemarks(true), true)?></div>
 
   <div class="card mt-3"><div class="card-body">
     <span class="float-right text-muted">
@@ -118,7 +119,7 @@ require('./header.inc.phtml'); ?>
       ) : 'Anonymous'
     ); ?>
   </div></div>
-<? $comment_parent_type = Comment::PARENT_TYPE_PACKET; require('./Comment/Section.inc.phtml');
+<? $comment_parent_type = Comment::PARENT_TYPE_PACKET; $comment_parent_id = $object_id; require('./Comment/Section.inc.phtml');
   } else { ?>
   <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_STRING)?></h1>
   <div class="row"><div class="col"><?=filter_var($description, FILTER_SANITIZE_STRING)?></div></div>

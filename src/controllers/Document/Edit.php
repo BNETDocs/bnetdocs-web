@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
@@ -45,6 +46,11 @@ class Edit extends Controller {
       $model->error = 'NOT_FOUND';
     } else {
       $flags = $model->document->getOptionsBitmask();
+
+      $model->comments = Comment::getAll(
+        Comment::PARENT_TYPE_DOCUMENT,
+        $model->document_id
+      );
 
       $model->content   = $model->document->getContent(false);
       $model->markdown  = ($flags & Document::OPTION_MARKDOWN);

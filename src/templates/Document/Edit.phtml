@@ -1,11 +1,13 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Document;
+use \BNETDocs\Libraries\Comment;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Edit Document';
 $description = 'This form allows an individual to edit a document.';
 $this->opengraph->attach(new Pair('url', '/document/edit'));
 $this->opengraph->attach(new Pair('type', 'article'));
+$comments = $this->getContext()->comments;
 $document_id = $this->getContext()->document_id;
 $document_url = ($this->getContext()->document ? $this->getContext()->document->getURI() : Common::relativeUrlToAbsolute('/document/' . rawurlencode($document_id)));
 $error = $this->getContext()->error;
@@ -27,6 +29,7 @@ require('./header.inc.phtml'); ?>
   <p><?=$description?></p>
 <?  if (is_null($error) || $error == 'NOT_FOUND') {
       require('./Document/Form.inc.phtml');
+      $comment_parent_type = Comment::PARENT_TYPE_DOCUMENT; $comment_parent_id = $document_id; require('./Comment/Section.inc.phtml');
     } else if ($error !== false) { ?>
   <div class="alert alert-danger">
     <p class="mb-0"><?=$message?></p>
