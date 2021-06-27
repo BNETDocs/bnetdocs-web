@@ -21,6 +21,8 @@ use \UnexpectedValueException;
 
 class Packet implements JsonSerializable {
 
+  const DATE_SQL = 'Y-m-d H:i:s';
+
   const DIRECTION_CLIENT_SERVER = 1;
   const DIRECTION_SERVER_CLIENT = 2;
   const DIRECTION_PEER_TO_PEER  = 3;
@@ -172,6 +174,49 @@ class Packet implements JsonSerializable {
     return null;
   }
 
+  public static function getPacketsByLastEdited(int $count)
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $stmt = Common::$database->prepare('
+      SELECT `created_datetime`,
+             `edited_count`,
+             `edited_datetime`,
+             `id`,
+             `options_bitmask`,
+             `packet_application_layer_id`,
+             `packet_direction_id`,
+             `packet_format`,
+             `packet_id`,
+             `packet_name`,
+             `packet_remarks`,
+             `packet_transport_layer_id`,
+             `user_id`
+      FROM `packets`
+      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC
+      LIMIT ' . $count . '
+    ');
+
+    $r = $stmt->execute();
+    if (!$r)
+    {
+      throw new QueryException('Cannot get packets by date');
+      return $r;
+    }
+
+    $r = [];
+    while ($row = $stmt->fetch(PDO::FETCH_OBJ))
+    {
+      $r[] = new self($row);
+    }
+
+    $stmt->closeCursor();
+    return $r;
+  }
+
   public static function getAllPacketsBySearch($query) {
 
     if ( !isset( Common::$database )) {
@@ -255,6 +300,14 @@ class Packet implements JsonSerializable {
 
   public function getId() {
     return $this->id;
+  }
+
+  public function getName() {
+    return sprintf('%s %s %s',
+      $this->getPacketDirectionTag(),
+      $this->getPacketId(true),
+      $this->getPacketName()
+    );
   }
 
   public function getOptionsBitmask() {
@@ -614,8 +667,9 @@ class Packet implements JsonSerializable {
     $this->edited_count = $value;
   }
 
-  public function setEditedDateTime( DateTime $value ) {
-    $this->edited_datetime = $value->format( 'Y-m-d H:i:s' );
+  public function setEditedDateTime(DateTime $value)
+  {
+    $this->edited_datetime = $value->format(self::DATE_SQL);
   }
 
   public function setInResearch( $value ) {

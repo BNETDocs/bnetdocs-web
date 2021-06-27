@@ -141,6 +141,45 @@ class Document {
     return null;
   }
 
+  public static function getDocumentsByLastEdited(int $count)
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $stmt = Common::$database->prepare(
+     'SELECT
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `title`,
+        `user_id`
+      FROM `documents`
+      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC
+      LIMIT ' . $count . ';'
+    );
+
+    $r = $stmt->execute();
+    if (!$r)
+    {
+      throw new QueryException('Cannot refresh documents');
+      return $r;
+    }
+
+    $r = [];
+    while ($row = $stmt->fetch(PDO::FETCH_OBJ))
+    {
+      $r[] = new self($row);
+    }
+
+    $stmt->closeCursor();
+    return $r;
+  }
+
   public function getContent($prepare) {
     if (!$prepare) {
       return $this->content;

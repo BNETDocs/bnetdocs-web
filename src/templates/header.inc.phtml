@@ -3,6 +3,7 @@ namespace BNETDocs\Templates;
 use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Common;
@@ -37,7 +38,8 @@ if (isset(Authentication::$user))
   $_header_user_url = null;
   $_header_staff    = null;
 }
-$_header_documents = Document::getAllDocuments(['title', 'ASC']);
+$_header_documents = Document::getDocumentsByLastEdited(10);
+$_header_packets = Packet::getPacketsByLastEdited(10);
 $_header_navigation_config = Common::$config->bnetdocs->navigation;
 $_header_user_register_disabled = Common::$config->bnetdocs->user_register_disabled;
 $_unique_asset = (
@@ -128,27 +130,33 @@ $_campaign_vultr = (
           </li>
 <?        } ?>
           <li class="nav-item<?=_header_active('/document/', false)?> dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarObjectsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documents</a>
-            <div class="dropdown-menu" aria-labelledby="navbarObjectsDropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDocumentsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documents</a>
+            <div class="dropdown-menu" aria-labelledby="navbarDocumentsDropdown">
               <a class="dropdown-item<?=_header_active('/document/index', false)?> text-info" href="<?=Common::relativeUrlToAbsolute('/document/index')?>">All Documents<?=_header_active('/document/index', true)?></a>
 <?            if ($_header_staff) { ?>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item<?=_header_active('/document/create', false)?> text-success" href="<?=Common::relativeUrlToAbsolute('/document/create')?>">Create Document<?=_header_active('/document/create', true)?></a>
               <div class="dropdown-divider"></div>
-<?            }
-              foreach ($_header_documents as $doc) { $doc_url_part = '/document/' . $doc->getId(); ?>
-              <a class="dropdown-item<?=_header_active($doc_url_part, false)?>" href="<?=Common::relativeUrlToAbsolute($doc->getURI())?>"><?=filter_var($doc->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?><?=_header_active($doc_url_part, true)?></a>
+<?            }?>
+              <div class="dropdown-header">Recently Edited Documents</div>
+<?            foreach ($_header_documents as $doc) { $doc_url_part = '/document/' . $doc->getId(); ?>
+              <a class="dropdown-item<?=_header_active($doc_url_part, false)?>" href="<?=$doc->getURI()?>"><?=filter_var($doc->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?><?=_header_active($doc_url_part, true)?></a>
 <?            } ?>
             </div>
           </li>
           <li class="nav-item<?=_header_active('/packet/', false)?> dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarObjectsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Packets</a>
-            <div class="dropdown-menu" aria-labelledby="navbarObjectsDropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarPacketsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Packets</a>
+            <div class="dropdown-menu" aria-labelledby="navbarPacketsDropdown">
               <a class="dropdown-item<?=_header_active('/packet/index', false)?> text-info" href="<?=Common::relativeUrlToAbsolute('/packet/index')?>">All Packets<?=_header_active('/packet/index', true)?></a>
 <?            if ($_header_staff) { ?>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item<?=_header_active('/packet/create', false)?> text-success" href="<?=Common::relativeUrlToAbsolute('/packet/create')?>">Create Packet<?=_header_active('/packet/create', true)?></a>
+              <div class="dropdown-divider"></div>
 <?            }?>
+              <div class="dropdown-header">Recently Edited Packets</div>
+<?            foreach ($_header_packets as $pkt) { $pkt_url_part = '/packet/' . $pkt->getId(); ?>
+              <a class="dropdown-item<?=_header_active($pkt_url_part, false)?>" href="<?=$pkt->getURI()?>"><?=filter_var($pkt->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?><?=_header_active($pkt_url_part, true)?></a>
+<?            } ?>
             </div>
           </li>
         </ul>
