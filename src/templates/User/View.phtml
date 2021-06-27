@@ -159,7 +159,7 @@ require('./header.inc.phtml'); ?>
       <h3>Documents</h3>
       <ul>
 <? foreach ($documents as $document) { ?>
-        <li><a href="<? echo $document->getURI(); ?>"><? echo filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></li>
+        <li><a href="<?=$document->getURI()?>"><?=filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
 <? } ?>
       </ul>
     </div>
@@ -169,7 +169,7 @@ require('./header.inc.phtml'); ?>
       <h3>News Posts</h3>
       <ul>
 <? foreach ($news_posts as $news_post) { ?>
-        <li><a href="<? echo $news_post->getURI(); ?>"><? echo filter_var($news_post->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></li>
+        <li><a href="<?=$news_post->getURI()?>"><?=filter_var($news_post->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
 <? } ?>
       </ul>
     </div>
@@ -189,7 +189,7 @@ require('./header.inc.phtml'); ?>
       <h3>Servers</h3>
       <ul>
 <? foreach ($servers as $server) { ?>
-        <li><a href="<? echo $server->getURI(); ?>"><? echo htmlspecialchars($server->getName()); ?></a></li>
+        <li><a href="<?=$server->getURI()?>"><?=filter_var($server->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
 <? } ?>
       </ul>
     </div>
