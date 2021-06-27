@@ -1,6 +1,7 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
@@ -20,6 +21,7 @@ class View extends Controller
   public function &run(Router &$router, ViewLib &$view, array &$args)
   {
     $model = new UserViewModel();
+    $model->active_user = Authentication::$user;
     $model->user_id = array_shift($args);
 
     $this->getUserInfo($model);

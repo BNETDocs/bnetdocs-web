@@ -1,5 +1,5 @@
 <?php namespace BNETDocs\Models\User;
-class View extends \CarlBennett\MVC\Libraries\Model
+class View extends \BNETDocs\Models\ActiveUser
 {
   public $contributions;
   public $documents;
