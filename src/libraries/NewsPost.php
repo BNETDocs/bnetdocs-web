@@ -153,6 +153,45 @@ class NewsPost {
     return null;
   }
 
+  public static function getNewsPostsByLastEdited(int $count)
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $stmt = Common::$database->prepare(
+     'SELECT
+        `category_id`,
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `title`,
+        `user_id`
+      FROM `news_posts`
+      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC
+      LIMIT ' . $count . ';'
+    );
+
+    $r = $stmt->execute();
+    if (!$r)
+    {
+      throw new QueryException('Cannot query news posts by last edited');
+    }
+
+    $r = [];
+    while ($row = $stmt->fetch(PDO::FETCH_OBJ))
+    {
+      $r[] = new self($row);
+    }
+
+    $stmt->closeCursor();
+    return $r;
+  }
+
   public static function getNewsPostsByUserId($user_id) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
@@ -281,6 +320,18 @@ class NewsPost {
 
   public function getUserId() {
     return $this->user_id;
+  }
+
+  public function isMarkdown() {
+    return ($this->options_bitmask & self::OPTION_MARKDOWN);
+  }
+
+  public function isPublished() {
+    return ($this->options_bitmask & self::OPTION_PUBLISHED);
+  }
+
+  public function isRSSExempt() {
+    return ($this->options_bitmask & self::OPTION_RSS_EXEMPT);
   }
 
   protected static function normalize(StdClass &$data) {
