@@ -1,60 +1,46 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
 use \BNETDocs\Libraries\User;
-
-$title       = 'Donate';
+$title = 'Donate';
 $description = 'Donate to BNETDocs to show your support for this project!';
-
 $this->opengraph->attach(new Pair('url', '/donate'));
 $this->opengraph->attach(new Pair('type', 'article'));
-
-$btc_address   = $this->getContext()->donations->btc_address;
+$btc_address = $this->getContext()->donations->btc_address;
 $email_address = $this->getContext()->donations->email_address;
-$paypal_url    = $this->getContext()->donations->paypal_url;
-$user_id       = $this->getContext()->donations->user_id;
-
-if (!empty($user_id)) {
+$paypal_url = $this->getContext()->donations->paypal_url;
+$user_id = $this->getContext()->donations->user_id;
+if (!empty($user_id))
+{
   $user = new User($user_id);
 }
-
-require('./header.inc.phtml');
-?>
-      <article>
-        <header>Support Us</header>
-        <section>
-          <p>
-            The following are the methods available for supporting us:
-            <ul type="circle">
-<?php if ($user) { ?>
-            <li>Contact: <a href="<?=$user->getURI()?>"><?=filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
-<?php } ?>
-<?php if (!empty($paypal_url)) { ?>
-            <li>PayPal: <a href="<?php echo filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"><?php echo filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></li>
-<?php } ?>
-<?php if (!empty($btc_address)) { ?>
-            <li>BTC: <code><?php echo $btc_address; ?></code></li>
-<?php } ?>
-<?php if (!empty($email_address)) { ?>
-            <li>Email us: <a href="mailto:<?=rawurlencode($email_address)?>"><?=filter_var($email_address, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
-<?php } ?>
-            </ul>
-          </p>
-        </section>
-        <header>Disclaimer</header>
-        <section>
-          <p>By donating to BNETDocs, you understand the following:</p>
-          <p><ol>
-            <li>The donation is non-refundable.</li>
-            <li>The donation's purpose is to pay for hosting of this website and all associated costs, and to further the development of open-source software (OSS).</li>
-            <li>A donation is not acceptable as payment for goods, products, or merchant items.</li>
-            <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net&trade;'s Terms of Service.</li>
-          </ol></p>
-          <p>Please see our <a href="<?php echo Common::relativeUrlToAbsolute('/legal'); ?>">Legal Policies</a> for more info.</p>
-        </section>
-      </article>
-<?php require('./footer.inc.phtml'); ?>
+require('./header.inc.phtml'); ?>
+<div class="container mb-3">
+  <h1>Support Us</h1>
+  <p>The following are the methods available for supporting us:</p>
+  <ul type="circle">
+<? if ($user) { ?>
+  <li>Contact: <a href="<?=$user->getURI()?>"><?=filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
+<? } ?>
+<? if (!empty($paypal_url)) { ?>
+  <li>PayPal: <a href="<?=filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"><?=filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
+<? } ?>
+<? if (!empty($btc_address)) { ?>
+  <li>BTC: <code><?=$btc_address?></code></li>
+<? } ?>
+<? if (!empty($email_address)) { ?>
+  <li>Email us: <a href="mailto:<?=rawurlencode($email_address)?>"><?=filter_var($email_address, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
+<? } ?>
+  </ul>
+  <h3>Disclaimer</h3>
+  <p>By donating to BNETDocs, you understand the following:</p>
+  <ol>
+    <li>The donation is non-refundable.</li>
+    <li>The donation's purpose is to pay for hosting of this website and all associated costs, and to further the development of open-source software (OSS).</li>
+    <li>A donation is not acceptable as payment for goods, products, or merchant items.</li>
+    <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net's Terms of Service.</li>
+  </ol>
+  <p>Please see our <a href="<?=Common::relativeUrlToAbsolute('/legal')?>">Legal</a> and <a href="<?=Common::relativeUrlToAbsolute('/privacy')?>">Privacy Notice</a> pages for more info.</p>
+</div>
+<? require('./footer.inc.phtml'); ?>
