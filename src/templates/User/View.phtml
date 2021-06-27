@@ -153,9 +153,9 @@ require('./header.inc.phtml'); ?>
     <p class="mb-0"><?=$description?></p>
   </div>
 <? } ?>
-  <div class="row">
+  <div class="row justify-content-center">
 <? if (!empty($documents)) { ?>
-    <div class="col mb-3">
+    <div class="col-md-auto mb-3">
       <h3>Documents</h3>
       <ul>
 <? foreach ($documents as $document) { ?>
@@ -165,7 +165,7 @@ require('./header.inc.phtml'); ?>
     </div>
 <? } ?>
 <? if (!empty($news_posts)) { ?>
-    <div class="col mb-3">
+    <div class="col-md-auto mb-3">
       <h3>News Posts</h3>
       <ul>
 <? foreach ($news_posts as $news_post) { ?>
@@ -175,7 +175,7 @@ require('./header.inc.phtml'); ?>
     </div>
 <? } ?>
 <? if (!empty($packets)) { ?>
-    <div class="col mb-3">
+    <div class="col-md-auto mb-3">
       <h3>Packets</h3>
       <ul>
 <? foreach ($packets as $packet) { ?>
@@ -185,7 +185,7 @@ require('./header.inc.phtml'); ?>
     </div>
 <? } ?>
 <? if (!empty($servers)) { ?>
-    <div class="col mb-3">
+    <div class="col-md-auto mb-3">
       <h3>Servers</h3>
       <ul>
 <? foreach ($servers as $server) { ?>
