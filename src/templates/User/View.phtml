@@ -1,148 +1,199 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
-
 use \BNETDocs\Libraries\Document;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
+$contributions = $this->getContext()->contributions;
+$documents = $this->getContext()->documents;
+$news_posts = $this->getContext()->news_posts;
+$packets = $this->getContext()->packets;
+$servers = $this->getContext()->servers;
+$sum_documents = $this->getContext()->sum_documents;
+$sum_news_posts = $this->getContext()->sum_news_posts;
+$sum_packets = $this->getContext()->sum_packets;
+$sum_servers = $this->getContext()->sum_servers;
+$user = $this->getContext()->user;
+$user_est = $this->getContext()->user_est;
+$user_id = $this->getContext()->user_id;
+$user_profile = $this->getContext()->user_profile;
+$title = ($user ? $user->getName() : 'User Not Found');
+$description = ($user ? $user->getName() . '\'s user profile on BNETDocs' : 'The requested user does not exist or could not be found.');
+$url = ($user ? $user->getURI() : Common::relativeUrlToAbsolute('/user/' . rawurlencode($user_id)));
 
-$object_id = $this->getContext()->user_id;
-$object    = $this->getContext()->user;
+if ($user)
+{
+  $this->opengraph->attach(new Pair('profile:username', $user->getName()));
+  $this->opengraph->attach(new Pair('image', $user->getAvatarURI(null)));
 
-$title       = ($object ? $object->getName() : "User Not Found");
-$description = ($object ? $object->getName() . "'s user profile on BNETDocs" : "The requested user does not exist or could not be found.");
-
-$this->opengraph->attach(new Pair("type", "profile"));
-
-$url = Common::relativeUrlToAbsolute("/user/" . urlencode($object_id));
-
-if ($object) {
-
-  $url = $object->getURI();
-
-  $this->opengraph->attach(new Pair("profile:username", $object->getName()));
-
-  $this->opengraph->attach(new Pair("image", $object->getAvatarURI(null)));
-
-  $safe_name = filter_var($object->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-  if ($this->getContext()->biography) $description = $this->getContext()->biography;
-  $safe_biography = filter_var($this->getContext()->biography, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
+  $user_created_dt = $user->getCreatedDateTime();
+  $user_name = filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $user_verified_dt = $user->getVerifiedDateTime();
 }
 
-$this->opengraph->attach(new Pair("url", $url));
+if ($user_profile)
+{
+  $biography = filter_var($user_profile->getBiography(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $discord_username = filter_var($user_profile->getDiscordUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $facebook_uri = filter_var($user_profile->getFacebookURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $facebook_username = filter_var($user_profile->getFacebookUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $github_uri = filter_var($user_profile->getGitHubURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $github_username = filter_var($user_profile->getGitHubUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $instagram_uri = filter_var($user_profile->getInstagramURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $instagram_username = filter_var($user_profile->getInstagramUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $phone = filter_var($user_profile->getPhone(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $phone_uri = filter_var($user_profile->getPhoneURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $reddit_uri = filter_var($user_profile->getRedditURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $reddit_username = filter_var($user_profile->getRedditUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $skype_uri = filter_var($user_profile->getSkypeURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $skype_username = filter_var($user_profile->getSkypeUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $steam_id = filter_var($user_profile->getSteamId(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $steam_uri = $user_profile->getSteamURI();
+  $twitter_uri = filter_var($user_profile->getTwitterURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $twitter_username = filter_var($user_profile->getTwitterUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $website = filter_var($user_profile->getWebsite(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+}
 
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if ($object) { ?>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($title); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-        <header>User Profile</header>
-        <section class="accountinfo">
-          <img class="avatar" src="<?php echo $object->getAvatarURI(80); ?>" />
-          <strong><?php echo $safe_name; ?></strong><br />
-<?php if (!$this->getContext()->biography) { ?>
-          <p class="biography"><em>(no biography information.)</em></p>
-<?php } else { ?>
-          <p class="biography"><?php echo $safe_biography; ?></p>
-<?php } ?>
-        </section>
-<?php if ($this->getContext()->profiledata) { ?>
-        <section class="profiledata">
-<?php if ($this->getContext()->discord) { ?>
-          <span><strong>Discord:</strong> <?php echo filter_var($this->getContext()->discord, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></span>
-<?php } ?>
-<?php if ($this->getContext()->github) { ?>
-          <span><strong>GitHub:</strong> <a href="<?php echo $this->getContext()->github_uri; ?>"><?php echo filter_var($this->getContext()->github, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
-<?php } ?>
-<?php if ($this->getContext()->reddit) { ?>
-          <span><strong>Reddit:</strong> <a href="<?php echo $this->getContext()->reddit_uri; ?>"><?php echo filter_var($this->getContext()->reddit, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
-<?php } ?>
-<?php if ($this->getContext()->steam_id) { ?>
-          <span><strong>Steam:</strong> <a href="<?php echo $this->getContext()->steam_uri; ?>"><?php echo filter_var($this->getContext()->steam_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
-<?php } ?>
-<?php if ($this->getContext()->facebook) { ?>
-          <span><strong>Facebook:</strong> <a href="<?php echo $this->getContext()->facebook_uri; ?>"><?php echo filter_var($this->getContext()->facebook, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
-<?php } ?>
-<?php if ($this->getContext()->twitter) { ?>
-          <span><strong>Twitter:</strong> <a href="<?php echo $this->getContext()->twitter_uri; ?>"><?php echo filter_var($this->getContext()->twitter, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
-<?php } ?>
-<?php if ($this->getContext()->instagram) { ?>
-          <span><strong>Instagram:</strong> <a href="<?php echo $this->getContext()->instagram_uri; ?>"><?php echo filter_var($this->getContext()->instagram, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
-<?php } ?>
-<?php if ($this->getContext()->skype) { ?>
-          <span><strong>Skype:</strong> <a href="<?php echo $this->getContext()->skype_uri; ?>"><?php echo filter_var($this->getContext()->skype, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
-<?php } ?>
-<?php if ($this->getContext()->website) { ?>
-          <span><strong>Website:</strong> <a href="<?php echo $this->getContext()->website_uri; ?>"><?php echo filter_var($this->getContext()->website, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></span>
-<?php } ?>
-        </section>
-<?php } ?>
-        <header>User Statistics</header>
-        <section>
-          <table class="stats"><tbody><tr>
-          <td><p><strong>Member Since:</strong><br/><time datetime="<?php echo $object->getCreatedDateTime()->format("c"); ?>"><?php echo $object->getCreatedDateTime()->format("D M j, Y"); ?></time> (<?php echo $this->getContext()->user_est; ?>)</p></td>
-          <td><p><strong>Owner/Author Of:</strong><br/><?php if ($this->getContext()->contributions == 0) { ?><em>(nothing)</em><?php } else {
-            if ($this->getContext()->sum_documents) echo number_format($this->getContext()->sum_documents) . " document" . ($this->getContext()->sum_documents  != 1 ? "s" : "") . "<br/>";
-            if ($this->getContext()->sum_news_posts) echo number_format($this->getContext()->sum_news_posts) . " news post" . ($this->getContext()->sum_news_posts  != 1 ? "s" : "") . "<br/>";
-            if ($this->getContext()->sum_packets) echo number_format($this->getContext()->sum_packets) . " packet" . ($this->getContext()->sum_packets  != 1 ? "s" : "") . "<br/>";
-            if ($this->getContext()->sum_servers) echo number_format($this->getContext()->sum_servers) . " server" . ($this->getContext()->sum_servers  != 1 ? "s" : "") . "<br/>";
-          } ?></p></td>
-          </tr></tbody></table>
-        </section>
-<?php } else { ?>
-        <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></header>
-        <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></section>
-<?php } ?>
-      </article>
-<?php if (isset($this->getContext()->documents)) { ?>
-      <article>
-        <header>Documents</header>
-        <section>
-          <table><tbody>
-<?php foreach ($this->getContext()->documents as $document) { ?>
-            <tr><td><a href="<?php echo $document->getURI(); ?>"><?php echo filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
-<?php } ?>
-          </tbody></table>
-        </section>
-      </article>
-<?php } ?>
-<?php if (isset($this->getContext()->news_posts)) { ?>
-      <article>
-        <header>News Posts</header>
-        <section>
-          <table><tbody>
-<?php foreach ($this->getContext()->news_posts as $news_post) { ?>
-            <tr><td><a href="<?php echo $news_post->getURI(); ?>"><?php echo filter_var($news_post->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
-<?php } ?>
-          </tbody></table>
-        </section>
-      </article>
-<?php } ?>
-<?php if (isset($this->getContext()->packets)) { ?>
-      <article>
-        <header>Packets</header>
-        <section>
-          <table><tbody>
-<?php foreach ($this->getContext()->packets as $packet) { ?>
-            <tr><td><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></td></tr>
-<?php } ?>
-          </tbody></table>
-        </section>
-      </article>
-<?php } ?>
-<?php if (isset($this->getContext()->servers)) { ?>
-      <article>
-        <header>Servers</header>
-        <section>
-          <table><tbody>
-<?php foreach ($this->getContext()->servers as $server) { ?>
-            <tr><td><a href="<?php echo $server->getURI(); ?>"><?php echo htmlspecialchars($server->getName()); ?></a></td></tr>
-<?php } ?>
-          </tbody></table>
-        </section>
-      </article>
-<?php } ?>
-<?php require("./footer.inc.phtml"); ?>
+if (!empty($biography)) $description = $biography;
+
+$this->opengraph->attach(new Pair('type', 'profile'));
+$this->opengraph->attach(new Pair('url', $url));
+require('./header.inc.phtml'); ?>
+<div class="container mb-3">
+  <span class="float-right">
+    <a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
+    <a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
+  </span>
+<? if ($user) { ?>
+  <h1>User Profile</h1>
+  <div class="row justify-content-md-center">
+    <div class="col-sm-3">
+      <!-- Avatar -->
+
+      <img class="rounded w-100" src="<?=$user->getAvatarURI(1024)?>" />
+    </div>
+    <div class="col-lg-4">
+      <!-- User name, Biography -->
+
+      <h2><?=$user_name?></h2>
+      <p><?=(empty($biography) ? '<em>(no biography information)</em>' : $biography)?></p>
+    </div>
+    <div class="col-lg-5">
+      <!-- Id, Timestamps -->
+
+      <table class="table table-borderless table-sm">
+        <thead></thead><tbody>
+          <tr class="text-muted">
+            <th scope="row" class="align-middle text-right">Id</th>
+            <td><code><?=filter_var($user_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></td>
+          </tr>
+          <tr class="text-success">
+            <th scope="row" class="align-middle text-right">Date created</th>
+            <td><time datetime="<?=$user_created_dt->format('c')?>"><?=$user_created_dt->format('D M j, Y')?></time></td>
+          </tr>
+          <tr class="text-<?=($user->isVerified() ? 'info' : 'danger')?>">
+            <th scope="row" class="align-middle text-right">Date verified</th>
+            <td><?=($user->isVerified() ? '<time datetime="' . $user_verified_dt->format('c') . '">' . $user_verified_dt->format('D M j, Y') . '</time>' : '<em>(not verified)</em>')?></td>
+          </tr>
+          <tr class="text-muted"><th scope="row" class="align-middle text-right">Member for</th><td><?=$user_est?></td></tr>
+          <tr class="text-muted"><th scope="row" class="align-middle text-right">Documents authored</th><td><?=number_format($sum_documents)?></td></tr>
+          <tr class="text-muted"><th scope="row" class="align-middle text-right">News posted</th><td><?=number_format($sum_news_posts)?></td></tr>
+          <tr class="text-muted"><th scope="row" class="align-middle text-right">Packets authored</th><td><?=number_format($sum_packets)?></td></tr>
+          <tr class="text-muted"><th scope="row" class="align-middle text-right">Servers owned</th><td><?=number_format($sum_servers)?></td></tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+<?  if (isset($user_profile) && $user_profile)
+    {
+      if (isset($discord_username) && !empty($discord_username))
+      {
+        echo '<span><strong>Discord:</strong> ' . $discord_username . '</span>' . PHP_EOL;
+      }
+      if (isset($github_username) && !empty($github_username))
+      {
+        echo '<span><strong>GitHub:</strong> <a href="' . $github_uri . '">' . $github_username . '</a></span>' . PHP_EOL;
+      }
+      if (isset($reddit_username) && !empty($reddit_username))
+      {
+        echo '<span><strong>Reddit:</strong> <a href="' . $reddit_uri . '">' . $reddit_username . '</a></span>' . PHP_EOL;
+      }
+      if (isset($steam_username) && !empty($steam_username))
+      {
+        echo '<span><strong>Steam:</strong> <a href="' . $steam_uri . '">' . $steam_username . '</a></span>' . PHP_EOL;
+      }
+      if (isset($facebook_username) && !empty($facebook_username))
+      {
+        echo '<span><strong>Facebook:</strong> <a href="' . $facebook_uri . '">' . $facebook_username . '</a></span>' . PHP_EOL;
+      }
+      if (isset($twitter_username) && !empty($twitter_username))
+      {
+        echo '<span><strong>Twitter:</strong> <a href="' . $twitter_uri . '">' . $twitter_username . '</a></span>' . PHP_EOL;
+      }
+      if (isset($instagram_username) && !empty($instagram_username))
+      {
+        echo '<span><strong>Instagram:</strong> <a href="' . $instagram_uri . '">' . $instagram_username . '</a></span>' . PHP_EOL;
+      }
+      if (isset($skype_username) && !empty($skype_username))
+      {
+        echo '<span><strong>Skype:</strong> <a href="' . $skype_uri . '">' . $skype_username . '</a></span>' . PHP_EOL;
+      }
+      if (isset($website) && !empty($website))
+      {
+        echo '<span><strong>Skype:</strong> <a href="' . $website_uri . '">' . $website . '</a></span>' . PHP_EOL;
+      }
+    }?>
+    </div>
+  </div>
+<? } else { ?>
+  <div class="alert alert-danger">
+    <h2><?=$title?></h2>
+    <p class="mb-0"><?=$description?></p>
+  </div>
+<? } ?>
+  <div class="row">
+<? if (!empty($documents)) { ?>
+    <div class="col mb-3">
+      <h3>Documents</h3>
+      <table><tbody>
+<? foreach ($documents as $document) { ?>
+        <tr><td><a href="<? echo $document->getURI(); ?>"><? echo filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
+<? } ?>
+      </tbody></table>
+    </div>
+<? } ?>
+<? if (!empty($news_posts)) { ?>
+    <div class="col mb-3">
+      <h3>News Posts</h3>
+      <table><tbody>
+<? foreach ($news_posts as $news_post) { ?>
+        <tr><td><a href="<? echo $news_post->getURI(); ?>"><? echo filter_var($news_post->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
+<? } ?>
+      </tbody></table>
+    </div>
+<? } ?>
+<? if (!empty($packets)) { ?>
+    <div class="col mb-3">
+      <h3>Packets</h3>
+      <table><tbody>
+<? foreach ($packets as $packet) { ?>
+        <tr><td><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></td></tr>
+<? } ?>
+      </tbody></table>
+    </div>
+<? } ?>
+<? if (!empty($servers)) { ?>
+    <div class="col mb-3">
+      <h3>Servers</h3>
+      <table><tbody>
+<? foreach ($servers as $server) { ?>
+        <tr><td><a href="<? echo $server->getURI(); ?>"><? echo htmlspecialchars($server->getName()); ?></a></td></tr>
+<? } ?>
+      </tbody></table>
+    </div>
+<? } ?>
+  </div>
+</div>
+<? require('./footer.inc.phtml'); ?>
