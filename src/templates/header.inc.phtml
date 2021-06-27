@@ -50,19 +50,19 @@ $_header_nav = [
     ['label' => 'File Archive', 'url' => 'https://files.bnetdocs.org/'],
     ['label' => 'BNETDocs Redux', 'url' => 'https://redux.bnetdocs.org/'],
   ]],
-  ['label' => 'Documents', 'dropdown' => [
-    ['label' => 'All Documents', 'url' => '/document/index', 'class' => 'text-info'],
-    ['label' => '-'],
-    ['label' => 'Create Document', 'url' => '/document/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
-    ['label' => '-', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
-    ['label' => '', 'recent_documents' => true],
-  ]],
   ['label' => 'News', 'dropdown' => [
     ['label' => 'All News', 'url' => '/news', 'class' => 'text-info'],
     ['label' => '-'],
     ['label' => 'Create News Post', 'url' => '/news/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_NEWS_CREATE],
     ['label' => '-', 'acl' => User::OPTION_ACL_NEWS_CREATE],
     ['label' => '', 'recent_news' => true],
+  ]],
+  ['label' => 'Documents', 'dropdown' => [
+    ['label' => 'All Documents', 'url' => '/document/index', 'class' => 'text-info'],
+    ['label' => '-'],
+    ['label' => 'Create Document', 'url' => '/document/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
+    ['label' => '-', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
+    ['label' => '', 'recent_documents' => true],
   ]],
   ['label' => 'Packets', 'dropdown' => [
     ['label' => 'All Packets', 'url' => '/packet/index', 'class' => 'text-info'],
