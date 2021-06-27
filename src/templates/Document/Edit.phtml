@@ -36,7 +36,7 @@ require('./header.inc.phtml'); ?>
     <p class="mb-0">The document was successfully edited!</p>
   </div>
   <div class="text-center">
-    <a class="btn btn-primary" href="<?=Common::relativeUrlToAbsolute('/document/' . rawurlencode($document_id))?>"><svg class="float-left align-middle" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg> Return to Document</a>
+    <a class="btn btn-primary" href="<?=Common::relativeUrlToAbsolute('/document/' . rawurlencode($document_id))?>"><img class="float-left" src="<?=Common::relativeUrlToAbsolute('/a/svg/chevron-right-white.svg' . $_unique_asset)?>"/> Return to Document</a>
   </div>
 <?  } ?>
 </div>
