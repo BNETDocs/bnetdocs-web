@@ -19,9 +19,7 @@ if ($object)
   $edited_dt = $object->getEditedDateTime();
   $packet_id = $object->getPacketId(true);
   $url = $object->getURI();
-  $title = sprintf('%s %s %s',
-    $object->getPacketDirectionTag(), $packet_id, $object->getPacketName()
-  );
+  $title = $object->getName();
   $description = Common::stripUpTo(trim(filter_var(
     $object->getPacketRemarks(true), FILTER_SANITIZE_STRING
   )), "\n", 300);

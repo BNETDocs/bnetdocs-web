@@ -127,7 +127,7 @@ require("./header.inc.phtml");
         <section>
           <table><tbody>
 <?php foreach ($this->getContext()->packets as $packet) { ?>
-            <tr><td><a href="<?php echo $packet->getURI(); ?>"><?php echo filter_var($packet->getPacketDirectionTag(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?> <?php echo filter_var($packet->getPacketId(true), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?> <?php echo filter_var($packet->getPacketName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
+            <tr><td><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></td></tr>
 <?php } ?>
           </tbody></table>
         </section>
