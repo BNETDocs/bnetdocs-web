@@ -157,41 +157,41 @@ require('./header.inc.phtml'); ?>
 <? if (!empty($documents)) { ?>
     <div class="col mb-3">
       <h3>Documents</h3>
-      <table><tbody>
+      <ul>
 <? foreach ($documents as $document) { ?>
-        <tr><td><a href="<? echo $document->getURI(); ?>"><? echo filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
+        <li><a href="<? echo $document->getURI(); ?>"><? echo filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></li>
 <? } ?>
-      </tbody></table>
+      </ul>
     </div>
 <? } ?>
 <? if (!empty($news_posts)) { ?>
     <div class="col mb-3">
       <h3>News Posts</h3>
-      <table><tbody>
+      <ul>
 <? foreach ($news_posts as $news_post) { ?>
-        <tr><td><a href="<? echo $news_post->getURI(); ?>"><? echo filter_var($news_post->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td></tr>
+        <li><a href="<? echo $news_post->getURI(); ?>"><? echo filter_var($news_post->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></li>
 <? } ?>
-      </tbody></table>
+      </ul>
     </div>
 <? } ?>
 <? if (!empty($packets)) { ?>
     <div class="col mb-3">
       <h3>Packets</h3>
-      <table><tbody>
+      <ul>
 <? foreach ($packets as $packet) { ?>
-        <tr><td><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></td></tr>
+        <li><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
 <? } ?>
-      </tbody></table>
+      </ul>
     </div>
 <? } ?>
 <? if (!empty($servers)) { ?>
     <div class="col mb-3">
       <h3>Servers</h3>
-      <table><tbody>
+      <ul>
 <? foreach ($servers as $server) { ?>
-        <tr><td><a href="<? echo $server->getURI(); ?>"><? echo htmlspecialchars($server->getName()); ?></a></td></tr>
+        <li><a href="<? echo $server->getURI(); ?>"><? echo htmlspecialchars($server->getName()); ?></a></li>
 <? } ?>
-      </tbody></table>
+      </ul>
     </div>
 <? } ?>
   </div>
