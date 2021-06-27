@@ -65,7 +65,7 @@ and/or other countries.
     <li>Donation's purpose is to pay for hosting of this website and all associated costs, and to further the development of open-source software (OSS).</li>
     <li>Donations are not acceptable as payment for goods, products, or merchant items.</li>
     <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net&trade;'s Terms of Service.</li>
-    <li>All questions and concerns related to material on this website or other matter should be communicated to <code><?=filter_var($email_mailbox, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code> <span>at</span> <code><?=filter_var($email_domain, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code>, it will reach the appropriate person. Responses to this communication medium are not guaranteed due to the volume of emails that may be received.
+    <li>All questions and concerns related to material on this website or other matter should be communicated to <?=filter_var($email_mailbox, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?><img width="13" height="13" alt="&#64;" src="<?=Common::relativeUrlToAbsolute('/a/svg/at-sign-white.svg' . $_unique_asset)?>"/><?=filter_var($email_domain, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>, it will reach the appropriate person. Responses to this communication medium are not guaranteed due to the volume of emails that may be received.
 <? if (Common::$config->discord->enabled) { ?>
     Alternatively, you may try reaching BNETDocs staff via <a href="<?=Common::relativeUrlToAbsolute('/discord')?>">Discord</a>.
 <? } ?></li>

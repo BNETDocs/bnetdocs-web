@@ -94,7 +94,7 @@ require('./header.inc.phtml'); ?>
     <p>If you have any questions about this privacy notice, the data held on you, or you would like to exercise one of your data protection rights, please do not hesitate to get in contact.</p>
 
     <h2><a id="how-to-contact"><strong>How to contact</strong></a></h2>
-    <p>You may send an email message to the site owner. Please write to <code><?=filter_var($email_mailbox, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code> <span>at</span> <code><?=filter_var($email_domain, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code>, it will reach the appropriate person.</p>
+    <p>You may send an email message to the site owner. Please write to <?=filter_var($email_mailbox, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?><img width="13" height="13" alt="&#64;" src="<?=Common::relativeUrlToAbsolute('/a/svg/at-sign-white.svg' . $_unique_asset)?>"/><?=filter_var($email_domain, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>, it will reach the appropriate person.</p>
 <? if (Common::$config->discord->enabled) { ?>
     <p>Alternatively, you may try reaching <?=$org?> staff via <a href="<?=Common::relativeUrlToAbsolute('/discord')?>">Discord</a>.</p>
 <? } ?>
