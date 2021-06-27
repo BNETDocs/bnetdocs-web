@@ -138,7 +138,7 @@ function _header_nav_html($nav)
         $acl_news_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_NEWS_MODIFY));
         foreach ($recent_news as $news)
         {
-          if (!$news->isPublished() && !$acl_neews_modify) continue;
+          if (!$news->isPublished() && !$acl_news_modify) continue;
           $news_class = ($news->isPublished() ? '' : ' text-warning');
           _line('<a class="dropdown-item%s" href="%s">%s</a>', $news_class, $news->getURI(), filter_var($news->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         }

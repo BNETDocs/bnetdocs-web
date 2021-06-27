@@ -1,95 +1,92 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\News;
-
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$comments     = $this->getContext()->comments;
-$object       = $this->getContext()->news_post;
-$object_id    = $this->getContext()->news_post_id;
-$logged_in    = $this->getContext()->user;
+$comments = $this->getContext()->comments;
+$object = $this->getContext()->news_post;
+$object_id = $this->getContext()->news_post_id;
+$logged_in = $this->getContext()->active_user;
 $logged_in_id = ($logged_in ? $logged_in->getId() : null);
+$title = ($object ? $object->getTitle() : 'News Post Not Found');
+$description = filter_var(($object ? $object->getContent(true) : 'The requested news post does not exist or could not be found.'), FILTER_SANITIZE_STRING);
+$this->opengraph->attach(new Pair('type', 'article'));
+$url = Common::relativeUrlToAbsolute('/news/' . urlencode($object_id));
 
-$title       = ($object ? $object->getTitle() : "News Post Not Found");
-$description = Common::stripUpTo(trim(filter_var(
-  ($object ? $object->getContent(true) : "The requested news post does not exist or could not be found."),
-  FILTER_SANITIZE_STRING
-)), "\n", 300);
-
-$this->opengraph->attach(new Pair("type", "article"));
-
-$url = Common::relativeUrlToAbsolute("/news/" . urlencode($object_id));
-
-if ($object) {
-
+if ($object)
+{
   $url = $object->getURI();
 
-  $this->opengraph->attach(new Pair("image", "/a/news_categories/" . $object->getCategory()->getFilename()));
-  $this->opengraph->attach(new Pair("article:published_time", $object->getCreatedDateTime()->format("c")));
+  $this->opengraph->attach(new Pair('image', '/a/news_categories/' . $object->getCategory()->getFilename()));
+  $this->opengraph->attach(new Pair('article:published_time', $object->getCreatedDateTime()->format('c')));
   if (!is_null($object->getEditedDateTime())) {
-    $this->opengraph->attach(new Pair("article:modified_time", $object->getEditedDateTime()->format("c")));
+    $this->opengraph->attach(new Pair('article:modified_time', $object->getEditedDateTime()->format('c')));
   }
-  $this->opengraph->attach(new Pair("article:author:username", $object->getUser()->getName()));
-  $this->opengraph->attach(new Pair("article:section", $object->getCategory()->getLabel()));
+  $this->opengraph->attach(new Pair('article:author:username', $object->getUser()->getName()));
+  $this->opengraph->attach(new Pair('article:section', $object->getCategory()->getLabel()));
 
 }
 
-$this->opengraph->attach(new Pair("url", $url));
+$this->opengraph->attach(new Pair('url', $url));
 
-$edit_url       = Common::relativeUrlToAbsolute("/news/edit?id=" . urlencode($object_id));
-$delete_url     = Common::relativeUrlToAbsolute("/news/delete?id=" . urlencode($object_id));
+$edit_url       = Common::relativeUrlToAbsolute('/news/edit?id=' . urlencode($object_id));
+$delete_url     = Common::relativeUrlToAbsolute('/news/delete?id=' . urlencode($object_id));
 $edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
                 & User::OPTION_ACL_NEWS_MODIFY));
 $delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
                 & User::OPTION_ACL_NEWS_DELETE));
 
-if ($object) {
-  $user        = $object->getUser();
-  $user_id     = $object->getUserId();
-  $user_name   = $user->getName();
-  $user_url    = $user->getURI();
-  $user_avatar = $user->getAvatarURI(22);
+if ($object)
+{
+  $draft = !$object->isPublished();
+  $user = $object->getUser();
+  $user_id = $object->getUserId();
+  $user_name = $user->getName();
+  $user_url = $user->getURI();
+  $user_avatar = $user->getAvatarURI(40);
 }
 
-require("./header.inc.phtml");
-?>
-      <article class="container mb-3">
-<?php if ($object) { ?>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($object->getTitle()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-<?php if ($edit_visible) { ?>
-        <a href="<?php echo $edit_url; ?>" class="header-button float-right">Edit</a>
-<?php } ?>
-<?php if ($delete_visible) { ?>
-        <a href="<?php echo $delete_url; ?>" class="header-button float-right">Delete</a>
-<?php } ?>
-        <header><a href="<?php echo $url; ?>"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></a></header>
-<?php if (!($object->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
-        <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
-<?php } ?>
-        <section class="news"><img class="category" alt="<?php echo $object->getCategory()->getLabel(); ?>" title="<?php echo $object->getCategory()->getLabel(); ?>" src="<?php echo Common::relativeUrlToAbsolute("/a/news_categories/" . $object->getCategory()->getFilename()); ?>"/><?php echo $object->getContent(true); ?></section>
-        <footer>
-<?php if ($object->getEditedDateTime() !== null) { ?>
-          <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<?php echo $object->getEditedDateTime()->format('c'); ?>"><?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>
-<?php } else { ?>
-          <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
-<?php } ?>
-          <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/>&nbsp;<?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
-        </footer>
-      </article>
-      <article class="container mb-3">
-<?php
+require_once('./MarkdownBootstrapFix.inc.php');
+require('./header.inc.phtml'); ?>
+<div class="container mb-3">
+<? if ($object) { ?>
+<? if ($draft) { ?>
+  <div class="alert alert-warning">This news post is marked as <strong>draft</strong>. Edit the news post to <strong>publish</strong> it.</div>
+<? } ?>
+  <span class="float-right">
+<? if ($edit_visible) { ?>
+    <a class="btn btn-sm btn-secondary" href="<?=$edit_url?>" title="Edit">📝</a>
+<? } if ($delete_visible) { ?>
+    <a class="btn btn-sm btn-danger" href="<?=$delete_url?>" title="Delete">❌</a>
+<? } ?>
+    <a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
+    <a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
+  </span>
+  <h1 class="display-4"><a href="<? echo $url; ?>"><? echo filter_var($title, FILTER_SANITIZE_STRING); ?></a></h1>
+<? if (!($object->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
+  <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
+<? } ?>
+  <section class="news"><img class="category" alt="<? echo $object->getCategory()->getLabel(); ?>" title="<? echo $object->getCategory()->getLabel(); ?>" src="<? echo Common::relativeUrlToAbsolute("/a/news_categories/" . $object->getCategory()->getFilename()); ?>"/><? echo $object->getContent(true); ?></section>
+  <footer>
+<? if ($object->getEditedDateTime() !== null) { ?>
+    <span class="float-right"><time datetime="<? echo $object->getCreatedDateTime()->format('c'); ?>"><? echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<? echo $object->getEditedDateTime()->format('c'); ?>"><? echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>
+<? } else { ?>
+    <span class="float-right"><time datetime="<? echo $object->getCreatedDateTime()->format('c'); ?>"><? echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
+<? } ?>
+    <span><a href="<? echo $user_url; ?>"><img class="avatar" src="<? echo $user_avatar; ?>"/>&nbsp;<? echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
+  </footer>
+</div>
+<div class="container mb-3">
+<?
 
 $comment_parent_type = Comment::PARENT_TYPE_NEWS_POST;
 require("./Comment/Section.inc.phtml");
 
-      } else { ?>
-        <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
-        <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+} else { ?>
+  <header class="red"><? echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
+  <section class="red"><? echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
+<? } ?>
+</div>
+<? require("./footer.inc.phtml"); ?>

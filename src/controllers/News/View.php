@@ -17,10 +17,10 @@ use \CarlBennett\MVC\Libraries\View as ViewLib;
 class View extends Controller {
   public function &run(Router &$router, ViewLib &$view, array &$args) {
     $model = new NewsViewModel();
+    $model->active_user = Authentication::$user;
     $model->news_post_id = array_shift($args);
-    $model->user = Authentication::$user;
 
-    $model->acl_allowed = ($model->user && $model->user->getAcl(
+    $model->acl_allowed = ($model->active_user && $model->active_user->getAcl(
       User::OPTION_ACL_NEWS_CREATE |
       User::OPTION_ACL_NEWS_MODIFY |
       User::OPTION_ACL_NEWS_DELETE

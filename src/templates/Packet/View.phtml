@@ -103,9 +103,9 @@ require('./header.inc.phtml'); ?>
   </tbody></table>
 
   <h2>Remarks</h2>
-<? echo $object->getPacketRemarks(true); ?>
+  <div class="container"><? echo $object->getPacketRemarks(true); ?></div>
 
-  <div class="card"><div class="card-body">
+  <div class="card mt-3"><div class="card-body">
     <span class="float-right text-muted">
       <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
 <? if ($edited_dt) { ?>
