@@ -18,15 +18,12 @@ if (!isset($title_suffix)) /* this should be allowed to be empty, however */
 {
   $title_suffix = ' &ndash; BNETDocs';
 }
-function _header_active($url, $sr)
+function _header_active(string $url, bool $sr)
 {
   $current_url = parse_url(getenv('REQUEST_URI'), PHP_URL_PATH);
   $match = (substr($current_url, 0, strlen($url)) == $url);
   if (!$match) return '';
-  if ($sr)
-    return ' <span class="sr-only">(current)</span>';
-  else
-    return ' active';
+  if ($sr) return ' <span class="sr-only">(current)</span>'; else return ' active';
 }
 $_header_user = Authentication::$user;
 $_unique_asset = (
@@ -79,12 +76,9 @@ $_header_nav = [
     ['label' => 'Event Logs', 'url' => '/eventlog/index', 'acl' => User::OPTION_ACL_EVENT_LOG_VIEW],
   ]],
 ];
-/*      <a>Account</a>
-      <a href="<?=Common::relativeUrlToAbsolute('/user/changepassword')?>">Change Password</a>
-      <a href="<?=Common::relativeUrlToAbsolute('/user/update')?>">Update Profile</a>*/
 function _header_nav_html($nav)
 {
-  function _line(string $format) { call_user_func_array('printf', func_get_args()) . PHP_EOL; }
+  function _line(string $format) { call_user_func_array('printf', func_get_args()); echo PHP_EOL; }
 
   ob_start();
   _line('<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">');
@@ -157,11 +151,11 @@ function _header_nav_html($nav)
       }
       else if (!$dropdown)
       {
-        if (isset($item['url'])) printf('<li class="nav-item"><a class="nav-link%s" href="%s">%s</a></li>' . PHP_EOL, $class, $item['url'], filter_var($item['label'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+        if (isset($item['url'])) printf('<li class="nav-item"><a class="nav-link%s" href="%s">%s</a></li>' . PHP_EOL, $class, Common::relativeUrlToAbsolute($item['url']), filter_var($item['label'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
       }
       else if ($dropdown)
       {
-        if (isset($item['url'])) printf('<a class="dropdown-item%s" href="%s">%s</a>' . PHP_EOL, $class, $item['url'], filter_var($item['label'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+        if (isset($item['url'])) printf('<a class="dropdown-item%s" href="%s">%s</a>' . PHP_EOL, $class, Common::relativeUrlToAbsolute($item['url']), filter_var($item['label'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
       }
 
       if (isset($item['dropdown']))

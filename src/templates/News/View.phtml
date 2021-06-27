@@ -69,14 +69,14 @@ require('./header.inc.phtml'); ?>
   <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
 <? } ?>
   <section class="news"><img class="category" alt="<? echo $object->getCategory()->getLabel(); ?>" title="<? echo $object->getCategory()->getLabel(); ?>" src="<? echo Common::relativeUrlToAbsolute("/a/news_categories/" . $object->getCategory()->getFilename()); ?>"/><? echo $object->getContent(true); ?></section>
-  <footer>
+  <div class="card"><div class="card-body">
 <? if ($object->getEditedDateTime() !== null) { ?>
     <span class="float-right"><time datetime="<? echo $object->getCreatedDateTime()->format('c'); ?>"><? echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<? echo $object->getEditedDateTime()->format('c'); ?>"><? echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>
 <? } else { ?>
     <span class="float-right"><time datetime="<? echo $object->getCreatedDateTime()->format('c'); ?>"><? echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
 <? } ?>
     <span><a href="<? echo $user_url; ?>"><img class="avatar" src="<? echo $user_avatar; ?>"/>&nbsp;<? echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
-  </footer>
+  </div></div>
 </div>
 <div class="container mb-3">
 <?
