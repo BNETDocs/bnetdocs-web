@@ -1,15 +1,13 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Document;
-use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
+$active_user = $this->getContext()->active_user;
 $comments = $this->getContext()->comments;
 $object = $this->getContext()->document;
 $object_id = $this->getContext()->document_id;
-$logged_in = Authentication::$user;
-$logged_in_id = ($logged_in ? $logged_in->getId() : null);
 $title = 'Document Not Found';
 $description = 'The requested document does not exist or could not be found.';
 $this->opengraph->attach(new Pair('type', 'article'));
@@ -27,8 +25,8 @@ if ($object)
 $this->opengraph->attach(new Pair('url', $url));
 $edit_url = Common::relativeUrlToAbsolute('/document/edit?id=' . rawurlencode($object_id));
 $delete_url = Common::relativeUrlToAbsolute('/document/delete?id=' . rawurlencode($object_id));
-$edit_visible = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY));
-$delete_visible = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE));
+$edit_visible = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY));
+$delete_visible = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE));
 require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container mb-3">

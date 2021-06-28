@@ -8,8 +8,7 @@ use \CarlBennett\MVC\Libraries\Pair;
 $comments = $this->getContext()->comments;
 $object = $this->getContext()->news_post;
 $object_id = $this->getContext()->news_post_id;
-$logged_in = $this->getContext()->active_user;
-$logged_in_id = ($logged_in ? $logged_in->getId() : null);
+$active_user = $this->getContext()->active_user;
 $title = ($object ? $object->getTitle() : 'News Post Not Found');
 $description = filter_var(($object ? $object->getContent(true) : 'The requested news post does not exist or could not be found.'), FILTER_SANITIZE_STRING);
 $this->opengraph->attach(new Pair('type', 'article'));
@@ -33,9 +32,9 @@ $this->opengraph->attach(new Pair('url', $url));
 
 $edit_url       = Common::relativeUrlToAbsolute('/news/edit?id=' . urlencode($object_id));
 $delete_url     = Common::relativeUrlToAbsolute('/news/delete?id=' . urlencode($object_id));
-$edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
+$edit_visible   = ($active_user && ($active_user->getOptionsBitmask()
                 & User::OPTION_ACL_NEWS_MODIFY));
-$delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
+$delete_visible = ($active_user && ($active_user->getOptionsBitmask()
                 & User::OPTION_ACL_NEWS_DELETE));
 
 if ($object)

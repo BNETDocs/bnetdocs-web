@@ -24,10 +24,9 @@ class News extends Controller {
 
   public function &run(Router &$router, View &$view, array &$args) {
     $model = new NewsModel();
+    $model->active_user = Authentication::$user;
 
-    $model->user = Authentication::$user;
-
-    $model->acl_allowed = ($model->user && $model->user->getAcl(
+    $model->acl_allowed = ($model->active_user && $model->active_user->getAcl(
       User::OPTION_ACL_NEWS_CREATE |
       User::OPTION_ACL_NEWS_MODIFY |
       User::OPTION_ACL_NEWS_DELETE

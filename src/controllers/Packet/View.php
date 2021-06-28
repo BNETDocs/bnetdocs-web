@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\Packet;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Packet;
@@ -18,7 +19,8 @@ use \DateTimeZone;
 
 class View extends Controller {
   public function &run(Router &$router, ViewLib &$view, array &$args) {
-    $model            = new PacketViewModel();
+    $model = new PacketViewModel();
+    $model->active_user = Authentication::$user;
     $model->packet_id = array_shift($args);
 
     try {

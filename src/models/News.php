@@ -1,14 +1,7 @@
-<?php
-
-namespace BNETDocs\Models;
-
-use \CarlBennett\MVC\Libraries\Model;
-
-class News extends Model {
-
+<?php namespace BNETDocs\Models;
+class News extends \BNETDocs\Models\ActiveUser
+{
   public $acl_allowed;
   public $news_posts;
   public $pagination;
-  public $user;
-
 }
