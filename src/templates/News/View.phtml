@@ -16,14 +16,22 @@ $url = Common::relativeUrlToAbsolute('/news/' . urlencode($object_id));
 
 if ($object)
 {
+  $created_dt = $object->getCreatedDateTime();
+  $draft = !$object->isPublished();
+  $edited_dt = $object->getEditedDateTime();
   $url = $object->getURI();
+  $user = $object->getUser();
+  $user_avatar = $user->getAvatarURI(40);
+  $user_id = $object->getUserId();
+  $user_name = $user->getName();
+  $user_url = $user->getURI();
 
   $this->opengraph->attach(new Pair('image', '/a/news_categories/' . $object->getCategory()->getFilename()));
-  $this->opengraph->attach(new Pair('article:published_time', $object->getCreatedDateTime()->format('c')));
+  $this->opengraph->attach(new Pair('article:published_time', $created_dt->format('c')));
   if (!is_null($object->getEditedDateTime())) {
-    $this->opengraph->attach(new Pair('article:modified_time', $object->getEditedDateTime()->format('c')));
+    $this->opengraph->attach(new Pair('article:modified_time', $edited_dt->format('c')));
   }
-  $this->opengraph->attach(new Pair('article:author:username', $object->getUser()->getName()));
+  $this->opengraph->attach(new Pair('article:author:username', $user_name));
   $this->opengraph->attach(new Pair('article:section', $object->getCategory()->getLabel()));
 
 }
@@ -36,16 +44,6 @@ $edit_visible   = ($active_user && ($active_user->getOptionsBitmask()
                 & User::OPTION_ACL_NEWS_MODIFY));
 $delete_visible = ($active_user && ($active_user->getOptionsBitmask()
                 & User::OPTION_ACL_NEWS_DELETE));
-
-if ($object)
-{
-  $draft = !$object->isPublished();
-  $user = $object->getUser();
-  $user_id = $object->getUserId();
-  $user_name = $user->getName();
-  $user_url = $user->getURI();
-  $user_avatar = $user->getAvatarURI(40);
-}
 
 require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
@@ -69,12 +67,17 @@ require('./header.inc.phtml'); ?>
 <? } ?>
   <section class="news"><img class="category" alt="<? echo $object->getCategory()->getLabel(); ?>" title="<? echo $object->getCategory()->getLabel(); ?>" src="<? echo Common::relativeUrlToAbsolute("/a/news_categories/" . $object->getCategory()->getFilename()); ?>"/><? echo $object->getContent(true); ?></section>
   <div class="card"><div class="card-body">
-<? if ($object->getEditedDateTime() !== null) { ?>
-    <span class="float-right"><time datetime="<? echo $object->getCreatedDateTime()->format('c'); ?>"><? echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<? echo $object->getEditedDateTime()->format('c'); ?>"><? echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>
-<? } else { ?>
-    <span class="float-right"><time datetime="<? echo $object->getCreatedDateTime()->format('c'); ?>"><? echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
+    <span class="float-right text-muted">
+      <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
+<? if ($edited_dt) { ?>
+      | <strong>Edited:</strong> <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
 <? } ?>
-    <span><a href="<? echo $user_url; ?>"><img class="avatar" src="<? echo $user_avatar; ?>"/>&nbsp;<? echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
+    </span>
+<?  echo ($user ?
+      sprintf('<a href="%s"><img class="img-fluid rounded mr-2" src="%s"/>%s</a>',
+        $user->getURI(), $user->getAvatarURI(40), filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+      ) : 'Anonymous'
+    ); ?>
   </div></div>
 </div>
 <div class="container mb-3">
