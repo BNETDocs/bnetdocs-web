@@ -23,13 +23,14 @@ $form_order_by = [
 require('./header.inc.phtml'); ?>
 <div class="container mb-3">
   <h1><?=$title?></h1>
+  <p><?=$description?></p>
   <form method="GET" id="order_by_form">
     <input type="hidden" name="page" value="<?=$page?>"/>
     <input type="hidden" name="limit" value="<?=$limit?>"/>
     <label for="order" class="font-weight-bold m-1">Order by:</label>
     <select class="form-control form-control-sm" name="order" id="order" onchange="form.submit();" style="display:inline-block;width:200px;">
 <?  foreach ($form_order_by as $item_value => $item_label) {
-      $item_selected = ($order === $item_value);
+      $item_selected = ($order === $item_value ? ' selected="selected"' : '');
       echo sprintf('<option value="%s"%s>%s</option>' . PHP_EOL, $item_value, $item_selected, $item_label);
     } ?>
     </select>
