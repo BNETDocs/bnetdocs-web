@@ -1,14 +1,13 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Packet;
-use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Packet Not Found';
 $description = 'The requested packet does not exist or could not be found.';
+$active_user = $this->getContext()->active_user;
 $comments = $this->getContext()->comments;
-$active_user = Authentication::$user;
 $object = $this->getContext()->packet;
 $object_id = $this->getContext()->packet_id;
 $url = Common::relativeUrlToAbsolute('/packet/' . urlencode($object_id));
