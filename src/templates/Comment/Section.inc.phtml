@@ -54,6 +54,7 @@ $c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & 
       <input type="hidden" name="parent_type" value="<?=$comment_parent_type?>"/>
       <input type="hidden" name="parent_id" value="<?=$comment_parent_id?>"/>
       <div class="form-group">
+        <span class="float-right text-muted small">(Markdown supported)</span>
         <label for="comment-content" class="font-weight-bold">Make a Comment:</label>
         <textarea id="comment-content" class="border border-secondary form-control bg-dark text-light" name="content"></textarea>
       </div>
