@@ -328,7 +328,7 @@ class UserProfile
       is_null($this->github_username) ? PDO::PARAM_NULL : PDO::PARAM_STR
     ));
 
-    $stmt->bindParam(':instagram', $this->instagram_username, (
+    $stmt->bindParam(':ig', $this->instagram_username, (
       is_null($this->instagram_username) ? PDO::PARAM_NULL : PDO::PARAM_STR
     ));
 
