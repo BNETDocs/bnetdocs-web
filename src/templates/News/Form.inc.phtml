@@ -1,0 +1,37 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates\Document; ?>
+  <form method="POST" action="?<?=($news_post_id ? 'id=' . filter_var($news_post_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '')?>">
+    <div class="form-group">
+      <label class="font-weight-bold" for="category">Category:</label><br/>
+      <select class="border border-primary custom-select bg-dark text-light" name="category" id="category" tabindex="1" required autofocus="autofocus" size="1">
+<?php $category = $this->getContext()->category;
+foreach ($this->getContext()->news_categories as $item) { ?>
+        <option value="<?php echo htmlspecialchars($item->getId(), ENT_HTML5, "UTF-8"); ?>"<?php if ($category === $item->getId()) { ?> selected="selected"<?php } ?>><?php echo htmlspecialchars($item->getLabel(), ENT_HTML5, "UTF-8"); ?></option>
+<?php } ?>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="font-weight-bold" class="form-label" for="title">Title:</label><br/>
+      <input class="border border-primary form-control bg-dark text-light" type="text" name="title" id="title" tabindex="1" required placeholder="Enter the news post title here" value="<?=$form_title?>"/>
+    </div>
+    <div class="form-group">
+      <label class="font-weight-bold" for="content">Content:</label>
+      <textarea class="border border-primary form-control bg-dark text-light" name="content" id="content" tabindex="2" required placeholder="Enter the news post content here" style="height:200px;"><?=$form_content?></textarea>
+    </div>
+    <div class="form-group">
+      <div class="custom-control custom-switch m-2">
+        <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="3" title="Use markdown or use raw HTML" value="1"<?=($form_markdown ? ' checked="checked"' : '')?>/>
+        <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown <span class="text-muted small">(enables Markdown-formatted parsing of the content, which renders into native html &ndash; uses <a title="https://github.com/erusev/parsedown" href="https://github.com/erusev/parsedown" rel="external">Parsedown</a> and <a title="https://highlightjs.readthedocs.io/" href="https://highlightjs.readthedocs.io/" rel="external">Highlight.js</a>)</span></label>
+      </div>
+      <div class="custom-control custom-switch m-2">
+        <input class="custom-control-input" type="checkbox" name="rss_exempt" id="rss_exempt" tabindex="4" title="Exempt from RSS feed" value="1"<?=($form_rss_exempt ? ' checked="checked"' : '')?>/>
+        <label class="custom-control-label" for="rss_exempt" title="Exempt from RSS feed">RSS Exempt <span class="text-muted small">(excludes this post from RSS/Atom feeds, which typically ignore future edits to posts &ndash; use this to control when to publish to those feeds)</span></label>
+      </div>
+    </div>
+    <div class="form-group text-center">
+      <a class="btn btn-primary" href="<?=($news_post_url ?? 'javascript:history.go(-1);')?>" tabindex="5">Back</a>
+      <span class="m-1"></span>
+      <input class="btn btn-secondary" type="submit" name="save" value="Save Draft" tabindex="6"/>
+      <input class="btn btn-success" type="submit" name="publish" value="Publish" tabindex="7"/>
+    </div>
+  </form>
