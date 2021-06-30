@@ -236,15 +236,15 @@ class NewsPost {
     return $this->category_id;
   }
 
-  public function getContent($prepare) {
-    if (!$prepare) {
+  public function getContent(bool $render) {
+    if (!$render) {
       return $this->content;
     }
     if ($this->options_bitmask & self::OPTION_MARKDOWN) {
       $md = new Parsedown();
       return $md->text($this->content);
     } else {
-      return htmlspecialchars($this->content, ENT_HTML5, "UTF-8");
+      return filter_var($this->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     }
   }
 
