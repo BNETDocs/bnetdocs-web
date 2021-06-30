@@ -52,32 +52,36 @@ require('./header.inc.phtml'); ?>
 <? if ($draft) { ?>
   <div class="alert alert-warning">This news post is marked as <strong>draft</strong>. Edit the news post to <strong>publish</strong> it.</div>
 <? } ?>
-  <span class="float-right">
-<? if ($edit_visible) { ?>
-    <a class="btn btn-sm btn-secondary" href="<?=$edit_url?>" title="Edit">📝</a>
-<? } if ($delete_visible) { ?>
-    <a class="btn btn-sm btn-danger" href="<?=$delete_url?>" title="Delete">❌</a>
-<? } ?>
-    <a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
-    <a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
-  </span>
-  <h1 class="display-4"><a href="<? echo $url; ?>"><? echo filter_var($title, FILTER_SANITIZE_STRING); ?></a></h1>
-<? if (!($object->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
-  <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
-<? } ?>
-  <section class="news"><img class="category" alt="<? echo $object->getCategory()->getLabel(); ?>" title="<? echo $object->getCategory()->getLabel(); ?>" src="<? echo Common::relativeUrlToAbsolute("/a/news_categories/" . $object->getCategory()->getFilename()); ?>"/><? echo $object->getContent(true); ?></section>
-  <div class="card"><div class="card-body">
-    <span class="float-right text-muted">
-      <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
-<? if ($edited_dt) { ?>
-      | <strong>Edited:</strong> <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
-<? } ?>
+  <div class="row"><div class="col">
+    <span class="float-right">
+<?    if ($edit_visible) { ?>
+      <a class="btn btn-sm btn-secondary" href="<?=$edit_url?>" title="Edit">📝</a>
+<?    } if ($delete_visible) { ?>
+      <a class="btn btn-sm btn-danger" href="<?=$delete_url?>" title="Delete">❌</a>
+<?    } ?>
+      <a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
+      <a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
     </span>
+    <h1 class="display-4"><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_STRING)?></a></h1>
+<?  if (!($object->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
+    <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
+<?  } ?>
+    <div style="background-color:rgba(0,0,0,0.45);" class="font-weight-bold float-left mb-2 mr-2 p-2 rounded small shadow text-center"><img alt="<?=$object->getCategory()->getLabel()?>" title="<?=$object->getCategory()->getLabel()?>" src="<?=Common::relativeUrlToAbsolute('/a/news_categories/' . $object->getCategory()->getFilename())?>"/><br/><?=$object->getCategory()->getLabel()?></div><?=$object->getContent(true)?>
+  </div></div>
+  <div class="row"><div class="col">
+    <div class="card"><div class="card-body">
+      <span class="float-right text-muted">
+        <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
+<? if ($edited_dt) { ?>
+        | <strong>Edited:</strong> <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
+<? } ?>
+      </span>
 <?  echo ($user ?
       sprintf('<a href="%s"><img class="img-fluid rounded mr-2" src="%s"/>%s</a>',
         $user->getURI(), $user->getAvatarURI(40), filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
       ) : 'Anonymous'
     ); ?>
+    </div></div>
   </div></div>
 </div>
 <div class="container mb-3">
