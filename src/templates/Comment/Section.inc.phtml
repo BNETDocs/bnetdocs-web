@@ -26,7 +26,7 @@ $c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & 
         $c_user_avatar = ($c_user ? $c_user->getAvatarURI(22) : '');
         $c_user_name   = ($c_user ? filter_var($c_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS) : 'Anonymous');
 
-        $c_user_string = ($c_user ? sprintf('<a href="%s"><img src="%s"/> %s</a>', $c_user_url, $c_user_avatar, $c_user_name) : $c_user_name);
+        $c_user_string = ($c_user ? sprintf('<a href="%s"><img class="rounded" src="%s"/> %s</a>', $c_user_url, $c_user_avatar, $c_user_name) : $c_user_name);
 
         $c_edit_visible = ($c_user_id == $active_user_id || $c_edit_visible_admin);
         $c_delete_visible = ($c_user_id == $active_user_id || $c_delete_visible_admin); ?>
