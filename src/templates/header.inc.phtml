@@ -52,23 +52,20 @@ $_header_nav = [
   ]],
   ['label' => 'News', 'dropdown' => [
     ['label' => 'All News', 'url' => '/news', 'class' => 'text-info'],
-    ['label' => '-'],
-    ['label' => 'Create News Post', 'url' => '/news/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_NEWS_CREATE],
     ['label' => '-', 'acl' => User::OPTION_ACL_NEWS_CREATE],
+    ['label' => 'Create News Post', 'url' => '/news/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_NEWS_CREATE],
     ['label' => '', 'recent_news' => true],
   ]],
   ['label' => 'Documents', 'dropdown' => [
     ['label' => 'All Documents', 'url' => '/document/index', 'class' => 'text-info'],
-    ['label' => '-'],
-    ['label' => 'Create Document', 'url' => '/document/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
     ['label' => '-', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
+    ['label' => 'Create Document', 'url' => '/document/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
     ['label' => '', 'recent_documents' => true],
   ]],
   ['label' => 'Packets', 'dropdown' => [
     ['label' => 'All Packets', 'url' => '/packet/index', 'class' => 'text-info'],
-    ['label' => '-'],
-    ['label' => 'Create Packet', 'url' => '/packet/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_PACKET_CREATE],
     ['label' => '-', 'acl' => User::OPTION_ACL_PACKET_CREATE],
+    ['label' => 'Create Packet', 'url' => '/packet/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_PACKET_CREATE],
     ['label' => '', 'recent_packets' => true],
   ]],
   ['label' => 'Admin', 'acl' => User::OPTION_ACL_SERVER_CREATE | User::OPTION_ACL_EVENT_LOG_VIEW, 'class' => 'text-danger', 'dropdown' => [
@@ -113,8 +110,9 @@ function _header_nav_html($nav)
       $class = $item['class'] ?? '';
       if (!empty($class)) $class = ' ' . $class;
 
-      if (isset($item['recent_documents']) && $item['recent_documents'])
+      if (isset($item['recent_documents']) && $item['recent_documents'] && isset(Common::$database))
       {
+        _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recently Edited Documents</div>');
         $recent_documents = Document::getDocumentsByLastEdited(10);
         $acl_doc_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY));
@@ -125,8 +123,9 @@ function _header_nav_html($nav)
           _line('<a class="dropdown-item%s" href="%s">%s</a>', $doc_class, $doc->getURI(), filter_var($doc->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         }
       }
-      else if (isset($item['recent_news']) && $item['recent_news'])
+      else if (isset($item['recent_news']) && $item['recent_news'] && isset(Common::$database))
       {
+        _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recent News</div>');
         $recent_news = NewsPost::getNewsPostsByLastEdited(10);
         $acl_news_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_NEWS_MODIFY));
@@ -137,8 +136,9 @@ function _header_nav_html($nav)
           _line('<a class="dropdown-item%s" href="%s">%s</a>', $news_class, $news->getURI(), filter_var($news->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         }
       }
-      else if (isset($item['recent_packets']) && $item['recent_packets'])
+      else if (isset($item['recent_packets']) && $item['recent_packets'] && isset(Common::$database))
       {
+        _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recently Edited Packets</div>');
         $recent_packets = Packet::getPacketsByLastEdited(10);
         $acl_pkt_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_PACKET_MODIFY));
@@ -175,18 +175,21 @@ function _header_nav_html($nav)
   _line('</ul>');
 
   // Account
-  if (!Authentication::$user)
+  if (isset(Common::$database))
   {
-    _line('<a class="btn btn-sm btn-outline-secondary my-2 my-sm-0" tabindex="-1" href="%s">Log in</a>', Common::relativeUrlToAbsolute('/user/login'));
-    if (!Common::$config->bnetdocs->user_register_disabled)
+    if (!Authentication::$user)
     {
-      _line('<a class="btn btn-sm btn-outline-success my-2 my-sm-0 ml-2" tabindex="-2" href="%s">Register</a>', Common::relativeUrlToAbsolute('/user/register'));
+      _line('<a class="btn btn-sm btn-outline-secondary my-2 my-sm-0" tabindex="-1" href="%s">Log in</a>', Common::relativeUrlToAbsolute('/user/login'));
+      if (!Common::$config->bnetdocs->user_register_disabled)
+      {
+        _line('<a class="btn btn-sm btn-outline-success my-2 my-sm-0 ml-2" tabindex="-2" href="%s">Register</a>', Common::relativeUrlToAbsolute('/user/register'));
+      }
     }
-  }
-  else
-  {
-    _line('<span class="nav-item navbar-text mx-3"><a href="%s">%s</a></span>', Authentication::$user->getURI(), filter_var(Authentication::$user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-     _line('<a class="btn btn-sm btn-outline-danger my-2 my-sm-0" tabindex="-1" href="%s">Log out</a>', Common::relativeUrlToAbsolute('/user/logout'));
+    else
+    {
+      _line('<span class="nav-item navbar-text mx-3"><a href="%s">%s</a></span>', Authentication::$user->getURI(), filter_var(Authentication::$user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+       _line('<a class="btn btn-sm btn-outline-danger my-2 my-sm-0" tabindex="-1" href="%s">Log out</a>', Common::relativeUrlToAbsolute('/user/logout'));
+    }
   }
 
   // Collapsible Hamburger Menu (End)
