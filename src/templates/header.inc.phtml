@@ -175,21 +175,18 @@ function _header_nav_html($nav)
   _line('</ul>');
 
   // Account
-  if (isset(Common::$database))
+  if (!Authentication::$user)
   {
-    if (!Authentication::$user)
+    _line('<a class="btn btn-sm btn-outline-secondary my-2 my-sm-0" tabindex="-1" href="%s">Log in</a>', Common::relativeUrlToAbsolute('/user/login'));
+    if (!Common::$config->bnetdocs->user_register_disabled)
     {
-      _line('<a class="btn btn-sm btn-outline-secondary my-2 my-sm-0" tabindex="-1" href="%s">Log in</a>', Common::relativeUrlToAbsolute('/user/login'));
-      if (!Common::$config->bnetdocs->user_register_disabled)
-      {
-        _line('<a class="btn btn-sm btn-outline-success my-2 my-sm-0 ml-2" tabindex="-2" href="%s">Register</a>', Common::relativeUrlToAbsolute('/user/register'));
-      }
+      _line('<a class="btn btn-sm btn-outline-success my-2 my-sm-0 ml-2" tabindex="-2" href="%s">Register</a>', Common::relativeUrlToAbsolute('/user/register'));
     }
-    else
-    {
-      _line('<span class="nav-item navbar-text mx-3"><a href="%s">%s</a></span>', Authentication::$user->getURI(), filter_var(Authentication::$user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-       _line('<a class="btn btn-sm btn-outline-danger my-2 my-sm-0" tabindex="-1" href="%s">Log out</a>', Common::relativeUrlToAbsolute('/user/logout'));
-    }
+  }
+  else
+  {
+    _line('<span class="nav-item navbar-text mx-3"><a href="%s">%s</a></span>', Authentication::$user->getURI(), filter_var(Authentication::$user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+     _line('<a class="btn btn-sm btn-outline-danger my-2 my-sm-0" tabindex="-1" href="%s">Log out</a>', Common::relativeUrlToAbsolute('/user/logout'));
   }
 
   // Collapsible Hamburger Menu (End)
