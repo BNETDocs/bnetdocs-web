@@ -110,7 +110,7 @@ function _header_nav_html($nav)
       $class = $item['class'] ?? '';
       if (!empty($class)) $class = ' ' . $class;
 
-      if (isset($item['recent_documents']) && $item['recent_documents'] && isset(Common::$database))
+      if (isset($item['recent_documents']) && $item['recent_documents'])
       {
         _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recently Edited Documents</div>');
@@ -123,7 +123,7 @@ function _header_nav_html($nav)
           _line('<a class="dropdown-item%s" href="%s">%s</a>', $doc_class, $doc->getURI(), filter_var($doc->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         }
       }
-      else if (isset($item['recent_news']) && $item['recent_news'] && isset(Common::$database))
+      else if (isset($item['recent_news']) && $item['recent_news'])
       {
         _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recent News</div>');
@@ -136,7 +136,7 @@ function _header_nav_html($nav)
           _line('<a class="dropdown-item%s" href="%s">%s</a>', $news_class, $news->getURI(), filter_var($news->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
         }
       }
-      else if (isset($item['recent_packets']) && $item['recent_packets'] && isset(Common::$database))
+      else if (isset($item['recent_packets']) && $item['recent_packets'])
       {
         _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recently Edited Packets</div>');
