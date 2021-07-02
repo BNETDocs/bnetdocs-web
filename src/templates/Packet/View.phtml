@@ -54,7 +54,7 @@ $delete_visible = ($active_user && ($active_user->getOptionsBitmask()
 
 require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
 <? if ($object) { ?>
   <a class="btn btn-sm btn-primary float-right mr-1" href="https://twitter.com/share?text=<?=urlencode($packet_id . ' ' . $object->getPacketName())?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
   <a class="btn btn-sm btn-primary float-right mr-1" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>

@@ -68,7 +68,7 @@ if (stripos($tpl_referer, '/eventlog/view?id=' . $object_id) !== false)
 }
 
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
 <? if (!$this->getContext()->acl_allowed) { ?>
   <div class="alert alert-danger">
     <h1><?=$title?></h1>

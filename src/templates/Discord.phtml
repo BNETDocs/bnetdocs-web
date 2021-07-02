@@ -7,7 +7,7 @@ $description = 'Join our Discord and have a chat with us!';
 $this->opengraph->attach(new Pair('url', '/discord'));
 $this->opengraph->attach(new Pair('type', 'article'));
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
   <h2><?=$title?></h2>
   <p><?=$description?></p>
 <? if (!$this->getContext()->enabled) { ?>

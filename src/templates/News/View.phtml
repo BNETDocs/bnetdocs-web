@@ -47,7 +47,7 @@ $delete_visible = ($active_user && ($active_user->getOptionsBitmask()
 
 require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
 <? if ($object) { ?>
 <? if ($draft) { ?>
   <div class="alert alert-warning">This news post is marked as <strong>draft</strong>. Edit the news post to <strong>publish</strong> it.</div>
@@ -84,7 +84,7 @@ require('./header.inc.phtml'); ?>
     </div></div>
   </div></div>
 </div>
-<div class="container mb-3">
+<div class="container">
 <?
 
 $comment_parent_type = Comment::PARENT_TYPE_NEWS_POST; $comment_parent_id = $object_id;

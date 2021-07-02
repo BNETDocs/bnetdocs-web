@@ -13,7 +13,7 @@ $news_posts = $this->getContext()->news_posts;
 $pagination = $this->getContext()->pagination;
 
 if (is_null($news_posts) || empty($news_posts)) { ?>
-<div class="container mb-3">
+<div class="container">
   <div class="alert alert-danger">
     <h1>No News Found</h1>
     <p class="mb-0">There are no news posts to view at this time.</p>
@@ -39,7 +39,7 @@ if (is_null($news_posts) || empty($news_posts)) { ?>
     $user_id = $news_post->getUserId();
     if (!isset($users[$user_id])) $users[$user_id] = new User($user_id);
     $avatar = $users[$user_id]->getAvatarURI(22); ?>
-<div class="container mb-3">
+<div class="container">
   <div class="row"><div class="col">
     <span class="float-right">
 <?    if ($edit_visible) { ?>
@@ -80,7 +80,7 @@ if ($pagination) {
   $page_prev    = ($page_current > 0               ? $page_current + 0 : false);
   $page_next    = ($page_current + 1 < $page_count ? $page_current + 2 : false);
 ?>
-<div class="container mb-3">
+<div class="container">
   <nav aria-label="User list navigation" class="d-flex justify-content-center">
     <ul class="pagination">
 <?    if ($page_prev) { ?>

@@ -112,7 +112,7 @@ switch ($this->getContext()->website_error[1] ?? null)
 }
 $avatar = ($this->getContext()->active_user ? $this->getContext()->active_user->getAvatarURI(512) : null);
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
 <? if ($this->getContext()->_responseCode == 401) { ?>
   <h1 class="text-danger"><?=$title?></h1>
   <div class="alert alert-danger">

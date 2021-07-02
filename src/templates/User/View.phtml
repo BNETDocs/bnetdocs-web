@@ -59,7 +59,7 @@ if (!empty($biography)) $description = $biography;
 $this->opengraph->attach(new Pair('type', 'profile'));
 $this->opengraph->attach(new Pair('url', $url));
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
   <span class="float-right">
 <?  if ($active_user && $user && $active_user->getId() == $user->getId()) { ?>
     <a class="btn btn-sm btn-secondary" href="<?=Common::relativeUrlToAbsolute('/user/update')?>" title="Update Profile">📝 Update Profile</a>

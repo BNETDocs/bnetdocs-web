@@ -29,7 +29,7 @@ $edit_visible = ($active_user && ($active_user->getOptionsBitmask() & User::OPTI
 $delete_visible = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE));
 require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
 <? if ($object) {
     if ($draft) { ?>
   <div class="alert alert-warning">This document is marked as <strong>draft</strong>. Edit the document to <strong>publish</strong> it.</div>
@@ -43,7 +43,7 @@ require('./header.inc.phtml'); ?>
 <? } ?>
 
   <h1 class="display-4"><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
-  <?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getContent(true))?>
+  <?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getContent(true), true)?>
 
   <div class="card"><div class="card-body">
     <span class="float-right text-muted">

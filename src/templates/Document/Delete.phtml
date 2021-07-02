@@ -17,7 +17,7 @@ switch ($error)
   default: $message = $error;
 }
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
 <? if (is_null($this->getContext()->error)) { ?>
   <h1 class="text-danger">Delete Document</h1>
   <form method="POST" action="?id=<?=filter_var($id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>">

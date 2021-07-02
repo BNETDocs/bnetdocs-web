@@ -26,7 +26,7 @@ $no_prev = ($page <= 1);
 $no_next = ($page >= $pages);
 
 require('./header.inc.phtml'); ?>
-<div class="container mb-3">
+<div class="container">
 <? if (!$this->getContext()->acl_allowed) { ?>
   <div class="alert alert-danger">
     <h1><?=$title?></h1>
