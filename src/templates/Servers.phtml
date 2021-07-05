@@ -4,8 +4,8 @@ use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\ServerType;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-$title = 'Servers';
-$description = 'A list of servers that our automated system checks the status of. The status represents if the port is opened or closed, not if the service is functioning correctly.';
+$title = 'Server List';
+$description = 'The list of servers that are well-known and monitored for port status.';
 $this->opengraph->attach(new Pair('url', '/servers'));
 
 $servers_by_type = [];
@@ -14,13 +14,18 @@ foreach ($this->context->servers as $server) {
 }
 ksort($servers_by_type);
 
-require('./header.inc.phtml');
-?>
+require('./header.inc.phtml'); ?>
 <div class="container">
-  <h1>Server List</h1>
+  <h1><?=$title?></h1>
   <div class="row"><div class="col">
-    <p>Below is a list of servers that our automated system checks the status of. The status represents if the port is opened or closed, not if the service is functioning correctly.</p>
-    <p>We have a total of <strong><? echo number_format(count($this->context->servers)); ?> servers</strong> that we monitor. <a href="<? echo Common::relativeUrlToAbsolute("/servers.json"); ?>">Click here</a> to see this list in JSON format.</p>
+    <p><?=$description?></p>
+    <p>The status represents if the port is opened or closed, not if the service is functioning correctly. These are the statuses a server could be in:</p>
+    <ul>
+      <li><span class="text-success">Online</span>: The port is open.</li>
+      <li><span class="text-danger">Offline</span>: The port is closed.</li>
+      <li><span class="text-danger">Disabled</span>: The server is not actively checked.</li>
+    </ul>
+    <p>We have a total of <strong><?=number_format(count($this->context->servers))?> servers</strong> that we monitor. <a href="<?=Common::relativeUrlToAbsolute('/servers.json')?>">Click here</a> to see this list in JSON format.</p>
   </div></div>
   <div class="row"><div class="col">
     <table class="table table-hover table-sm table-striped" id="servers_tbl">
@@ -28,9 +33,11 @@ require('./header.inc.phtml');
 <?    foreach ($servers_by_type as $type_id => $servers)
       {
         $server_type = new ServerType($type_id);
-        echo '<tr><th colspan="4">' . filter_var($server_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS) . '</th></tr>';
+        $server_type_label = filter_var($server_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        printf('<tr><th scope="row" colspan="4">%s</th></tr>', $server_type_label);
         foreach ($servers as $server)
         {
+          $server_label = filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
           $status_bitmask = $server->getStatusBitmask();
           if ($status_bitmask & Server::STATUS_ONLINE) {
             $status_subclass = 'success'; $status = 'Online';
@@ -40,13 +47,12 @@ require('./header.inc.phtml');
             $status_subclass = 'danger'; $status = 'Offline';
           } ?>
         <tr>
-          <td class="text-center"><span class="text-<?=$status_subclass?>"><?=$status?></span></td>
-          <td><?=($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server->getLabel() : '&nbsp;')?></td>
-          <td><code><? echo $server->getAddress(); ?>:<? echo $server->getPort(); ?></code></td>
-          <td><a class="btn btn-sm btn-primary" href="<? echo $server->getURI(); ?>" title="Details">ℹ</a></td>
+          <td class="text-center text-<?=$status_subclass?>"><?=$status?></td>
+          <td><?=($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server_label : '&nbsp;')?></td>
+          <td><code><?=$server->getAddress()?>:<?=$server->getPort()?></code></td>
+          <td><a class="btn btn-sm btn-primary" href="<?=$server->getURI()?>" title="View Server Details for <?=$server_label?>">🔎</a></td>
         </tr>
-<?      }
-      } ?>
+<?    }} ?>
       </tbody>
     </table>
   </div></div>

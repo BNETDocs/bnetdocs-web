@@ -54,6 +54,7 @@ require('./header.inc.phtml'); ?>
         <th>Event Type</th>
         <th>Timestamp</th>
         <th>User Account</th>
+        <th></th>
       </tr>
     </thead><tbody>
 <? foreach ($this->getContext()->events as $event) {
@@ -73,6 +74,7 @@ require('./header.inc.phtml'); ?>
         <td><?=$event->getEventTypeName()?></td>
         <td><time datetime="<?=$event->getEventDateTime()->format('c')?>"><?=$event->getEventDateTime()->format('l, F j, Y')?></time></td>
         <td><?=$e_user?></td>
+        <td><a class="btn btn-sm btn-primary" href="<?=Common::relativeUrlToAbsolute('/eventlog/view?id=' . $e_id)?>" title="View Event #<?=$e_id?>">🔎</a></td>
       </tr>
 <? } ?>
   </tbody></table>

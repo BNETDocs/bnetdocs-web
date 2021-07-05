@@ -1,67 +1,79 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Server;
-
 use \BNETDocs\Libraries\Server;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$object_id     = $this->getContext()->server_id;
-$object        = $this->getContext()->server;
-$object_status = null;
-$object_type   = $this->getContext()->server_type;
-
-$object_user        = ($object      ? $object->getUser()             : null);
-$object_user_avatar = ($object_user ? $object_user->getAvatarURI(22) : null);
-$object_user_url    = ($object_user ? $object_user->getURI()         : null);
-
-$title       = ($object ? $object->getName() : "Server Not Found");
-$description = ($object ? "The BNETDocs Status Page for " . $object->getName()
-  : "The requested server does not exist or could not be found.");
-
-$this->opengraph->attach(new Pair("type", "article"));
-
-$url = Common::relativeUrlToAbsolute("/server/" . urlencode($object_id));
-
-if ($object) {
-
-  $url = $object->getURI();
-
-  $object_status_bitmask = $object->getStatusBitmask();
-  if ($object_status_bitmask & Server::STATUS_ONLINE) {
-    $object_status = "<span class=\"online\">Online</span>";
-  } else {
-    $object_status = "<span class=\"offline\">Offline</span>";
-  }
-  if ($object_status_bitmask & Server::STATUS_DISABLED) {
-    $object_status .= ", <span class=\"disabled\">Disabled</span>";
-  }
-
+$title = 'Server Not Found';
+$description = 'The requested server does not exist or could not be found.';
+$server = $this->getContext()->server;
+$server_id = $this->getContext()->server_id;
+$server_type = $this->getContext()->server_type;
+if (!$server)
+{
+  $server_user = null;
+  $url = Common::relativeUrlToAbsolute(sprintf('/server/', rawurlencode($server_id)));
 }
+else
+{
+  $server_address = filter_var(sprintf('%s:%s', $server->getAddress(), $server->getPort()), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $server_name = filter_var($server->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-$this->opengraph->attach(new Pair("url", $url));
+  $title = $server_name;
+  $description = sprintf('Server Status for %s', $server_name);
+  $url = $server->getURI();
+  $url_json = sprintf('%s.json', $url);
+  $url_txt = sprintf('%s.txt', $url);
 
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if ($object) { ?>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($title); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-        <header>Server Status</header>
-        <section>
-          <table class="serverview"><tbody>
-            <tr><th>Label</th><td><?php echo filter_var($object->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></td></tr>
-            <tr><th>Address</th><td class="address" onclick="bnetdocs.fSelectText(this);"><?php echo filter_var($object->getAddress() . ":" . $object->getPort(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></td></tr>
-            <tr><th>Owner</th><td><?php if ($object_user) { ?><a href="<?php echo $object_user_url; ?>"><img class="avatar" src="<?php echo $object_user_avatar; ?>"/> <?php echo filter_var($object_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a><?php } else { echo "Anonymous"; } ?></td></tr>
-            <tr><th>Type</th><td><?php echo filter_var($object_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></td></tr>
-            <tr><th>Current Status</th><td><?php echo $object_status; ?></td></tr>
-          </tbody></table>
-          <hr/>
-          <p style="font-size:smaller;text-align:center;"><a href="<?php echo Common::relativeUrlToAbsolute( $url . '.json' ); ?>">JSON</a> | <a href="<?php echo Common::relativeUrlToAbsolute( $url . '.txt' ); ?>">TXT</a></p>
-        </section>
-<?php } else { ?>
-        <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></header>
-        <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+  $server_type = $server->getType();
+  $server_type_label = filter_var($server_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+  $server_user = $server->getUser();
+  if (!$server_user)
+  {
+    $server_user_string = 'Anonymous';
+  }
+  else
+  {
+    $server_user_avatar = $server_user->getAvatarURI(22);
+    $server_user_name = filter_var($server_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $server_user_url = $server_user->getURI();
+    $server_user_string = sprintf('<a href="%s"><img class="mr-2 rounded" src="%s"/>%s</a>', $server_user_url, $server_user_avatar, $server_user_name);
+  }
+
+  $server_status_bitmask = $server->getStatusBitmask();
+  $server_status = (
+    ($server_status_bitmask & Server::STATUS_ONLINE) ?
+    '<span class="text-success">Online</span>' :
+    '<span class="text-danger">Offline</span>'
+  ) . (
+    ($server_status_bitmask & Server::STATUS_DISABLED) ?
+    ', <span class="text-danger">Disabled</span>' : ''
+  );
+}
+$this->opengraph->attach(new Pair('type', 'article'));
+$this->opengraph->attach(new Pair('url', $url));
+require('./header.inc.phtml'); ?>
+<div class="container">
+<? if (!$server) { ?>
+  <div class="alert alert-danger">
+    <h1><?=$title?></h1>
+    <p class="mb-0"><?=$description?></p>
+  </div>
+<? } else { ?>
+  <span class="float-right">
+    <a class="btn btn-sm btn-primary" href="<?=$url_json?>">JSON</a>
+    <a class="btn btn-sm btn-primary" href="<?=$url_txt?>">TXT</a>
+    <a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
+    <a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
+  </span>
+  <h1><?=$title?></h1>
+  <table class="table table-hover table-sm table-striped"><thead></thead><tbody>
+    <tr><th class="text-right">Label</th><td><?=$server_name?></td></tr>
+    <tr><th class="text-right">Address</th><td onclick="bnetdocs.fSelectText(this);"><code><?=$server_address?></td></tr>
+    <tr><th class="text-right">Owner</th><td><?=$server_user_string?></td></tr>
+    <tr><th class="text-right">Type</th><td><?=$server_type_label?></td></tr>
+    <tr><th class="text-right">Current Status</th><td><?=$server_status?></td></tr>
+  </tbody></table>
+<? } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>
