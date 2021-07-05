@@ -52,7 +52,7 @@ if (is_null($news_posts) || empty($news_posts)) { ?>
     </span>
     <h1 class="display-4"><a href="<?=$url?>"><?=filter_var($news_post_title, FILTER_SANITIZE_STRING)?></a></h1>
 <?  if (!($news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
-    <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
+    <div class="alert alert-warning"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></div>
 <?  } ?>
     <div style="background-color:rgba(0,0,0,0.45);" class="font-weight-bold float-left mb-2 mr-2 p-2 rounded small shadow text-center"><img alt="<?=$news_post->getCategory()->getLabel()?>" title="<?=$news_post->getCategory()->getLabel()?>" src="<?=Common::relativeUrlToAbsolute('/a/news_categories/' . $news_post->getCategory()->getFilename())?>"/><br/><?=$news_post->getCategory()->getLabel()?></div><?=$news_post->getContent(true)?>
   </div></div>
