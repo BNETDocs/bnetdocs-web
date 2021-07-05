@@ -65,7 +65,7 @@ require('./header.inc.phtml'); ?>
         $e_user_url    = $e_user->getURI();
         $e_user_avatar = $e_user->getAvatarURI(22);
         $e_user        = filter_var( $e_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-        $e_user        = '<a href="' . $e_user_url . '"><img class="avatar" src="' . $e_user_avatar . '"/>&nbsp;' . $e_user . '</a>';
+        $e_user        = '<a href="' . $e_user_url . '"><img class="mr-2 rounded" src="' . $e_user_avatar . '"/>' . $e_user . '</a>';
       }
 ?>
       <tr>
