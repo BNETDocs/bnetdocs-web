@@ -1,97 +1,52 @@
-<?php namespace BNETDocs\Templates\User;
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Account Login";
-$description = "This form allows an individual to log in to their account on BNETDocs";
-$this->opengraph->attach(new Pair("url", "/user/login"));
-
-switch ($this->getContext()->error) {
-  case "ALREADY_LOGGED_IN":
-    $message = "You are already logged in, you must log out first.";
-    break;
-  case "EMPTY_EMAIL":
-    $message = "The email address was left blank.";
-    break;
-  case "USER_NOT_FOUND":
-  case "PASSWORD_INCORRECT":
-    $message = "Incorrect email address or password.";
-    break;
-  case "USER_DISABLED":
-    $message = "The account has been administratively disabled.";
-    break;
-  case "USER_NOT_VERIFIED":
-    $message = "The account's identity has not been verified yet. "
-      . "No email yet? Use the Recover Password button.";
-    break;
-  case "LOGIN_DISABLED":
-    $message = "Logging in has been administratively disabled indefinitely.";
-    break;
-  default:
-    $message = $this->getContext()->error;
+$title = 'Account Login';
+$description = 'This form enables a user to log in to their account.';
+$this->opengraph->attach(new Pair('url', '/user/login'));
+$email = filter_var($this->getContext()->email, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$error = $this->getContext()->error;
+switch ($error)
+{
+  case 'ALREADY_LOGGED_IN': $message = 'You are already logged in, you must log out first.'; break;
+  case 'EMPTY_EMAIL': $message = 'The email address was left blank.'; break;
+  case 'USER_NOT_FOUND':
+  case 'PASSWORD_INCORRECT': $message = 'Incorrect email address or password.'; break;
+  case 'USER_DISABLED': $message = 'The account has been administratively disabled.'; break;
+  case 'USER_NOT_VERIFIED': $message = 'The account\'s identity has not been verified yet. No email yet? Use the Recover Password button.'; break;
+  case 'LOGIN_DISABLED': $message = 'Logging in has been administratively disabled indefinitely.'; break;
+  default: $message = $error;
 }
-
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if ($this->getContext()->error !== false) { ?>
-        <header>Account Login</header>
-<?php if (!empty($message)) { ?>
-        <section class="red">
-          <p><?php echo $message; ?></p>
-        </section>
-<?php } ?>
-        <form method="POST" action="?">
-          <section>
-            <table>
-              <thead></thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <label for="email">Email address:</label><br/>
-                    <input
-                      type="email"
-                      name="email"
-                      id="email"
-                      value="<?=filter_var($this->getContext()->email, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"
-                      tabindex="1"
-                      required
-                      autocomplete="email"
-                      autofocus="autofocus"
-                    />
-                  </td><td>
-                    <label for="password">Password:</label><br/>
-                    <input
-                      type="password"
-                      name="password"
-                      id="password"
-                      value=""
-                      tabindex="2"
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <p style="color:rgba(128,128,128,0.8);">Session lifetime is 1 month.</p>
-            <hr/>
-            <input
-              type="submit"
-              value="Log In"
-              tabindex="3"
-            />
-            <a class="button" style="margin-left:8px;"
-              href="<?php echo Common::relativeUrlToAbsolute("/user/resetpassword"); ?>"
-              tabindex="4"
-            >Recover Password</a>
-          </section>
-        </form>
-<?php } else { ?>
-        <header class="green">Logged In</header>
-        <section class="green">
-          <p>You have successfully logged in!</p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+require('./header.inc.phtml'); ?>
+<div class="container">
+<? if ($error !== false) { ?>
+  <h1><?=$title?></h1>
+<? if (!empty($message)) { ?>
+  <div class="alert alert-danger">
+    <p class="mb-0"><?=$message?></p>
+  </div>
+<? } ?>
+  <form method="POST" action="?">
+    <div class="card"><div class="card-body">
+      <div class="form-group">
+        <label class="font-weight-bold" for="email">Email address:</label>
+        <input class="bg-dark border border-primary form-control text-light" type="email" name="email" id="email" placeholder="Enter the email address here" value="<?=$email?>" tabindex="1" required autocomplete="email" autofocus="autofocus" />
+      </div>
+      <div class="form-group">
+        <label class="font-weight-bold" for="password">Password:</label>
+        <input class="bg-dark border border-primary form-control text-light" type="password" name="password" id="password" placeholder="Enter the password here" value="" tabindex="2"/>
+      </div>
+      <p class="text-muted">Session lifetime is 1 month.</p>
+      <input class="btn btn-success" type="submit" value="Log In" tabindex="3"/>
+      <a class="btn btn-primary" href="<?=Common::relativeUrlToAbsolute('/user/resetpassword')?>" tabindex="4">Recover Password</a>
+    </div></div>
+  </form>
+<? } else { ?>
+  <h1 class="text-success">Logged In</h1>
+  <div class="alert alert-success">
+    <p class="mb-0">You have successfully logged in!</p>
+  </div>
+<? } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>
