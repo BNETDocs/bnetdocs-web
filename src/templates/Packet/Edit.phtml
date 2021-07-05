@@ -1,133 +1,99 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Packet;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = 'Edit Packet';
+$title = 'Edit Packet';
 $description = 'This form allows an individual to edit a packet.';
-
 $this->opengraph->attach(new Pair('url', '/packet/edit'));
 $this->opengraph->attach(new Pair('type', 'article'));
-
-switch ($this->getContext()->error) {
-  case 'ACL_NOT_SET':
-    $message = 'You do not have the privilege to edit packets.';
-    break;
-  case 'NOT_FOUND':
-    $message = 'Cannot find packet by that id.';
-    break;
-  case 'EMPTY_NAME':
-    $message = 'The name of the packet is required.';
-    break;
-  case 'EMPTY_FORMAT':
-    $message = 'The format of the packet is required.';
-    break;
-  case 'EMPTY_REMARKS':
-    $message = 'The remarks of the packet is required.';
-    break;
-  case 'INTERNAL_ERROR':
-    $message = 'An internal error occurred while processing your request. '
-      . 'Our staff have been notified of the issue. Try again later.';
-    break;
-  default:
-    $message = $this->getContext()->error;
+$error = $this->getContext()->error;
+switch ($error)
+{
+  case 'ACL_NOT_SET': $message = 'You do not have the privilege to edit packets.'; break;
+  case 'NOT_FOUND': $message = 'Cannot find packet by that id.'; break;
+  case 'EMPTY_NAME': $message = 'The name of the packet is required.'; break;
+  case 'EMPTY_FORMAT': $message = 'The format of the packet is required.'; break;
+  case 'EMPTY_REMARKS': $message = 'The remarks of the packet is required.'; break;
+  case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  default: $message = $error;
 }
-
-require('./header.inc.phtml');
-?>
-      <article>
-<?php if ($this->getContext()->error !== false) { ?>
-        <header>Edit Packet</header>
-<?php if (!empty($message)) { ?>
-        <section class="red"><p><?php echo $message; ?></p></section>
-<?php } ?>
-<?php if ($this->getContext()->error != "NOT_FOUND") { ?>
-        <form method="POST" action="?id=<?php echo
-            htmlspecialchars($this->getContext()->packet_id, ENT_HTML5, "UTF-8"); ?>">
-          <section>
-            <label for="id">Id:</label>
-            <em style="float:right;">(base 10 / decimal format)</em><br/>
-            <input type="text" name="id" id="id" tabindex="1" required
-              autofocus="autofocus" value="<?php echo
-                filter_var( $this->getContext()->id, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-              ?>"/>
-          </section>
-          <section>
-            <label for="name">Name:</label><br/>
-            <input type="text" name="name" id="name" tabindex="2" required
-              value="<?php echo
-                filter_var( $this->getContext()->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-              ?>"/>
-          </section>
-          <section>
-            <label for="format">Format:</label>
-            <textarea name="format" id="format" tabindex="3" required
-              style="height:200px;"><?php echo
-                filter_var( $this->getContext()->format, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-              ?></textarea>
-          </section>
-          <section>
-            <label>Used by:</label>
-            <table>
-              <thead></thead><tbody>
-<?php function add_product_checkbox( $id, $name, $checked ) { ?>
-                  <td><input type="checkbox" id="used_by_<?php echo $id; ?>" name="used_by[]" value="<?php echo $id; ?>"<?php if ( $checked ) { ?> checked="checked"<?php } ?>/><label for="used_by_<?php echo $id; ?>"><?php echo $name; ?></label></td>
-<?php }
-$product_ubound = count( $this->getContext()->products );
-for ( $product_i = 0; $product_i < $product_ubound; ++$product_i ) { ?>
-                <tr>
-<?php
-  $p = $this->getContext()->products[ $product_i ];
-  $checked = in_array( $p, $this->getContext()->used_by );
-  add_product_checkbox( $p->getBnetProductId(), $p->getLabel(), $checked );
-  if ( $product_i + 1 < $product_ubound ) {
-    $p = $this->getContext()->products[ ++$product_i ];
-    $checked = in_array( $p, $this->getContext()->used_by );
-    add_product_checkbox( $p->getBnetProductId(), $p->getLabel(), $checked );
-  }
-?>
-                </tr>
-<?php } ?>
-              </tbody>
-            </table>
-          </section>
-          <section>
-            <label for="remarks">Remarks:</label>
-            <span style="float:right;">
-              <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
-              <input type="checkbox" name="markdown" id="markdown" tabindex="5"
-                title="Use markdown or use raw HTML" value="1"<?=($this->getContext()->markdown?' checked="checked"':'')?>/>
-            </span>
-            <textarea name="remarks" id="remarks" tabindex="4" required
-              style="height:200px;"><?php echo
-                htmlspecialchars($this->getContext()->remarks, ENT_HTML5, "UTF-8");
-              ?></textarea>
-          </section>
-          <section>
-            <label>Flags:</label>
-            <table>
-              <thead></thead><tbody>
-                <tr>
-                  <td><input type="checkbox" id="deprecated" name="deprecated" value="1"<?=($this->getContext()->deprecated?' checked="checked"':'')?> tabindex="6"/> <label for="deprecated">Deprecated</label></td>
-                  <td><input type="checkbox" id="research" name="research" value="1"<?=($this->getContext()->research?' checked="checked"':'')?> tabindex="7"/> <label for="research">In Research</label></td>
-                  <td><input type="checkbox" id="published" name="published" value="1"<?=($this->getContext()->published?' checked="checked"':'')?> tabindex="8"/> <label for="published">Published</label></td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-          <section style="text-align:center;">
-            <input type="submit" value="Save" tabindex="9"/>
-          </section>
-        </form>
-<?php } ?>
-<?php } else { ?>
-        <header class="green">Edit Packet</header>
-        <section class="green">
-          <p>Your packet has been edited.</p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+$id = filter_var($this->getContext()->id, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$packet_format = filter_var($this->getContext()->format, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$packet_id = filter_var($this->getContext()->packet_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$packet_name = filter_var($this->getContext()->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$packet_remarks = filter_var($this->getContext()->remarks, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$packet_used_by = $this->getContext()->used_by;
+$products = $this->getContext()->products;
+require('./header.inc.phtml'); ?>
+<div class="container">
+<? if ($error !== false) { ?>
+  <h1>Edit Packet</h1>
+<? if (!empty($message)) { ?>
+  <div class="alert alert-danger"><p class="mb-0"><?=$message?></p></div>
+<? } ?>
+<? if ($error != 'NOT_FOUND') { ?>
+  <form method="POST" action="?id=<?=$packet_id?>">
+    <div class="form-group">
+      <label class="font-weight-bold">Flags:</label>
+      <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($this->getContext()->deprecated?' checked="checked"':'')?> tabindex="6"/><label class="custom-control-label" for="deprecated">Deprecated</label></div>
+      <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="research" name="research" value="1"<?=($this->getContext()->research?' checked="checked"':'')?> tabindex="7"/> <label class="custom-control-label" for="research">In Research</label></div>
+      <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="published" name="published" value="1"<?=($this->getContext()->published?' checked="checked"':'')?> tabindex="8"/> <label class="custom-control-label" for="published">Published</label></div>
+    </div>
+    <div class="form-group">
+      <label class="font-weight-bold" for="id">Id:</label>
+      <input class="bg-dark border border-primary form-control text-light" type="text" name="id" id="id" placeholder="Enter the decimal (base-10) formatted id here" tabindex="1" required  autofocus="autofocus" value="<?=$id?>"/>
+    </div>
+    <div class="form-group">
+      <label class="font-weight-bold" for="name">Name:</label>
+      <input class="bg-dark border border-primary form-control text-light" type="text" name="name" id="name" tabindex="2" required value="<?=$packet_name?>"/>
+    </div>
+    <div class="form-group">
+      <label class="font-weight-bold" for="format">Format:</label>
+      <textarea class="bg-dark border border-primary form-control text-light" name="format" id="format" tabindex="3" required><?=$packet_format?></textarea>
+    </div>
+    <div class="form-group">
+      <label class="font-weight-bold">Used by:</label>
+      <table class="table table-sm">
+        <thead></thead><tbody>
+<?      function add_product_checkbox($id, $name, $checked)
+        {
+          printf('<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="used_by_%s" name="used_by[]" value="%s"%s/><label class="custom-control-label" for="used_by_%s">%s</label></td>', $id, $id, ($checked ? ' checked="checked"' : ''), $id, $name);
+        }
+        $product_ubound = count($products);
+        for ($product_i = 0; $product_i < $product_ubound; ++$product_i)
+        {
+          echo '<tr>';
+          $p = $products[$product_i];
+          add_product_checkbox($p->getBnetProductId(), $p->getLabel(), in_array($p, $packet_used_by));
+          if ($product_i + 1 < $product_ubound)
+          {
+            $p = $products[++$product_i];
+            add_product_checkbox($p->getBnetProductId(), $p->getLabel(), in_array($p, $packet_used_by));
+          }
+          echo '</tr>';
+        } ?>
+        </tbody>
+      </table>
+    </div>
+    <div class="form-group">
+      <label class="font-weight-bold" for="remarks">Remarks:</label>
+      <span class="float-right">
+        <div class="custom-control custom-switch">
+          <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="5"
+          title="Use markdown or use raw HTML" value="1"<?=($this->getContext()->markdown?' checked="checked"':'')?>/>
+          <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown</label>
+        </div>
+      </span>
+      <textarea class="bg-dark border border-primary form-control text-light" name="remarks" id="remarks" tabindex="4" required><?=$packet_remarks?></textarea>
+    </div>
+    <div class="form-group text-center">
+      <input class="btn btn-success" type="submit" value="Save" tabindex="9"/>
+    </div>
+  </form>
+<? } ?>
+<? } else { ?>
+  <h1 class="text-success">Edit Packet</h1>
+  <div class="alert alert-success"><p class="mb-0">Your packet has been edited.</p></div>
+<? } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>
