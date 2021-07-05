@@ -19,7 +19,7 @@ else
   $server_name = filter_var($server->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
   $title = $server_name;
-  $description = sprintf('Server Status for %s', $server_name);
+  $description = sprintf('The server details and status for %s', $server_name);
   $url = $server->getURI();
   $url_json = sprintf('%s.json', $url);
   $url_txt = sprintf('%s.txt', $url);
