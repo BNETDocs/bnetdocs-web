@@ -49,7 +49,7 @@ require('./header.inc.phtml'); ?>
     </div>
     <div class="form-group">
       <label class="font-weight-bold" for="format">Format:</label>
-      <textarea class="bg-dark border border-primary form-control text-light" name="format" id="format" tabindex="3" required><?=$packet_format?></textarea>
+      <textarea class="bg-dark border border-primary form-control language-objectivec text-light text-monospace" style="height:120px;" name="format" id="format" tabindex="3" required><?=$packet_format?></textarea>
     </div>
     <div class="form-group">
       <label class="font-weight-bold">Used by:</label>
@@ -84,7 +84,7 @@ require('./header.inc.phtml'); ?>
           <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown</label>
         </div>
       </span>
-      <textarea class="bg-dark border border-primary form-control text-light" name="remarks" id="remarks" tabindex="4" required><?=$packet_remarks?></textarea>
+      <textarea class="bg-dark border border-primary form-control text-light" style="height:200px;" name="remarks" id="remarks" tabindex="4" required><?=$packet_remarks?></textarea>
     </div>
     <div class="form-group text-center">
       <input class="btn btn-success" type="submit" value="Save" tabindex="9"/>

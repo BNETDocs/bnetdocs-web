@@ -1,59 +1,43 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Packet;
-
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Delete Packet";
-$description = "This form allows an individual to delete a packet.";
-
-$this->opengraph->attach(new Pair("url", "/packet/delete"));
-$this->opengraph->attach(new Pair("type", "article"));
-
-switch ($this->getContext()->error) {
-  case "ACL_NOT_SET":
-    $message = "You do not have the privilege to delete packets.";
-    break;
-  case "NOT_FOUND":
-    $message = "Cannot find packet by that id.";
-    break;
-  case "NOT_LOGGED_IN":
-    $message = "You must be logged in to delete packets.";
-    break;
-  case "INTERNAL_ERROR":
-    $message = "An internal error occurred while processing your request. "
-      . "Our staff have been notified of the issue. Try again later.";
-    break;
-  default:
-    $message = $this->getContext()->error;
+$title = 'Delete Packet';
+$description = 'This form allows an individual to delete a packet.';
+$this->opengraph->attach(new Pair('url', '/packet/delete'));
+$this->opengraph->attach(new Pair('type', 'article'));
+$error = $this->getContext()->error;
+switch ($error)
+{
+  case 'ACL_NOT_SET': $message = 'You do not have the privilege to delete packets.'; break;
+  case 'NOT_FOUND': $message = 'Cannot find packet by that id.'; break;
+  case 'NOT_LOGGED_IN': $message = 'You must be logged in to delete packets.'; break;
+  case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  default: $message = $error;
 }
-
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if (is_null($this->getContext()->error)) { ?>
-        <header>Delete Packet</header>
-        <form method="POST" action="?id=<?php echo
-            htmlspecialchars($this->getContext()->id, ENT_HTML5, "UTF-8"); ?>">
-          <section>
-            <p>Are you sure you wish to delete this packet?</p>
-            <p><input type="text" readonly="readonly" value="<?php echo filter_var($this->getContext()->title, FILTER_SANITIZE_STRING); ?>" tabindex="1"/></p>
-            <p><input type="submit" value="Delete Packet" tabindex="2" autofocus="autofocus"/></p>
-          </section>
-        </form>
-<?php } else if ($this->getContext()->error === false) { ?>
-        <header class="green">Packet Deleted</header>
-        <section class="green">
-          <p>You have successfully deleted the packet!</p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } else { ?>
-        <header class="red">Delete Packet</header>
-        <section class="red">
-          <p>An error occurred while attempting to delete the packet.</p>
-          <p><?php echo $message; ?></p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+$id = filter_var($this->getContext()->id, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+require('./header.inc.phtml'); ?>
+<div class="container">
+<? if (is_null($error)) { ?>
+  <h1 class="text-danger"><?=$title?></h1>
+  <p class="text-danger"><?=$description?></p>
+  <form method="POST" action="?id=<?=$id?>">
+    <div class="alert alert-danger">
+      <p class="mb-0">Are you sure you wish to delete this packet?</p>
+    </div>
+    <pre><code class="language-objectivec"><? echo filter_var($this->getContext()->title, FILTER_SANITIZE_STRING); ?></code></pre>
+    <input class="btn btn-danger" type="submit" value="Delete Packet" tabindex="2" autofocus="autofocus"/>
+  </form>
+<? } else if ($error === false) { ?>
+  <h1 class="text-success">Packet Deleted</h1>
+  <div class="alert alert-success">
+    <p class="mb-0">You have successfully deleted the packet!</p>
+  </div>
+<? } else { ?>
+  <h1 class="text-danger">Delete Packet</h1>
+  <div class="alert alert-danger">
+    <p>An error occurred while attempting to delete the packet.</p>
+    <p class="mb-0"><?=$message?></p>
+  </div>
+<? } ?>
+</div>
+<? require("./footer.inc.phtml"); ?>
