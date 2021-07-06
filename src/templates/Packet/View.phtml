@@ -120,5 +120,5 @@ require('./header.inc.phtml'); ?>
 <? $comment_parent_type = Comment::PARENT_TYPE_PACKET; $comment_parent_id = $object_id; require('./Comment/Section.inc.phtml');
   } else { ?>
   <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_STRING)?></h1>
-  <div class="row"><div class="col"><?=filter_var($description, FILTER_SANITIZE_STRING)?></div></div>
+  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_STRING)?></div></div>
 <? } require('./footer.inc.phtml'); ?>
