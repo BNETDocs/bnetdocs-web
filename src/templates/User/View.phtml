@@ -91,11 +91,11 @@ require('./header.inc.phtml'); ?>
             <th scope="row" class="align-middle text-right">Id</th>
             <td><code><?=filter_var($user_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></td>
           </tr>
+<? if ($active_user && $active_user->isStaff()) { ?>
           <tr class="text-success">
             <th scope="row" class="align-middle text-right">Date created</th>
             <td><time datetime="<?=$user_created_dt->format('c')?>"><?=$user_created_dt->format('D M j, Y')?></time></td>
           </tr>
-<? if ($active_user && $active_user->isStaff()) { ?>
           <tr class="text-<?=($user->isVerified() ? 'info' : 'danger')?>">
             <th scope="row" class="align-middle text-right">Date verified</th>
             <td><?=($user->isVerified() ? '<time datetime="' . $user_verified_dt->format('c') . '">' . $user_verified_dt->format('D M j, Y') . '</time>' : '<em>(not verified)</em>')?></td>
