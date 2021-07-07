@@ -1,5 +1,4 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\Authentication;
@@ -21,8 +20,10 @@ use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 
-class Edit extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
+class Edit extends Controller
+{
+  public function &run(Router &$router, View &$view, array &$args)
+  {
     $data                   = $router->getRequestQueryArray();
     $model                  = new NewsEditModel();
     $model->active_user     = Authentication::$user;
@@ -40,6 +41,14 @@ class Edit extends Controller {
     $model->acl_allowed = ($model->active_user && $model->active_user->getAcl(
       User::OPTION_ACL_NEWS_MODIFY
     ));
+
+    if (!$model->acl_allowed)
+    {
+      $model->_responseCode = 403;
+      $model->error = 'ACL_NOT_SET';
+      $view->render($model);
+      return $model;
+    }
 
     try { $model->news_post = new NewsPost($model->news_post_id); }
     catch (NewsPostNotFoundException $e) { $model->news_post = null; }
@@ -75,12 +84,16 @@ class Edit extends Controller {
     return $model;
   }
 
-  protected function handlePost(Router &$router, NewsEditModel &$model) {
-    if (!$model->acl_allowed) {
+  protected function handlePost(Router &$router, NewsEditModel &$model)
+  {
+    if (!$model->acl_allowed)
+    {
       $model->error = 'ACL_NOT_SET';
       return;
     }
-    if (!isset(Common::$database)) {
+
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
@@ -99,16 +112,12 @@ class Edit extends Controller {
     $model->content    = $content;
     $model->rss_exempt = $rss_exempt;
 
-    if (empty($title)) {
-      $model->error = 'EMPTY_TITLE';
-    } else if (empty($content)) {
-      $model->error = 'EMPTY_CONTENT';
-    }
+    $model->error = (empty($title) ? 'EMPTY_TITLE' : (empty($content) ? 'EMPTY_CONTENT' : null));
 
-    $user_id = $model->active_user->getId();
+    if ($model->error) return;
 
-    try {
-
+    try
+    {
       $model->news_post->setCategoryId($model->category);
       $model->news_post->setTitle($model->title);
       $model->news_post->setMarkdown($model->markdown);
@@ -124,28 +133,25 @@ class Edit extends Controller {
       );
 
       $success = $model->news_post->save();
-
-    } catch (QueryException $e) {
-
+      $model->error = false;
+    }
+    catch (QueryException $e)
+    {
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
 
       $success = false;
-
-    }
-
-    if (!$success) {
       $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
     }
 
-    Logger::logEvent(
+    Logger::logEvent
+    (
       EventTypes::NEWS_EDITED,
-      $user_id,
+      ($model->active_user ? $model->active_user->getId() : null),
       getenv('REMOTE_ADDR'),
-      json_encode([
+      json_encode
+      ([
         'error'           => $model->error,
         'news_post_id'    => $model->news_post_id,
         'category_id'     => $model->news_post->getCategoryId(),

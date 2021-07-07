@@ -26,6 +26,7 @@ $news_post = $this->getContext()->news_post;
 $news_post_id = filter_var($this->getContext()->news_post_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 require('./header.inc.phtml'); ?>
 <div class="container">
+<? if ($this->getContext()->acl_allowed) { ?>
   <h1><?=$title?></h1>
   <p><?=$description?></p>
 <?  if ($error !== false) {
@@ -39,6 +40,7 @@ require('./header.inc.phtml'); ?>
   <div class="alert alert-success">
     <p class="mb-0">Your news post has been edited successfully!</p>
   </div>
-<?  } ?>
+<?  }
+  } else { require('./LoginRequired.inc.phtml'); } ?>
 </div>
 <? require('./footer.inc.phtml'); ?>

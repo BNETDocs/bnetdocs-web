@@ -25,6 +25,7 @@ $form_markdown = $this->getContext()->markdown;
 $form_title = filter_var($this->getContext()->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 require('./header.inc.phtml'); ?>
 <div class="container">
+<? if ($this->getContext()->acl_allowed) { ?>
   <h1><?=$title?></h1>
   <p><?=$description?></p>
 <?  if (is_null($error) || $error == 'NOT_FOUND') {
@@ -41,6 +42,7 @@ require('./header.inc.phtml'); ?>
   <div class="text-center">
     <a class="btn btn-primary" href="<?=Common::relativeUrlToAbsolute('/document/' . rawurlencode($document_id))?>"><img class="float-left" src="<?=Common::relativeUrlToAbsolute('/a/svg/chevron-right-white.svg' . $_unique_asset)?>"/> Return to Document</a>
   </div>
-<?  } ?>
+<?  }
+  } else { require('./LoginRequired.inc.phtml'); } ?>
 </div>
 <? require('./footer.inc.phtml'); ?>
