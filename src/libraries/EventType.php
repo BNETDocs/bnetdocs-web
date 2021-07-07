@@ -76,7 +76,7 @@ class EventType {
       case EventTypes::COMMENT_EDITED_PACKET:
         return 'Comment Edited on Packet';
       case EventTypes::COMMENT_EDITED_DOCUMENT:
-        return 'Comment Edited on User';
+        return 'Comment Edited on Document';
       case EventTypes::COMMENT_EDITED_USER:
         return 'Comment Edited on User';
       case EventTypes::COMMENT_DELETED_NEWS:
