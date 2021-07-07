@@ -5,6 +5,7 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
 use \BNETDocs\Libraries\UserProfile;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
@@ -462,7 +463,11 @@ class User implements JsonSerializable {
   }
 
   public function getUserProfile() {
-    return new UserProfile($this->id);
+    try {
+      return new UserProfile($this->id);
+    } catch (UserProfileNotFoundException $e) {
+      return null;
+    }
   }
 
   public function getVerifiedDateTime() {
