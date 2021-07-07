@@ -120,27 +120,27 @@ require('./header.inc.phtml'); ?>
       }
       if (isset($github_username) && !empty($github_username))
       {
-        echo '<li><strong>GitHub:</strong> <a href="' . $github_uri . '">' . $github_username . '</a></li>' . PHP_EOL;
+        echo '<li><strong>GitHub:</strong> <a rel="external" href="' . $github_uri . '">' . $github_username . '</a></li>' . PHP_EOL;
       }
       if (isset($reddit_username) && !empty($reddit_username))
       {
-        echo '<li><strong>Reddit:</strong> <a href="' . $reddit_uri . '">' . $reddit_username . '</a></li>' . PHP_EOL;
+        echo '<li><strong>Reddit:</strong> <a rel="external" href="' . $reddit_uri . '">' . $reddit_username . '</a></li>' . PHP_EOL;
       }
       if (isset($steam_username) && !empty($steam_username))
       {
-        echo '<li><strong>Steam:</strong> <a href="' . $steam_uri . '">' . $steam_username . '</a></li>' . PHP_EOL;
+        echo '<li><strong>Steam:</strong> <a rel="external" href="' . $steam_uri . '">' . $steam_username . '</a></li>' . PHP_EOL;
       }
       if (isset($facebook_username) && !empty($facebook_username))
       {
-        echo '<li><strong>Facebook:</strong> <a href="' . $facebook_uri . '">' . $facebook_username . '</a></li>' . PHP_EOL;
+        echo '<li><strong>Facebook:</strong> <a rel="external" href="' . $facebook_uri . '">' . $facebook_username . '</a></li>' . PHP_EOL;
       }
       if (isset($twitter_username) && !empty($twitter_username))
       {
-        echo '<li><strong>Twitter:</strong> <a href="' . $twitter_uri . '">' . $twitter_username . '</a></li>' . PHP_EOL;
+        echo '<li><strong>Twitter:</strong> <a rel="external" href="' . $twitter_uri . '">' . $twitter_username . '</a></li>' . PHP_EOL;
       }
       if (isset($instagram_username) && !empty($instagram_username))
       {
-        echo '<li><strong>Instagram:</strong> <a href="' . $instagram_uri . '">' . $instagram_username . '</a></li>' . PHP_EOL;
+        echo '<li><strong>Instagram:</strong> <a rel="external" href="' . $instagram_uri . '">' . $instagram_username . '</a></li>' . PHP_EOL;
       }
       if (isset($skype_username) && !empty($skype_username))
       {
@@ -148,7 +148,7 @@ require('./header.inc.phtml'); ?>
       }
       if (isset($website) && !empty($website))
       {
-        echo '<li><strong>Website:</strong> <a href="' . $website . '">' . $website . '</a></li>' . PHP_EOL;
+        echo '<li><strong>Website:</strong> <a rel="external" href="' . $website . '">' . $website . '</a></li>' . PHP_EOL;
       }
       echo '</ul>';
     }?>
