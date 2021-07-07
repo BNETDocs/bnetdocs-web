@@ -50,7 +50,7 @@ if (is_null($news_posts) || empty($news_posts)) { ?>
       <a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
       <a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
     </span>
-    <h1 class="display-4"><a href="<?=$url?>"><?=filter_var($news_post_title, FILTER_SANITIZE_STRING)?></a></h1>
+    <h1><a href="<?=$url?>"><?=filter_var($news_post_title, FILTER_SANITIZE_STRING)?></a></h1>
 <?  if (!($news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
     <div class="alert alert-warning"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></div>
 <?  } ?>
@@ -64,11 +64,11 @@ if (is_null($news_posts) || empty($news_posts)) { ?>
         | <strong>Edited:</strong> <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
 <? } ?>
       </span>
-<?  echo ($users[$user_id] ?
+<?=($users[$user_id] ?
       sprintf('<a href="%s"><img class="img-fluid rounded mr-2" src="%s"/>%s</a>',
         $users[$user_id]->getURI(), $users[$user_id]->getAvatarURI(40), filter_var($users[$user_id]->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
       ) : 'Anonymous'
-    ); ?>
+    )?>
     </div></div>
   </div></div>
 </div>
@@ -80,7 +80,7 @@ if ($pagination) {
   $page_prev    = ($page_current > 0               ? $page_current + 0 : false);
   $page_next    = ($page_current + 1 < $page_count ? $page_current + 2 : false);
 ?>
-<div class="container">
+<div class="container mt-3">
   <nav aria-label="User list navigation" class="d-flex justify-content-center">
     <ul class="pagination">
 <?    if ($page_prev) { ?>
