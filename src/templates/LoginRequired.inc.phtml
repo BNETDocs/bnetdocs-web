@@ -1,0 +1,11 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates;
+use \CarlBennett\MVC\Libraries\Common; ?>
+<div class="alert alert-danger clearfix">
+  <p class="mb-0">You must be <strong>logged in</strong> and have <strong>sufficient permission</strong> to access this resource.</p>
+</div>
+<div class="text-center">
+  <a class="btn btn-primary" href="javascript:history.go(-1);">Back</a>
+  <a class="btn btn-success" href="<?=Common::relativeUrlToAbsolute(
+    '/user/login?return=' . rawurlencode(getenv('REQUEST_URI')))?>">Log in</a>
+</div>
