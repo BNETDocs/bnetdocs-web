@@ -117,9 +117,6 @@ function main() {
     $router->addRoute( // URL: /document/index.json
       "#^/document/index\.json/?$#", "Document\\Index", "Document\\IndexJSON"
     );
-    $router->addRoute( // URL: /document/popular
-      "#^/document/popular/?$#", "Document\\Popular", "Document\\PopularHtml"
-    );
     $router->addRoute( // URL: /donate
       "#^/donate/?$#", "Donate", "DonateHtml"
     );
