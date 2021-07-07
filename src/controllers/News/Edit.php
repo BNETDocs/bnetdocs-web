@@ -2,6 +2,7 @@
 namespace BNETDocs\Controllers\News;
 
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Logger;
@@ -58,6 +59,11 @@ class Edit extends Controller
       $model->error = 'NOT_FOUND';
     } else {
       $flags = $model->news_post->getOptionsBitmask();
+
+      $model->comments = Comment::getAll(
+        Comment::PARENT_TYPE_NEWS_POST,
+        $model->news_post_id
+      );
 
       $model->news_categories = NewsCategory::getAll();
       usort($model->news_categories, function($a, $b){

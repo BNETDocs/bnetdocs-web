@@ -1,11 +1,13 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\News;
+use \BNETDocs\Libraries\Comment;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Edit News Post';
 $description = 'This page enables a user to edit a news post on the site.';
 $this->opengraph->attach(new Pair('url', '/news/edit'));
 $this->opengraph->attach(new Pair('type', 'article'));
+$comments = $this->getContext()->comments;
 $error = $this->getContext()->error;
 switch ($error)
 {
@@ -36,6 +38,7 @@ require('./header.inc.phtml'); ?>
   </div>
 <?    }
       require('./News/Form.inc.phtml');
+      $comment_parent_type = Comment::PARENT_TYPE_NEWS_POST; $comment_parent_id = $news_post_id; require('./Comment/Section.inc.phtml');
     } else { ?>
   <div class="alert alert-success">
     <p class="mb-0">Your news post has been edited successfully!</p>
