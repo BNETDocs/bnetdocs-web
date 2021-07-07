@@ -195,9 +195,6 @@ function main() {
     $router->addRoute( // URL: /packet/popular
       "#^/packet/popular/?$#", "Packet\\Popular", "Packet\\PopularHtml"
     );
-    $router->addRoute( // URL: /packet/search
-      "#^/packet/search/?$#", "Packet\\Search", "Packet\\SearchHtml"
-    );
     $router->addRoute( // URL: /privacy
       '#^/privacy/?$#', 'PrivacyNotice', 'PrivacyNoticeHtml'
     );
