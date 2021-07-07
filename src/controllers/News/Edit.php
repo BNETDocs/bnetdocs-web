@@ -25,6 +25,7 @@ class Edit extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $data                   = $router->getRequestQueryArray();
     $model                  = new NewsEditModel();
+    $model->active_user     = Authentication::$user;
     $model->category        = null;
     $model->content         = null;
     $model->error           = null;
@@ -35,9 +36,8 @@ class Edit extends Controller {
     $model->published       = null;
     $model->rss_exempt      = null;
     $model->title           = null;
-    $model->user            = Authentication::$user;
 
-    $model->acl_allowed = ($model->user && $model->user->getAcl(
+    $model->acl_allowed = ($model->active_user && $model->active_user->getAcl(
       User::OPTION_ACL_NEWS_MODIFY
     ));
 
@@ -105,7 +105,7 @@ class Edit extends Controller {
       $model->error = 'EMPTY_CONTENT';
     }
 
-    $user_id = $model->user->getId();
+    $user_id = $model->active_user->getId();
 
     try {
 
