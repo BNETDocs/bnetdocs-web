@@ -47,8 +47,7 @@ $c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & 
   </div>
 </div>
 <? if ($active_user) { ?>
-<div class="row mt-3">
-  <div class="col-2"></div>
+<div class="row my-3 justify-content-center">
   <div class="col-8">
     <form method="POST" action="<?=Common::relativeUrlToAbsolute('/comment/create')?>">
       <input type="hidden" name="parent_type" value="<?=$comment_parent_type?>"/>
@@ -61,6 +60,5 @@ $c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & 
       <input class="btn btn-sm btn-secondary" type="submit" value="Comment"/>
     </form>
   </div>
-  <div class="col-2"></div>
 </div>
 <? } ?>
