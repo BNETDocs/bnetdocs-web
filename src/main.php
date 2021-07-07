@@ -120,9 +120,6 @@ function main() {
     $router->addRoute( // URL: /document/popular
       "#^/document/popular/?$#", "Document\\Popular", "Document\\PopularHtml"
     );
-    $router->addRoute( // URL: /document/search
-      "#^/document/search/?$#", "Document\\Search", "Document\\SearchHtml"
-    );
     $router->addRoute( // URL: /donate
       "#^/donate/?$#", "Donate", "DonateHtml"
     );
