@@ -44,6 +44,8 @@ class View extends Controller
       return;
     }
 
+    $model->user_profile = ($model->user ? $model->user->getUserProfile() : null);
+
     // How long have they been a member?
     $model->user_est = Common::intervalToString($model->user->getCreatedDateTime()->diff(new DateTime('now')));
     $model->user_est = substr($model->user_est, 0, min(strlen($model->user_est), strpos($model->user_est, ',')));
