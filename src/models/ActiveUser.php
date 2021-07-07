@@ -1,7 +1,5 @@
-<?php
-namespace BNETDocs\Models;
-use \CarlBennett\MVC\Libraries\Model;
-class ActiveUser extends Model
+<?php namespace BNETDocs\Models;
+class ActiveUser extends \CarlBennett\MVC\Libraries\Model
 {
   public $active_user;
 }

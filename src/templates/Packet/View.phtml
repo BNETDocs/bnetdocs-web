@@ -1,47 +1,36 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Packet;
-
-use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\User;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$comments  = $this->getContext()->comments;
+$title = 'Packet Not Found';
+$description = 'The requested packet does not exist or could not be found.';
+$active_user = $this->getContext()->active_user;
+$comments = $this->getContext()->comments;
+$object = $this->getContext()->packet;
 $object_id = $this->getContext()->packet_id;
-$object    = $this->getContext()->packet;
-
-$logged_in    = Authentication::$user;
-$logged_in_id = ($logged_in ? $logged_in->getId() : null);
-
-$title       = "Packet Not Found";
-$description = "The requested packet does not exist or could not be found.";
-
-$this->opengraph->attach(new Pair("type", "article"));
-
-$url = Common::relativeUrlToAbsolute("/packet/" . urlencode($object_id));
-
-if ($object) {
-
-  $url       = $object->getURI();
+$url = Common::relativeUrlToAbsolute('/packet/' . urlencode($object_id));
+if ($object)
+{
+  $created_dt = $object->getCreatedDateTime();
+  $edited_dt = $object->getEditedDateTime();
   $packet_id = $object->getPacketId(true);
-
-  $title = $object->getPacketDirectionTag() . ' '
-    . $packet_id . ' '
-    . $object->getPacketName();
-
+  $url = $object->getURI();
+  $title = $object->getName();
   $description = Common::stripUpTo(trim(filter_var(
     $object->getPacketRemarks(true), FILTER_SANITIZE_STRING
   )), "\n", 300);
 
-  if ($object->getUserId() !== null) {
+  if ($object->getUserId() !== null)
+  {
     $user_name   = $object->getUser()->getName();
     $user_id     = $object->getUserId();
     $user_url    = $object->getUser()->getURI();
-    $user_avatar = $object->getUser()->getAvatarURI(22);
-  } else {
+    $user_avatar = $object->getUser()->getAvatarURI(40);
+  }
+  else
+  {
     $user_name   = null;
     $user_id     = null;
     $user_url    = null;
@@ -51,93 +40,85 @@ if ($object) {
   $deprecated = $object->isDeprecated();
   $research   = $object->isInResearch();
   $published  = $object->isPublished();
-
 }
 
-$this->opengraph->attach(new Pair("url", $url));
+$this->opengraph->attach(new Pair('type', 'article'));
+$this->opengraph->attach(new Pair('url', $url));
 
-$edit_url       = Common::relativeUrlToAbsolute("/packet/edit?id=" . urlencode($object_id));
-$delete_url     = Common::relativeUrlToAbsolute("/packet/delete?id=" . urlencode($object_id));
-$edit_visible   = ($logged_in && ($logged_in->getOptionsBitmask()
-                & User::OPTION_ACL_PACKET_MODIFY));
-$delete_visible = ($logged_in && ($logged_in->getOptionsBitmask()
+$edit_url = Common::relativeUrlToAbsolute('/packet/edit?id=' . urlencode($object_id));
+$delete_url = Common::relativeUrlToAbsolute('/packet/delete?id=' . urlencode($object_id));
+$edit_visible = ($active_user && ($active_user->getOptionsBitmask()
+              & User::OPTION_ACL_PACKET_MODIFY));
+$delete_visible = ($active_user && ($active_user->getOptionsBitmask()
                 & User::OPTION_ACL_PACKET_DELETE));
 
-$this->additional_css[] = "/a/table-keypair.css";
-$this->additional_css[] = "/a/comments.css";
-if ($logged_in) $this->additional_css[] = "/a/forms.css";
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if ($object) { ?>
-        <a href="https://twitter.com/share?text=<?php echo urlencode($packet_id . " " . $object->getPacketName()); ?>&amp;url=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-twitter-24px.png"); ?>"/></a>
-        <a href="https://facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" rel="external" data-popup="1"><img class="header-button float-right" src="<?php echo Common::relativeUrlToAbsolute("/a/social-facebook-24px.png"); ?>"/></a>
-<?php if ($edit_visible) { ?>
-        <a href="<?php echo $edit_url; ?>" class="header-button float-right">Edit</a>
-<?php } ?>
-<?php if ($delete_visible) { ?>
-        <a href="<?php echo $delete_url; ?>" class="header-button float-right">Delete</a>
-<?php } ?>
-        <header><a href="<?php echo $url; ?>"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></a></header>
-        <section>
-          <table class="info"><tbody>
-            <tr><th style="width:20%;">Message Id:</th><td><?php echo $packet_id; ?></td></tr>
-            <tr><th>Message Name:</th><td><?php echo filter_var($object->getPacketName(), FILTER_SANITIZE_STRING); ?></td></tr>
-            <tr><th>Direction:</th><td><?php echo filter_var($object->getPacketDirectionLabel(), FILTER_SANITIZE_STRING); ?></td></tr>
-<?php if ($deprecated || $research || !$published) { ?>
-            <tr><th>Flags:</th><td>
-              <? if ($deprecated) require('./Deprecated.inc.phtml'); ?>
-              <? if ($research) require('./InResearch.inc.phtml'); ?>
-              <? if (!$published) require('./Draft.inc.phtml'); ?>
-            </td></tr>
-<?php } ?>
-            <tr><th>Used By:</th><td><?php
-              $products = $this->getContext()->used_by;
-              if (count($products) == 0) {
-                echo '<em>(nothing or unknown)</em>';
-              } else if (count($products) == 1) {
-                echo filter_var($products[0]->getLabel(), FILTER_SANITIZE_STRING);
-              } else {
-                $j = count($this->getContext()->used_by);
-                for ($i = 0; $i < $j; ++$i) {
-                  echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_STRING);
-                  if ($i + 1 < $j) {
-                    ++$i;
-                    echo ', ';
-                    echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_STRING) . "<br/>";
-                  } else {
-                    echo "<br/>";
-                  }
-                }
-              }
-            ?></td></tr>
-            <tr><th>Format:</th><td><p><pre><code><?php echo $object->getPacketFormat(); ?></code></pre></p></td></tr>
-          </tbody></table>
-        </section>
-        <header>Remarks</header>
-        <section>
-<?php echo $object->getPacketRemarks(true); ?>
-        </section>
-        <footer>
-<?php if ($object->getEditedDateTime() !== null) { ?>
-          <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time> | Edited: <time datetime="<?php echo $object->getEditedDateTime()->format('c'); ?>"><?php echo $object->getEditedDateTime()->format("l, F j, Y"); ?></time></span>
-<?php } else { ?>
-          <span class="float-right"><time datetime="<?php echo $object->getCreatedDateTime()->format('c'); ?>"><?php echo $object->getCreatedDateTime()->format("l, F j, Y"); ?></time></span>
-<?php } ?>
-<?php if ($user_id !== null) { ?>
-          <span><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $user_avatar; ?>"/> <?php echo filter_var($user_name, FILTER_SANITIZE_STRING); ?></a></span>
-<?php } ?>
-        </footer>
-      </article>
-      <article>
-<?php
+require_once('./MarkdownBootstrapFix.inc.php');
+require('./header.inc.phtml'); ?>
+<div class="container">
+<? if ($object) { ?>
+  <a class="btn btn-sm btn-primary float-right mr-1" href="https://twitter.com/share?text=<?=urlencode($packet_id . ' ' . $object->getPacketName())?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
+  <a class="btn btn-sm btn-primary float-right mr-1" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
+<? if ($delete_visible) { ?>
+  <a class="btn btn-sm btn-danger float-right mr-1" href="<?=$delete_url?>" title="Delete">❌</a>
+<? } if ($edit_visible) { ?>
+  <a class="btn btn-sm btn-secondary float-right mr-1" href="<?=$edit_url?>" title="Edit">📝</a>
+<? } ?>
 
-$comment_parent_type = Comment::PARENT_TYPE_PACKET;
-require("./Comment/Section.inc.phtml");
+  <h1><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
+  <table class="table table-striped"><tbody>
+    <tr><th class="text-right">Message Id:</th><td><code><?=$packet_id?></code></td></tr>
+    <tr><th class="text-right">Message Name:</th><td><code><?=filter_var($object->getPacketName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></td></tr>
+    <tr><th class="text-right">Direction:</th><td><?=filter_var($object->getPacketDirectionLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></td></tr>
+<? if ($deprecated || $research || !$published) { ?>
+    <tr><th class="text-right">Flags:</th><td>
+      <? if ($deprecated) require('./Deprecated.inc.phtml'); ?>
+      <? if ($research) require('./InResearch.inc.phtml'); ?>
+      <? if (!$published) require('./Draft.inc.phtml'); ?>
+    </td></tr>
+<? } ?>
+    <tr><th class="text-right">Used By:</th><td><?
+      $products = $this->getContext()->used_by;
+      if (count($products) == 0) {
+        echo '<em>(nothing or unknown)</em>';
+      } else if (count($products) == 1) {
+        echo filter_var($products[0]->getLabel(), FILTER_SANITIZE_STRING);
+      } else {
+        $j = count($this->getContext()->used_by);
+        for ($i = 0; $i < $j; ++$i) {
+          echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_STRING);
+          if ($i + 1 < $j) {
+            ++$i;
+            echo ', ';
+            echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_STRING) . "<br/>";
+          } else {
+            echo "<br/>";
+          }
+        }
+      }
+    ?></td></tr>
+    <tr><th class="text-right">Message Format:<br/><sup class="text-muted">(does not include protocol header)</sup></th><td>
+      <pre class="border border-primary overflow-auto rounded bg-dark text-light"><code class="language-objectivec"><?=$object->getPacketFormat()?></code></pre>
+    </td></tr>
+  </tbody></table>
 
-      } else { ?>
-        <header class="red"><?php echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
-        <section class="red"><?php echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+  <h1>Remarks</h1>
+  <div class="container"><?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getPacketRemarks(true), true)?></div>
+
+  <div class="card mt-3"><div class="card-body">
+    <span class="float-right text-muted">
+      <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
+<? if ($edited_dt) { ?>
+      | <strong>Edited:</strong> <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
+<? } ?>
+    </span>
+<?  echo (!empty($user_url) && !empty($user_avatar) ?
+      sprintf('<a href="%s"><img class="img-fluid rounded mr-2" src="%s"/>%s</a>',
+        $user_url, $user_avatar, filter_var($user_name, FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+      ) : 'Anonymous'
+    ); ?>
+  </div></div>
+<? $comment_parent_type = Comment::PARENT_TYPE_PACKET; $comment_parent_id = $object_id; require('./Comment/Section.inc.phtml');
+  } else { ?>
+  <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_STRING)?></h1>
+  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_STRING)?></div></div>
+<? } require('./footer.inc.phtml'); ?>

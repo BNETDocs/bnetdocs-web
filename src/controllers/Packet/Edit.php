@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Logger;
@@ -25,6 +26,7 @@ class Edit extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $data              = $router->getRequestQueryArray();
     $model             = new PacketEditModel();
+    $model->comments   = null;
     $model->deprecated = null;
     $model->error      = null;
     $model->format     = null;
@@ -51,6 +53,10 @@ class Edit extends Controller {
     if ($model->packet === null) {
       $model->error = 'NOT_FOUND';
     } else {
+      $model->comments = Comment::getAll(
+        Comment::PARENT_TYPE_PACKET, $model->packet_id
+      );
+
       $model->deprecated = $model->packet->isDeprecated();
       $model->id         = $model->packet->getPacketId();
       $model->name       = $model->packet->getPacketName();

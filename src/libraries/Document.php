@@ -2,18 +2,18 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Markdown;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
+use \Parsedown;
 use \StdClass;
 
 class Document {
@@ -141,12 +141,51 @@ class Document {
     return null;
   }
 
+  public static function getDocumentsByLastEdited(int $count)
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $stmt = Common::$database->prepare(
+     'SELECT
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `title`,
+        `user_id`
+      FROM `documents`
+      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC
+      LIMIT ' . $count . ';'
+    );
+
+    $r = $stmt->execute();
+    if (!$r)
+    {
+      throw new QueryException('Cannot refresh documents');
+      return $r;
+    }
+
+    $r = [];
+    while ($row = $stmt->fetch(PDO::FETCH_OBJ))
+    {
+      $r[] = new self($row);
+    }
+
+    $stmt->closeCursor();
+    return $r;
+  }
+
   public function getContent($prepare) {
     if (!$prepare) {
       return $this->content;
     }
     if ($this->options_bitmask & self::OPTION_MARKDOWN) {
-      $md = new Markdown();
+      $md = new Parsedown();
       return $md->text($this->content);
     } else {
       return $this->content;
@@ -248,6 +287,14 @@ class Document {
 
   public function getUserId() {
     return $this->user_id;
+  }
+
+  public function isMarkdown() {
+    return ($this->options_bitmask & self::OPTION_MARKDOWN);
+  }
+
+  public function isPublished() {
+    return ($this->options_bitmask & self::OPTION_PUBLISHED);
   }
 
   protected static function normalize(StdClass &$data) {

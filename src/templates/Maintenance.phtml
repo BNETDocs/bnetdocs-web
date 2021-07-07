@@ -1,9 +1,13 @@
-<?php namespace BNETDocs\Templates; $title = "Maintenance"; $slim_ui = true; ?>
-<?php require("./header.inc.phtml"); ?>
-<article>
-  <header><?=$title?></header>
-  <section>
-    <p><?=$this->getContext()->message?></p>
-  </section>
-</article>
-<?php require("./footer.inc.phtml"); ?>
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates;
+$title = 'Maintenance';
+$description = $this->getContext()->message;
+$_header_maintenance = true;
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading"><?=$title?></h4>
+    <p class="mb-0"><?=$description?></p>
+  </div>
+</div>
+<?php require('./footer.inc.phtml'); ?>

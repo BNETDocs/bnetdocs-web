@@ -117,12 +117,6 @@ function main() {
     $router->addRoute( // URL: /document/index.json
       "#^/document/index\.json/?$#", "Document\\Index", "Document\\IndexJSON"
     );
-    $router->addRoute( // URL: /document/popular
-      "#^/document/popular/?$#", "Document\\Popular", "Document\\PopularHtml"
-    );
-    $router->addRoute( // URL: /document/search
-      "#^/document/search/?$#", "Document\\Search", "Document\\SearchHtml"
-    );
     $router->addRoute( // URL: /donate
       "#^/donate/?$#", "Donate", "DonateHtml"
     );
@@ -194,12 +188,6 @@ function main() {
     );
     $router->addRoute( // URL: /packet/index
       "#^/packet/index/?$#", "Packet\\Index", "Packet\\IndexHtml"
-    );
-    $router->addRoute( // URL: /packet/popular
-      "#^/packet/popular/?$#", "Packet\\Popular", "Packet\\PopularHtml"
-    );
-    $router->addRoute( // URL: /packet/search
-      "#^/packet/search/?$#", "Packet\\Search", "Packet\\SearchHtml"
     );
     $router->addRoute( // URL: /privacy
       '#^/privacy/?$#', 'PrivacyNotice', 'PrivacyNoticeHtml'

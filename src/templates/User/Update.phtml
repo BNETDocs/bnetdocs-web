@@ -1,485 +1,262 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = 'Update Profile';
-$description = 'This form allows an individual to update their account '
-  . 'information.';
+$title = 'Update Profile';
+$description = 'This page updates your account and public profile information.';
 $this->opengraph->attach(new Pair('url', '/user/update'));
-
-switch ($this->getContext()->username_error[1] ?? null) {
+switch ($this->getContext()->username_error[1] ?? null)
+{
   case null: case '': $username_error = ''; break;
-  case 'USERNAME_LONG':
-    $username_error = 'Your chosen username is too long.'; break;
-  case 'USERNAME_SHORT':
-    $username_error = 'Your chosen username is too short.'; break;
-  case 'CHANGE_FAILED':
-    $username_error = 'Failed to change username due to '
-      . 'an internal error.'; break;
-  case 'CHANGE_SUCCESS':
-    $username_error = 'Your username has been changed.'; break;
-  default:
-    $username_error = 'Internal error: '
-      . $this->getContext()->username_error[1];
+  case 'USERNAME_LONG': $username_error = 'Your chosen username is too long.'; break;
+  case 'USERNAME_SHORT': $username_error = 'Your chosen username is too short.'; break;
+  case 'CHANGE_FAILED': $username_error = 'Failed to change username due to an internal error.'; break;
+  case 'CHANGE_SUCCESS': $username_error = 'Your username has been changed.'; break;
+  default: $username_error = 'Internal error: ' . $this->getContext()->username_error[1];
 }
-
-switch ($this->getContext()->email_error[1] ?? null) {
+switch ($this->getContext()->email_error[1] ?? null)
+{
   case null: case '': $email_error = ''; break;
-  case 'MISMATCH':
-    $email_error = 'Emails do not match, check for typos.'; break;
-  case 'EMPTY':
-    $email_error = 'Your new email address cannot be blank.'; break;
-  case 'INVALID':
-    $email_error = 'Your new email address uses invalid formatting.'; break;
-  case 'NOT_ALLOWED':
-    $email_error = 'Your new email address is not allowed, use a different '
-      . 'one.'; break;
-  case 'CHANGE_FAILED':
-    $email_error = 'Failed to change email due to an internal error.'; break;
-  case 'CHANGE_SUCCESS':
-    $email_error = 'Your email has been changed.'; break;
-  default:
-    $email_error = 'Internal error: '
-      . $this->getContext()->email_error[1];
+  case 'MISMATCH': $email_error = 'Emails do not match, check for typos.'; break;
+  case 'EMPTY': $email_error = 'Your new email address cannot be blank.'; break;
+  case 'INVALID': $email_error = 'Your new email address uses invalid formatting.'; break;
+  case 'NOT_ALLOWED': $email_error = 'Your new email address is not allowed, use a different one.'; break;
+  case 'CHANGE_FAILED': $email_error = 'Failed to change email due to an internal error.'; break;
+  case 'CHANGE_SUCCESS': $email_error = 'Your email has been changed.'; break;
+  default: $email_error = 'Internal error: ' . $this->getContext()->email_error[1];
 }
-
-switch ($this->getContext()->display_name_error[1] ?? null) {
+switch ($this->getContext()->display_name_error[1] ?? null)
+{
   case null: case '': $display_name_error = ''; break;
-  case 'CHANGE_FAILED':
-    $display_name_error = 'Failed to change display name.'; break;
-  case 'CHANGE_SUCCESS':
-    $display_name_error = 'Your display name has been changed to '
-      . '<strong>' . filter_var(
-        $this->getContext()->display_name_error[2],
-        FILTER_SANITIZE_FULL_SPECIAL_CHARS
-      ) . '</strong>.'; break;
-  default:
-    $display_name_error = 'Internal error: '
-      . $this->getContext()->display_name_error[1];
+  case 'CHANGE_FAILED': $display_name_error = 'Failed to change display name.'; break;
+  case 'CHANGE_SUCCESS': $display_name_error = sprintf('Your display name has been changed to <strong>%s</strong>.',
+    filter_var($this->getContext()->display_name_error[2], FILTER_SANITIZE_FULL_SPECIAL_CHARS)); break;
+  default: $display_name_error = 'Internal error: ' . $this->getContext()->display_name_error[1];
 }
-
-switch ($this->getContext()->biography_error[1] ?? null) {
+switch ($this->getContext()->biography_error[1] ?? null)
+{
   case null: case '': $biography_error = ''; break;
-  case 'TOO_LONG':
-    $biography_error = 'Your biography is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $biography_error = 'Your biography was updated.'; break;
-  default:
-    $biography_error = 'Internal error: '
-      . $this->getContext()->biography_error[1];
+  case 'TOO_LONG': $biography_error = 'Your biography is too long.'; break;
+  case 'CHANGE_SUCCESS': $biography_error = 'Your biography was updated.'; break;
+  default: $biography_error = 'Internal error: ' . $this->getContext()->biography_error[1];
 }
-
-switch ($this->getContext()->discord_username_error[1] ?? null) {
+switch ($this->getContext()->discord_username_error[1] ?? null)
+{
   case null: case '': $discord_username_error = ''; break;
-  case 'TOO_LONG':
-    $discord_username_error = 'Your Discord username is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $discord_username_error = 'Your Discord username was updated.'; break;
-  default:
-    $discord_username_error = 'Internal error: '
-      . $this->getContext()->discord_username_error[1];
+  case 'TOO_LONG': $discord_username_error = 'Your Discord username is too long.'; break;
+  case 'CHANGE_SUCCESS': $discord_username_error = 'Your Discord username was updated.'; break;
+  default: $discord_username_error = 'Internal error: ' . $this->getContext()->discord_username_error[1];
 }
-
-switch ($this->getContext()->facebook_username_error[1] ?? null) {
+switch ($this->getContext()->facebook_username_error[1] ?? null)
+{
   case null: case '': $facebook_username_error = ''; break;
-  case 'TOO_LONG':
-    $facebook_username_error = 'Your Facebook username is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $facebook_username_error = 'Your Facebook username was updated.'; break;
-  default:
-    $facebook_username_error = 'Internal error: '
-      . $this->getContext()->facebook_username_error[1];
+  case 'TOO_LONG': $facebook_username_error = 'Your Facebook username is too long.'; break;
+  case 'CHANGE_SUCCESS': $facebook_username_error = 'Your Facebook username was updated.'; break;
+  default: $facebook_username_error = 'Internal error: ' . $this->getContext()->facebook_username_error[1];
 }
-
-switch ($this->getContext()->github_username_error[1] ?? null) {
+switch ($this->getContext()->github_username_error[1] ?? null)
+{
   case null: case '': $github_username_error = ''; break;
-  case 'TOO_LONG':
-    $github_username_error = 'Your Github username is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $github_username_error = 'Your Github username was updated.'; break;
-  default:
-    $github_username_error = 'Internal error: '
-      . $this->getContext()->github_username_error[1];
+  case 'TOO_LONG': $github_username_error = 'Your Github username is too long.'; break;
+  case 'CHANGE_SUCCESS': $github_username_error = 'Your Github username was updated.'; break;
+  default: $github_username_error = 'Internal error: ' . $this->getContext()->github_username_error[1];
 }
-
-switch ($this->getContext()->instagram_username_error[1] ?? null) {
+switch ($this->getContext()->instagram_username_error[1] ?? null)
+{
   case null: case '': $instagram_username_error = ''; break;
-  case 'TOO_LONG':
-    $instagram_username_error = 'Your Instagram username is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $instagram_username_error = 'Your Instagram username was updated.'; break;
-  default:
-    $instagram_username_error = 'Internal error: '
-      . $this->getContext()->instagram_username_error[1];
+  case 'TOO_LONG': $instagram_username_error = 'Your Instagram username is too long.'; break;
+  case 'CHANGE_SUCCESS': $instagram_username_error = 'Your Instagram username was updated.'; break;
+  default: $instagram_username_error = 'Internal error: ' . $this->getContext()->instagram_username_error[1];
 }
-
-switch ($this->getContext()->phone_error[1] ?? null) {
+switch ($this->getContext()->phone_error[1] ?? null)
+{
   case null: case '': $phone_error = ''; break;
-  case 'TOO_LONG':
-    $phone_error = 'Your phone number is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $phone_error = 'Your phone number was updated.'; break;
-  default:
-    $phone_error = 'Internal error: '
-      . $this->getContext()->phone_error[1];
+  case 'TOO_LONG': $phone_error = 'Your phone number is too long.'; break;
+  case 'CHANGE_SUCCESS': $phone_error = 'Your phone number was updated.'; break;
+  default: $phone_error = 'Internal error: ' . $this->getContext()->phone_error[1];
 }
-
-switch ($this->getContext()->reddit_username_error[1] ?? null) {
+switch ($this->getContext()->reddit_username_error[1] ?? null)
+{
   case null: case '': $reddit_username_error = ''; break;
-  case 'TOO_LONG':
-    $reddit_username_error = 'Your Reddit username is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $reddit_username_error = 'Your Reddit username was updated.'; break;
-  default:
-    $reddit_username_error = 'Internal error: '
-      . $this->getContext()->reddit_username_error[1];
+  case 'TOO_LONG': $reddit_username_error = 'Your Reddit username is too long.'; break;
+  case 'CHANGE_SUCCESS': $reddit_username_error = 'Your Reddit username was updated.'; break;
+  default: $reddit_username_error = 'Internal error: ' . $this->getContext()->reddit_username_error[1];
 }
-
-switch ($this->getContext()->skype_username_error[1] ?? null) {
+switch ($this->getContext()->skype_username_error[1] ?? null)
+{
   case null: case '': $skype_username_error = ''; break;
-  case 'TOO_LONG':
-    $skype_username_error = 'Your Skype username is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $skype_username_error = 'Your Skype username was updated.'; break;
-  default:
-    $skype_username_error = 'Internal error: '
-      . $this->getContext()->skype_username_error[1];
+  case 'TOO_LONG': $skype_username_error = 'Your Skype username is too long.'; break;
+  case 'CHANGE_SUCCESS': $skype_username_error = 'Your Skype username was updated.'; break;
+  default: $skype_username_error = 'Internal error: ' . $this->getContext()->skype_username_error[1];
 }
-
-switch ($this->getContext()->steam_id_error[1] ?? null) {
+switch ($this->getContext()->steam_id_error[1] ?? null)
+{
   case null: case '': $steam_id_error = ''; break;
-  case 'TOO_LONG':
-    $steam_id_error = 'Your Steam Id is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $steam_id_error = 'Your Steam Id was updated.'; break;
-  default:
-    $steam_id_error = 'Internal error: '
-      . $this->getContext()->steam_id_error[1];
+  case 'TOO_LONG': $steam_id_error = 'Your Steam Id is too long.'; break;
+  case 'CHANGE_SUCCESS': $steam_id_error = 'Your Steam Id was updated.'; break;
+  default: $steam_id_error = 'Internal error: ' . $this->getContext()->steam_id_error[1];
 }
-
-switch ($this->getContext()->twitter_username_error[1] ?? null) {
+switch ($this->getContext()->twitter_username_error[1] ?? null)
+{
   case null: case '': $twitter_username_error = ''; break;
-  case 'TOO_LONG':
-    $twitter_username_error = 'Your Twitter username is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $twitter_username_error = 'Your Twitter username was updated.'; break;
-  default:
-    $twitter_username_error = 'Internal error: '
-      . $this->getContext()->twitter_username_error[1];
+  case 'TOO_LONG': $twitter_username_error = 'Your Twitter username is too long.'; break;
+  case 'CHANGE_SUCCESS': $twitter_username_error = 'Your Twitter username was updated.'; break;
+  default: $twitter_username_error = 'Internal error: ' . $this->getContext()->twitter_username_error[1];
 }
-
-switch ($this->getContext()->website_error[1] ?? null) {
+switch ($this->getContext()->website_error[1] ?? null)
+{
   case null: case '': $website_error = ''; break;
-  case 'TOO_LONG':
-    $website_error = 'Your website url is too long.'; break;
-  case 'CHANGE_SUCCESS':
-    $website_error = 'Your website url was updated.'; break;
-  default:
-    $website_error = 'Internal error: '
-      . $this->getContext()->website_error[1];
+  case 'TOO_LONG': $website_error = 'Your website url is too long.'; break;
+  case 'CHANGE_SUCCESS': $website_error = 'Your website url was updated.'; break;
+  default: $website_error = 'Internal error: ' . $this->getContext()->website_error[1];
 }
+$avatar = ($this->getContext()->active_user ? $this->getContext()->active_user->getAvatarURI(512) : null);
+require('./header.inc.phtml'); ?>
+<div class="container">
+<? if ($this->getContext()->_responseCode == 401) { ?>
+  <h1 class="text-danger"><?=$title?></h1>
+  <div class="alert alert-danger">
+    <p class="mb-0">You are not authorized to access this page.</p>
+  </div>
+  <a class="btn btn-success" href="<?=Common::relativeUrlToAbsolute('/user/login')?>">Log in</a>
+<? } else { ?>
+  <h1><?=$title?></h1>
+  <p><?=$description?></p>
 
-$this->additional_css[] = '/a/forms.css';
-require('./header.inc.phtml');
-?>
-      <article>
-<?php if ($this->getContext()->_responseCode == 401) { ?>
-        <header class="red">Update Profile</header>
-        <section class="red">
-          <p>You are not authorized to access this page.</p>
-          <p><a class="button" href="<?php
-            echo Common::relativeUrlToAbsolute('/user/login');
-            ?>">Log in</a></p>
-        </section>
-<?php } else { ?>
-        <header>Identity</header>
-        <form method="POST">
-          <section<?php
-            if ($username_error) {
-              echo ' class="' . $this->getContext()->username_error[0] . '"';
-            } ?>>
-            <label for="username">Username:</label><br/>
-            <input
-              tabindex="1" required
-              type="text" name="username" id="username"
-              maxlength="<?php echo $this->getContext()->username_max_len; ?>"
-              value="<?php echo filter_var($this->getContext()->username,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
-            <?php if ($username_error) {
-              echo '<p>' . $username_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($email_error) {
-              echo ' class="' . $this->getContext()->email_error[0] . '"';
-            } ?>>
-            <hr/>
-            <table>
-              <thead></thead>
-              <tbody><tr>
-                <td>
-                  <label for="email_1">Email address:</label><br/>
-                  <input
-                    tabindex="2" required autocomplete="email"
-                    type="email" name="email_1" id="email_1"
-                    value="<?php echo filter_var($this->getContext()->email_1,
-                      FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
-                </td><td>
-                  <label for="email_2">Confirm email address:
-                    <span style="color:rgba(128,128,128,0.8);padding-left:8px;">
-                      (Fill box only if changing email address.)
-                    </span>
-                  </label><br/>
-                  <input
-                    tabindex="3" autocomplete="email"
-                    type="email" name="email_2" id="email_2"
-                    value="<?php echo filter_var($this->getContext()->email_2,
-                        FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
-                </td>
-              </tr></tbody>
-            </table>
-            <?php if ($email_error) {
-              echo '<p>' . $email_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($display_name_error) {
-              echo ' class="' .
-                $this->getContext()->display_name_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="display_name">Display name:
-              <span style="color:rgba(128,128,128,0.8);padding-left:8px;">
-                (Your username will be used instead if blank.)
-              </span>
-            </label><br/>
-            <input
-              tabindex="4" type="text" name="display_name" id="display_name"
-              value="<?php echo filter_var($this->getContext()->display_name,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>"/>
-            <?php if ($display_name_error) {
-              echo '<p>' . $display_name_error . '</p>';
-            } ?>
-          </section>
-          <section>
-            <hr/>
-            <label>Avatar:</label>
-            <p style="color:rgba(128,128,128,1);">Currently custom avatars are
-              unsupported. You may set your avatar by using
-              <a href="https://www.gravatar.com/">Gravatar</a> and matching your
-              email address.</p>
-          </section>
-          <section<?php
-            if ($biography_error) {
-              echo ' class="' .
-                $this->getContext()->biography_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="biography">Biography:</label>
-            <textarea tabindex="5"
-              maxlength="<?php echo $this->getContext()->biography_max_len; ?>"
-              name="biography" id="biography"><?php echo filter_var(
-                $this->getContext()->biography,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS
-              ); ?></textarea>
-            <?php if ($biography_error) {
-              echo '<p>' . $biography_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($discord_username_error) {
-              echo ' class="' .
-                $this->getContext()->discord_username_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="discord_username">Discord Username:</label>
-            <input tabindex="6"
-              maxlength="<?php echo
-                $this->getContext()->discord_username_max_len; ?>"
-              type="text" name="discord_username" id="discord_username"
-              value="<?php
-                echo filter_var($this->getContext()->discord_username,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($discord_username_error) {
-              echo '<p>' . $discord_username_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($facebook_username_error) {
-              echo ' class="' .
-                $this->getContext()->facebook_username_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="facebook_username">Facebook Username:</label>
-            <input tabindex="7"
-              maxlength="<?php echo
-                $this->getContext()->facebook_username_max_len; ?>"
-              type="text" name="facebook_username" id="facebook_username"
-              value="<?php
-                echo filter_var($this->getContext()->facebook_username,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($facebook_username_error) {
-              echo '<p>' . $facebook_username_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($github_username_error) {
-              echo ' class="' .
-                $this->getContext()->github_username_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="github_username">Github Username:</label>
-            <input tabindex="8"
-              maxlength="<?php echo
-                $this->getContext()->github_username_max_len; ?>"
-              type="text" name="github_username" id="github_username"
-              value="<?php
-                echo filter_var($this->getContext()->github_username,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($github_username_error) {
-              echo '<p>' . $github_username_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($instagram_username_error) {
-              echo ' class="' .
-                $this->getContext()->instagram_username_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="instagram_username">Instagram Username:</label>
-            <input tabindex="9"
-              maxlength="<?php echo
-                $this->getContext()->instagram_username_max_len; ?>"
-              type="text" name="instagram_username" id="instagram_username"
-              value="<?php
-                echo filter_var($this->getContext()->instagram_username,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($instagram_username_error) {
-              echo '<p>' . $instagram_username_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($phone_error) { echo ' class="' .
-                $this->getContext()->phone_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="phone">Phone Number:</label>
-            <input tabindex="10" maxlength="<?php echo
-                $this->getContext()->phone_max_len; ?>"
-              type="text" name="phone" id="phone"
-              value="<?php
-                echo filter_var($this->getContext()->phone,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($phone_error) { echo '<p>' . $phone_error . '</p>'; } ?>
-          </section>
-          <section<?php
-            if ($reddit_username_error) {
-              echo ' class="' .
-                $this->getContext()->reddit_username_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="reddit_username">Reddit Username:</label>
-            <input tabindex="11"
-              maxlength="<?php echo
-                $this->getContext()->reddit_username_max_len; ?>"
-              type="text" name="reddit_username" id="reddit_username"
-              value="<?php
-                echo filter_var($this->getContext()->reddit_username,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($reddit_username_error) {
-              echo '<p>' . $reddit_username_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($skype_username_error) {
-              echo ' class="' .
-                $this->getContext()->skype_username_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="skype_username">Skype Username:</label>
-            <input tabindex="12"
-              maxlength="<?php echo
-                $this->getContext()->skype_username_max_len; ?>"
-              type="text" name="skype_username" id="skype_username"
-              value="<?php
-                echo filter_var($this->getContext()->skype_username,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($skype_username_error) {
-              echo '<p>' . $skype_username_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($steam_id_error) {
-              echo ' class="' .
-                $this->getContext()->steam_id_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="steam_id">Steam Id:</label>
-            <input tabindex="13"
-              maxlength="<?php echo
-                $this->getContext()->steam_id_max_len; ?>"
-              type="text" name="steam_id" id="steam_id"
-              value="<?php
-                echo filter_var($this->getContext()->steam_id,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($steam_id_error) {
-              echo '<p>' . $steam_id_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($twitter_username_error) {
-              echo ' class="' .
-                $this->getContext()->twitter_username_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="twitter_username">Twitter Username:</label>
-            <input tabindex="14"
-              maxlength="<?php echo
-                $this->getContext()->twitter_username_max_len; ?>"
-              type="text" name="twitter_username" id="twitter_username"
-              value="<?php
-                echo filter_var($this->getContext()->twitter_username,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($twitter_username_error) {
-              echo '<p>' . $twitter_username_error . '</p>';
-            } ?>
-          </section>
-          <section<?php
-            if ($website_error) {
-              echo ' class="' .
-                $this->getContext()->website_error[0] . '"';
-            } ?>>
-            <hr/>
-            <label for="website">Website:</label>
-            <input tabindex="15"
-              maxlength="<?php echo
-                $this->getContext()->website_max_len; ?>"
-              type="text" name="website" id="website"
-              value="<?php
-                echo filter_var($this->getContext()->website,
-                FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-              ?>"/>
-            <?php if ($website_error) {
-              echo '<p>' . $website_error . '</p>';
-            } ?>
-          </section>
-          <section>
-            <hr/>
-            <input tabindex="16" type="submit" class="bg-green" value="Update"/>
-          </section>
-        </form>
-<?php } ?>
-      </article>
-<?php require('./footer.inc.phtml'); ?>
+  <!-- This here notice below is for GDPR purposes -->
+  <div class="alert alert-info"><p class="mb-0">Our <a href="<?=Common::relativeUrlToAbsolute('/privacy')?>">privacy notice</a> page clarifies your data rights. You agree to giving (or not giving) the info contained herein on this page.</p></div>
+
+  <form method="POST">
+    <h2>Account</h2>
+    <p>Your account details.</p>
+    <div class="row justify-content-center"><div class="col-lg-6 form-group">
+<?    if ($username_error) { ?>
+      <div class="alert alert-<?=$this->getContext()->username_error[0]?>"><p class="mb-0"><?=$username_error?></p></div>
+<?    } ?>
+      <label class="form-input-label font-weight-bold" for="username">Username:<span class="ml-2 small text-muted">(what you log in with, must be unique)</span></label>
+      <input class="border border-primary form-control bg-dark text-light" tabindex="1" required type="text" name="username" id="username" placeholder="Enter the unique username here" maxlength="<?=$this->getContext()->username_max_len?>" value="<?=filter_var($this->getContext()->username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+    </div><div class="col-lg-6 form-group">
+<?    if ($display_name_error) { ?>
+      <div class="alert alert-<?=$this->getContext()->display_name_error[0]?>"><p class="mb-0"><?=$display_name_error?></p></div>
+<?    } ?>
+      <label class="form-input-label font-weight-bold" for="display_name">Custom name:<span class="ml-2 small text-muted">(your custom name around the site &ndash; if blank then your username is used)</span></label>
+      <input class="border border-primary form-control bg-dark text-light" tabindex="2" type="text" name="display_name" id="display_name" placeholder="Enter the custom name here" value="<?=filter_var($this->getContext()->display_name, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+    </div></div>
+    <div class="row"><div class="col-lg-6 form-group">
+      <label class="form-input-label font-weight-bold" for="email_1">Email address:<span class="ml-2 small text-muted">(required for identity and site functions)</span></label>
+      <input class="border border-primary form-control bg-dark text-light" tabindex="3" required autocomplete="email" type="email" name="email_1" id="email_1" placeholder="Enter the email address here" value="<?=filter_var($this->getContext()->email_1, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+    </div><div class="col-lg-6 form-group">
+<?    if ($email_error) { ?>
+      <div class="alert alert-<?=$this->getContext()->email_error[0]?>"><p class="mb-0"><?=$email_error?></p></div>
+<?    } ?>
+      <label class="form-input-label font-weight-bold" for="email_2">Confirm email address:<span class="ml-2 small text-muted">(required if changing email address &ndash; leave blank otherwise)</span></label>
+      <input class="border border-primary form-control bg-dark text-light" tabindex="4" autocomplete="email" type="email" name="email_2" id="email_2" placeholder="Confirm the new email address here if changing it" value="<?=filter_var($this->getContext()->email_2, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+    </div></div>
+    <div class="row"><div class="col form-group">
+      <a class="btn btn-sm btn-secondary" href="<?=Common::relativeUrlToAbsolute('/user/changepassword')?>" tabindex="5">🔑 Change Password</a>
+    </div></div>
+    <div class="row"><div class="col">
+      <h2>Gravatar</h2>
+      <img class="float-left m-2 rounded shadow" src="<?=$avatar?>" width="128px"/>
+      <p>This is your avatar around the site. It is generated using a <a href="https://www.gravatar.com/site/implement/hash/" rel="external">hashed</a> representation of your email address. <strong>To change it, go to <a href="https://www.gravatar.com/" rel="external">Gravatar.com</a></strong> or change your email address.</p>
+      <p>Your Gravatar url: <code class="language-plaintext"><?=$avatar?></code></p>
+    </div></div>
+    <h2>Public Profile</h2>
+    <p>This information will be displayed to everyone who views your profile page.</p>
+
+    <div class="row justify-content-center">
+      <div class="col-md-10 form-group">
+<?      if ($biography_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->biography_error[0]?>"><p class="mb-0"><?=$biography_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="biography">Biography:</label>
+        <textarea class="border border-primary form-control bg-dark text-light" name="biography" id="biography" placeholder="Enter the brief biography here" maxlength="<?=$this->getContext()->biography_max_len?>" tabindex="6"><?=filter_var($this->getContext()->biography, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></textarea>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-5 form-group">
+<?      if ($discord_username_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->discord_username_error[0]?>"><p class="mb-0"><?=$discord_username_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="discord_username">Discord username:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="discord_username" id="discord_username" placeholder="Enter your Discord tag here" maxlength="<?=$this->getContext()->discord_username_max_len?>" tabindex="7" type="text" value="<?=filter_var($this->getContext()->discord_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+      <div class="col-md-5 form-group">
+<?      if ($facebook_username_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->facebook_username_error[0]?>"><p class="mb-0"><?=$facebook_username_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="facebook_username">Facebook username:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="facebook_username" id="facebook_username" placeholder="Enter your Facebook username here" maxlength="<?=$this->getContext()->facebook_username_max_len?>" tabindex="8" type="text" value="<?=filter_var($this->getContext()->facebook_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-5 form-group">
+<?      if ($github_username_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->github_username_error[0]?>"><p class="mb-0"><?=$github_username_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="github_username">GitHub username:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="github_username" id="github_username" placeholder="Enter your GitHub username here" maxlength="<?=$this->getContext()->github_username_max_len?>" tabindex="9" type="text" value="<?=filter_var($this->getContext()->github_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+      <div class="col-md-5 form-group">
+<?      if ($instagram_username_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->instagram_username_error[0]?>"><p class="mb-0"><?=$instagram_username_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="instagram_username">Instagram username:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="instagram_username" id="instagram_username" placeholder="Enter your Instagram username here" maxlength="<?=$this->getContext()->instagram_username_max_len?>" tabindex="10" type="text" value="<?=filter_var($this->getContext()->instagram_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-5 form-group">
+<?      if ($phone_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->phone_error[0]?>"><p class="mb-0"><?=$phone_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="phone">Phone number:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="phone" id="phone" placeholder="Enter your phone number here" maxlength="<?=$this->getContext()->phone_max_len?>" tabindex="11" type="text" value="<?=filter_var($this->getContext()->phone, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+      <div class="col-md-5 form-group">
+<?      if ($reddit_username_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->reddit_username_error[0]?>"><p class="mb-0"><?=$reddit_username_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="reddit_username">Reddit username:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="reddit_username" id="reddit_username" placeholder="Enter your Reddit username here" maxlength="<?=$this->getContext()->reddit_username_max_len?>" tabindex="12" type="text" value="<?=filter_var($this->getContext()->reddit_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-5 form-group">
+<?      if ($skype_username_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->skype_username_error[0]?>"><p class="mb-0"><?=$skype_username_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="skype_username">Skype username:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="skype_username" id="skype_username" placeholder="Enter your Skype username here" maxlength="<?=$this->getContext()->skype_username_max_len?>" tabindex="13" type="text" value="<?=filter_var($this->getContext()->skype_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+      <div class="col-md-5 form-group">
+<?      if ($steam_id_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->steam_id_error[0]?>"><p class="mb-0"><?=$steam_id_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="steam_id">Steam id:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="steam_id" id="steam_id" placeholder="Enter your Steam id here" maxlength="<?=$this->getContext()->steam_id_max_len?>" tabindex="14" type="text" value="<?=filter_var($this->getContext()->steam_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-5 form-group">
+<?      if ($twitter_username_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->twitter_username_error[0]?>"><p class="mb-0"><?=$twitter_username_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="twitter_username">Twitter username:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="twitter_username" id="twitter_username" placeholder="Enter your Twitter username here" maxlength="<?=$this->getContext()->twitter_username_max_len?>" tabindex="15" type="text" value="<?=filter_var($this->getContext()->twitter_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+      <div class="col-md-5 form-group">
+<?      if ($website_error) { ?>
+        <div class="alert alert-<?=$this->getContext()->website_error[0]?>"><p class="mb-0"><?=$website_error?></p></div>
+<?      } ?>
+        <label class="form-input-label font-weight-bold" for="website">Website:</label>
+        <input class="border border-primary form-control bg-dark text-light" name="website" id="website" placeholder="Enter your website url here" maxlength="<?=$this->getContext()->website_max_len?>" tabindex="16" type="text" value="<?=filter_var($this->getContext()->website, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      </div>
+    </div>
+    <div class="row justify-content-center"><div class="col form-group text-center">
+      <input class="btn btn-success" type="submit" value="Save Profile" tabindex="17"/>
+    </div></div>
+  </form>
+<? } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>

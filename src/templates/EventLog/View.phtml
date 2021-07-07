@@ -1,5 +1,4 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\EventLog;
 
 use \BNETDocs\Libraries\Event;
@@ -8,112 +7,94 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
-$title       = 'Event Log Viewer';
+$title = 'Event Log Viewer';
 $description = 'The event log viewer on BNETDocs';
 $this->opengraph->attach( new Pair( 'url', '/eventlog/view' ));
 
 $object_id = $this->getContext()->id;
-$object    = $this->getContext()->event;
-$user      = $this->getContext()->user;
+$object = $this->getContext()->event;
+$user = $this->getContext()->user;
 
-$object_ip_address = (
-  $object instanceof Event ? $object->getIPAddress() : null
-);
+$object_ip_address = ($object instanceof Event ? $object->getIPAddress() : null);
+$object_metadata = ($object instanceof Event ? $object->getMetadata() : null);
+$object_user_id = ($object instanceof Event ? $object->getUserId() : null);
 
-$object_metadata = (
-  $object instanceof Event ? $object->getMetadata() : null
-);
-
-$object_user_id = (
-  $object instanceof Event ? $object->getUserId() : null
-);
-
-try {
-  $object_user = (
-    !is_null( $object_user_id ) ? new User( $object_user_id ) : null
-  );
-} catch (UserNotFoundException $e) {
+try
+{
+  $object_user = (!is_null($object_user_id) ? new User($object_user_id) : null);
+}
+catch (UserNotFoundException $e)
+{
   $object_user = null;
 }
 
-if ( !$object instanceof Event ) {
+if (!$object instanceof Event)
+{
   $title = 'Event Not Found';
   $description = 'The event you tried to access could not be found.';
 }
 
 $tpl_user = (
-  is_null( $object_user ) ? '<em>(null)</em>' :
-  '<a href="' . $object_user->getURI() . '"><img class="avatar" src="' .
-  $object_user->getAvatarURI( 22 ) . '"/> ' . filter_var(
-    $object_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS
-  )
+  is_null($object_user) ? '<em>(null)</em>' :
+  '<a href="' . $object_user->getURI() . '"><img class="mr-2" src="' .
+  $object_user->getAvatarURI(22) . '"/>' .
+  filter_var($object_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
 );
 
-$tpl_metadata_j = @json_decode( $object_metadata );
+$tpl_metadata_j = @json_decode($object_metadata);
 $tpl_metadata = (
-  is_null( $object_metadata ) ? '<em>(null)</em>' : (
-    json_last_error() === JSON_ERROR_NONE ? (
-      '<pre><code class="wrap">' . filter_var(
-        json_encode( $tpl_metadata_j, JSON_PRETTY_PRINT ),
-        FILTER_SANITIZE_FULL_SPECIAL_CHARS
-      ) .
-      '</code></pre>'
-    ) : (
-      '<textarea rows="10" readonly="readonly">' . filter_var(
-        $object_metadata, FILTER_SANITIZE_FULL_SPECIAL_CHARS
-      ) . '</textarea>'
-    )
+  is_null($object_metadata) ? '<em>(null)</em>' :
+  (
+    '<pre><code style="white-space:pre-wrap;" class="language-' . (
+      json_last_error() === JSON_ERROR_NONE ? 'json' : 'plaintext'
+    ) . '">' . str_replace("\n", "<br/>\n", filter_var(
+      json_encode($tpl_metadata_j, JSON_PRETTY_PRINT), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+    ) . '</code></pre>'
   )
 );
 
-$tpl_referer = getenv( 'HTTP_REFERER' );
-if ( !empty( $tpl_referer )) {
-  $tpl_referer = '<a href="' . filter_var(
-    $tpl_referer, FILTER_SANITIZE_FULL_SPECIAL_CHARS
-  ) . '">&lt;&lt; Back to Previous</a>';
+$tpl_referer = getenv('HTTP_REFERER');
+if (!empty($tpl_referer))
+{
+  $tpl_referer = '<a href="' . filter_var($tpl_referer, FILTER_SANITIZE_FULL_SPECIAL_CHARS) . '">&lt;&lt; Back to Previous</a>';
 }
-if ( stripos( $tpl_referer, getenv( 'HTTP_HOST' ) ) === false ) {
+if (stripos($tpl_referer, getenv('HTTP_HOST')) === false)
+{
   $tpl_referer = '';
 }
-if ( stripos( $tpl_referer, '/eventlog/view?id=' . $object_id ) !== false ) {
+if (stripos($tpl_referer, '/eventlog/view?id=' . $object_id) !== false)
+{
   $tpl_referer = '';
 }
 
-$this->additional_css[] = '/a/table-keypair.css';
-require('./header.inc.phtml');
-?>
-      <article>
-<?php if ( !$this->getContext()->acl_allowed ) { ?>
-        <header class="red"><?php echo $title; ?></header>
-        <section class="red">
-          <p>You are not authorized to view this page.</p>
-        </section>
-<?php } else if ( is_null( $object )) { $title = 'Event Not Found' ?>
-        <header class="red"><?php echo $title; ?></header>
-        <section class="red">
-          <p><?php echo $description; ?></p>
-<?php if ( !empty( $tpl_referer )) { ?>
-          <p><?php echo $tpl_referer; ?></p>
-<?php } ?>
-        </section>
-<?php } else { ?>
-        <header><?php echo $title; ?></header>
-        <section>
-          <table class="info">
-            <thead></thead><tbody>
-              <tr><th class="right" style="width:100px;">Id</th><td><a href="<?php echo Common::relativeUrlToAbsolute('/eventlog/view?id=' . $object_id); ?>"><?php echo $object_id; ?></a></td></tr>
-              <tr><th class="right">Event Type</th><td><?php echo $object->getEventTypeName(); ?></td></tr>
-              <tr><th class="right">Timestamp</th><td><time datetime='<?php echo $object->getEventDateTime()->format('c'); ?>'><?php echo $object->getEventDateTime()->format('l, F j, Y'); ?></time></td></tr>
-              <tr><th class="right">IP Address</th><td><?php echo ( $object_ip_address ? $object_ip_address : '<em>(null)</em>' ); ?></td></tr>
-              <tr><th class="right">User Account</th><td><?php echo $tpl_user; ?></td></tr>
-              <tr><th class="right" style="vertical-align:top;">Metadata</th><td><?php echo $tpl_metadata; ?></td></tr>
-            </tbody>
-          </table>
-<?php if ( !empty( $tpl_referer )) { ?>
-          <hr/><p><?php echo $tpl_referer; ?></p>
-<?php } ?>
-        </section>
-      </article>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+require('./header.inc.phtml'); ?>
+<div class="container">
+<? if (!$this->getContext()->acl_allowed) { ?>
+  <div class="alert alert-danger">
+    <h1><?=$title?></h1>
+    <p class="mb-0">You are not authorized to view this page.</p>
+  </div>
+<? } else if (is_null($object)) { ?>
+  <div class="alert alert-danger">
+    <h1><?=$title?></h1>
+    <p><?=$description?></p>
+<?=(!empty($tpl_referer) ? '    <p>' . $tpl_referer . '</p>' : '')?>
+  </div>
+<? } else { ?>
+    <h1><?=$title?></h1>
+    <table class="table table-hover table-striped">
+      <thead></thead><tbody>
+        <tr><th scope="row" class="text-right">Id</th><td><code><a href="<?=Common::relativeUrlToAbsolute('/eventlog/view?id=' . $object_id)?>"><?=$object_id?></a></code></td></tr>
+        <tr><th scope="row" class="text-right">Event Type</th><td><?=$object->getEventTypeName()?></td></tr>
+        <tr><th scope="row" class="text-right">Timestamp</th><td><time datetime='<?=$object->getEventDateTime()->format('c')?>'><?=$object->getEventDateTime()->format('l, F j, Y')?></time></td></tr>
+        <tr><th scope="row" class="text-right">IP Address</th><td><?=($object_ip_address ? '<code>' . $object_ip_address . '</code>' : '<em>(null)</em>')?></td></tr>
+        <tr><th scope="row" class="text-right">User Account</th><td><?=$tpl_user?></td></tr>
+      </tbody>
+    </table>
+    <?=$tpl_metadata?>
+<? if (!empty($tpl_referer)) { ?>
+    <hr/><p><?=$tpl_referer?></p>
+  <? } ?>
+<? } ?>
+</div>
+<? require("./footer.inc.phtml"); ?>

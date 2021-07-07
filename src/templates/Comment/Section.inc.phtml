@@ -1,44 +1,64 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Comment;
-
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\User;
-
 use \CarlBennett\MVC\Libraries\Common;
-
+$active_user = $this->getContext()->active_user ?? Authentication::$user;
+$active_user_id = ($active_user ? $active_user->getId() : null);
+$c_edit_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
+$c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
 ?>
-        <header><a name="comments">Comments</a></header>
-        <section>
-<?php if (!$comments) { ?>
-          <p class="center"><em>no one has commented yet.</em></p>
-<?php } else {
-$c_edit_visible_master   = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
-$c_delete_visible_master = ($logged_in && ($logged_in->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
-?>
-          <table class="comments"><tbody>
-<?php foreach ($comments as $c) {
-        $c_id          = $c->getId();
+<div class="row mt-3">
+  <div class="col">
+    <h2><a name="comments">Comments</a></h2>
+<? if (!$comments) { ?>
+    <div class="border border-secondary m-auto rounded-pill p-2" style="max-width:400px;"><p class="text-center mb-0"><em>no one has commented yet.</em></p></div>
+<? } else { ?>
+    <table class="table table-striped text-white-50"><tbody>
+<?    foreach ($comments as $c) {
+        $c_created_dt  = $c->getCreatedDateTime();
+        $c_id          = rawurlencode($c->getId());
+        $c_parent_url  = $c->getParentUrl();
         $c_user        = $c->getUser();
         $c_user_id     = $c->getUserId();
+        $c_user_url    = ($c_user ? $c_user->getURI() : '');
+        $c_user_avatar = ($c_user ? $c_user->getAvatarURI(22) : '');
+        $c_user_name   = ($c_user ? filter_var($c_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS) : 'Anonymous');
 
-        $c_edit_visible = ($c_user_id == $logged_in_id || $c_edit_visible_master);
-        $c_delete_visible = ($c_user_id == $logged_in_id || $c_delete_visible_master);
-?>
-            <tr><td><?php if ($c_user) { ?><a href="<?php echo $c_user->getURI(); ?>"><img class="avatar" src="<?php echo $c_user->getAvatarURI(22); ?>"/> <?php echo filter_var($c_user->getName(), FILTER_SANITIZE_STRING); ?></a><?php } else { ?>Anonymous<?php } ?><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time><?php if ($c_delete_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/delete?id=" . urlencode($c_id)); ?>">Delete</a><?php } if ($c_edit_visible) { ?><a class="button comment_button" href="<?php echo Common::relativeUrlToAbsolute("/comment/edit?id=" . urlencode($c_id)); ?>">Edit</a><?php } ?></td><td><?php echo $c->getContent(true); ?></td></tr>
-<?php } ?>
-          </tbody></table>
-<?php } ?>
-        </section>
-<?php if ($logged_in) { ?>
-        <section>
-          <hr/>
-          <form method="POST" action="<?php echo Common::relativeUrlToAbsolute("/comment/create"); ?>">
-            <input type="hidden" name="parent_type" value="<?php echo $comment_parent_type; ?>"/>
-            <input type="hidden" name="parent_id" value="<?php echo $object_id; ?>"/>
-            <p class="center"><label for="comment-content">Comment on this post:</label></p>
-            <p class="center"><textarea id="comment-content" name="content" cols="80" rows="5"></textarea></p>
-            <p class="center"><input type="submit" value="Comment"/></p>
-          </form>
-        </section>
-<?php } ?>
+        $c_user_string = ($c_user ? sprintf('<a href="%s"><img class="rounded" src="%s"/> %s</a>', $c_user_url, $c_user_avatar, $c_user_name) : $c_user_name);
+
+        $c_edit_visible = ($c_user_id == $active_user_id || $c_edit_visible_admin);
+        $c_delete_visible = ($c_user_id == $active_user_id || $c_delete_visible_admin); ?>
+      <tr><td>
+        <?=$c_user_string?><br/>
+        <time datetime="<?=$c_created_dt->format('c')?>"><?=$c_created_dt->format('D M j, Y g:ia T')?></time>
+      </td><td>
+<?    if ($c_delete_visible) { ?>
+        <a class="btn btn-sm btn-danger float-right m-1" href="<?=Common::relativeUrlToAbsolute('/comment/delete?id=' . $c_id)?>" title="Delete">❌</a>
+<?    } if ($c_edit_visible) { ?>
+        <a class="btn btn-sm btn-secondary float-right m-1" href="<?=Common::relativeUrlToAbsolute('/comment/edit?id=' . $c_id)?>" title="Edit">📝</a>
+<?    } ?>
+        <?=$c->getContent(true)?>
+      </td></tr>
+<? } ?>
+    </tbody></table>
+<? } ?>
+  </div>
+</div>
+<? if ($active_user) { ?>
+<div class="row my-3 justify-content-center">
+  <div class="col-8">
+    <form method="POST" action="<?=Common::relativeUrlToAbsolute('/comment/create')?>">
+      <input type="hidden" name="parent_type" value="<?=$comment_parent_type?>"/>
+      <input type="hidden" name="parent_id" value="<?=$comment_parent_id?>"/>
+      <div class="form-group">
+        <span class="float-right text-muted small">(Markdown supported)</span>
+        <label for="comment-content" class="font-weight-bold">Make a Comment:</label>
+        <textarea id="comment-content" class="border border-secondary form-control bg-dark text-light" name="content"></textarea>
+      </div>
+      <input class="btn btn-sm btn-secondary" type="submit" value="Comment"/>
+    </form>
+  </div>
+</div>
+<? } ?>

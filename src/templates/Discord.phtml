@@ -1,36 +1,34 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
 $title       = 'Discord';
 $description = 'Join our Discord and have a chat with us!';
-
-$this->opengraph->attach( new Pair( 'url', '/discord' ));
-$this->opengraph->attach( new Pair( 'type', 'article' ));
-
-$this->additional_css[] = "/a/forms.css";
-require( './header.inc.phtml' );
-?>
-      <article>
-<?php if (!$this->getContext()->enabled) { ?>
-        <header class="red">Discord</header>
-        <section class="red"><p>Sorry, but this page is currently not available. Try again later.</p></section>
-<?php } else { ?>
-        <header>Discord</header>
-        <section>
-          <h2>Who's Online</h2><br/>
-          <iframe style="display:block;margin:auto;" src="https://discordapp.com/widget?id=<?=filter_var( $this->getContext()->discord_server_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS )?>&theme=dark" width="80%" height="400" allowtransparency="true" frameborder="0"></iframe>
-          <h2>What is Discord?</h2><br/>
-          <p><a href="https://discordapp.com/">Discord</a> is a free voice, video, and text chat app made for gamers.</p>
-          <p>The Discord app can be accessed on PCs, browsers, and mobile phones. Users can direct message other users and congregate by joining servers.</p>
-          <p>From small to large communities, millions of users are using Discord to chat securely in real-time. BNETDocs is no exception.</p>
-          <h2>How to Join</h2>
-          <p style="text-align:center;"><a class="button" href="<?php echo Common::relativeUrlToAbsolute( $this->getContext()->discord_url ); ?>">Click this invite link</a></p>
-          <p><strong><a href="<?php echo Common::relativeUrlToAbsolute( $this->getContext()->discord_url ); ?>">Join our Discord</a></strong> and chat with other gamers like you! Our community is open to the public and we welcome new users.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require( './footer.inc.phtml' ); ?>
+$this->opengraph->attach(new Pair('url', '/discord'));
+$this->opengraph->attach(new Pair('type', 'article'));
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <h2><?=$title?></h2>
+  <p><?=$description?></p>
+<? if (!$this->getContext()->enabled) { ?>
+  <div class="alert alert-danger">
+    <p class="mb-0">Sorry, but this page is currently not available. Try again later.</p>
+  </div>
+<? } else { ?>
+  <div class="row">
+    <div class="col-md-8">
+      <h4>What is Discord?</h4>
+      <p class="mb-0"><a href="https://discordapp.com/">Discord</a> is a VoIP, instant messaging and digital distribution platform designed for creating communities. Users communicate with voice calls, video calls, text messaging, media and files in private chats or as part of communities called "servers" or less commonly "guilds." Servers are a collection of persistent chat rooms and voice chat channels. Discord runs on Windows, macOS, Android, iOS, iPadOS, Linux, and in web browsers. As of December 2020, the service has over 140 million monthly active users.</p>
+      <sup>(from <a href="https://en.wikipedia.org/wiki/Discord_(software)">Wikipedia</a>)</sup>
+      <h4>How to Join</h4>
+      <p>BNETDocs maintains a publicly-accessible community Discord server. Simply click the button below to be invited.</p>
+      <p class="text-center"><a class="btn btn-info" href="<?=Common::relativeUrlToAbsolute($this->getContext()->discord_url)?>">Join our Discord</a></p>
+    </div>
+    <div class="col-md-4">
+      <h4>Who's Online</h4>
+      <iframe style="display:block;width:100%;" src="https://discordapp.com/widget?id=<?=filter_var( $this->getContext()->discord_server_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS )?>&theme=dark" width="80%" height="400" allowtransparency="true" frameborder="0"></iframe>
+    </div>
+  </div>
+<? } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>

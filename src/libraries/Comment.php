@@ -2,19 +2,19 @@
 
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Markdown;
+use \CarlBennett\MVC\Libraries\Database;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \JsonSerializable;
 use \PDO;
 use \PDOException;
+use \Parsedown;
 use \StdClass;
 
 class Comment implements JsonSerializable {
@@ -152,7 +152,8 @@ class Comment implements JsonSerializable {
     if (!$prepare) {
       return $this->content;
     }
-    $md = new Markdown();
+    $md = new Parsedown();
+    $md->setSafeMode(true); // unsafe user-input
     return $md->text(filter_var($this->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
   }
 
@@ -192,6 +193,21 @@ class Comment implements JsonSerializable {
 
   public function getParentType() {
     return $this->parent_type;
+  }
+
+  public function getParentUrl() {
+    if (!is_int($this->parent_type)) return false;
+    switch ($this->parent_type) {
+      case self::PARENT_TYPE_DOCUMENT: $page = 'document'; break;
+      case self::PARENT_TYPE_COMMENT: $page = 'comment'; break;
+      case self::PARENT_TYPE_NEWS_POST: $page = 'news'; break;
+      case self::PARENT_TYPE_PACKET: $page = 'packet'; break;
+      case self::PARENT_TYPE_SERVER: $page = 'server'; break;
+      case self::PARENT_TYPE_USER: $page = 'user'; break;
+      default: return false;
+    }
+    $page = '/' . $page . '/' . rawurlencode($this->parent_id);
+    return Common::relativeUrlToAbsolute($page);
   }
 
   public function getUser() {

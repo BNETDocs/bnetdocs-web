@@ -1,96 +1,41 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\News;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Create News Post";
-$description = "This form allows an individual to create a news post.";
-
-$this->opengraph->attach(new Pair("url", "/news/create"));
-$this->opengraph->attach(new Pair("type", "article"));
-
-switch ($this->getContext()->error) {
-  case "ACL_NOT_SET":
-    $message = "You do not have the privilege to create news posts.";
-    break;
-  case "EMPTY_TITLE":
-    $message = "The title of the news post is required.";
-    break;
-  case "EMPTY_CONTENT":
-    $message = "The content of the news post is required.";
-    break;
-  case "INTERNAL_ERROR":
-    $message = "An internal error occurred while processing your request. "
-      . "Our staff have been notified of the issue. Try again later.";
-    break;
-  default:
-    $message = $this->getContext()->error;
+$title = 'Create News Post';
+$description = 'This page enables a user to create news posts on the site.';
+$this->opengraph->attach(new Pair('url', '/news/create'));
+$this->opengraph->attach(new Pair('type', 'article'));
+$error = $this->getContext()->error;
+switch ($error)
+{
+  case 'ACL_NOT_SET': $message = 'You do not have the privilege to create news posts.'; break;
+  case 'EMPTY_TITLE': $message = 'The title of the news post is required.'; break;
+  case 'EMPTY_CONTENT': $message = 'The content of the news post is required.'; break;
+  case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  default: $message = $error;
 }
-
-$this->additional_css[] = "/a/forms.css";
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if ($this->getContext()->error !== false) { ?>
-        <header>Create News Post</header>
-<?php if (!empty($message)) { ?>
-        <section class="red"><p><?php echo $message; ?></p></section>
-<?php } ?>
-        <form method="POST" action="?">
-          <section>
-            <label for="category">Category:</label><br/>
-            <select name="category" id="category" tabindex="1" required
-            autofocus="autofocus" size="<?php echo min(count($this->getContext()->news_categories), 10); ?>">
-<?php $category = $this->getContext()->category;
-      foreach ($this->getContext()->news_categories as $item) { ?>
-              <option value="<?php echo htmlspecialchars($item->getId(), ENT_HTML5, "UTF-8"); ?>"<?php if ($category === $item->getId()) { ?> selected="selected"<?php } ?>><?php echo htmlspecialchars($item->getLabel(), ENT_HTML5, "UTF-8"); ?></option>
-<?php } ?>
-            </select>
-          </section>
-          <section>
-            <label for="title">Title:</label><br/>
-            <input type="text" name="title" id="title" tabindex="2" required
-              value="<?php echo
-                filter_var($this->getContext()->title, FILTER_SANITIZE_STRING);
-              ?>"/>
-          </section>
-          <section>
-            <label for="content">Content:</label>
-            <span style="float:right;">
-              <label for="markdown" title="Use markdown or use raw HTML">Markdown</label>
-              <input type="checkbox" name="markdown" id="markdown" tabindex="4"
-                title="Use markdown or use raw HTML" value="1"<?php
-                  if ($this->getContext()->markdown)
-                    echo " checked=\"checked\"";
-                ?>/>
-            </span>
-            <textarea name="content" id="content" tabindex="3" required
-              style="height:200px;"><?php echo
-                htmlspecialchars($this->getContext()->content, ENT_HTML5, "UTF-8");
-              ?></textarea>
-          </section>
-          <section>
-            <input type="checkbox" name="rss_exempt" id="rss_exempt"
-              tabindex="5" value="1"<?php
-                if ($this->getContext()->rss_exempt)
-                  echo " checked=\"checked\"";
-              ?>/>
-            <label for="rss_exempt">Hide this news post from RSS feeds*</label>
-            <p style="font-size:small;padding-left:4px;">* Some RSS feed readers such as Feedly do not watch for updates, be sure this is your final draft before publishing.</p>
-          </section>
-          <section>
-            <input type="submit" name="publish" value="Publish" tabindex="6"/>
-            <input type="submit" name="save" value="Save as Draft" tabindex="7"/>
-          </section>
-        </form>
-<?php } else { ?>
-        <header class="green">Create News Post</header>
-        <section class="green">
-          <p>Your news post has been created.</p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+$form_content = filter_var($this->getContext()->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$form_markdown = $this->getContext()->markdown;
+$form_rss_exempt = $this->getContext()->rss_exempt;
+$form_title = filter_var($this->getContext()->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$news_post_id = null;
+$news_post_url = null;
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <h1><?=$title?></h1>
+  <p><?=$description?></p>
+<?  if ($error !== false) {
+      if (!empty($message)) { ?>
+  <div class="alert alert-danger">
+    <p class="mb-0"><?=$message?></p>
+  </div>
+<?    }
+      require('./News/Form.inc.phtml');
+    } else { ?>
+  <div class="alert alert-success">
+    <p class="mb-0">Your news post has been created.</p>
+  </div>
+<?  } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>

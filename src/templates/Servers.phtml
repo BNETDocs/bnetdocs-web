@@ -1,15 +1,12 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-
 use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\ServerType;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Servers";
-$description = "A list of servers that our automated system checks the status of. The status represents if the port is opened or closed, not if the service is functioning correctly.";
-$this->opengraph->attach(new Pair("url", "/servers"));
+$title = 'Server List';
+$description = 'The list of servers that are well-known and monitored for port status.';
+$this->opengraph->attach(new Pair('url', '/servers'));
 
 $servers_by_type = [];
 foreach ($this->context->servers as $server) {
@@ -17,50 +14,56 @@ foreach ($this->context->servers as $server) {
 }
 ksort($servers_by_type);
 
-$this->additional_css[] = "/a/servers.css";
-require("./header.inc.phtml");
-?>
-      <article>
-        <header>Server List</header>
-        <section>
-          <p>Below is a list of servers that our automated system checks the status of. The status represents if the port is opened or closed, not if the service is functioning correctly.</p>
-          <p>We have a total of <strong><?php echo number_format(count($this->context->servers)); ?> servers</strong> that we monitor. <a href="<?php echo Common::relativeUrlToAbsolute("/servers.json"); ?>">Click here</a> to see this list in JSON format.</p>
-        </section>
-        <section>
-          <table class="servers">
-            <thead>
-              <tr>
-                <th class="status">Status</th>
-                <th class="label">Label</th>
-                <th class="address">Address</th>
-                <th class="details"></th>
-              </tr>
-            </thead>
-            <tbody>
-<?php foreach ($servers_by_type as $type_id => $servers) {
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <h1><?=$title?></h1>
+  <div class="row"><div class="col">
+    <p><?=$description?></p>
+    <p>The status represents if the port is opened or closed, not if the service is functioning correctly. These are the statuses a server could be in:</p>
+    <ul>
+      <li><span class="text-success">Online</span>: The port is open.</li>
+      <li><span class="text-danger">Offline</span>: The port is closed.</li>
+      <li><span class="text-danger">Disabled</span>: The server is not actively checked.</li>
+    </ul>
+    <p>We have a total of <strong><?=number_format(count($this->context->servers))?> servers</strong> that we monitor. <a href="<?=Common::relativeUrlToAbsolute('/servers.json')?>">Click here</a> to see this list in JSON format.</p>
+  </div></div>
+  <div class="row"><div class="col">
+    <table class="table table-hover table-sm table-striped" id="servers_tbl">
+      <thead><tr><th scope="col">Status</th><th scope="col">Label</th><th scope="col">Address</th><th scope="col"></th></tr></thead><tbody>
+<?    foreach ($servers_by_type as $type_id => $servers)
+      {
         $server_type = new ServerType($type_id);
-?>
-              <tr><th colspan="4"><?php echo $server_type->getLabel(); ?></th></tr>
-<?php   foreach ($servers as $server) {
+        $server_type_label = filter_var($server_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        printf('<tr><th scope="row" colspan="4">%s</th></tr>', $server_type_label);
+        foreach ($servers as $server)
+        {
+          $server_label = filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
           $status_bitmask = $server->getStatusBitmask();
           if ($status_bitmask & Server::STATUS_ONLINE) {
-            $status_subclass = "online"; $status = "Online";
+            $status_subclass = 'success'; $status = 'Online';
           } else if ($status_bitmask & Server::STATUS_DISABLED) {
-            $status_subclass = "disabled"; $status = "Disabled";
+            $status_subclass = 'danger'; $status = 'Disabled';
           } else {
-            $status_subclass = "offline"; $status = "Offline";
-          }
-?>
-              <tr>
-                <td class="status center <?php echo $status_subclass; ?>"><?php echo $status; ?></td>
-                <td class="label"><?php echo ($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server->getLabel() : "&nbsp;"); ?></td>
-                <td class="address" onclick="bnetdocs.fSelectText(this);"><?php echo $server->getAddress(); ?>:<?php echo $server->getPort(); ?></td>
-                <td class="details center"><a href="<?php echo $server->getURI(); ?>">View Details</a></td>
-              </tr>
-<?php   } ?>
-<?php } ?>
-            </tbody>
-          </table>
-        </section>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+            $status_subclass = 'danger'; $status = 'Offline';
+          } ?>
+        <tr>
+          <td class="text-center text-<?=$status_subclass?>"><?=$status?></td>
+          <td><?=($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server_label : '&nbsp;')?></td>
+          <td><code><?=$server->getAddress()?>:<?=$server->getPort()?></code></td>
+          <td><a class="btn btn-sm btn-primary" href="<?=$server->getURI()?>" title="View Server Details for <?=$server_label?>">🔎</a></td>
+        </tr>
+<?    }} ?>
+      </tbody>
+    </table>
+  </div></div>
+</div>
+<? ob_start(); ?>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('#servers_tbl').DataTable({
+        "language": {"zeroRecords": "No matching servers found"},
+        "responsive": true,
+      });
+    });
+  </script>
+<? $_footer_script = ob_get_clean(); require('./footer.inc.phtml'); ?>

@@ -1,16 +1,12 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-
-$title       = "Page Not Found";
-$description = "The requested resource does not exist or could not be found.";
-
-require("./header.inc.phtml");
-?>
-      <article>
-        <header class="red">Page Not Found</header>
-        <section class="red">
-          <p><?php echo htmlspecialchars($description, ENT_HTML5, "UTF-8"); ?></p>
-        </section>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+$title = 'Page Not Found';
+$description = 'The requested resource does not exist or could not be found.';
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading"><?=$title?></h4>
+    <p class="mb-0"><?=$description?></p>
+  </div>
+</div>
+<?php require('./footer.inc.phtml'); ?>

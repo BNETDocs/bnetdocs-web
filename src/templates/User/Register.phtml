@@ -1,152 +1,78 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Create Account";
-$description = "This form allows an individual to create an account on BNETDocs.";
+$title = 'Create Account';
+$description = 'This form allows a user to create an account on the site.';
 $this->opengraph->attach(new Pair("url", "/user/register"));
-
-switch ($this->getContext()->error) {
-  case null:
-    $af      = "email";
-    $message = null;
-    break;
-  case "ALREADY_LOGGED_IN":
-    $af      = null;
-    $message = "You are already logged in, you must log out first.";
-    break;
-  case "INVALID_CAPTCHA":
-    $af      = "";
-    $message = "The captcha code did not successfully verify, try again.";
-    break;
-  case "NONMATCHING_PASSWORD":
-    $af      = "pw1";
-    $message = "The password does not match its confirmation.";
-    break;
-  case "INVALID_EMAIL":
-    $af      = "email";
-    $message = "The email address is invalid.";
-    break;
-  case "EMAIL_NOT_ALLOWED":
-    $af      = "email";
-    $message = "The email address is not allowed, use a different one.";
-    break;
-  case "PASSWORD_CONTAINS_EMAIL":
-    $af      = "pw1";
-    $message = "The password contains the email address, "
-      . "use a better password.";
-    break;
-  case "PASSWORD_CONTAINS_USERNAME":
-    $af      = "pw1";
-    $message = "The password contains the username, use a better password.";
-    break;
-  case "USERNAME_TOO_LONG":
-    $af      = "username";
-    $message = "The username is too long, choose a different username.";
-    break;
-  case "USERNAME_TOO_SHORT":
-    $af      = "username";
-    $message = "The username is too short, choose a different username.";
-    break;
-  case "PASSWORD_TOO_LONG":
-    $af      = "pw1";
-    $message = "The password is too long, shorten it.";
-    break;
-  case "PASSWORD_TOO_SHORT":
-    $af      = "pw1";
-    $message = "The password is too short, use a better password.";
-    break;
-  case "PASSWORD_BLACKLIST":
-    $af      = "pw1";
-    $message = $this->getContext()->error_extra;
-    if (empty($message)) $message = "The password is blacklisted.";
-    break;
-  case "COUNTRY_DENIED":
-    $af      = null;
-    $message = $this->getContext()->error_extra;
-    if (empty($message)) $message = "Your country is blacklisted.";
-    break;
-  case "REGISTER_DISABLED":
-    $af      = null;
-    $message = "Creating accounts is currently administratively disabled.";
-    break;
-  case "EMAIL_ALREADY_USED":
-    $af      = "email";
-    $message = "The email address is already in use, use another.";
-    break;
-  case "USERNAME_TAKEN":
-    $af      = "username";
-    $message = "That username is taken, try another.";
-    break;
-  case "EMAIL_FAILURE":
-    $af      = "email";
-    $message = "Your account was created, but the email failed to send.";
-    break;
-  case "INTERNAL_ERROR":
-    $af      = null;
-    $message = "An internal error occurred while processing your request. "
-      . "Our staff have been notified of the issue. Try again later.";
-    break;
-  default:
-    $af      = null;
-    $message = $this->getContext()->error;
+$error = $this->getContext()->error;
+$error_extra = $this->getContext()->error_extra;
+switch ($error)
+{
+  case null: $af = 'email'; $message = null; break;
+  case 'ALREADY_LOGGED_IN': $af = null; $message = 'You are already logged in, you must log out first.'; break;
+  case 'INVALID_CAPTCHA': $af = ''; $message = 'The captcha code did not successfully verify, try again.'; break;
+  case 'NONMATCHING_PASSWORD': $af = 'pw1'; $message = 'The password does not match its confirmation.'; break;
+  case 'INVALID_EMAIL': $af = 'email'; $message = 'The email address is invalid.'; break;
+  case 'EMAIL_NOT_ALLOWED': $af = 'email'; $message = 'The email address is not allowed, use a different one.'; break;
+  case 'PASSWORD_CONTAINS_EMAIL': $af = 'pw1'; $message = 'The password contains the email address, use a better password.'; break;
+  case 'PASSWORD_CONTAINS_USERNAME': $af = 'pw1'; $message = 'The password contains the username, use a better password.'; break;
+  case 'USERNAME_TOO_LONG': $af = 'username'; $message = 'The username is too long, choose a different username.'; break;
+  case 'USERNAME_TOO_SHORT': $af = 'username'; $message = 'The username is too short, choose a different username.'; break;
+  case 'PASSWORD_TOO_LONG': $af = 'pw1'; $message = 'The password is too long, shorten it.'; break;
+  case 'PASSWORD_TOO_SHORT': $af = 'pw1'; $message = 'The password is too short, use a better password.'; break;
+  case 'PASSWORD_BLACKLIST': $af = 'pw1'; $message = $error_extra; if (empty($message)) $message = 'The password is blacklisted.'; break;
+  case 'COUNTRY_DENIED': $af = null; $message = $error_extra; if (empty($message)) $message = 'Your country is blacklisted.'; break;
+  case 'REGISTER_DISABLED': $af = null; $message = 'Creating accounts is currently administratively disabled.'; break;
+  case 'EMAIL_ALREADY_USED': $af = 'email'; $message = 'The email address is already in use, use another.'; break;
+  case 'USERNAME_TAKEN': $af = 'username'; $message = 'That username is taken, try another.'; break;
+  case 'EMAIL_FAILURE': $af = 'email'; $message = 'Your account was created, but the email failed to send.'; break;
+  case 'INTERNAL_ERROR': $af = null; $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  default: $af = null; $message = $error;
 }
-
-$register_disabled = ($this->getContext()->error == 'REGISTER_DISABLED');
-
-$safe_email    = htmlentities($this->getContext()->email   , ENT_HTML5, "UTF-8");
-$safe_username = htmlentities($this->getContext()->username, ENT_HTML5, "UTF-8");
-
-$this->additional_css[] = "/a/forms.css";
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if ($this->getContext()->error !== false) { ?>
-        <script async defer="defer" src="https://www.google.com/recaptcha/api.js"><![CDATA[]]></script>
-        <header<?=($register_disabled ? ' class="red"' : '')?>>Create Account</header>
-<?php if (!empty($message)) { ?>
-        <section class="red">
-          <p><?php echo $message; ?></p>
-        </section>
-<?php } ?>
-<?php if (!$register_disabled) { ?>
-        <form method="POST" action="?">
-          <section>
-            <table><tbody><tr>
-              <td>
-                <label for="email">Email address:</label><br/>
-                <input type="email" name="email" id="email" tabindex="1"
-                  value="<?php echo $safe_email; ?>" required<?php if ($af == "email") { ?> autofocus="autofocus"<?php } ?>/>
-              </td><td>
-                <label for="username">Username:</label><br/>
-                <input type="text" name="username" id="username" tabindex="2" maxlength="<?php echo $this->getContext()->username_max_len; ?>"
-                  value="<?php echo $safe_username; ?>" required<?php if ($af == "username") { ?> autofocus="autofocus"<?php } ?>/>
-              </td></tr><tr><td>
-                <label for="pw1">Password:</label><br/>
-                <input type="password" name="pw1" id="pw1" tabindex="3"
-                  value="" required<?php if ($af == "pw1") { ?> autofocus="autofocus"<?php } ?>/>
-              </td><td>
-                <label for="pw2">Confirm password:</label><br/>
-                <input type="password" name="pw2" id="pw2" tabindex="4"
-                  value="" required<?php if ($af == "pw2") { ?> autofocus="autofocus"<?php } ?>/>
-              </td></tr><tr><td colspan="2">
-                <div class="g-recaptcha" data-theme="dark" data-sitekey="<?php echo $this->getContext()->recaptcha->site_key; ?>"></div>
-              </td></tr><tr><td colspan="2" style="padding-top:16px;">
-                <input type="submit" value="Register" tabindex="5"/>
-              </td>
-            </tr></tbody></table>
-          </section>
-        </form>
-<?php } ?>
-<?php } else { ?>
-        <header class="green">Account Created</header>
-        <section class="green">
-          <p>You have successfully created an account!</p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+$register_disabled = ($error == 'REGISTER_DISABLED');
+$email = htmlentities($this->getContext()->email, ENT_HTML5, 'UTF-8');
+$username = htmlentities($this->getContext()->username, ENT_HTML5, 'UTF-8');
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <script async defer="defer" src="https://www.google.com/recaptcha/api.js"><![CDATA[]]></script>
+  <div class="card mx-auto mb-3" style="width:22rem;">
+    <h3 class="card-header text-center<?=($register_disabled ? ' text-danger' : '')?>"><?=$title?></h3>
+    <div class="card-body">
+      <p><?=$description?></p>
+      <p>Be sure to review our <a href="/privacy">privacy notice</a>.</p>
+<?  if ($error !== false) {
+      if (!empty($message)) { ?>
+      <div class="alert alert-danger"><p class="mb-0"><?=$message?></p></div>
+<?    }
+      if (!$register_disabled) { ?>
+      <form method="POST" action="?">
+        <div class="form-group">
+          <label class="font-weight-bold" for="email">Email address:</label>
+          <input class="bg-dark border border-primary form-control text-light" type="email" name="email" id="email" placeholder="Enter the email address here" tabindex="1" value="<?=$email?>" required<?=($af == 'email' ? ' autofocus="autofocus"' : '')?>/>
+        </div><div class="form-group">
+          <label class="font-weight-bold" for="username">Username:</label>
+          <input class="bg-dark border border-primary form-control text-light" type="text" name="username" id="username" placeholder="Enter the username here" tabindex="2" maxlength="<?=$this->getContext()->username_max_len?>" value="<?=$username?>" required<?=($af == 'email' ? ' autofocus="autofocus"' : '')?>/>
+        </div><div class="form-group">
+          <label class="font-weight-bold" for="pw1">Password:</label>
+          <input class="bg-dark border border-primary form-control text-light" type="password" name="pw1" id="pw1" placeholder="Enter the password here" tabindex="3"
+            value="" required<? if ($af == "pw1") { ?> autofocus="autofocus"<? } ?>/>
+        </div><div class="form-group">
+          <label class="font-weight-bold" for="pw2">Confirm password:</label>
+          <input class="bg-dark border border-primary form-control text-light" type="password" name="pw2" id="pw2" placeholder="Confirm the password here" tabindex="4"
+            value="" required<? if ($af == "pw2") { ?> autofocus="autofocus"<? } ?>/>
+        </div>
+        <div class="form-group">
+          <div class="g-recaptcha" data-theme="dark" data-sitekey="<? echo $this->getContext()->recaptcha->site_key; ?>"></div>
+        </div>
+        <div class="form-group">
+          <input class="btn btn-success" type="submit" value="Register" tabindex="5"/>
+        </div>
+      </form>
+<?    }
+    } else { ?>
+  <h1 class="text-success">Account Created</h1>
+  <div class="alert alert-success"><p class="mb-0">You have successfully created an account!</p></div>
+<?  } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>

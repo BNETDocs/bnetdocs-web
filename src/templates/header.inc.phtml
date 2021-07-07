@@ -1,36 +1,201 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\NewsPost;
+use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\VersionInfo;
-
 use \CarlBennett\MVC\Libraries\Common;
-
-if ( isset( Authentication::$user  )) {
-  $_header_user     = Authentication::$user;
-  $_header_user_url = $_header_user->getURI();
-  $_header_staff    = ($_header_user && $_header_user->isStaff());
-} else {
-  $_header_user     = null;
-  $_header_user_url = null;
-  $_header_staff    = null;
+use \CarlBennett\MVC\Libraries\DatabaseDriver;
+use \LogicException;
+if (!isset($title))
+{
+  throw new LogicException('template variable not set before include of header template: $title');
 }
-
-$_header_navigation_config = Common::$config->bnetdocs->navigation;
-$_header_user_register_disabled = Common::$config->bnetdocs->user_register_disabled;
-
-if ( !Common::$config->bnetdocs->asset_versioning ) {
-  $_unique_asset = '';
-} else if ( !is_null( VersionInfo::$version->bnetdocs )) {
-  $_unique_asset = '?v=' . VersionInfo::$version->bnetdocs[1];
-} else {
-  $_unique_asset = '?v=' . date('YmdHis');
+if (!isset($title_suffix)) /* this should be allowed to be empty, however */
+{
+  $title_suffix = ' &ndash; BNETDocs';
 }
+function _header_active(string $url, bool $sr)
+{
+  $current_url = parse_url(getenv('REQUEST_URI'), PHP_URL_PATH);
+  $match = (substr($current_url, 0, strlen($url)) == $url);
+  if (!$match) return '';
+  if ($sr) return ' <span class="sr-only">(current)</span>'; else return ' active';
+}
+$_header_user = Authentication::$user;
+$_unique_asset = (
+  !Common::$config->bnetdocs->asset_versioning ? '' :
+  (
+    !is_null(VersionInfo::$version->bnetdocs) ?
+    '?v=' . VersionInfo::$version->bnetdocs[1] :
+    '?v=' . date('YmdHis')
+  )
+);
+$_header_nav = [
+  ['label' => 'Welcome', 'url' => '/welcome'],
+  ['label' => 'Community', 'dropdown' => [
+    ['label' => 'Discord', 'url' => '/discord', 'visible' => (Common::$config->discord->enabled)],
+    ['label' => '-', 'visible' => (Common::$config->discord->enabled)],
+    ['label' => 'Contributors', 'url' => '/credits'],
+    ['label' => 'Support Us', 'url' => '/donate'],
+    ['label' => 'Server List', 'url' => '/servers'],
+    ['label' => 'Users', 'url' => '/user/index'],
+    ['label' => '-'],
+    ['label' => 'Privacy Notice', 'url' => '/privacy'],
+    ['label' => 'Disclaimer & TOS', 'url' => '/legal'],
+    ['label' => '-'],
+    ['label' => 'File Archive', 'url' => 'https://files.bnetdocs.org/'],
+    ['label' => 'BNETDocs Redux', 'url' => 'https://redux.bnetdocs.org/'],
+  ]],
+  ['label' => 'News', 'dropdown' => [
+    ['label' => 'All News', 'url' => '/news', 'class' => 'text-info'],
+    ['label' => '-', 'acl' => User::OPTION_ACL_NEWS_CREATE],
+    ['label' => 'Create News Post', 'url' => '/news/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_NEWS_CREATE],
+    ['label' => '', 'recent_news' => true],
+  ]],
+  ['label' => 'Documents', 'dropdown' => [
+    ['label' => 'All Documents', 'url' => '/document/index', 'class' => 'text-info'],
+    ['label' => '-', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
+    ['label' => 'Create Document', 'url' => '/document/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_DOCUMENT_CREATE],
+    ['label' => '', 'recent_documents' => true],
+  ]],
+  ['label' => 'Packets', 'dropdown' => [
+    ['label' => 'All Packets', 'url' => '/packet/index', 'class' => 'text-info'],
+    ['label' => '-', 'acl' => User::OPTION_ACL_PACKET_CREATE],
+    ['label' => 'Create Packet', 'url' => '/packet/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_PACKET_CREATE],
+    ['label' => '', 'recent_packets' => true],
+  ]],
+  ['label' => 'Admin', 'acl' => User::OPTION_ACL_SERVER_CREATE | User::OPTION_ACL_EVENT_LOG_VIEW, 'class' => 'text-danger', 'dropdown' => [
+    ['label' => 'Create Server', 'url' => '/server/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_SERVER_CREATE],
+    ['label' => 'Event Logs', 'url' => '/eventlog/index', 'acl' => User::OPTION_ACL_EVENT_LOG_VIEW],
+  ]],
+];
+function _header_nav_html($nav)
+{
+  function _line(string $format) { call_user_func_array('printf', func_get_args()); echo PHP_EOL; }
 
-$_campaign_battleforthenet = (
+  ob_start();
+  _line('<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">');
+
+  // Brand
+  _line('<a class="navbar-brand" style="color:#00ccad;" href="%s"><img class="float-left mr-2" src="%s" style="height:32px;" /> %s</a>',
+    Common::$config->bnetdocs->navigation->front_page, '/a/VSZX0bJ.png', 'BNETDocs'
+  );
+
+  // Collapsible Hamburger Menu (Start)
+  _line('<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>');
+  _line('<div class="collapse navbar-collapse" id="navbarSupportedContent">');
+
+  // Navbar (Start)
+  _line('<ul class="navbar-nav mr-auto">');
+
+  function _nav_loop(array $nav, bool $dropdown)
+  {
+    foreach ($nav as $item)
+    {
+      if (!isset($item['label'])) continue;
+      if (isset($item['visible']) && !$item['visible']) continue;
+
+      if (isset($item['acl']))
+      {
+        if (!Authentication::$user) continue;
+        if (!(Authentication::$user->getOptionsBitmask() & $item['acl'])) continue;
+      }
+
+      if ($item['label'] == '-') { _line('<div class="dropdown-divider"></div>'); continue; }
+
+      $class = $item['class'] ?? '';
+      if (!empty($class)) $class = ' ' . $class;
+
+      if (isset($item['recent_documents']) && $item['recent_documents'])
+      {
+        _line('<div class="dropdown-divider"></div>');
+        _line('<div class="dropdown-header">Recently Edited Documents</div>');
+        $recent_documents = Document::getDocumentsByLastEdited(10);
+        $acl_doc_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY));
+        foreach ($recent_documents as $doc)
+        {
+          if (!$doc->isPublished() && !$acl_doc_modify) continue;
+          $doc_class = ($doc->isPublished() ? '' : ' text-warning');
+          _line('<a class="dropdown-item%s" href="%s">%s</a>', $doc_class, $doc->getURI(), filter_var($doc->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+        }
+      }
+      else if (isset($item['recent_news']) && $item['recent_news'])
+      {
+        _line('<div class="dropdown-divider"></div>');
+        _line('<div class="dropdown-header">Recent News</div>');
+        $recent_news = NewsPost::getNewsPostsByLastEdited(10);
+        $acl_news_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_NEWS_MODIFY));
+        foreach ($recent_news as $news)
+        {
+          if (!$news->isPublished() && !$acl_news_modify) continue;
+          $news_class = ($news->isPublished() ? '' : ' text-warning');
+          _line('<a class="dropdown-item%s" href="%s">%s</a>', $news_class, $news->getURI(), filter_var($news->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+        }
+      }
+      else if (isset($item['recent_packets']) && $item['recent_packets'])
+      {
+        _line('<div class="dropdown-divider"></div>');
+        _line('<div class="dropdown-header">Recently Edited Packets</div>');
+        $recent_packets = Packet::getPacketsByLastEdited(10);
+        $acl_pkt_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_PACKET_MODIFY));
+        foreach ($recent_packets as $pkt)
+        {
+          if (!$pkt->isPublished() && !$acl_pkt_modify) continue;
+          $pkt_class = ($pkt->isPublished() ? '' : ' text-warning');
+          _line('<a class="dropdown-item%s" href="%s">%s</a>', $pkt_class, $pkt->getURI(), filter_var($pkt->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+        }
+      }
+      else if (!$dropdown)
+      {
+        if (isset($item['url'])) printf('<li class="nav-item"><a class="nav-link%s" href="%s">%s</a></li>' . PHP_EOL, $class, Common::relativeUrlToAbsolute($item['url']), filter_var($item['label'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+      }
+      else if ($dropdown)
+      {
+        if (isset($item['url'])) printf('<a class="dropdown-item%s" href="%s">%s</a>' . PHP_EOL, $class, Common::relativeUrlToAbsolute($item['url']), filter_var($item['label'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+      }
+
+      if (isset($item['dropdown']))
+      {
+        _line('<li class="nav-item dropdown">');
+        $navbarName = str_replace(' ', '_', $item['label']);
+        _line('<a class="nav-link dropdown-toggle%s" href="#" id="navbar%sDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">%s</a>', $class, $navbarName, $item['label']);
+        _line('<div class="dropdown-menu" aria-labelledby="navbar%sDropdown">', $navbarName);
+        _nav_loop($item['dropdown'], true);
+        _line('</div></li>');
+      }
+    }
+  }
+  _nav_loop($nav, false);
+
+  // Navbar (End)
+  _line('</ul>');
+
+  // Account
+  if (!Authentication::$user)
+  {
+    _line('<a class="btn btn-sm btn-outline-secondary my-2 my-sm-0" tabindex="-1" href="%s">Log in</a>', Common::relativeUrlToAbsolute('/user/login'));
+    if (!Common::$config->bnetdocs->user_register_disabled)
+    {
+      _line('<a class="btn btn-sm btn-outline-success my-2 my-sm-0 ml-2" tabindex="-2" href="%s">Register</a>', Common::relativeUrlToAbsolute('/user/register'));
+    }
+  }
+  else
+  {
+    _line('<span class="nav-item navbar-text mx-3"><a href="%s">%s</a></span>', Authentication::$user->getURI(), filter_var(Authentication::$user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+     _line('<a class="btn btn-sm btn-outline-danger my-2 my-sm-0" tabindex="-1" href="%s">Log out</a>', Common::relativeUrlToAbsolute('/user/logout'));
+  }
+
+  // Collapsible Hamburger Menu (End)
+  _line('</div>');
+
+  _line('</nav>');
+  return ob_get_clean();
+}
+/*$_campaign_battleforthenet = (
   !empty( Common::$config->bnetdocs->campaigns->battleforthenet ) ?
   '<script type="text/javascript" src="' .
   Common::relativeUrlToAbsolute(
@@ -42,119 +207,57 @@ $_campaign_vultr = (
   '<a href="' . Common::relativeUrlToAbsolute(
     Common::$config->bnetdocs->campaigns->vultr
   ) . '"><img id="vultr-campaign" src="' . Common::relativeUrlToAbsolute(
-    '/a/vultr_logo_ondark.svg'
+    '/a/vultr_logo_ondark.svg' . $_unique_asset
   ) . '"/></a>'  : ''
-);
-
+);*/
 ?><!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-US" class="h-100">
   <head>
-<?php echo Logger::getTimingHeader(); ?>
-    <title><?php echo $title; ?> - BNETDocs</title>
-<?php if (isset($url) && !empty($url)) { ?>
-    <link rel="canonical" href="<?php echo $url; ?>"/>
-<?php } ?>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<?php if (Common::$config->bnetdocs->mobile_site_enabled) { ?>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_asset); ?>" type="text/css" media="(min-width:1000px)"/>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main-mobile.css' . $_unique_asset); ?>" type="text/css" media="(max-width:999px)"/>
-<?php } else { ?>
-    <link rel="stylesheet" href="<?php echo Common::relativeUrlToAbsolute('/a/main.css' . $_unique_asset); ?>" type="text/css" media="all"/>
-<?php }
-      foreach ($this->additional_css as $path) { ?>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute($path . $_unique_asset); ?>" media="all"/>
-<?php } ?>
-    <link rel="icon" href="<?php echo Common::relativeUrlToAbsolute('/a/VSZX0bJ.png'); ?>" type="image/png" sizes="156x174"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute('/a/font/SourceSansPro-Regular-201508251844.css'); ?>"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo Common::relativeUrlToAbsolute('/a/font/SourceCodePro-Regular-201508251844.css'); ?>"/>
-    <script type="text/javascript" src="<?php echo Common::relativeUrlToAbsolute('/a/BNETDocs.js' . $_unique_asset); ?>" async><![CDATA[]]></script>
-    <?php echo $_campaign_battleforthenet; ?>
-    <link rel="alternate" href="<?php echo Common::relativeUrlToAbsolute('/news.rss'); ?>" type="application/rss+xml" title="BNETDocs News"/>
-    <link rel="license" href="<?php echo Common::relativeUrlToAbsolute('/legal'); ?>"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title><?=$title?> &ndash; BNETDocs</title>
+<?  if (isset($url) && !empty($url)) { ?>
+    <link rel="canonical" href="<?=$url?>"/>
+<?  } ?>
+<?=Logger::getTimingHeader()?>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/bootstrap-4.4.1-slate.min.css')?>" integrity="sha384-tfnMnZ6k273p3mDqSKikc9aXSvumltGq76Tbo+VMydpXeD5EDZwbQWo7nbZz+wc9" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/datatables.min.css' . $_unique_asset)?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/highlight/styles/vs2015.min.css' . $_unique_asset)?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/footer.css' . $_unique_asset)?>" type="text/css" media="all"/>
+<?  foreach ($this->additional_css as $css_path) {
+      echo '<link rel="stylesheet" type="text/css" href="' . Common::relativeUrlToAbsolute($css_path . $_unique_asset) . '" media="all"/>' . PHP_EOL;
+    } ?>
+    <link rel="icon" href="<?=Common::relativeUrlToAbsolute('/a/VSZX0bJ.png')?>" type="image/png" sizes="156x174"/>
+    <script type="text/javascript" src="<?=Common::relativeUrlToAbsolute('/a/BNETDocs.js' . $_unique_asset)?>" async><![CDATA[]]></script>
+    <link rel="alternate" href="<?=Common::relativeUrlToAbsolute('/news.rss')?>" type="application/rss+xml" title="BNETDocs News"/>
+    <link rel="license" href="<?=Common::relativeUrlToAbsolute('/legal')?>"/>
     <meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding"/>
-<?php if (!empty($description)) { ?>
-    <meta name="description" content="<?php echo $description; ?>"/>
-    <meta property="og:description" content="<?php echo $description; ?>"/>
-    <meta property="twitter:description" content="<?php echo $description; ?>"/>
-<?php } ?>
+<?  if (!empty($description)) { ?>
+    <meta name="description" content="<?=$description?>"/>
+    <meta property="og:description" content="<?=$description?>"/>
+    <meta property="twitter:description" content="<?=$description?>"/>
+<?  } ?>
     <meta property="og:site_name" content="BNETDocs"/>
     <meta property="og:locale" content="en_US"/>
     <meta property="twitter:card" content="summary"/>
     <meta property="twitter:site" content="@BNETDocs"/>
-    <meta property="og:title" content="<?php echo $title; ?>"/>
-    <meta property="twitter:title" content="<?php echo $title; ?>"/>
-<?php
-    $ogimage = false; $ogtype = false;
+    <meta property="og:title" content="<?=$title?>"/>
+    <meta property="twitter:title" content="<?=$title?>"/>
+<?  $ogimage = false; $ogtype = false;
     foreach ($this->opengraph as $og) {
       $ogkey = $og->getKey();
       $ogval = $og->getValue();
       if ($ogkey == "image") $ogimage = true;
       if ($ogkey == "type") $ogtype = true;
-      if ($ogkey == "url" || $ogkey == "image") $ogval = Common::relativeUrlToAbsolute($ogval);
-?>
-    <meta property="og:<?php echo $ogkey; ?>" content="<?php echo $ogval; ?>"/>
-<?php } if (!$ogimage) { ?>
-    <meta property="og:image" content="<?php echo Common::relativeUrlToAbsolute("/a/eNoi70A.png"); ?>"/>
-<?php } if (!$ogtype) { ?>
+      if ($ogkey == "url" || $ogkey == "image") $ogval = Common::relativeUrlToAbsolute($ogval); ?>
+    <meta property="og:<?=$ogkey?>" content="<?=$ogval?>"/>
+<?  } if (!$ogimage) { ?>
+    <meta property="og:image" content="<?=Common::relativeUrlToAbsolute('/a/eNoi70A.png')?>"/>
+<?  } if (!$ogtype) { ?>
     <meta property="og:type" content="website"/>
-<?php } ?>
+<?  } ?>
   </head>
-  <body>
-    <header class="main-page"><a href="<?php echo Common::relativeUrlToAbsolute($_header_navigation_config->front_page); ?>"><img src="<?php echo Common::relativeUrlToAbsolute("/a/VSZX0bJ.png"); ?>" style="float:left;margin-right:6px;height:32px;"/> BNETDocs</a> <span id="mobile-nav">&#9776;</span><?php echo $_campaign_vultr; ?></header>
-<?php if (!(isset($slim_ui) && $slim_ui)) { ?>
-    <nav>
-      <a>Info Hub</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/welcome"); ?>">Welcome</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/credits"); ?>">Contributors</a>
-<?php if (Common::$config->discord->enabled) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/discord"); ?>">Discord</a>
-<?php } ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/donate"); ?>">Donate</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/index"); ?>">Members</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/news"); ?>">News</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/servers"); ?>">Servers</a>
-      <a>Account</a>
-<?php if ($_header_user) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/logout"); ?>">Logout</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/changepassword"); ?>">Change Password</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/update"); ?>">Update Profile</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute($_header_user_url); ?>">View Profile</a>
-<?php } else { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/login"); ?>">Log In</a>
-<?php if (!$_header_user_register_disabled) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/user/register"); ?>">Create</a>
-<?php } ?>
-<?php } ?>
-      <a>The Docs</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/document/index"); ?>">Document Index</a>
-<?php if (!$_header_navigation_config->hide_search_documents) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/document/search"); ?>">Search Documents</a>
-<?php } ?>
-<?php if (!$_header_navigation_config->hide_popular_documents) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/document/popular"); ?>">Popular Documents</a>
-<?php } ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/index"); ?>">Packet Index</a>
-<?php if (!$_header_navigation_config->hide_search_packets) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/search"); ?>">Search Packets</a>
-<?php } ?>
-<?php if (!$_header_navigation_config->hide_popular_packets) { ?>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/popular"); ?>">Popular Packets</a>
-<?php } ?>
-      <a>Other Pages</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("//files.bnetdocs.org/"); ?>">File Archive</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/privacy"); ?>">Privacy Notice</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>">Legal Policies</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("//redux.bnetdocs.org/"); ?>">BNETDocs Redux</a>
-<?php if ($_header_staff) { ?>
-      <a>Site Admin</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/document/create"); ?>">Create Document</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/news/create"); ?>">Create News Post</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/packet/create"); ?>">Create Packet</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/server/create"); ?>">Create Server</a>
-      <a href="<?php echo Common::relativeUrlToAbsolute("/eventlog/index"); ?>">Event Log</a>
-<?php } ?>
-    </nav>
-    <main>
-<?php } else { ?>
-    <main class="slim">
-<?php } ?>
+  <body class="d-flex flex-column h-100">
+
+<?=_header_nav_html($_header_nav)?>
+<main>

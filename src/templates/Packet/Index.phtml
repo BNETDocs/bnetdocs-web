@@ -1,115 +1,104 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Packet;
-
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = 'Packet Index';
-$description = 'The index for packets on BNETDocs';
+$title = 'All Packets';
+$description = 'The index for all of the packets documented on BNETDocs';
 $this->opengraph->attach(new Pair('url', '/packet/index'));
-
 $order = $this->getContext()->order;
+$form_order_by = [
+  'created-datetime-asc' => 'Created Timestamp (Ascending)',
+  'created-datetime-desc' => 'Created Timestamp (Descending)',
+  'id-asc' => 'Database Id (Ascending)',
+  'id-desc' => 'Database Id (Descending)',
+  'packet-id-asc' => 'Packet Id (Ascending)',
+  'packet-id-desc' => 'Packet Id (Descending)',
+  'user-id-asc' => 'User Id (Ascending)',
+  'user-id-desc' => 'User Id (Descending)',
+];
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <h2><?=$title?></h2>
+  <p><?=$description?></p>
+  <form method="GET" class="m-2" id="filter_form">
+    <div class="form-group" id="order_by_form">
+      <label for="order" class="font-weight-bold m-1">Order by:</label>
+      <select class="form-control form-control-sm m-1" name="order" id="order" onchange="form.submit();" style="display:inline-block;width:200px;">
+<?    foreach ($form_order_by as $item_value => $item_label) {
+        $item_selected = ($order === $item_value ? ' selected="selected"' : '');
+        echo sprintf('<option value="%s"%s>%s</option>' . PHP_EOL, $item_value, $item_selected, $item_label);
+      } ?>
+      </select>
+    </div>
+    <div class="form-group">
+      <table class="table d-inline-block"><thead><tr><th colspan="3" class="text-center">Packet Types</th></tr></thead><tbody>
+<?    $x = 0;
+      foreach ($this->getContext()->application_layers as $layer)
+      {
+        $id = 'pktapplayer-' . $layer->getId();
+        $chk = in_array($layer->getId(), $this->getContext()->pktapplayer);
+        if ( $x % 3 == 0 ) { echo '<tr>'; }
+        echo sprintf(
+          '<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" name="pktapplayer[]" id="%s" value="%s"%s><label class="custom-control-label" for="%s">%s</label></div></td>',
+          $id, $layer->getId(), ($chk ? ' checked="checked"' : ''), $id, $layer->getTag()
+        );
+        if ( $x % 3 == 2 ) { echo '</tr>'; }
+        $x++;
+      }
+      if ( $x % 3 > 0 ) { echo '</tr>'; } ?>
+        <tr><td colspan="3" class="text-center"><input class="btn btn-sm btn-secondary" type="submit" value="Set Filter"/></td></tr>
+      </tbody></table>
+    </div>
+  </form>
+  <table class="table table-hover table-striped" id="packets_tbl">
+    <thead><tr><th>Packet</th><th>Author</th></tr></thead><tbody>
+<?  foreach ($this->getContext()->packets as $packet)
+    {
+      $user = $packet->getUser();
+      if ($user)
+      {
+        $avatar_url = $user->getAvatarURI(22);
+        $user_url = $user->getURI();
+      }
+      $deprecated = $packet->isDeprecated();
+      $packet_id = $packet->getPacketId(true);
+      $published = $packet->isPublished();
+      $research = $packet->isInResearch();
 
-$this->additional_css[] = '/a/forms.css';
-require('./header.inc.phtml');
-?>
-      <article>
-        <header>Packet Index</header>
-        <section>
-          <form method="GET">
-            <div style="text-align:center;">
-              <label for="order">Order by:</label>
-              <select name="order" id="order" onchange="form.submit();"
-                style="display:inline-block;width:200px;">
-                <option value="created-datetime-asc"<?php
-                  if ($order === 'created-datetime-asc') { echo ' selected="selected"';
-                  } ?>>Created Timestamp (Ascending)</option>
-                <option value="created-datetime-desc"<?php
-                  if ($order === 'created-datetime-desc') { echo ' selected="selected"';
-                  } ?>>Created Timestamp (Descending)</option>
-                <option value="id-asc"<?php
-                  if ($order === 'id-asc') { echo ' selected="selected"';
-                  } ?>>Database Id (Ascending)</option>
-                <option value="id-desc"<?php
-                  if ($order === 'id-desc') { echo ' selected="selected"';
-                  } ?>>Database Id (Descending)</option>
-                <option value="packet-id-asc"<?php
-                  if ($order === 'packet-id-asc') { echo ' selected="selected"';
-                  } ?>>Packet Id (Ascending)</option>
-                <option value="packet-id-desc"<?php
-                  if ($order === 'packet-id-desc') { echo ' selected="selected"';
-                  } ?>>Packet Id (Descending)</option>
-                <option value="user-id-asc"<?php
-                  if ($order === 'user-id-asc') { echo ' selected="selected"';
-                  } ?>>User Id (Ascending)</option>
-                <option value="user-id-desc"<?php
-                  if ($order === 'user-id-desc') { echo ' selected="selected"';
-                  } ?>>User Id (Descending)</option>
-              </select>
-            </div>
-            <table><thead><tr><th colspan="6">Packet Types</th></tr></thead><tbody>
-<?php $x = 0; foreach ($this->getContext()->application_layers as $layer) {
-  $id = 'pktapplayer-' . $layer->getId();
-  $chk = in_array( $layer->getId(), $this->getContext()->pktapplayer );
-  if ( $x % 3 == 0 ) { ?>
-              <tr>
-<?php } ?>
-                <td style="width:20px;"><input type="checkbox" name="pktapplayer[]" id="<?php echo $id; ?>" value="<?php echo $layer->getId(); ?>"<?php if ($chk) { ?> checked="checked"<?php } ?>></td><td><label style="display:inline-block;" for="<?php echo $id; ?>"><?php echo $layer->getTag(); ?></label></td>
-<?php if ( $x % 3 == 2 ) { ?>
-              </tr>
-<?php } ?>
-<?php $x++; } ?>
-<?php if ( $x % 3 > 0 ) { ?>
-              </tr>
-<?php } ?>
-            </tbody></table>
-            <div style="text-align:center;"><input type="submit" value="Submit"/></div>
-          </form>
-          <hr/>
-          <table>
-            <thead>
-              <tr>
-                <th class="left">Packet</th>
-                <th class="left">Author</th>
-              </tr>
-            </thead><tbody>
-<?php foreach ($this->getContext()->packets as $packet) {
-        $user         = $packet->getUser();
-        if ($user) {
-          $user_url   = $user->getURI();
-          $avatar_url = $user->getAvatarURI(22);
-        }
-        $packet_id  = $packet->getPacketId(true);
-        $deprecated = $packet->isDeprecated();
-        $research   = $packet->isInResearch();
-        $published  = $packet->isPublished();
-
-        ob_start();
-        if ($deprecated) require('./Deprecated.inc.phtml');
-        if ($research) require('./InResearch.inc.phtml');
-        if (!$published) require('./Draft.inc.phtml');
-        $tpl_packet_flags = ob_get_clean();
-        if (!empty($tpl_packet_flags)) $tpl_packet_flags = ' ' . $tpl_packet_flags;
-?>
-              <tr>
-                <td><strong><a href="<?php echo $packet->getURI(); ?>"><?php echo filter_var($packet->getPacketDirectionTag() . " " . $packet_id . " " . $packet->getPacketName(), FILTER_SANITIZE_STRING); ?></a></strong><?=$tpl_packet_flags?><br/><span style="color:#aaa;"><?php echo rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($packet->getPacketRemarks(true), FILTER_SANITIZE_STRING)), "\n", 90), ". ", 90), "."); ?></span></td>
-                <td><?php if ($user) { ?><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/>&nbsp;<?php echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><?php } else { ?>Anonymous<?php } ?></td>
-              </tr>
-<?php } ?>
-          </tbody></table>
+      ob_start();
+      if ($deprecated) require('./Deprecated.inc.phtml');
+      if ($research) require('./InResearch.inc.phtml');
+      if (!$published) require('./Draft.inc.phtml');
+      $tpl_packet_flags = ob_get_clean();
+      if (!empty($tpl_packet_flags)) $tpl_packet_flags = ' ' . $tpl_packet_flags; ?>
+      <tr>
+        <td><strong><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></strong><?=$tpl_packet_flags?><br/><span class="text-muted"><?=rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($packet->getPacketRemarks(true), FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.')?></span></td>
+        <td><? if ($user) { ?><a href="<? echo $user_url; ?>"><img class="avatar" src="<? echo $avatar_url; ?>"/>&nbsp;<? echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><? } else { ?>Anonymous<? } ?></td>
+      </tr>
+<?  } ?>
+  </tbody></table>
         </section>
         <section>
           <p>These packets are also available as constants in
-<?php $q = getenv('QUERY_STRING'); if (!empty($q)) { $q = '?' . $q; } ?>
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.cpp' . $q); ?>">C++</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.java' . $q); ?>">Java</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.json' . $q); ?>">JSON</a>,
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.php' . $q); ?>">PHP</a>, and
-            <a href="<?php echo Common::relativeUrlToAbsolute('/packet/index.vb' . $q); ?>">VB6</a>.
+<? $q = getenv('QUERY_STRING'); if (!empty($q)) { $q = '?' . $q; } ?>
+            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.cpp' . $q); ?>">C++</a>,
+            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.java' . $q); ?>">Java</a>,
+            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.json' . $q); ?>">JSON</a>,
+            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.php' . $q); ?>">PHP</a>, and
+            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.vb' . $q); ?>">VB6</a>.
           </p>
         </section>
       </article>
-<?php require("./footer.inc.phtml"); ?>
+<? ob_start(); ?>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('#packets_tbl').DataTable({
+        'aaSorting': [],
+        'language': {'zeroRecords': 'No matching packets found'},
+        'responsive': false,
+      });
+    });
+  </script>
+<? $_footer_script = ob_get_clean(); require('./footer.inc.phtml'); ?>

@@ -1,93 +1,67 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
-
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = 'User Index';
-$description = 'The index for users on BNETDocs';
+$title = 'All Users';
+$description = 'All users currently registered on BNETDocs';
 $this->opengraph->attach(new Pair('url', '/user/index'));
-
 $page = $this->getContext()->page;
 $pages = $this->getContext()->pages;
 $limit = $this->getContext()->limit;
 $order = $this->getContext()->order;
-
 $no_prev = ($page <= 1);
 $no_next = ($page >= $pages);
-
-$this->additional_css[] = '/a/forms.css';
-require('./header.inc.phtml');
-?>
-      <article>
-        <header>User Index</header>
-        <section>
-          <form method="GET">
-            <input type="hidden" name="page" value="<?php echo $page; ?>"/>
-            <input type="hidden" name="limit" value="<?php echo $limit; ?>"/>
-            <label for="order">Order by:</label>
-            <select name="order" id="order" onchange="form.submit();"
-              style="display:inline-block;width:200px;">
-              <option value="id-asc"<?php
-                if ($order === 'id-asc') { echo ' selected="selected"';
-                } ?>>User Id (Ascending)</option>
-              <option value="id-desc"<?php
-                if ($order === 'id-desc') { echo ' selected="selected"';
-                } ?>>User Id (Descending)</option>
-              <option value="username-asc"<?php
-                if ($order === 'username-asc') { echo ' selected="selected"';
-                } ?>>Username (Ascending)</option>
-              <option value="username-desc"<?php
-                if ($order === 'username-desc') { echo ' selected="selected"';
-                } ?>>Username (Descending)</option>
-              <option value="registered-asc"<?php
-                if ($order === 'registered-asc') { echo ' selected="selected"';
-                } ?>>Registered (Ascending)</option>
-              <option value="registered-desc"<?php
-                if ($order === 'registered-desc') { echo ' selected="selected"';
-                } ?>>Registered (Descending)</option>
-            </select>
-            <input type="submit" value="Reorder"/>
-          </form>
-          <table>
-            <thead>
-              <tr>
-                <th class="left">Account</th>
-                <th class="left">Registered</th>
-              </tr>
-            </thead><tbody>
-<?php foreach ($this->getContext()->users as $user) {
-        $user_url   = $user->getURI();
-        $avatar_url = $user->getAvatarURI(22);
-?>
-              <tr>
-                <td><a href="<?php echo $user_url; ?>"><img class="avatar" src="<?php echo $avatar_url; ?>"/>&nbsp;<?php echo filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?></a></td>
-                <td><time datetime="<?php echo $user->getCreatedDateTime()->format('c'); ?>"><?php echo $user->getCreatedDateTime()->format('l, F j, Y'); ?></time></td>
-              </tr>
-<?php } ?>
-          </tbody></table>
-        </section>
-        <section>
-          <hr/>
-          <span class="float-left">
-<?php if (!$no_prev) { ?>
-            <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/user/index?page=' . ($page - 1) . '&limit=' . $limit . '&order=' . $order); ?>">Prev</a>
-<?php } else { ?>
-            <button class="button button-disabled" disabled="disabled">Prev</button>
-<?php } ?>
-          </span>
-          <span class="float-right">
-<?php if (!$no_next) { ?>
-              <a class="button" href="<?php echo Common::relativeUrlToAbsolute('/user/index?page=' . ($page + 1) . '&limit=' . $limit . '&order=' . $order); ?>">Next</a>
-  <?php } else { ?>
-            <button class="button button-disabled" disabled="disabled">Next</button>
-<?php } ?>
-          </span>
-          <p class="center" style="line-height:24px;">
-            <strong><?php echo number_format($page); ?></strong> of <?php echo number_format($pages); ?>
-          </p>
-        </section>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+$form_order_by = [
+  'id-asc' => 'User Id (Ascending)',
+  'id-desc' => 'User Id (Descending)',
+  'username-asc' => 'Username (Ascending)',
+  'username-desc' => 'Username (Descending)',
+  'registered-asc' => 'Registered (Ascending)',
+  'registered-desc' => 'Registered (Descending)',
+];
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <h1><?=$title?></h1>
+  <p><?=$description?></p>
+  <form method="GET" id="order_by_form">
+    <input type="hidden" name="page" value="<?=$page?>"/>
+    <input type="hidden" name="limit" value="<?=$limit?>"/>
+    <label for="order" class="font-weight-bold m-1">Order by:</label>
+    <select class="form-control form-control-sm" name="order" id="order" onchange="form.submit();" style="display:inline-block;width:200px;">
+<?  foreach ($form_order_by as $item_value => $item_label) {
+      $item_selected = ($order === $item_value ? ' selected="selected"' : '');
+      echo sprintf('<option value="%s"%s>%s</option>' . PHP_EOL, $item_value, $item_selected, $item_label);
+    } ?>
+    </select>
+    <input class="btn btn-sm btn-secondary" type="submit" value="Reorder"/>
+  </form>
+  <table class="table table-hover table-sm table-striped" id="users_tbl">
+    <thead><tr><th>Account</th><th>Registered</th></tr></thead><tbody>
+<?  foreach ($this->getContext()->users as $user)
+    {
+      $user_url = $user->getURI();
+      $avatar_url = $user->getAvatarURI(22); ?>
+      <tr>
+        <td><a href="<?=$user_url?>"><img class="mr-2" src="<?=$avatar_url?>"/><?=filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></td>
+        <td><time datetime="<?=$user->getCreatedDateTime()->format('c')?>"><?=$user->getCreatedDateTime()->format('l, F j, Y')?></time></td>
+      </tr>
+<?  } ?>
+  </tbody></table>
+  <nav aria-label="User list navigation" class="d-flex justify-content-center">
+    <ul class="pagination">
+  <?  if (!$no_prev) { ?>
+      <li class="page-item"><a class="page-link" href="<?=Common::relativeUrlToAbsolute('/user/index?page=' . ($page - 1) . '&limit=' . $limit . '&order=' . $order)?>">Previous</a></li>
+  <?  } else { ?>
+      <li class="page-item disabled"><span class="page-link">Previous</span></li>
+  <?  } ?>
+      <li class="page-item disabled"><span class="page-link"><?=number_format($page)?> of <?=number_format($pages)?></span></li>
+  <?  if (!$no_next) { ?>
+      <li class="page-item"><a class="page-link" href="<?=Common::relativeUrlToAbsolute('/user/index?page=' . ($page + 1) . '&limit=' . $limit . '&order=' . $order)?>">Next</a></li>
+  <?  } else { ?>
+      <li class="page-item disabled"><span class="page-link">Next</span></li>
+  <?  } ?>
+    </ul>
+  </nav>
+</div>
+<? require("./footer.inc.phtml"); ?>

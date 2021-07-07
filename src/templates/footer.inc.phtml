@@ -1,16 +1,14 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Common;
-
 ?>
-    </main>
-    <footer class="main-page<?php if (isset($slim_ui) && $slim_ui) { ?> slim<?php } ?>">
-      <p><?php if ( VersionInfo::$version->bnetdocs ) { ?><a href="https://github.com/BNETDocs/bnetdocs-web/tree/<?php echo VersionInfo::$version->bnetdocs[1]; ?>" rel="external" title="Contribute to the BNETDocs source code!">BNETDocs <?php echo VersionInfo::$version->bnetdocs[0]; ?></a><?php } else { ?>(Development)<?php } ?> &copy; 2003-2021 BNETDocs | <a href="<?php echo Common::relativeUrlToAbsolute("/legal"); ?>" rel="external" title="BNETDocs Legal Policies">Legal page</a></p>
-      <p style="font-size:smaller;">
+</main>
+<footer class="footer mt-auto py-3">
+  <div class="container mt-3 text-center">
+    <p class="small text-muted"><?php if ( VersionInfo::$version->bnetdocs ) { ?><a href="https://github.com/BNETDocs/bnetdocs-web/tree/<?=VersionInfo::$version->bnetdocs[1]?>" rel="external" title="Contribute to the BNETDocs source code!">BNETDocs <?=VersionInfo::$version->bnetdocs[0]?></a><?php } else { ?>(Development)<?php } ?> &copy; 2003-2021 BNETDocs | <a href="<?=Common::relativeUrlToAbsolute('/legal')?>" title="BNETDocs Legal Page">Legal page</a> | <a href="<?=Common::relativeUrlToAbsolute('/privacy')?>" title="BNETDocs Privacy Notice">Privacy Notice</a></p>
+    <p class="small text-muted">
 BNETDocs is a documentation and discussion website for Blizzard Entertainment's
 Battle.net&trade; and in-game protocols. You hereby acknowledge that BNETDocs
 content is offered as is and without warranty. BNETDocs content may be
@@ -19,11 +17,21 @@ affiliated or partnered with Blizzard Entertainment in absolutely any way.
 Battle.net&trade;, Starcraft&trade;, Warcraft&trade;, and Diablo&trade; are
 trademarks or registered trademarks of Blizzard Entertainment, Inc., in the U.S.
 and/or other countries.
-      </p>
-    </footer>
-<?php echo Logger::getTimingFooter(); ?>
+    </p>
+  </div>
+</footer>
+<script type="text/javascript" src="<?=Common::relativeUrlToAbsolute('/a/datatables.min.js' . ($_unique_asset ?? ''))?>" async><![CDATA[]]></script>
+<?=Logger::getTimingFooter()?>
 <?php if (Common::$config->analytics->cloudflare) { ?>
 <!-- Cloudflare Web Analytics --><script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":<?=json_encode(Common::$config->analytics->cloudflare)?>}'></script><!-- End Cloudflare Web Analytics -->
 <?php } ?>
-  </body>
-</html>
+
+<script src="<?=Common::relativeUrlToAbsolute('/a/jquery-3.4.1.slim.min.js' . ($_unique_asset ?? ''))?>" type="text/javascript" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"><![CDATA[]]></script>
+<script src="<?=Common::relativeUrlToAbsolute('/a/popper-1.16.0.min.js' . ($_unique_asset ?? ''))?>" type="text/javascript" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"><![CDATA[]]></script>
+<script src="<?=Common::relativeUrlToAbsolute('/a/bootstrap-4.4.1.min.js' . ($_unique_asset ?? ''))?>" type="text/javascript" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"><![CDATA[]]></script>
+<script src="<?=Common::relativeUrlToAbsolute('/a/datatables.min.js' . ($_unique_asset ?? ''))?>" type="text/javascript" crossorigin="anonymous" charset="utf8"><![CDATA[]]></script>
+<script src="<?=Common::relativeUrlToAbsolute('/a/highlight/highlight.min.js' . ($_unique_asset ?? ''))?>" type="text/javascript" crossorigin="anonymous" charset="utf8"><![CDATA[]]></script>
+<script type="text/javascript">$(document).ready(function(){hljs.highlightAll()});</script>
+<script src="<?=Common::relativeUrlToAbsolute('/a/moment-2.24.0.min.js' . ($_unique_asset ?? ''))?>" type="text/javascript" crossorigin="anonymous" charset="utf8"><![CDATA[]]></script>
+<?=(isset($_footer_script) && !empty($_footer_script) ? $_footer_script : '')?>
+</body></html>

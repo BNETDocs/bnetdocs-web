@@ -7,21 +7,21 @@ use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
 use \BNETDocs\Libraries\Packet\Transport as TransportLayer;
 use \BNETDocs\Libraries\User;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Markdown;
-
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \JsonSerializable;
 use \PDO;
 use \PDOException;
+use \Parsedown;
 use \StdClass;
 use \UnexpectedValueException;
 
 class Packet implements JsonSerializable {
+
+  const DATE_SQL = 'Y-m-d H:i:s';
 
   const DIRECTION_CLIENT_SERVER = 1;
   const DIRECTION_SERVER_CLIENT = 2;
@@ -174,6 +174,49 @@ class Packet implements JsonSerializable {
     return null;
   }
 
+  public static function getPacketsByLastEdited(int $count)
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $stmt = Common::$database->prepare('
+      SELECT `created_datetime`,
+             `edited_count`,
+             `edited_datetime`,
+             `id`,
+             `options_bitmask`,
+             `packet_application_layer_id`,
+             `packet_direction_id`,
+             `packet_format`,
+             `packet_id`,
+             `packet_name`,
+             `packet_remarks`,
+             `packet_transport_layer_id`,
+             `user_id`
+      FROM `packets`
+      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC
+      LIMIT ' . $count . '
+    ');
+
+    $r = $stmt->execute();
+    if (!$r)
+    {
+      throw new QueryException('Cannot get packets by date');
+      return $r;
+    }
+
+    $r = [];
+    while ($row = $stmt->fetch(PDO::FETCH_OBJ))
+    {
+      $r[] = new self($row);
+    }
+
+    $stmt->closeCursor();
+    return $r;
+  }
+
   public static function getAllPacketsBySearch($query) {
 
     if ( !isset( Common::$database )) {
@@ -259,6 +302,14 @@ class Packet implements JsonSerializable {
     return $this->id;
   }
 
+  public function getName() {
+    return sprintf('%s %s %s',
+      $this->getPacketDirectionTag(),
+      $this->getPacketId(true),
+      $this->getPacketName()
+    );
+  }
+
   public function getOptionsBitmask() {
     return $this->options_bitmask;
   }
@@ -321,7 +372,7 @@ class Packet implements JsonSerializable {
     }
 
     if ( $this->options_bitmask & self::OPTION_MARKDOWN ) {
-      $md = new Markdown();
+      $md = new Parsedown();
       return $md->text($this->packet_remarks);
     }
 
@@ -616,8 +667,9 @@ class Packet implements JsonSerializable {
     $this->edited_count = $value;
   }
 
-  public function setEditedDateTime( DateTime $value ) {
-    $this->edited_datetime = $value->format( 'Y-m-d H:i:s' );
+  public function setEditedDateTime(DateTime $value)
+  {
+    $this->edited_datetime = $value->format(self::DATE_SQL);
   }
 
   public function setInResearch( $value ) {

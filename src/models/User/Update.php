@@ -1,11 +1,6 @@
-<?php
-
-namespace BNETDocs\Models\User;
-
-use \CarlBennett\MVC\Libraries\Model;
-
-class Update extends Model {
-
+<?php namespace BNETDocs\Models\User;
+class Update extends \BNETDocs\Models\ActiveUser
+{
   const MAX_LEN = 255; // table design: varchar(255)
 
   public $display_name_1;
@@ -65,5 +60,4 @@ class Update extends Model {
   public $website;
   public $website_error;
   public $website_max_len = self::MAX_LEN;
-
 }

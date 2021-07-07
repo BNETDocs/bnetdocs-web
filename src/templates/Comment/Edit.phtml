@@ -1,75 +1,68 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Comment;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-
-$title       = "Edit Comment";
-$description = "This form allows an individual to edit a comment.";
-
-$this->opengraph->attach(new Pair("url", "/comment/edit"));
-$this->opengraph->attach(new Pair("type", "article"));
-
-switch ($this->getContext()->error) {
-  case "ACL_NOT_SET":
-    $message = "You do not have the privilege to edit this comment.";
-    break;
-  case "NOT_FOUND":
-    $message = "Cannot find comment by that id.";
-    break;
-  case "NOT_LOGGED_IN":
-    $message = "You must be logged in to edit comments.";
-    break;
-  case "INTERNAL_ERROR":
-    $message = "An internal error occurred while processing your request. "
-      . "Our staff have been notified of the issue. Try again later.";
-    break;
-  default:
-    $message = $this->getContext()->error;
+$title = 'Edit Comment';
+$description = 'This page enables a user to alter a comment.';
+$this->opengraph->attach(new Pair('url', '/comment/edit'));
+$this->opengraph->attach(new Pair('type', 'article'));
+switch ($this->getContext()->error)
+{
+  case 'ACL_NOT_SET': $message = 'You do not have the privilege to edit this comment.'; break;
+  case 'NOT_FOUND': $message = 'Cannot find comment by that id.'; break;
+  case 'NOT_LOGGED_IN': $message = 'You must be logged in to edit comments.'; break;
+  case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  default: $message = $this->getContext()->error;
 }
-
 $c = $this->getContext()->comment;
-if ($c) {
+if ($c)
+{
+  $c_content     = filter_var($c->getContent(false), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $c_created_dt  = $c->getCreatedDateTime();
   $c_id          = $c->getId();
+  $c_parent_url  = $c->getParentUrl();
   $c_user        = $c->getUser();
   $c_user_id     = $c->getUserId();
-  $c_user_name   = $c_user->getName();
+  $c_user_name   = filter_var($c_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   $c_user_url    = $c_user->getURI();
   $c_user_avatar = $c_user->getAvatarURI(22);
 }
+require('./header.inc.phtml'); ?>
+<div class="container">
+<? if (is_null($this->getContext()->error) && !is_null($c)) { ?>
 
-$this->additional_css[] = "/a/comments.css";
-$this->additional_css[] = "/a/forms.css";
-require("./header.inc.phtml");
-?>
-      <article>
-<?php if (is_null($this->getContext()->error) && !is_null($c)) { ?>
-        <header>Edit Comment</header>
-        <form method="POST" action="<?php echo Common::relativeUrlToAbsolute( '/comment/edit?id=' . $c_id ); ?>">
-          <section>
-            <table class="comments"><tbody>
-              <tr><td><a href="<?php echo $c_user_url; ?>"><img class="avatar" src="<?php echo $c_user_avatar; ?>"/> <?php echo filter_var($c_user_name, FILTER_SANITIZE_STRING); ?></a><br/><time class="comment_timestamp" datetime="<?php echo $c->getCreatedDateTime()->format("c"); ?>"><?php echo $c->getCreatedDateTime()->format("D M j, Y g:ia T"); ?></time></td><td><textarea id="comment-content" name="content" cols="80" rows="5" tabindex="1" autofocus="autofocus"><?php echo filter_var( $c->getContent( false ), FILTER_SANITIZE_FULL_SPECIAL_CHARS ); ?></textarea></td></tr>
-            </tbody></table><hr/>
-            <p>
-              <input class="float-right bg-green" type="submit" value="Edit Comment" tabindex="2"/>
-              <a class="button button-bg-red" href="<?php echo $this->getContext()->return_url; ?>" id="cancel-btn">Cancel</a>
-            </p>
-          </section>
-        </form>
-<?php } else if ($this->getContext()->error === false) { ?>
-        <header class="green">Comment Edited</header>
-        <section class="green">
-          <p>You have successfully edited the comment!</p>
-          <p><a href="<?php echo $this->getContext()->return_url; ?>#comments">Return to previous page</a></p>
-        </section>
-<?php } else { ?>
-        <header class="red">Edit Comment</header>
-        <section class="red">
-          <p>An error occurred while attempting to delete the comment.</p>
-          <p><?php echo $message; ?></p>
-          <p>Use the navigation to the left to move to another page.</p>
-        </section>
-<?php } ?>
-      </article>
-<?php require("./footer.inc.phtml"); ?>
+  <h2>Edit Comment</h2>
+  <p>Use the form below to edit the comment, when you are finished you must save.</p>
+  <form method="POST" action="<?=Common::relativeUrlToAbsolute('/comment/edit?id=' . $c_id)?>">
+    <table class="table table-striped"><tbody>
+      <tr><td>
+        <a href="<?=$c_user_url?>"><img class="avatar" src="<?=$c_user_avatar?>"/> <?=$c_user_name?></a><br/>
+        <time datetime="<?=$c_created_dt->format('c')?>"><?=$c_created_dt->format('D M j, Y g:ia T')?></time>
+      </td><td>
+        <textarea class="form-control bg-dark text-light" name="content" cols="80" rows="5" tabindex="1" autofocus="autofocus"><?=$c_content?></textarea>
+      </td></tr>
+    </tbody></table>
+    <a class="btn btn-primary" href="javascript:history.go(-1);">Back</a>
+    <input class="btn btn-success" type="submit" value="Save" tabindex="2"/>
+  </form>
+
+<? } else if ($this->getContext()->error === false) { ?>
+
+  <h2 class="text-success">Edit Comment</h2>
+  <div class="alert alert-success">
+    <p class="mb-0"><strong>The comment was successfully edited!</strong></p>
+  </div>
+  <a class="btn btn-primary" href="<?=$c_parent_url?>">Back</a>
+
+<? } else { ?>
+
+  <h2 class="text-danger">Edit Comment</h2>
+  <div class="alert alert-danger">
+    <p class="mb-0"><strong>An error occurred while attempting to edit the comment:</strong></p>
+    <p class="mb-0"><?=$message?></p>
+  </div>
+  <a class="btn btn-primary" href="<?=$c_parent_url?>">Back</a>
+
+<? } ?>
+</div>
+<? require('./footer.inc.phtml'); ?>

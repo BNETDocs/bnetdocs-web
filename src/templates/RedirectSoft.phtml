@@ -1,11 +1,12 @@
-<?php namespace BNETDocs\Templates; $title = "Soft Redirect"; ?>
-<?php require("./header.inc.phtml"); ?>
-<article>
-  <header><?=$title?></header>
-  <section>
-    Location has moved, please follow this link:<br/>
-    <br/>
-    <a href="<?=$this->getContext()->location?>"><?=$this->getContext()->location?></a><br/>
-  </section>
-</article>
-<?php require("./footer.inc.phtml"); ?>
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates;
+$title = 'Soft Redirect';
+require('./header.inc.phtml'); ?>
+<div class="container">
+  <h1><?=$title?></h1>
+  <div class="alert alert-warning">
+    <p>Location has moved, please follow this link:</p>
+    <p><a href="<?=$this->getContext()->location?>"><?=$this->getContext()->location?></a></p>
+  </div>
+</div>
+<? require('./footer.inc.phtml'); ?>
