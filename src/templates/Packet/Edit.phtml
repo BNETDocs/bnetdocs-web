@@ -1,11 +1,13 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Packet;
+use \BNETDocs\Libraries\Comment;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Edit Packet';
 $description = 'This form allows an individual to edit a packet.';
 $this->opengraph->attach(new Pair('url', '/packet/edit'));
 $this->opengraph->attach(new Pair('type', 'article'));
+$comments = $this->getContext()->comments;
 $error = $this->getContext()->error;
 switch ($error)
 {
@@ -90,7 +92,7 @@ require('./header.inc.phtml'); ?>
       <input class="btn btn-success" type="submit" value="Save" tabindex="9"/>
     </div>
   </form>
-<? } ?>
+<? $comment_parent_type = Comment::PARENT_TYPE_PACKET; $comment_parent_id = $packet_id; require('./Comment/Section.inc.phtml'); } ?>
 <? } else { ?>
   <h1 class="text-success">Edit Packet</h1>
   <div class="alert alert-success"><p class="mb-0">Your packet has been edited.</p></div>

@@ -3,6 +3,7 @@ class Edit extends \BNETDocs\Models\ActiveUser
 {
   public $acl_allowed;
   public $category;
+  public $comments;
   public $content;
   public $error;
   public $markdown;

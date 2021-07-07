@@ -1,12 +1,10 @@
 <?php
-
 namespace BNETDocs\Models\Packet;
-
 use \CarlBennett\MVC\Libraries\Model;
-
-class Edit extends Model {
-
+class Edit extends Model
+{
   public $acl_allowed;
+  public $comments;
   public $error;
   public $format;
   public $id;
@@ -19,5 +17,4 @@ class Edit extends Model {
   public $remarks;
   public $used_by;
   public $user;
-
 }
