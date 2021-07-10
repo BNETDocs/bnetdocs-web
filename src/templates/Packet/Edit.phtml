@@ -35,19 +35,25 @@ require('./header.inc.phtml'); ?>
 <? } ?>
 <? if ($error != 'NOT_FOUND') { ?>
   <form method="POST" action="?id=<?=$packet_id?>">
-    <div class="form-group">
-      <label class="font-weight-bold">Flags:</label>
-      <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($this->getContext()->deprecated?' checked="checked"':'')?> tabindex="6"/><label class="custom-control-label" for="deprecated">Deprecated</label></div>
-      <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="research" name="research" value="1"<?=($this->getContext()->research?' checked="checked"':'')?> tabindex="7"/> <label class="custom-control-label" for="research">In Research</label></div>
-      <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="published" name="published" value="1"<?=($this->getContext()->published?' checked="checked"':'')?> tabindex="8"/> <label class="custom-control-label" for="published">Published</label></div>
-    </div>
-    <div class="form-group">
-      <label class="font-weight-bold" for="id">Id:</label>
-      <input class="bg-dark border border-primary form-control text-light" type="text" name="id" id="id" placeholder="Enter the decimal (base-10) formatted id here" tabindex="1" required  autofocus="autofocus" value="<?=$id?>"/>
-    </div>
-    <div class="form-group">
-      <label class="font-weight-bold" for="name">Name:</label>
-      <input class="bg-dark border border-primary form-control text-light" type="text" name="name" id="name" tabindex="2" required value="<?=$packet_name?>"/>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label class="font-weight-bold" for="id">Id:</label>
+          <input class="bg-dark border border-primary form-control text-light" type="text" name="id" id="id" placeholder="Enter the message id here" tabindex="1" required  autofocus="autofocus" value="<?=$id?>"/>
+        </div>
+      </div><div class="col-md-6">
+        <div class="form-group">
+          <label class="font-weight-bold" for="name">Name:</label>
+          <input class="bg-dark border border-primary form-control text-light" type="text" name="name" id="name" placeholder="Enter the message name here" tabindex="2" required value="<?=$packet_name?>"/>
+        </div>
+      </div><div class="col-md-3">
+        <div class="form-group">
+          <label class="font-weight-bold">Options:</label>
+          <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($this->getContext()->deprecated?' checked="checked"':'')?> tabindex="6"/><label class="custom-control-label text-danger" for="deprecated">Deprecated</label></div>
+          <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="research" name="research" value="1"<?=($this->getContext()->research?' checked="checked"':'')?> tabindex="7"/> <label class="custom-control-label text-warning" for="research">In Research</label></div>
+          <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="published" name="published" value="1"<?=($this->getContext()->published?' checked="checked"':'')?> tabindex="8"/> <label class="custom-control-label text-success" for="published">Published</label></div>
+        </div>
+      </div>
     </div>
     <div class="form-group">
       <label class="font-weight-bold" for="format">Format:</label>
@@ -59,20 +65,17 @@ require('./header.inc.phtml'); ?>
         <thead></thead><tbody>
 <?      function add_product_checkbox($id, $name, $checked)
         {
-          printf('<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="used_by_%s" name="used_by[]" value="%s"%s/><label class="custom-control-label" for="used_by_%s">%s</label></td>', $id, $id, ($checked ? ' checked="checked"' : ''), $id, $name);
+          ;
         }
         $product_ubound = count($products);
         for ($product_i = 0; $product_i < $product_ubound; ++$product_i)
         {
-          echo '<tr>';
+          if ($product_i % 2 === 0) echo '<tr>';
           $p = $products[$product_i];
-          add_product_checkbox($p->getBnetProductId(), $p->getLabel(), in_array($p, $packet_used_by));
-          if ($product_i + 1 < $product_ubound)
-          {
-            $p = $products[++$product_i];
-            add_product_checkbox($p->getBnetProductId(), $p->getLabel(), in_array($p, $packet_used_by));
-          }
-          echo '</tr>';
+          $p_id = $p->getBnetProductId();
+          $p_label = $p->getLabel();
+          printf('<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="used_by_%s" name="used_by[]" value="%s"%s/><label class="custom-control-label" for="used_by_%s">%s</label></div></td>', $p_id, $p_id, (in_array($p, $packet_used_by) ? ' checked="checked"' : ''), $p_id, $p_label);
+          if ($product_i % 2 === 1) echo '</tr>';
         } ?>
         </tbody>
       </table>
