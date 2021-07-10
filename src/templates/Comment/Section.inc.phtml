@@ -9,7 +9,7 @@ $active_user_id = ($active_user ? $active_user->getId() : null);
 $c_edit_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
 $c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
 ?>
-<div class="row mt-3 justify-content-center">
+<div class="row my-3 justify-content-center">
   <div class="col-md-9">
     <h2><a href="#comments" name="comments">Comments</a></h2>
 <? if (!$comments) { ?>
@@ -42,7 +42,7 @@ $c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & 
   </div>
 </div>
 <? if ($active_user) { ?>
-<div class="row my-3 justify-content-center">
+<div class="row mb-3 justify-content-center">
   <div class="col-md-8">
     <form method="POST" action="<?=Common::relativeUrlToAbsolute('/comment/create')?>">
       <input type="hidden" name="parent_type" value="<?=$comment_parent_type?>"/>
