@@ -63,11 +63,7 @@ require('./header.inc.phtml'); ?>
       <label class="font-weight-bold">Used by:</label>
       <table class="table table-sm">
         <thead></thead><tbody>
-<?      function add_product_checkbox($id, $name, $checked)
-        {
-          ;
-        }
-        $product_ubound = count($products);
+<?      $product_ubound = count($products);
         for ($product_i = 0; $product_i < $product_ubound; ++$product_i)
         {
           if ($product_i % 2 === 0) echo '<tr>';
