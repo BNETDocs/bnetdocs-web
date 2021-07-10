@@ -154,7 +154,7 @@ class Comment implements JsonSerializable {
     }
     $md = new Parsedown();
     $md->setSafeMode(true); // unsafe user-input
-    return $md->text(filter_var($this->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+    return $md->text($this->content);
   }
 
   public function getCreatedDateTime() {
