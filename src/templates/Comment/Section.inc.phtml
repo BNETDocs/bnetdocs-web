@@ -28,8 +28,8 @@ $c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & 
         $c_user_string = ($c_user ? sprintf('<a href="%s"><img class="rounded" src="%s"/> %s</a>', $c_user_url, $c_user_avatar, $c_user_name) : $c_user_name);
         $c_time_string = sprintf('<time class="small text-muted" datetime="%s">%s</time>', $c_created_dt->format('c'), $c_created_dt->format('D M j, Y g:ia T'));
 
-        $c_edit_visible = ($c_user_id == $active_user_id || $c_edit_visible_admin);
-        $c_delete_visible = ($c_user_id == $active_user_id || $c_delete_visible_admin);
+        $c_edit_visible = ($c_user_id === $active_user_id || $c_edit_visible_admin);
+        $c_delete_visible = ($c_user_id === $active_user_id || $c_delete_visible_admin);
 
         $c_content = (
           ($c_delete_visible ? '<a class="btn btn-sm btn-danger float-right m-1" href="' . Common::relativeUrlToAbsolute('/comment/delete?id=' . $c_id) . '" title="Delete">❌</a>' : '') .
