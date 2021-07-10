@@ -1,0 +1,62 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates\Packet;
+use \BNETDocs\Libraries\Comment;
+use \CarlBennett\MVC\Libraries\Common; ?>
+<form method="POST" action="?id=<?=$packet_id?>">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="form-group">
+        <label class="font-weight-bold" for="id">Id:</label>
+        <input class="bg-dark border border-primary form-control text-light" type="text" name="id" id="id" placeholder="Enter the message id here" tabindex="1" required  autofocus="autofocus" value="<?=$id?>"/>
+      </div>
+    </div><div class="col-md-6">
+      <div class="form-group">
+        <label class="font-weight-bold" for="name">Name:</label>
+        <input class="bg-dark border border-primary form-control text-light" type="text" name="name" id="name" placeholder="Enter the message name here" tabindex="2" required value="<?=$packet_name?>"/>
+      </div>
+    </div><div class="col-md-3">
+      <div class="form-group">
+        <label class="font-weight-bold">Options:</label>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($this->getContext()->deprecated?' checked="checked"':'')?> tabindex="6"/><label class="custom-control-label text-danger" for="deprecated">Deprecated</label></div>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="research" name="research" value="1"<?=($this->getContext()->research?' checked="checked"':'')?> tabindex="7"/> <label class="custom-control-label text-warning" for="research">In Research</label></div>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="published" name="published" value="1"<?=($this->getContext()->published?' checked="checked"':'')?> tabindex="8"/> <label class="custom-control-label text-success" for="published">Published</label></div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="font-weight-bold" for="format">Format:</label>
+    <textarea class="bg-dark border border-primary form-control language-objectivec text-light text-monospace" style="height:120px;" name="format" id="format" placeholder="Enter the message format here" tabindex="3" required><?=$packet_format?></textarea>
+  </div>
+  <div class="form-group">
+    <label class="font-weight-bold">Used by:</label>
+    <table class="table table-borderless table-sm">
+      <thead></thead><tbody>
+<?      $product_ubound = count($products);
+      for ($product_i = 0; $product_i < $product_ubound; ++$product_i)
+      {
+        if ($product_i % 2 === 0) echo '<tr>';
+        $p = $products[$product_i];
+        $p_id = $p->getBnetProductId();
+        $p_label = $p->getLabel();
+        printf('<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="used_by_%s" name="used_by[]" value="%s"%s/><label class="custom-control-label" for="used_by_%s">%s</label></div></td>', $p_id, $p_id, (in_array($p, $packet_used_by) ? ' checked="checked"' : ''), $p_id, $p_label);
+        if ($product_i % 2 === 1) echo '</tr>';
+      } ?>
+      </tbody>
+    </table>
+  </div>
+  <div class="form-group">
+    <label class="font-weight-bold" for="remarks">Remarks:</label>
+    <span class="float-right">
+      <div class="custom-control custom-switch">
+        <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="5"
+        title="Use markdown or use raw HTML" value="1"<?=($this->getContext()->markdown?' checked="checked"':'')?>/>
+        <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown</label>
+      </div>
+    </span>
+    <textarea class="bg-dark border border-primary form-control text-light" style="height:200px;" name="remarks" id="remarks" placeholder="Enter the message remarks here" tabindex="4" required><?=$packet_remarks?></textarea>
+  </div>
+  <div class="form-group text-center">
+    <input class="btn btn-success" type="submit" value="Save" tabindex="9"/>
+  </div>
+</form>
+<? $comment_parent_type = Comment::PARENT_TYPE_PACKET; $comment_parent_id = $packet_id; require('./Comment/Section.inc.phtml'); ?>

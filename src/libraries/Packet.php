@@ -13,6 +13,7 @@ use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \JsonSerializable;
+use \OutOfBoundsException;
 use \PDO;
 use \PDOException;
 use \Parsedown;
@@ -26,6 +27,12 @@ class Packet implements JsonSerializable {
   const DIRECTION_CLIENT_SERVER = 1;
   const DIRECTION_SERVER_CLIENT = 2;
   const DIRECTION_PEER_TO_PEER  = 3;
+
+  const MAX_EDITED_COUNT = 0xFFFFFFFFFFFFFFFF;
+  const MAX_PACKET_FORMAT = 0xFFFF;
+  const MAX_PACKET_ID = 0xFF;
+  const MAX_PACKET_NAME = 191;
+  const MAX_PACKET_REMARKS = 0xFFFF;
 
   const OPTION_MARKDOWN   = 0x00000001;
   const OPTION_PUBLISHED  = 0x00000002;
@@ -663,7 +670,13 @@ class Packet implements JsonSerializable {
     }
   }
 
-  public function setEditedCount( $value ) {
+  public function setEditedCount(int $value)
+  {
+    if ($value < 0 || $value > self::MAX_EDITED_COUNT)
+    {
+      throw new OutOfBoundsException();
+    }
+
     $this->edited_count = $value;
   }
 
@@ -688,19 +701,65 @@ class Packet implements JsonSerializable {
     }
   }
 
-  public function setPacketFormat( $value ) {
+  public function setPacketFormat(string $value)
+  {
+    if (strlen($value) > self::MAX_PACKET_FORMAT)
+    {
+      throw new OutOfBoundsException();
+    }
+
     $this->packet_format = $value;
   }
 
-  public function setPacketId( $value ) {
-    $this->packet_id = $value;
+  /**
+   * Sets the packet/message id
+   *
+   * @param mixed $value The packet id. Supports hexadecimal and octal input.
+   */
+  public function setPacketId($value)
+  {
+    if (is_string($value) && strlen($value) >= 2
+      && substr($value, 0, 2) == '0x')
+    {
+      $this->packet_id = hexdec(substr($value, 2));
+    }
+    else if (is_string($value) && strlen($value) >= 1
+      && substr($value, 0, 1) == '0')
+    {
+      $this->packet_id = octdec(substr($value, 1));
+    }
+    else if (is_numeric($value))
+    {
+      $this->packet_id = (int) $value;
+    }
+    else
+    {
+      throw new InvalidArgumentException();
+    }
+
+    if ($this->packet_id < 0 || $this->packet_id > self::MAX_PACKET_ID)
+    {
+      throw new OutOfBoundsException();
+    }
   }
 
-  public function setPacketName( $value ) {
+  public function setPacketName(string $value)
+  {
+    if (strlen($value) > self::MAX_PACKET_NAME)
+    {
+      throw new OutOfBoundsException();
+    }
+
     $this->packet_name = $value;
   }
 
-  public function setPacketRemarks( $value ) {
+  public function setPacketRemarks(string $value)
+  {
+    if (strlen($value) > self::MAX_PACKET_REMARKS)
+    {
+      throw new OutOfBoundsException();
+    }
+
     $this->packet_remarks = $value;
   }
 
@@ -768,6 +827,7 @@ class Packet implements JsonSerializable {
           `packet_application_layer_id` = :app_layer_id,
           `packet_direction_id` = :direction,
           `packet_format` = :format,
+          `packet_id` = :pid,
           `packet_name` = :name,
           `packet_remarks` = :remarks,
           `packet_transport_layer_id` = :transport_layer_id,
@@ -796,6 +856,7 @@ class Packet implements JsonSerializable {
       $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
       $stmt->bindParam( ':name', $this->packet_name, PDO::PARAM_STR );
       $stmt->bindParam( ':options', $this->options_bitmask, PDO::PARAM_INT );
+      $stmt->bindParam( ':pid', $this->packet_id, PDO::PARAM_INT );
       $stmt->bindParam( ':remarks', $this->packet_remarks, PDO::PARAM_STR );
 
       $stmt->bindParam(

@@ -21,6 +21,7 @@ use \CarlBennett\MVC\Libraries\View;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
+use \OutOfBoundsException;
 
 class Edit extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
@@ -58,7 +59,7 @@ class Edit extends Controller {
       );
 
       $model->deprecated = $model->packet->isDeprecated();
-      $model->id         = $model->packet->getPacketId();
+      $model->id         = $model->packet->getPacketId(true);
       $model->name       = $model->packet->getPacketName();
       $model->format     = $model->packet->getPacketFormat();
       $model->remarks    = $model->packet->getPacketRemarks(false);
@@ -141,6 +142,12 @@ class Edit extends Controller {
       // Used-by is stored in a different table than packet data so it is
       // updated separately.
       $model->packet->setUsedBy($used_by);
+
+    } catch (OutOfBoundsException $e) {
+
+      // Some value was outside of a boundary
+      Logger::logException($e);
+      $success = false;
 
     } catch (QueryException $e) {
 
