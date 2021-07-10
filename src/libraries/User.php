@@ -397,6 +397,25 @@ class User implements JsonSerializable {
     }
   }
 
+  public function getCreatedEstimate() {
+    $c = $this->getCreatedDateTime();
+    if (!$c) return $c;
+
+    $now = new DateTime('now');
+    $d = $c->diff($now);
+    $i = 0;
+    $r = '';
+    $t = 3;
+
+    if ($d->y > 0 && $i < $t) { ++$i; $r .= sprintf('%s%d %s%s', ($r ? ', ' : ''), $d->y, 'year', ($d->y !== 1 ? 's' : '')); }
+    if ($d->m > 0 && $i < $t) { ++$i; $r .= sprintf('%s%d %s%s', ($r ? ', ' : ''), $d->m, 'month', ($d->m !== 1 ? 's' : '')); }
+    if ($d->d > 0 && $i < $t) { ++$i; $r .= sprintf('%s%d %s%s', ($r ? ', ' : ''), $d->d, 'day', ($d->d !== 1 ? 's' : '')); }
+    if ($d->h > 0 && $i < $t) { ++$i; $r .= sprintf('%s%d %s%s', ($r ? ', ' : ''), $d->h, 'hour', ($d->h !== 1 ? 's' : '')); }
+    if ($d->i > 0 && $i < $t) { ++$i; $r .= sprintf('%s%d %s%s', ($r ? ', ' : ''), $d->i, 'minute', ($d->i !== 1 ? 's' : '')); }
+
+    return $r;
+  }
+
   public function getDisplayName() {
     return $this->display_name;
   }

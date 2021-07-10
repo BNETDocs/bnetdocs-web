@@ -3,6 +3,7 @@ namespace BNETDocs\Templates\User;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
+use \DateTime;
 $title = 'All Users';
 $description = 'All users currently registered on BNETDocs';
 $this->opengraph->attach(new Pair('url', '/user/index'));
@@ -20,6 +21,7 @@ $form_order_by = [
   'registered-asc' => 'Registered (Ascending)',
   'registered-desc' => 'Registered (Descending)',
 ];
+$now = new DateTime('now');
 require('./header.inc.phtml'); ?>
 <div class="container">
   <h1><?=$title?></h1>
@@ -37,14 +39,14 @@ require('./header.inc.phtml'); ?>
     <input class="btn btn-sm btn-secondary" type="submit" value="Reorder"/>
   </form>
   <table class="table table-hover table-sm table-striped" id="users_tbl">
-    <thead><tr><th>Account</th><th>Registered</th></tr></thead><tbody>
+    <thead><tr><th>Account</th><th>Member for</th></tr></thead><tbody>
 <?  foreach ($this->getContext()->users as $user)
     {
       $user_url = $user->getURI();
       $avatar_url = $user->getAvatarURI(22); ?>
       <tr>
         <td><a href="<?=$user_url?>"><img class="mr-2" src="<?=$avatar_url?>"/><?=filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></td>
-        <td><time datetime="<?=$user->getCreatedDateTime()->format('c')?>"><?=$user->getCreatedDateTime()->format('l, F j, Y')?></time></td>
+        <td><?=($user->getCreatedEstimate() ?? '<em>(null)</em>')?></td>
       </tr>
 <?  } ?>
   </tbody></table>

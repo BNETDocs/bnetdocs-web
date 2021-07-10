@@ -11,7 +11,6 @@ class View extends \BNETDocs\Models\ActiveUser
   public $sum_packets;
   public $sum_servers;
   public $user;
-  public $user_est;
   public $user_id;
   public $user_profile;
 }

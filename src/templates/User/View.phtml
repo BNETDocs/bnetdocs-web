@@ -14,7 +14,6 @@ $sum_news_posts = $this->getContext()->sum_news_posts;
 $sum_packets = $this->getContext()->sum_packets;
 $sum_servers = $this->getContext()->sum_servers;
 $user = $this->getContext()->user;
-$user_est = $this->getContext()->user_est;
 $user_id = $this->getContext()->user_id;
 $user_profile = $this->getContext()->user_profile;
 $title = ($user ? $user->getName() : 'User Not Found');
@@ -27,6 +26,7 @@ if ($user)
   $this->opengraph->attach(new Pair('image', $user->getAvatarURI(null)));
 
   $user_created_dt = $user->getCreatedDateTime();
+  $user_est = $user->getCreatedEstimate();
   $user_name = filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   $user_verified_dt = $user->getVerifiedDateTime();
 }
