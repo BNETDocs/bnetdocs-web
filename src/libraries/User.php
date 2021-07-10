@@ -21,7 +21,17 @@ use \StdClass;
 
 class User implements JsonSerializable {
 
-  const DEFAULT_OPTION              = 0x00000020;
+  const DEFAULT_OPTION = 0x00000020;
+
+  const MAX_DISPLAY_NAME = 191;
+  const MAX_EMAIL = 191;
+  const MAX_ID = 0xFFFFFFFFFFFFFFFF;
+  const MAX_OPTIONS = 0xFFFFFFFFFFFFFFFF;
+  const MAX_PASSWORD_HASH = 191;
+  const MAX_PASSWORD_SALT = 191;
+  const MAX_TIMEZONE = 191;
+  const MAX_USERNAME = 191;
+  const MAX_VERIFIER_TOKEN = 191;
 
   const OPTION_DISABLED             = 0x00000001;
   const OPTION_VERIFIED             = 0x00000002;
