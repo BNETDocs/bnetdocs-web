@@ -413,6 +413,9 @@ class User implements JsonSerializable {
     if ($d->h > 0 && $i < $t) { ++$i; $r .= sprintf('%s%d %s%s', ($r ? ', ' : ''), $d->h, 'hour', ($d->h !== 1 ? 's' : '')); }
     if ($d->i > 0 && $i < $t) { ++$i; $r .= sprintf('%s%d %s%s', ($r ? ', ' : ''), $d->i, 'minute', ($d->i !== 1 ? 's' : '')); }
 
+    if ($i === 0) $r = 'created a moment ago';
+    if ($c > $now) $r = '-' . $r;
+
     return $r;
   }
 
