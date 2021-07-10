@@ -133,7 +133,7 @@ function _header_nav_html($nav)
         {
           if (!$news->isPublished() && !$acl_news_modify) continue;
           $news_class = ($news->isPublished() ? '' : ' text-warning');
-          _line('<a class="dropdown-item%s" href="%s">%s<span class="ml-1 small text-muted">%s</span></a>', $news_class, $news->getURI(), filter_var($news->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS), $news->getCreatedDateTime()->format('Y-m-d'));
+          _line('<a class="dropdown-item%s" href="%s">%s<span class="ml-1 small text-muted">%s</span></a>', $news_class, $news->getURI(), filter_var($news->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS), ($news->getEditedDateTime() ?? $news->getCreatedDateTime())->format('Y-m-d'));
         }
       }
       else if (isset($item['recent_packets']) && $item['recent_packets'])
