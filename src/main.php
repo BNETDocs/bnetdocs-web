@@ -162,9 +162,9 @@ function main() {
     $router->addRoute( // URL: /packet/:id
       "#^/packet/(\d+)/?#", "Packet\\View", "Packet\\ViewHtml"
     );
-    //$router->addRoute( // URL: /packet/create
-    //  "#^/packet/create/?$#", "Packet\\Create", "Packet\\CreateHtml"
-    //);
+    $router->addRoute( // URL: /packet/create
+      "#^/packet/create/?$#", "Packet\\Create", "Packet\\CreateHtml"
+    );
     $router->addRoute( // URL: /packet/delete
       "#^/packet/delete/?$#", "Packet\\Delete", "Packet\\DeleteHtml"
     );
