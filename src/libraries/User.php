@@ -13,11 +13,13 @@ use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Gravatar;
 use \DateTime;
 use \DateTimeZone;
+use \Exception;
 use \InvalidArgumentException;
 use \JsonSerializable;
 use \OutOfBoundsException;
 use \PDO;
 use \PDOException;
+use \RuntimeException;
 use \StdClass;
 use \UnexpectedValueException;
 
