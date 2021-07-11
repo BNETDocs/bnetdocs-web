@@ -122,7 +122,7 @@ class User implements IDatabaseObject, JsonSerializable
     $this->setOptions(self::DEFAULT_OPTION);
     $this->setTimezone(self::DEFAULT_TZ);
 
-    if (empty($id)) return;
+    if (is_null($id)) return;
 
     if (!isset(Common::$database))
     {
@@ -368,20 +368,6 @@ class User implements IDatabaseObject, JsonSerializable
     return hash('sha256', $digest);
   }
 
-  public static function findUserById(?int $user_id)
-  {
-    if (is_null($user_id)) return null;
-
-    try
-    {
-      return new User($user_id);
-    }
-    catch (UserNotFoundException $e)
-    {
-      return null;
-    }
-  }
-
   public static function &getAllUsers($order = null, $limit = null, $index = null)
   {
     if (!(is_numeric($limit) || is_numeric($index))) {
@@ -479,7 +465,7 @@ class User implements IDatabaseObject, JsonSerializable
 
   public function getName()
   {
-    return (is_null($this->display_name) ? $this->username : $this->display_name);
+    return $this->display_name ?? $this->username;
   }
 
   public function getOption(int $option)
@@ -511,9 +497,16 @@ class User implements IDatabaseObject, JsonSerializable
 
   public function getURI()
   {
-    return Common::relativeUrlToAbsolute(
-      '/user/' . $this->getId() . '/' . Common::sanitizeForUrl($this->getName(), true)
-    );
+    $id = $this->getId();
+
+    if (is_null($id))
+    {
+      throw new UnexpectedValueException('user id is null');
+    }
+
+    return Common::relativeUrlToAbsolute(sprintf(
+      '/user/%s/%s', $id, Common::sanitizeForUrl($this->getName(), true)
+    ));
   }
 
   public static function getUserCount()

@@ -531,7 +531,8 @@ class Packet implements JsonSerializable {
   }
 
   public function getUser() {
-    return User::findUserById($this->user_id);
+    if (is_null($this->user_id)) return null;
+    return new User($this->user_id);
   }
 
   public function getUserId() {
@@ -590,7 +591,7 @@ class Packet implements JsonSerializable {
       $data->edited_datetime = $data->edited_datetime;
 
     if (!is_null($data->user_id))
-      $data->user_id = $data->user_id;
+      $data->user_id = (int) $data->user_id;
 
     return true;
   }
