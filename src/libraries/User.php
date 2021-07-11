@@ -249,7 +249,7 @@ class User implements IDatabaseObject, JsonSerializable
 
     $q->closeCursor();
 
-    $q = Common::$database->prepare('SELECT `id` FROM `users` WHERE `username` = :u_name');
+    $q = Common::$database->prepare('SELECT `id` FROM `users` WHERE `username` = :u_name LIMIT 1;');
     $q->bindParam(':u_name', $this->username, PDO::PARAM_STR);
 
     $r = $q->execute();
