@@ -25,8 +25,8 @@ if ($object)
 $this->opengraph->attach(new Pair('url', $url));
 $edit_url = Common::relativeUrlToAbsolute('/document/edit?id=' . rawurlencode($object_id));
 $delete_url = Common::relativeUrlToAbsolute('/document/delete?id=' . rawurlencode($object_id));
-$edit_visible = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY));
-$delete_visible = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_DELETE));
+$edit_visible = ($active_user && $active_user->getOption(User::OPTION_ACL_DOCUMENT_MODIFY));
+$delete_visible = ($active_user && $active_user->getOption(User::OPTION_ACL_DOCUMENT_DELETE));
 require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container">

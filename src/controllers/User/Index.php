@@ -69,18 +69,6 @@ class Index extends Controller {
       $model->limit * ( $model->page - 1 )
     );
 
-    /*for ($i = 101; $i <= 100000; ++$i) {
-      $email           = 'testuser' . $i . '@bnetdocs.org';
-      $username        = 'testuser' . $i;
-      $display_name    = null;
-      $password        = 'testuser';
-      $options_bitmask = User::OPTION_DISABLED;
-
-      User::create(
-        $email, $username, $display_name, $password, $options_bitmask
-      );
-    }*/
-
     // Post-filter summary of users
     $model->sum_users = count($model->users);
 

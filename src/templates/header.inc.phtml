@@ -102,7 +102,7 @@ function _header_nav_html($nav)
       if (isset($item['acl']))
       {
         if (!Authentication::$user) continue;
-        if (!(Authentication::$user->getOptionsBitmask() & $item['acl'])) continue;
+        if (!(Authentication::$user->getOptions() & $item['acl'])) continue;
       }
 
       if ($item['label'] == '-') { _line('<div class="dropdown-divider"></div>'); continue; }
@@ -115,7 +115,7 @@ function _header_nav_html($nav)
         _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recently Edited Documents</div>');
         $recent_documents = Document::getDocumentsByLastEdited(10);
-        $acl_doc_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_DOCUMENT_MODIFY));
+        $acl_doc_modify = (Authentication::$user && (Authentication::$user->getOptions() & User::OPTION_ACL_DOCUMENT_MODIFY));
         foreach ($recent_documents as $doc)
         {
           if (!$doc->isPublished() && !$acl_doc_modify) continue;
@@ -128,7 +128,7 @@ function _header_nav_html($nav)
         _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recent News</div>');
         $recent_news = NewsPost::getNewsPostsByLastEdited(10);
-        $acl_news_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_NEWS_MODIFY));
+        $acl_news_modify = (Authentication::$user && (Authentication::$user->getOptions() & User::OPTION_ACL_NEWS_MODIFY));
         foreach ($recent_news as $news)
         {
           if (!$news->isPublished() && !$acl_news_modify) continue;
@@ -141,7 +141,7 @@ function _header_nav_html($nav)
         _line('<div class="dropdown-divider"></div>');
         _line('<div class="dropdown-header">Recently Edited Packets</div>');
         $recent_packets = Packet::getPacketsByLastEdited(10);
-        $acl_pkt_modify = (Authentication::$user && (Authentication::$user->getOptionsBitmask() & User::OPTION_ACL_PACKET_MODIFY));
+        $acl_pkt_modify = (Authentication::$user && (Authentication::$user->getOptions() & User::OPTION_ACL_PACKET_MODIFY));
         foreach ($recent_packets as $pkt)
         {
           if (!$pkt->isPublished() && !$acl_pkt_modify) continue;

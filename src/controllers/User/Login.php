@@ -71,10 +71,11 @@ class Login extends Controller {
 
     // Upgrade old password (we checked it matches earlier above)
     if (substr($user->getPasswordHash(), 0, 1) !== '$') {
-      $user->changePassword($password);
+      $user->setPassword($password);
+      $user->commit();
     }
 
-    Authentication::login( $user );
+    Authentication::login($user);
 
     Logger::logEvent(
       EventTypes::USER_LOGIN,

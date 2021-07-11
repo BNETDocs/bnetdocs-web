@@ -26,7 +26,7 @@ class News extends Controller {
     $model = new NewsModel();
     $model->active_user = Authentication::$user;
 
-    $model->acl_allowed = ($model->active_user && $model->active_user->getAcl(
+    $model->acl_allowed = ($model->active_user && $model->active_user->getOption(
       User::OPTION_ACL_NEWS_CREATE |
       User::OPTION_ACL_NEWS_MODIFY |
       User::OPTION_ACL_NEWS_DELETE

@@ -12,6 +12,7 @@ use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+use \Exception;
 use \StdClass;
 
 class Update extends Controller
@@ -133,13 +134,15 @@ class Update extends Controller
           else
           {
             // initiate username change
-            if (!$model->active_user->changeUsername($model->username))
+            try
+            {
+              $model->active_user->setUsername($model->username);
+              $model->active_user->commit();
+              $model->username_error = ['success', 'CHANGE_SUCCESS'];
+            }
+            catch (Exception $e)
             {
               $model->username_error = ['danger', 'CHANGE_FAILED'];
-            }
-            else
-            {
-              $model->username_error = ['success', 'CHANGE_SUCCESS'];
             }
           }
         }
@@ -185,13 +188,15 @@ class Update extends Controller
           else
           {
             // initiate email change
-            if (!$model->active_user->changeEmail($model->email_2))
+            try
+            {
+              $model->active_user->setEmail($model->email_2);
+              $model->active_user->commit();
+              $model->email_error = ['success', 'CHANGE_SUCCESS'];
+            }
+            catch (Exception $e)
             {
               $model->email_error = ['danger', 'CHANGE_FAILED'];
-            }
-            else
-            {
-              $model->email_error = ['success', 'CHANGE_SUCCESS'];
             }
           }
         }
@@ -212,13 +217,15 @@ class Update extends Controller
         );
         if ($display_name_diff)
         {
-          if (!$model->active_user->changeDisplayName($display_name))
+          try
+          {
+            $model->active_user->setDisplayName($display_name);
+            $model->active_user->commit();
+            $model->display_name_error = ['success', 'CHANGE_SUCCESS', $new_name];
+          }
+          catch (Exception $e)
           {
             $model->display_name_error = ['danger', 'CHANGE_FAILED'];
-          }
-          else
-          {
-            $model->display_name_error = ['success', 'CHANGE_SUCCESS', $new_name];
           }
         }
 

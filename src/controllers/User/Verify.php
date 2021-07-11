@@ -6,14 +6,12 @@ use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
-
 use \BNETDocs\Models\User\Verify as UserVerifyModel;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
-
+use \Exception;
 use \InvalidArgumentException;
 
 class Verify extends Controller {
@@ -42,13 +40,15 @@ class Verify extends Controller {
       $user_token = $model->user->getVerifierToken();
 
       if ( $user_token === $model->token ) {
-        $model->user->invalidateVerificationToken();
-
-        if (!$model->user->setVerified()) {
-          $model->error = 'INTERNAL_ERROR';
-        } else {
+        try {
+          $model->user->setVerified(true);
+          $model->user->commit();
           $model->error = false;
+        } catch (Exception $e) {
+          $model->error = 'INTERNAL_ERROR';
+        }
 
+        if (!$model->error) {
           Logger::logEvent(
             EventTypes::USER_VERIFIED,
             $model->user_id,

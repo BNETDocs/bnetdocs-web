@@ -6,8 +6,8 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 $active_user = $this->getContext()->active_user ?? Authentication::$user;
 $active_user_id = ($active_user ? $active_user->getId() : null);
-$c_edit_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_MODIFY));
-$c_delete_visible_admin = ($active_user && ($active_user->getOptionsBitmask() & User::OPTION_ACL_COMMENT_DELETE));
+$c_edit_visible_admin = ($active_user && $active_user->getOption(User::OPTION_ACL_COMMENT_MODIFY));
+$c_delete_visible_admin = ($active_user && $active_user->getOption(User::OPTION_ACL_COMMENT_DELETE));
 ?>
 <div class="row my-3 justify-content-center">
   <div class="col-md-9">

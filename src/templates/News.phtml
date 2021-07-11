@@ -22,10 +22,8 @@ if (is_null($news_posts) || empty($news_posts)) { ?>
 <? } else {
 
   $active_user = $this->getContext()->active_user;
-  $edit_visible   = ($active_user && ($active_user->getOptionsBitmask()
-                  & User::OPTION_ACL_NEWS_MODIFY));
-  $delete_visible = ($active_user && ($active_user->getOptionsBitmask()
-                  & User::OPTION_ACL_NEWS_DELETE));
+  $edit_visible   = ($active_user && $active_user->getOption(User::OPTION_ACL_NEWS_MODIFY));
+  $delete_visible = ($active_user && $active_user->getOption(User::OPTION_ACL_NEWS_DELETE));
 
   $users = [];
   foreach ($this->getContext()->news_posts as $news_post)

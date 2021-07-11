@@ -7,11 +7,11 @@ use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\ChangePassword as UserChangePasswordModel;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
+use \Exception;
 
 class ChangePassword extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
@@ -80,19 +80,17 @@ class ChangePassword extends Controller {
     $old_password_hash = Authentication::$user->getPasswordHash();
     $old_password_salt = Authentication::$user->getPasswordSalt();
     try {
-      $success = Authentication::$user->changePassword($pw2);
-    } catch (QueryException $e) {
+      Authentication::$user->setPassword($pw2);
+      Authentication::$user->commit();
+      $model->error = false;
+    } catch (Exception $e) {
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
+      $model->error = 'INTERNAL_ERROR';
     }
     $new_password_hash = Authentication::$user->getPasswordHash();
     $new_password_salt = Authentication::$user->getPasswordSalt();
-    if (!$success) {
-      $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
-    }
     Logger::logEvent(
       EventTypes::USER_PASSWORD_CHANGE,
       Authentication::$user->getId(),

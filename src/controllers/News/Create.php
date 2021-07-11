@@ -24,7 +24,7 @@ class Create extends Controller {
     $model->news_categories = null;
     $model->user            = Authentication::$user;
 
-    $model->acl_allowed = ($model->user && $model->user->getAcl(
+    $model->acl_allowed = ($model->user && $model->user->getOption(
       User::OPTION_ACL_NEWS_CREATE
     ));
 

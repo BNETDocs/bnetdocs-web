@@ -40,7 +40,7 @@ class Edit extends Controller {
     catch ( InvalidArgumentException $e ) { $model->comment = null; }
 
     $model->acl_allowed = ( $model->user && (
-      $model->user->getAcl( User::OPTION_ACL_COMMENT_MODIFY ) ||
+      $model->user->getOption( User::OPTION_ACL_COMMENT_MODIFY ) ||
       $model->user->getId() == $model->comment->getUserId()
     ));
 

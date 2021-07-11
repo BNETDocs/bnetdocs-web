@@ -19,7 +19,7 @@ class View extends Controller {
 
     $model->user = Authentication::$user;
 
-    $model->acl_allowed = ( $model->user && $model->user->getAcl(
+    $model->acl_allowed = ( $model->user && $model->user->getOption(
       User::OPTION_ACL_EVENT_LOG_VIEW
     ));
 

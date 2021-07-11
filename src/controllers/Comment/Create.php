@@ -23,7 +23,7 @@ class Create extends Controller {
 
     $model->user = Authentication::$user;
 
-    $model->acl_allowed = ($model->user && $model->user->getAcl(
+    $model->acl_allowed = ($model->user && $model->user->getOption(
       User::OPTION_ACL_COMMENT_CREATE
     ));
 

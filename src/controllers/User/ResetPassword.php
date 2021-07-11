@@ -2,23 +2,19 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\EventTypes;
+use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\User;
+use \BNETDocs\Models\User\ResetPassword as UserResetPasswordModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\Template;
 use \CarlBennett\MVC\Libraries\View;
-
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\User;
-
-use \BNETDocs\Models\User\ResetPassword as UserResetPasswordModel;
-
-use \PHPMailer\PHPMailer\Exception;
-use \PHPMailer\PHPMailer\PHPMailer;
-
+use \Exception;
 use \InvalidArgumentException;
+use \PHPMailer\PHPMailer\PHPMailer;
 use \StdClass;
 
 class ResetPassword extends Controller {
@@ -156,7 +152,7 @@ class ResetPassword extends Controller {
           ])
         );
 
-      } catch (\Exception $e) {
+      } catch (Exception $e) {
         $model->error = 'EMAIL_FAILURE';
       }
 
@@ -200,21 +196,19 @@ class ResetPassword extends Controller {
       return self::RET_FAILURE;
     }
 
-    // --
-    $model->user->invalidateVerificationToken();
-    // --
-
     if ( $model->user->isDisabled() ) {
       $model->error = 'USER_DISABLED';
       return self::RET_FAILURE;
     }
 
-    if (!$model->user->changePassword( $model->pw1 )) {
+    try {
+      $model->user->setPassword($model->pw1);
+      $model->user->setVerified(true);
+      $model->user->commit();
+    } catch (Exception $e) {
       $model->error = 'INTERNAL_ERROR';
       return self::RET_FAILURE;
     }
-
-    $model->user->setVerified();
 
     $model->error = false;
     return self::RET_SUCCESS;

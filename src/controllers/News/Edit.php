@@ -39,7 +39,7 @@ class Edit extends Controller
     $model->rss_exempt      = null;
     $model->title           = null;
 
-    $model->acl_allowed = ($model->active_user && $model->active_user->getAcl(
+    $model->acl_allowed = ($model->active_user && $model->active_user->getOption(
       User::OPTION_ACL_NEWS_MODIFY
     ));
 

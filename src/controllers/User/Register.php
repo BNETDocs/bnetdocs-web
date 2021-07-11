@@ -165,33 +165,29 @@ class Register extends Controller {
       }
     } catch (UserNotFoundException $e) {}
 
-    $user = null;
-    $user_id = null;
-
     try {
 
-      $success = User::create(
-        $email, $username, null, $pw1, User::DEFAULT_OPTION
-      );
-
-      if ($success) {
-        $user_id = User::findIdByUsername($username);
-        $user = new User( $user_id );
-      }
+      $user = new User(null);
+      $user->setEmail($email);
+      $user->setPassword($pw1);
+      $user->setUsername($username);
+      $user->setVerified(false, true);
+      $user->commit();
+      $user_id = $user->getId();
+      $model->error = false;
 
     } catch (QueryException $e) {
 
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
+      $model->error = 'INTERNAL_ERROR';
+      $user = null;
+      $user_id = null;
 
     }
 
-    if (!$success) {
-      $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
-
+    if ($user) {
       Logger::logEvent(
         EventTypes::USER_CREATED,
         $user_id,
@@ -213,8 +209,8 @@ class Register extends Controller {
       $mail_config = Common::$config->email;
 
       $state->mail = &$mail;
-      $state->name = ( $user ? $user->getName() : $username );
-      $state->token = ( $user ? $user->getVerifierToken() : null );
+      $state->name = $user->getName();
+      $state->token = $user->getVerifierToken();
       $state->user_id = $user_id;
 
       try {

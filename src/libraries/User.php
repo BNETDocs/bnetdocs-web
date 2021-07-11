@@ -1,11 +1,11 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
+use \BNETDocs\Libraries\IDatabaseObject;
 use \BNETDocs\Libraries\UserProfile;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
@@ -15,14 +15,20 @@ use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \JsonSerializable;
+use \OutOfBoundsException;
 use \PDO;
 use \PDOException;
 use \StdClass;
+use \UnexpectedValueException;
 
-class User implements JsonSerializable {
+class User implements IDatabaseObject, JsonSerializable
+{
+  const DATE_SQL = 'Y-m-d H:i:s';
 
   const DEFAULT_OPTION = 0x00000020;
+  const DEFAULT_TZ = 'Etc/UTC';
 
+  # Maximum SQL field lengths, alter as appropriate.
   const MAX_DISPLAY_NAME = 191;
   const MAX_EMAIL = 191;
   const MAX_ID = 0xFFFFFFFFFFFFFFFF;
@@ -57,160 +63,216 @@ class User implements JsonSerializable {
   const OPTION_ACL_USER_MODIFY      = 0x00200000;
   const OPTION_ACL_USER_DELETE      = 0x00400000;
 
+  const TZ_SQL = 'Etc/UTC'; // database values are stored in this TZ
+
+  private $_id;
+
   protected $created_datetime;
   protected $display_name;
   protected $email;
   protected $id;
-  protected $options_bitmask;
+  protected $options;
   protected $password_hash;
   protected $password_salt;
   protected $timezone;
   protected $username;
   protected $verified_datetime;
+  protected $verifier_token;
 
-  public function __construct($data) {
-    if (is_numeric($data)) {
-      $this->created_datetime  = null;
-      $this->display_name      = null;
-      $this->email             = null;
-      $this->id                = (int) $data;
-      $this->options_bitmask   = null;
-      $this->password_hash     = null;
-      $this->password_salt     = null;
-      $this->timezone          = null;
-      $this->username          = null;
-      $this->verified_datetime = null;
-      $this->verifier_token    = null;
-      $this->refresh();
-    } else if ($data instanceof StdClass) {
-      self::normalize($data);
-      $this->created_datetime  = $data->created_datetime;
-      $this->display_name      = $data->display_name;
-      $this->email             = $data->email;
-      $this->id                = $data->id;
-      $this->options_bitmask   = $data->options_bitmask;
-      $this->password_hash     = $data->password_hash;
-      $this->password_salt     = $data->password_salt;
-      $this->timezone          = $data->timezone;
-      $this->username          = $data->username;
-      $this->verified_datetime = $data->verified_datetime;
-      $this->verifier_token    = $data->verifier_token;
-    } else {
-      throw new InvalidArgumentException("Cannot use data argument");
+  public function __construct($value)
+  {
+    if (is_string($value) && is_numeric($value) && strpos($value, '.') === false)
+    {
+      // something is lazily providing an int value in a string type
+      $value = (int) $value;
     }
+
+    if (is_null($value) || is_int($value))
+    {
+      $this->_id = $value;
+      $this->allocate();
+      return;
+    }
+
+    if ($value instanceof StdClass)
+    {
+      $this->allocateObject($value);
+      return;
+    }
+
+    throw new InvalidArgumentException(sprintf(
+      'value must be null, an integer, or StdClass; %s given', gettype($value)
+    ));
   }
 
-  public function changeDisplayName($new_display_name) {
-    if (!isset(Common::$database)) {
+  /**
+   * Implements the allocate function from the IDatabaseObject interface
+   */
+  public function allocate()
+  {
+    $id = $this->_id;
+
+    if (!(is_null($id) || is_int($id)))
+    {
+      throw new InvalidArgumentException('value must be null or an integer');
+    }
+
+    $this->setCreatedDateTime(new DateTime('now'));
+    $this->setId($id);
+    $this->setOptions(self::DEFAULT_OPTION);
+    $this->setTimezone(self::DEFAULT_TZ);
+
+    if (empty($id)) return;
+
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare('
-        UPDATE `users` SET `display_name` = :dn WHERE `id` = :user_id;
-      ');
-      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
-      if (is_null($new_display_name)) {
-        $stmt->bindParam(':dn', $new_display_name, PDO::PARAM_NULL);
-      } else {
-        $stmt->bindParam(':dn', $new_display_name, PDO::PARAM_STR);
-      }
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-      if ($successful) {
-        if (is_null($new_display_name)) {
-          $this->display_name = $new_display_name;
-        } else {
-          $this->display_name = (string) $new_display_name;
-        }
-      }
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot change user display name', $e);
-    } finally {
-      return $successful;
+
+    $q = Common::$database->prepare('
+      SELECT
+        `created_datetime`,
+        `display_name`,
+        `email`,
+        `id`,
+        `options_bitmask`,
+        `password_hash`,
+        `password_salt`,
+        `timezone`,
+        `username`,
+        `verified_datetime`,
+        `verifier_token`
+      FROM `users` WHERE `id` = :id LIMIT 1;
+    ');
+    $q->bindParam(':id', $id, PDO::PARAM_INT);
+
+    $r = $q->execute();
+    if (!$r)
+    {
+      throw new UnexpectedValueException('an error occurred finding user id');
     }
+
+    if ($q->rowCount() != 1)
+    {
+      throw new UnexpectedValueException(sprintf('user id: %s not found', $id));
+    }
+
+    $r = $q->fetchObject();
+    $q->closeCursor();
+
+    $this->allocateObject($r);
   }
 
-  public function changeEmail($new_email) {
-    if (!isset(Common::$database)) {
+  /**
+   * Internal function to process and translate StdClass objects into properties.
+   */
+  protected function allocateObject(StdClass $value)
+  {
+    $tz = new DateTimeZone(self::TZ_SQL);
+
+    $this->setCreatedDateTime(new DateTime($value->created_datetime, $tz));
+    $this->setDisplayName($value->display_name);
+    $this->setEmail($value->email);
+    $this->setId($value->id);
+    $this->setOptions($value->options_bitmask);
+    $this->setPasswordHash($value->password_hash);
+    $this->setPasswordSalt($value->password_salt);
+    $this->setTimezone($value->timezone);
+    $this->setUsername($value->username);
+    $this->setVerifiedDateTime(
+      $value->verified_datetime ? new DateTime($value->verified_datetime) : null
+    );
+    $this->setVerifierToken($value->verifier_token);
+  }
+
+  /**
+   * Implements the commit function from the IDatabaseObject interface
+   */
+  public function commit()
+  {
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare('
-        UPDATE `users` SET `email` = :email WHERE `id` = :user_id;
-      ');
-      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(':email', $new_email, PDO::PARAM_STR);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-      if ($successful) {
-        $this->email = (string) $new_email;
-      }
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot change user email', $e);
-    } finally {
-      return $successful;
-    }
+
+    $q = Common::$database->prepare(
+      'INSERT INTO `users` (
+        `created_datetime`,
+        `display_name`,
+        `email`,
+        `id`,
+        `options_bitmask`,
+        `password_hash`,
+        `password_salt`,
+        `timezone`,
+        `username`,
+        `verified_datetime`,
+        `verifier_token`
+      ) VALUES (
+        :c_dt, :d_name, :email, :id, :opts, :p_hash, :p_salt, :tz, :u_name, :v_dt, :v_t
+      ) ON DUPLICATE KEY UPDATE
+        `created_datetime` = :c_dt,
+        `display_name` = :d_name,
+        `email` = :email,
+        `id` = :id,
+        `options_bitmask` = :opts,
+        `password_hash` = :p_hash,
+        `password_salt` = :p_salt,
+        `timezone` = :tz,
+        `username` = :u_name,
+        `verified_datetime` = :v_dt,
+        `verifier_token` = :v_t
+      ;'
+    );
+
+    $created_datetime = $this->created_datetime->format(self::DATE_SQL);
+
+    $verified_datetime = (
+      is_null($this->verified_datetime) ? null :
+      $this->verified_datetime->format(self::DATE_SQL)
+    );
+
+    $q->bindParam(':c_dt', $created_datetime, PDO::PARAM_STR);
+    $q->bindParam(':d_name', $this->display_name, (is_null($this->display_name) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':email', $this->email, PDO::PARAM_STR);
+    $q->bindParam(':id', $this->id, (is_null($this->id) ? PDO::PARAM_NULL : PDO::PARAM_INT));
+    $q->bindParam(':opts', $this->options, PDO::PARAM_INT);
+    $q->bindParam(':p_hash', $this->password_hash, (is_null($this->password_hash) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':p_salt', $this->password_salt, (is_null($this->password_salt) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':tz', $this->timezone, (is_null($this->timezone) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':u_name', $this->username, PDO::PARAM_STR);
+    $q->bindParam(':v_dt', $verified_datetime, (is_null($verified_datetime) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':v_t', $this->verifier_token, (is_null($this->verifier_token) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+
+    $r = $q->execute();
+    if (!$r) return $r;
+
+    $q->closeCursor();
+
+    $q = Common::$database->prepare('SELECT `id` FROM `users` WHERE `username` = :u_name');
+    $q->bindParam(':u_name', $this->username, PDO::PARAM_STR);
+
+    $r = $q->execute();
+    if (!$r) return $r;
+
+    $this->setId($q->fetch(PDO::FETCH_NUM)[0]);
+
+    $q->closeCursor();
+    return $r;
   }
 
-  public function changePassword($new_password) {
-    $password_hash = self::createPassword($new_password);
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare('
-        UPDATE `users` SET
-          `password_hash` = :password_hash, `password_salt` = NULL
-        WHERE `id` = :user_id;
-      ');
-      $stmt->bindParam(":user_id", $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-      if ($successful) {
-        $this->password_hash = (string) $password_hash;
-      }
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot change user password", $e);
-    } finally {
-      return $successful;
-    }
-  }
-
-  public function changeUsername($new_username) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare('
-        UPDATE `users` SET `username` = :username WHERE `id` = :user_id;
-      ');
-      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(':username', $new_username, PDO::PARAM_STR);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-      if ($successful) {
-        $this->username = (string) $new_username;
-      }
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot change username of user', $e);
-    } finally {
-      return $successful;
-    }
-  }
-
-  public function checkPassword($password) {
-    if (is_null($this->password_hash)) {
-      // no password set
+  public function checkPassword(string $password)
+  {
+    if (is_null($this->password_hash))
+    {
+      // no hash set
       return false;
     }
 
-    if (substr($this->password_hash, 0, 1) == '$') {
+    if (substr($this->password_hash, 0, 1) == '$')
+    {
       // new style bcrypt password
+      // salt and pepper are deprecated and unused here
 
       $cost = Common::$config->bnetdocs->user_password_bcrypt_cost;
       $match = password_verify($password, $this->password_hash);
@@ -219,60 +281,35 @@ class User implements JsonSerializable {
       );
 
       return ($match && !$rehash); // will deny if not match or needs rehash
-
-    } else {
-      // old style sha256 password
+    }
+    else
+    {
+      // old style peppered and salted sha256 password
 
       $pepper = Common::$config->bnetdocs->user_password_pepper;
       $salt = $this->password_salt;
-      $hash = strtoupper(hash('sha256', $password.$salt.$pepper));
 
+      if (is_null($salt))
+      {
+        // no salt set
+        return false;
+      }
+
+      $hash = strtoupper(hash('sha256', $password.$salt.$pepper));
       return ($hash === strtoupper($this->password_hash));
     }
   }
 
-  public static function create(
-    $email, $username, $display_name, $password, $options_bitmask
-  ) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $verifier_token = self::generateVerifierToken($username, $email);
-    $password_hash = self::createPassword($password);
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare("
-        INSERT INTO `users` (
-          `id`, `email`, `username`, `display_name`, `created_datetime`,
-          `verified_datetime`, `verifier_token`, `password_hash`,
-          `password_salt`, `options_bitmask`, `timezone`
-        ) VALUES (
-          NULL, :email, :username, :display_name, NOW(),
-          NULL, :verifier, :password_hash, NULL, :options_bitmask, NULL
-        );
-      ");
-      $stmt->bindParam(":email", $email, PDO::PARAM_STR);
-      $stmt->bindParam(":username", $username, PDO::PARAM_STR);
-      $stmt->bindParam(":display_name", $display_name, PDO::PARAM_STR);
-      $stmt->bindParam(":verifier", $verifier_token, PDO::PARAM_STR);
-      $stmt->bindParam(":password_hash", $password_hash, PDO::PARAM_STR);
-      $stmt->bindParam(":options_bitmask", $options_bitmask, PDO::PARAM_INT);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot create user", $e);
-    } finally {
-      return $successful;
-    }
-  }
-
-  public static function createPassword($password) {
+  public static function createPassword(string $password)
+  {
     $cost = Common::$config->bnetdocs->user_password_bcrypt_cost;
     return password_hash($password, PASSWORD_BCRYPT, array('cost' => $cost));
   }
 
-  public static function findIdByEmail($email) {
-    if (!isset(Common::$database)) {
+  public static function findIdByEmail(string $email)
+  {
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
     try {
@@ -297,7 +334,8 @@ class User implements JsonSerializable {
     return null;
   }
 
-  public static function findIdByUsername($username) {
+  public static function findIdByUsername(string $username)
+  {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
@@ -323,29 +361,29 @@ class User implements JsonSerializable {
     return null;
   }
 
-  public static function generateVerifierToken($username, $email) {
+  public static function generateVerifierToken(string $username, string $email)
+  {
     // entropy
     $digest = sprintf('%s%s%s', mt_rand(), $username, $email);
     return hash('sha256', $digest);
   }
 
-  public function getAcl($acl) {
-    return ($this->options_bitmask & $acl);
-  }
-
-  public static function findUserById($user_id) {
+  public static function findUserById(?int $user_id)
+  {
     if (is_null($user_id)) return null;
 
-    try {
+    try
+    {
       return new User($user_id);
-    } catch (UserNotFoundException $e) {
+    }
+    catch (UserNotFoundException $e)
+    {
       return null;
     }
   }
 
-  public static function &getAllUsers(
-    $order = null, $limit = null, $index = null
-  ) {
+  public static function &getAllUsers($order = null, $limit = null, $index = null)
+  {
     if (!(is_numeric($limit) || is_numeric($index))) {
       $limit_clause = '';
     } else if (!is_numeric($index)) {
@@ -390,21 +428,16 @@ class User implements JsonSerializable {
     return null;
   }
 
-  public function getAvatarURI($size) {
+  public function getAvatarURI($size)
+  {
     return Common::relativeUrlToAbsolute(
-      (new Gravatar($this->getEmail()))->getUrl($size, "identicon")
+      (new Gravatar($this->getEmail()))->getUrl($size, 'identicon')
     );
   }
 
-  public function getCreatedDateTime() {
-    if (is_null($this->created_datetime)) {
-      return $this->created_datetime;
-    } else {
-      $tz = new DateTimeZone( 'Etc/UTC' );
-      $dt = new DateTime($this->created_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
-    }
+  public function getCreatedDateTime()
+  {
+    return $this->created_datetime;
   }
 
   public function getCreatedEstimate() {
@@ -429,116 +462,126 @@ class User implements JsonSerializable {
     return $r;
   }
 
-  public function getDisplayName() {
+  public function getDisplayName()
+  {
     return $this->display_name;
   }
 
-  public function getEmail() {
+  public function getEmail()
+  {
     return $this->email;
   }
 
-  public function getId() {
+  public function getId()
+  {
     return $this->id;
   }
 
-  public function getName() {
-    return (is_null($this->display_name) ?
-      $this->username : $this->display_name);
+  public function getName()
+  {
+    return (is_null($this->display_name) ? $this->username : $this->display_name);
   }
 
-  public function getOptionsBitmask() {
-    return $this->options_bitmask;
+  public function getOption(int $option)
+  {
+    if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
+    }
+
+    return ($this->options & $option) === $option;
   }
 
-  public function getPasswordHash() {
+  public function getOptions()
+  {
+    return $this->options;
+  }
+
+  public function getPasswordHash()
+  {
     return $this->password_hash;
   }
 
-  public function getPasswordSalt() {
+  public function getPasswordSalt()
+  {
     return $this->password_salt;
   }
 
-  public function getURI() {
+  public function getURI()
+  {
     return Common::relativeUrlToAbsolute(
-      "/user/" . $this->getId() . "/" . Common::sanitizeForUrl(
-        $this->getName(), true
-      )
+      '/user/' . $this->getId() . '/' . Common::sanitizeForUrl($this->getName(), true)
     );
   }
 
-  public static function getUserCount() {
-    if (!isset(Common::$database)) {
+  public static function getUserCount()
+  {
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    try {
-      $stmt = Common::$database->prepare('SELECT COUNT(*) FROM `users`;');
-      if (!$stmt->execute()) {
-        throw new QueryException('Cannot query user count');
-      } else if ($stmt->rowCount() == 0) {
-        throw new QueryException('Missing result while querying user count');
-      }
-      $row = $stmt->fetch(PDO::FETCH_NUM);
-      $stmt->closeCursor();
-      return (int) $row[0];
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot query user count', $e);
+
+    $q = Common::$database->prepare('SELECT COUNT(*) FROM `users`;');
+    $r = $q->execute();
+
+    if (!$r || $q->rowCount() !== 1)
+    {
+      return false;
     }
-    return null;
+
+    $r = $q->fetch(PDO::FETCH_NUM);
+    $q->closeCursor();
+
+    return (int) $r[0];
   }
 
-  public function getTimezone() {
+  public function getTimezone()
+  {
     return $this->timezone;
   }
 
-  public function getUsername() {
+  public function getUsername()
+  {
     return $this->username;
   }
 
-  public function getUserProfile() {
-    try {
+  public function getUserProfile()
+  {
+    try
+    {
       return new UserProfile($this->id);
-    } catch (UserProfileNotFoundException $e) {
+    }
+    catch (UserProfileNotFoundException $e)
+    {
       return null;
     }
   }
 
-  public function getVerifiedDateTime() {
-    if (is_null($this->verified_datetime)) {
-      return $this->verified_datetime;
-    } else {
-      $tz = new DateTimeZone( 'Etc/UTC' );
-      $dt = new DateTime($this->verified_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
-    }
+  public function getVerifiedDateTime()
+  {
+    return $this->verified_datetime;
   }
 
-  public function getVerifierToken() {
+  public function getVerifierToken()
+  {
     return $this->verifier_token;
   }
 
-  public function invalidateVerificationToken() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $stmt = Common::$database->prepare(
-      'UPDATE `users` SET `verifier_token` = NULL WHERE `id` = :id LIMIT 1;'
-    );
-
-    $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
-    $successful = $stmt->execute();
-
-    $stmt->closeCursor();
-    return $successful;
+  public function invalidateVerificationToken()
+  {
+    return $this->setVerifierToken(null);
   }
 
-  public function isDisabled() {
-    return ($this->options_bitmask & self::OPTION_DISABLED);
+  public function isDisabled()
+  {
+    return $this->getOption(self::OPTION_DISABLED);
   }
 
-  public function isStaff() {
-    return ($this->options_bitmask & (
+  public function isStaff()
+  {
+    return ($this->options & (
       self::OPTION_ACL_DOCUMENT_CREATE  |
       self::OPTION_ACL_DOCUMENT_MODIFY  |
       self::OPTION_ACL_DOCUMENT_DELETE  |
@@ -562,165 +605,215 @@ class User implements JsonSerializable {
     ));
   }
 
-  public function isVerified() {
-    return ($this->options_bitmask & self::OPTION_VERIFIED);
+  public function isVerified()
+  {
+    return $this->getOption(self::OPTION_VERIFIED);
   }
 
-  public function jsonSerialize() {
+  public function jsonSerialize()
+  {
     $created_datetime = $this->getCreatedDateTime();
     if (!is_null($created_datetime)) $created_datetime = [
-      "iso"  => $created_datetime->format("r"),
-      "unix" => $created_datetime->getTimestamp(),
+      'iso'  => $created_datetime->format('r'),
+      'unix' => $created_datetime->getTimestamp(),
     ];
-
-    $url = Common::relativeUrlToAbsolute(
-      "/user/" . $this->getId() . "/"
-      . Common::sanitizeForUrl($this->getName())
-    );
 
     $verified_datetime = $this->getVerifiedDateTime();
     if (!is_null($verified_datetime)) $verified_datetime = [
-      "iso"  => $verified_datetime->format("r"),
-      "unix" => $verified_datetime->getTimestamp(),
+      'iso'  => $verified_datetime->format('r'),
+      'unix' => $verified_datetime->getTimestamp(),
     ];
 
     return [
-      "avatar_url"        => $this->getAvatarURI(null),
-      "created_datetime"  => $created_datetime,
-      "id"                => $this->getId(),
-      "name"              => $this->getName(),
-      "timezone"          => $this->getTimezone(),
-      "url"               => $url,
-      "verified_datetime" => $verified_datetime,
+      'avatar_url'        => $this->getAvatarURI(null),
+      'created_datetime'  => $created_datetime,
+      'id'                => $this->getId(),
+      'name'              => $this->getName(),
+      'timezone'          => $this->getTimezone(),
+      'url'               => $this->getURI(),
+      'verified_datetime' => $verified_datetime,
     ];
   }
 
-  protected static function normalize(StdClass &$data) {
-    $data->created_datetime = (string) $data->created_datetime;
-    $data->email            = (string) $data->email;
-    $data->id               = (int)    $data->id;
-    $data->options_bitmask  = (int)    $data->options_bitmask;
-    $data->username         = (string) $data->username;
-
-    if (!is_null($data->display_name))
-      $data->display_name = (string) $data->display_name;
-
-    if (!is_null($data->password_hash))
-      $data->password_hash = (string) $data->password_hash;
-
-    if (!is_null($data->password_salt))
-      $data->password_salt = (string) $data->password_salt;
-
-    if (!is_null($data->timezone))
-      $data->timezone = (string) $data->timezone;
-
-    if (!is_null($data->verified_datetime))
-      $data->verified_datetime = (string) $data->verified_datetime;
-
-    if (!is_null($data->verifier_token))
-      $data->verifier_token = (string) $data->verifier_token;
-
-    return true;
+  public function setCreatedDateTime(DateTime $value)
+  {
+    $this->created_datetime = $value;
   }
 
-  public function refresh() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+  public function setDisplayName(?string $value)
+  {
+    if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_DISPLAY_NAME))
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be null or between 1-%d characters', self::MAX_DISPLAY_NAME
+      ));
     }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `created_datetime`,
-          `display_name`,
-          `email`,
-          `id`,
-          `options_bitmask`,
-          `password_hash`,
-          `password_salt`,
-          `timezone`,
-          `username`,
-          `verified_datetime`,
-          `verifier_token`
-        FROM `users`
-        WHERE `id` = :id
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh user");
-      } else if ($stmt->rowCount() == 0) {
-        throw new UserNotFoundException($this->id);
+
+    $this->display_name = $value;
+  }
+
+  public function setEmail(string $value)
+  {
+    if (empty($value) || strlen($value) > self::MAX_EMAIL)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 1-%d characters', self::MAX_EMAIL
+      ));
+    }
+
+    if (!filter_var($value, FILTER_VALIDATE_EMAIL))
+    {
+      throw new UnexpectedValueException('value is not a valid email address');
+    }
+
+    $this->email = $value;
+  }
+
+  public function setId(?int $value)
+  {
+    if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
+    {
+      throw new InvalidArgumentException(sprintf(
+        'value must be between 0-%d', self::MAX_ID
+      ));
+    }
+
+    $this->id = $value;
+  }
+
+  public function setOption(int $option, bool $value)
+  {
+    if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
+    }
+
+    if ($value)
+    {
+      $this->options |= $option; // bitwise or
+    }
+    else
+    {
+      $this->options &= ~$option; // bitwise and ones complement
+    }
+  }
+
+  public function setOptions(int $value)
+  {
+    if ($value < 0 || $value > self::MAX_OPTIONS)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
+    }
+
+    $this->options = $value;
+  }
+
+  public function setPassword(string $value)
+  {
+    $this->setPasswordHash(self::createPassword($value));
+    $this->setPasswordSalt(null);
+  }
+
+  public function setPasswordHash(?string $value)
+  {
+    if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_PASSWORD_HASH))
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be null or between 1-%d characters', self::MAX_PASSWORD_HASH
+      ));
+    }
+
+    $this->password_hash = $value;
+  }
+
+  public function setPasswordSalt(?string $value)
+  {
+    if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_PASSWORD_SALT))
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be null or between 1-%d characters', self::MAX_PASSWORD_SALT
+      ));
+    }
+
+    $this->password_salt = $value;
+  }
+
+  public function setTimezone(?string $value)
+  {
+    if (!is_null($value) && strlen($value) > self::MAX_TIMEZONE)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be null or between 0-%d characters', self::MAX_TIMEZONE
+      ));
+    }
+
+    if (!empty($value))
+    {
+      try
+      {
+        $tz = new DateTimeZone($value);
+        if (!$tz) throw new RuntimeException();
       }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      self::normalize($row);
-      $this->created_datetime  = $row->created_datetime;
-      $this->display_name      = $row->display_name;
-      $this->email             = $row->email;
-      $this->options_bitmask   = $row->options_bitmask;
-      $this->password_hash     = $row->password_hash;
-      $this->password_salt     = $row->password_salt;
-      $this->timezone          = $row->timezone;
-      $this->username          = $row->username;
-      $this->verified_datetime = $row->verified_datetime;
-      $this->verifier_token    = $row->verifier_token;
-      return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh user", $e);
-    }
-    return false;
-  }
-
-  public function setAcl($acl, $value) {
-    if ($value) {
-      $this->options_bitmask |= $acl;
-    } else {
-      $this->options_bitmask &= ~$acl;
-    }
-  }
-
-  public function setVerified() {
-    $this->invalidateVerificationToken();
-
-    $tz = new DateTimeZone( 'Etc/UTC' );
-    $dt = new DateTime($this->created_datetime);
-    $dt->setTimezone($tz);
-
-    $verified_datetime = $dt;
-    $options_bitmask = $this->options_bitmask | self::OPTION_VERIFIED;
-
-    if ( !isset( Common::$database )) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $successful = false;
-
-    try {
-
-      $stmt = Common::$database->prepare('
-        UPDATE `users` SET
-          `options_bitmask` = :bits,
-          `verified_datetime` = :dt,
-          `verifier_token` = NULL
-        WHERE `id` = :user_id;
-      ');
-      $dt = $verified_datetime->format( 'Y-m-d H:i:s' );
-      $stmt->bindParam(':dt', $dt, PDO::PARAM_STR); // must be byref
-      $stmt->bindParam(':bits', $options_bitmask, PDO::PARAM_INT);
-      $stmt->bindParam(':user_id', $this->id, PDO::PARAM_INT);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-      if ($successful) {
-        $this->options_bitmask = $options_bitmask;
-        $this->verified_datetime = $verified_datetime;
-        $this->verifier_token = null;
+      catch (Exception $e)
+      {
+        throw new UnexpectedValueException('value must be a valid timezone', $e);
       }
+    }
 
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot set user as verified', $e);
-    } finally {
-      return $successful;
+    $this->timezone = $value;
+  }
+
+  public function setUsername(string $value)
+  {
+    if (empty($value) || strlen($value) > self::MAX_USERNAME)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be null or between 1-%d characters', self::MAX_USERNAME
+      ));
+    }
+
+    $this->username = $value;
+  }
+
+  public function setVerified(bool $value, bool $reset = false)
+  {
+    $old_value = $this->getOption(self::OPTION_VERIFIED);
+    if (!$reset && $old_value === $value) return; // avoid resetting values every call
+
+    $this->setOption(self::OPTION_VERIFIED, $value);
+
+    if ($value)
+    {
+      // verified
+      $this->setVerifiedDateTime(new DateTime('now'));
+      $this->setVerifierToken(null);
+    }
+    else
+    {
+      // not verified
+      $this->setVerifiedDateTime(null);
+      $this->setVerifierToken(self::generateVerifierToken($this->username ?? '', $this->email ?? ''));
     }
   }
 
+  public function setVerifiedDateTime(?DateTime $value)
+  {
+    $this->verified_datetime = $value;
+  }
+
+  public function setVerifierToken(?string $value)
+  {
+    if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_VERIFIER_TOKEN))
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be null or between 1-%d characters', self::MAX_VERIFIER_TOKEN
+      ));
+    }
+
+    $this->verifier_token = $value;
+  }
 }

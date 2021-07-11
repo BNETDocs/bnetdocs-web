@@ -40,10 +40,8 @@ $this->opengraph->attach(new Pair('url', $url));
 
 $edit_url       = Common::relativeUrlToAbsolute('/news/edit?id=' . urlencode($object_id));
 $delete_url     = Common::relativeUrlToAbsolute('/news/delete?id=' . urlencode($object_id));
-$edit_visible   = ($active_user && ($active_user->getOptionsBitmask()
-                & User::OPTION_ACL_NEWS_MODIFY));
-$delete_visible = ($active_user && ($active_user->getOptionsBitmask()
-                & User::OPTION_ACL_NEWS_DELETE));
+$edit_visible   = ($active_user && $active_user->getOption(User::OPTION_ACL_NEWS_MODIFY));
+$delete_visible = ($active_user && $active_user->getOption(User::OPTION_ACL_NEWS_DELETE));
 
 require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
