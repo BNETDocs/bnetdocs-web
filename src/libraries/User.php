@@ -760,7 +760,7 @@ class User implements IDatabaseObject, JsonSerializable
     if (empty($value) || strlen($value) > self::MAX_USERNAME)
     {
       throw new OutOfBoundsException(sprintf(
-        'value must be null or between 1-%d characters', self::MAX_USERNAME
+        'value must be between 1-%d characters', self::MAX_USERNAME
       ));
     }
 
