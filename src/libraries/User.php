@@ -569,11 +569,6 @@ class User implements IDatabaseObject, JsonSerializable
     return $this->verifier_token;
   }
 
-  public function invalidateVerificationToken()
-  {
-    return $this->setVerifierToken(null);
-  }
-
   public function isDisabled()
   {
     return $this->getOption(self::OPTION_DISABLED);
