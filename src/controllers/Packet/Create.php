@@ -75,7 +75,7 @@ class Create extends Controller
 
     try
     {
-      $model->packet->setPacketName($name);
+      $model->packet->setName($name);
     }
     catch (OutOfBoundsException $e)
     {
@@ -85,7 +85,7 @@ class Create extends Controller
 
     try
     {
-      $model->packet->setPacketFormat($format);
+      $model->packet->setFormat($format);
     }
     catch (OutOfBoundsException $e)
     {
@@ -95,7 +95,7 @@ class Create extends Controller
 
     try
     {
-      $model->packet->setPacketRemarks($remarks);
+      $model->packet->setRemarks($remarks);
     }
     catch (OutOfBoundsException $e)
     {
@@ -117,7 +117,6 @@ class Create extends Controller
     $model->packet->setOption(Packet::OPTION_MARKDOWN, $markdown);
     $model->packet->setOption(Packet::OPTION_PUBLISHED, $published);
     $model->packet->setOption(Packet::OPTION_RESEARCH, $research);
-    $model->packet->incrementEdited();
 
     try
     {

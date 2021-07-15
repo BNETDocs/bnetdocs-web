@@ -1,9 +1,9 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\IDatabaseObject;
 use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
 use \BNETDocs\Libraries\Packet\Transport as TransportLayer;
 use \BNETDocs\Libraries\User;
@@ -20,114 +20,274 @@ use \Parsedown;
 use \StdClass;
 use \UnexpectedValueException;
 
-class Packet implements JsonSerializable {
+class Packet implements IDatabaseObject, JsonSerializable
+{
+  const DATE_SQL = 'Y-m-d H:i:s'; // DateTime::format() string for database
 
-  const DATE_SQL = 'Y-m-d H:i:s';
+  const DEFAULT_APPLICATION_LAYER_ID = 1;
+  const DEFAULT_DIRECTION = self::DIRECTION_CLIENT_SERVER;
+  const DEFAULT_OPTION = self::OPTION_MARKDOWN;
+  const DEFAULT_TRANSPORT_LAYER_ID = 1;
 
   const DIRECTION_CLIENT_SERVER = 1;
   const DIRECTION_SERVER_CLIENT = 2;
   const DIRECTION_PEER_TO_PEER  = 3;
 
+  // Maximum SQL field lengths, alter as appropriate
+  const MAX_APPLICATION_LAYER_ID = 0xFFFFFFFFFFFFFFFF;
   const MAX_EDITED_COUNT = 0xFFFFFFFFFFFFFFFF;
-  const MAX_PACKET_FORMAT = 0xFFFF;
+  const MAX_FORMAT = 0xFFFF;
+  const MAX_ID = 0xFFFFFFFFFFFFFFFF;
+  const MAX_NAME = 191;
+  const MAX_OPTIONS = 0xFFFFFFFFFFFFFFFF;
   const MAX_PACKET_ID = 0xFF;
-  const MAX_PACKET_NAME = 191;
-  const MAX_PACKET_REMARKS = 0xFFFF;
+  const MAX_REMARKS = 0xFFFF;
+  const MAX_TRANSPORT_LAYER_ID = 0xFFFFFFFFFFFFFFFF;
+  const MAX_USER_ID = 0xFFFFFFFFFFFFFFFF;
 
-  const OPTION_MARKDOWN   = 0x00000001;
-  const OPTION_PUBLISHED  = 0x00000002;
-  const OPTION_DEPRECATED = 0x00000004;
-  const OPTION_RESEARCH   = 0x00000008;
+  const OPTION_MARKDOWN   = 0x00000001; // Markdown-formatted remarks
+  const OPTION_PUBLISHED  = 0x00000002; // 'Draft' badge and visiblility to non-editors
+  const OPTION_DEPRECATED = 0x00000004; // 'Deprecated' badge
+  const OPTION_RESEARCH   = 0x00000008; // 'In Research' badge
 
+  const TZ_SQL = 'Etc/UTC'; // database values are stored in this TZ
+
+  private $_id;
+
+  protected $application_layer_id;
   protected $created_datetime;
+  protected $direction;
   protected $edited_count;
   protected $edited_datetime;
+  protected $format;
   protected $id;
-  protected $options_bitmask;
-  protected $packet_application_layer_id;
-  protected $packet_direction_id;
-  protected $packet_format;
+  protected $name;
+  protected $options;
   protected $packet_id;
-  protected $packet_name;
-  protected $packet_remarks;
-  protected $packet_transport_layer_id;
+  protected $remarks;
+  protected $transport_layer_id;
   protected $user_id;
 
-  public function __construct( $data ) {
-    if ( is_numeric( $data )) {
-
-      $this->created_datetime            = null;
-      $this->edited_count                = null;
-      $this->edited_datetime             = null;
-      $this->id                          = (int) $data;
-      $this->options_bitmask             = null;
-      $this->packet_application_layer_id = null;
-      $this->packet_direction_id         = null;
-      $this->packet_format               = null;
-      $this->packet_id                   = null;
-      $this->packet_name                 = null;
-      $this->packet_remarks              = null;
-      $this->packet_transport_layer_id   = null;
-      $this->user_id                     = null;
-      $this->refresh();
-
-    } else if ( $data instanceof StdClass ) {
-
-      self::normalize( $data );
-
-      $this->created_datetime            = $data->created_datetime;
-      $this->edited_count                = $data->edited_count;
-      $this->edited_datetime             = $data->edited_datetime;
-      $this->id                          = $data->id;
-      $this->options_bitmask             = $data->options_bitmask;
-      $this->packet_application_layer_id = $data->packet_application_layer_id;
-      $this->packet_direction_id         = $data->packet_direction_id;
-      $this->packet_format               = $data->packet_format;
-      $this->packet_id                   = $data->packet_id;
-      $this->packet_name                 = $data->packet_name;
-      $this->packet_remarks              = $data->packet_remarks;
-      $this->packet_transport_layer_id   = $data->packet_transport_layer_id;
-      $this->user_id                     = $data->user_id;
-
-    } else {
-
-      throw new InvalidArgumentException( 'Cannot use data argument' );
-
+  public function __construct($value)
+  {
+    if (is_string($value) && is_numeric($value) && strpos($value, '.') === false)
+    {
+      // something is lazily providing an int value in a string type
+      $value = (int) $value;
     }
+
+    if (is_null($value) || is_int($value))
+    {
+      $this->_id = $value;
+      $this->allocate();
+      return;
+    }
+
+    if ($value instanceof StdClass)
+    {
+      $this->allocateObject($value);
+      return;
+    }
+
+    throw new InvalidArgumentException(sprintf(
+      'value must be null, an integer, or StdClass; %s given', gettype($value)
+    ));
   }
 
-  public static function delete($id) {
-    if (!isset(Common::$database)) {
+  /**
+   * Implements the allocate function from the IDatabaseObject interface
+   */
+  public function allocate()
+  {
+    $id = $this->_id;
+
+    if (!(is_null($id) || is_int($id)))
+    {
+      throw new InvalidArgumentException('value must be null or an integer');
+    }
+
+    $this->setApplicationLayerId(self::DEFAULT_APPLICATION_LAYER_ID);
+    $this->setCreatedDateTime(new DateTime('now'));
+    $this->setDirection(self::DEFAULT_DIRECTION);
+    $this->setEditedCount(0);
+    $this->setFormat('[blank]');
+    $this->setId($id);
+    $this->setOptions(self::DEFAULT_OPTION);
+    $this->setPacketId(0);
+    $this->setRemarks('');
+    $this->setTransportLayerId(self::DEFAULT_TRANSPORT_LAYER_ID);
+
+    if (is_null($id)) return;
+
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare("
-        DELETE FROM `packets` WHERE `id` = :id LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot delete packet");
-    } finally {
-      return $successful;
+
+    $q = Common::$database->prepare('
+      SELECT
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `packet_application_layer_id`,
+        `packet_direction_id`,
+        `packet_format`,
+        `packet_id`,
+        `packet_name`,
+        `packet_remarks`,
+        `packet_transport_layer_id`,
+        `user_id`
+      FROM `packets` WHERE `id` = :id LIMIT 1;
+    ');
+    $q->bindParam(':id', $id, PDO::PARAM_INT);
+
+    $r = $q->execute();
+    if (!$r)
+    {
+      throw new UnexpectedValueException(sprintf('an error occurred finding packet id: %d', $id));
     }
+
+    if ($q->rowCount() != 1)
+    {
+      throw new UnexpectedValueException(sprintf('packet id: %d not found', $id));
+    }
+
+    $r = $q->fetchObject();
+    $q->closeCursor();
+
+    $this->allocateObject($r);
   }
 
-  public static function &getAllPackets(
-    $where_clause = null, $order = null, $limit = null, $index = null
-  ) {
+  /**
+   * Internal function to process and translate StdClass objects into properties.
+   */
+  protected function allocateObject(StdClass $value)
+  {
+    $tz = new DateTimeZone(self::TZ_SQL);
 
-    if ( !empty( $where_clause )) {
+    $this->setApplicationLayerId($value->packet_application_layer_id);
+    $this->setCreatedDateTime(new DateTime($value->created_datetime, $tz));
+    $this->setDirection($value->packet_direction_id);
+    $this->setEditedCount($value->edited_count);
+    $this->setEditedDateTime(
+      $value->edited_datetime ? new DateTime($value->edited_datetime) : null
+    );
+    $this->setFormat($value->packet_format);
+    $this->setId($value->id);
+    $this->setName($value->packet_name);
+    $this->setOptions($value->options_bitmask);
+    $this->setPacketId($value->packet_id);
+    $this->setRemarks($value->packet_remarks);
+    $this->setTransportLayerId($value->packet_transport_layer_id);
+    $this->setUserId($value->user_id);
+  }
+
+  /**
+   * Implements the commit function from the IDatabaseObject interface
+   */
+  public function commit()
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $q = Common::$database->prepare(
+      'INSERT INTO `packets` (
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `packet_application_layer_id`,
+        `packet_direction_id`,
+        `packet_format`,
+        `packet_id`,
+        `packet_name`,
+        `packet_remarks`,
+        `packet_transport_layer_id`,
+        `user_id`
+      ) VALUES (
+        :c_dt, :e_c, :e_dt, :id, :opts, :app_id, :id, :f, :pid, :n, :r, :tr_id, :uid
+      ) ON DUPLICATE KEY UPDATE
+        `created_datetime` = :c_dt,
+        `edited_count` = :e_c,
+        `edited_datetime` = :e_dt,
+        `id` = :id,
+        `options_bitmask` = :opts,
+        `packet_application_layer_id` = :app_id,
+        `packet_direction_id` = :d,
+        `packet_format` = :f,
+        `packet_id` = :pid,
+        `packet_name` = :n,
+        `packet_remarks` = :r,
+        `packet_transport_layer_id` = :tr_id,
+        `user_id` = :uid
+      ;
+      SELECT LAST_INSERT_ID();
+    ');
+
+    $created_datetime = $this->created_datetime->format(self::DATE_SQL);
+
+    $edited_datetime = (
+      is_null($this->edited_datetime) ? null : $this->edited_datetime->format(self::DATE_SQL)
+    );
+
+    $q->bindParam(':app_id', $this->application_layer_id, PDO::PARAM_INT);
+    $q->bindParam(':c_dt', $created_datetime, PDO::PARAM_STR);
+    $q->bindParam(':d', $this->direction, PDO::PARAM_INT);
+    $q->bindParam(':e_c', $this->edited_count, PDO::PARAM_INT);
+    $q->bindParam(':e_dt', $edited_datetime, (is_null($edited_datetime) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':f', $this->format, PDO::PARAM_STR);
+    $q->bindParam(':id', $this->id, (is_null($this->id) ? PDO::PARAM_NULL : PDO::PARAM_INT));
+    $q->bindParam(':n', $this->name, PDO::PARAM_STR);
+    $q->bindParam(':opts', $this->options, PDO::PARAM_INT);
+    $q->bindParam(':pid', $this->packet_id, PDO::PARAM_INT);
+    $q->bindParam(':r', $this->remarks, PDO::PARAM_STR);
+    $q->bindParam(':tr_id', $this->transport_layer_id, PDO::PARAM_INT);
+    $q->bindParam(':uid', $this->user_id, (is_null($this->user_id) ? PDO::PARAM_NULL : PDO::PARAM_INT));
+
+    $r = $q->execute();
+    if (!$r) return $r;
+
+    $q->nextRowset();
+    $this->setId($q->fetch(PDO::FETCH_NUM)[0]);
+
+    $q->closeCursor();
+    return $r;
+  }
+
+  public static function delete(int $id)
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $q = Common::$database->prepare('DELETE FROM `packets` WHERE `id` = :id LIMIT 1;');
+    $q->bindParam(':id', $id, PDO::PARAM_INT);
+    return $q->execute();
+  }
+
+  public static function &getAllPackets(?string $where_clause = null, ?array $order = null, ?int $limit = null, ?int $index = null)
+  {
+    if (!empty($where_clause))
+    {
       $where_clause = 'WHERE ' . $where_clause;
     }
 
-    if ( !( is_numeric( $limit ) || is_numeric( $index ))) {
+    if (!(is_numeric($limit) || is_numeric($index)))
+    {
       $limit_clause = '';
-    } else if ( !is_numeric( $index )) {
+    }
+    else if (!is_numeric($index))
+    {
       $limit_clause = 'LIMIT ' . (int) $limit;
-    } else {
+    }
+    else
+    {
       $limit_clause = 'LIMIT ' . (int) $index . ',' . (int) $limit;
     }
 
@@ -136,49 +296,43 @@ class Packet implements JsonSerializable {
         implode( '`,`', explode( ',', $order[0] )) .
         '` ' . $order[1] . ',' : ''
       ) . '`id` ' . ( $order ? $order[1] : 'ASC' ) . ' ' .
-      $limit_clause;
+      $limit_clause
+    ;
 
-    if ( !isset( Common::$database )) {
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    try {
+    $q = Common::$database->prepare(sprintf('
+      SELECT
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `packet_application_layer_id`,
+        `packet_direction_id`,
+        `packet_format`,
+        `packet_id`,
+        `packet_name`,
+        `packet_remarks`,
+        `packet_transport_layer_id`,
+        `user_id`
+      FROM `packets` %s ORDER BY %s;', $where_clause, $order_clause
+    ));
 
-      $stmt = Common::$database->prepare('
-        SELECT `created_datetime`,
-               `edited_count`,
-               `edited_datetime`,
-               `id`,
-               `options_bitmask`,
-               `packet_application_layer_id`,
-               `packet_direction_id`,
-               `packet_format`,
-               `packet_id`,
-               `packet_name`,
-               `packet_remarks`,
-               `packet_transport_layer_id`,
-               `user_id`
-        FROM `packets` ' . $where_clause . '
-        ORDER BY ' . $order_clause . ';
-      ');
+    $r = $q->execute();
+    if (!$r) return $r;
 
-      if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot refresh all packets' );
-      }
-
-      $objects = [];
-      while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
-        $objects[] = new self( $row );
-      }
-
-      $stmt->closeCursor();
-      return $objects;
-
-    } catch ( PDOException $e ) {
-      throw new QueryException( 'Cannot refresh packets', $e );
+    $r = [];
+    while ($row = $q->fetch(PDO::FETCH_OBJ))
+    {
+      $r[] = new self($row);
     }
 
-    return null;
+    $q->closeCursor();
+    return $r;
   }
 
   public static function getPacketsByLastEdited(int $count)
@@ -188,699 +342,585 @@ class Packet implements JsonSerializable {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $stmt = Common::$database->prepare('
-      SELECT `created_datetime`,
-             `edited_count`,
-             `edited_datetime`,
-             `id`,
-             `options_bitmask`,
-             `packet_application_layer_id`,
-             `packet_direction_id`,
-             `packet_format`,
-             `packet_id`,
-             `packet_name`,
-             `packet_remarks`,
-             `packet_transport_layer_id`,
-             `user_id`
+    $q = Common::$database->prepare(sprintf('
+      SELECT
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `packet_application_layer_id`,
+        `packet_direction_id`,
+        `packet_format`,
+        `packet_id`,
+        `packet_name`,
+        `packet_remarks`,
+        `packet_transport_layer_id`,
+        `user_id`
       FROM `packets`
-      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC
-      LIMIT ' . $count . '
-    ');
+      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC LIMIT %s;', $count
+    ));
 
-    $r = $stmt->execute();
-    if (!$r)
-    {
-      throw new QueryException('Cannot get packets by date');
-      return $r;
-    }
+    $r = $q->execute();
+    if (!$r) return $r;
 
     $r = [];
-    while ($row = $stmt->fetch(PDO::FETCH_OBJ))
+    while ($row = $q->fetch(PDO::FETCH_OBJ))
     {
       $r[] = new self($row);
     }
 
-    $stmt->closeCursor();
+    $q->closeCursor();
     return $r;
   }
 
-  public static function getAllPacketsBySearch($query) {
-
-    if ( !isset( Common::$database )) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    try {
-
-      $stmt = Common::$database->prepare('
-        SELECT
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `options_bitmask`,
-          `packet_application_layer_id`,
-          `packet_direction_id`,
-          `packet_format`,
-          `packet_id`,
-          `packet_name`,
-          `packet_remarks`,
-          `packet_transport_layer_id`,
-          `user_id`
-        FROM `packets`
-        WHERE
-          MATCH (`packet_remarks`, `packet_format`, `packet_name`)
-          AGAINST (:query IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)
-        ;
-      ');
-
-      $stmt->bindParam( ':query', $query, PDO::PARAM_STR );
-
-      if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot search packets' );
-      }
-
-      $objects = [];
-      while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
-        $objects[] = new self( $row );
-      }
-
-      $stmt->closeCursor();
-      return $objects;
-
-    } catch ( PDOException $e ) {
-      throw new QueryException( 'Cannot search packets', $e );
-    }
-
-    return null;
+  public function getApplicationLayer()
+  {
+    return new ApplicationLayer($this->application_layer_id);
   }
 
-  public function getCreatedDateTime() {
-    if ( is_null( $this->created_datetime )) {
-      return $this->created_datetime;
-    }
-
-    $tz = new DateTimeZone( 'Etc/UTC' );
-    $dt = new DateTime( $this->created_datetime );
-
-    $dt->setTimezone( $tz );
-
-    return $dt;
+  public function getApplicationLayerId()
+  {
+    return $this->application_layer_id;
   }
 
-  public function getEditedCount() {
-    return $this->edited_count;
+  public function getCreatedDateTime()
+  {
+    return $this->created_datetime;
   }
 
-  public function getEditedDateTime() {
-    if ( is_null( $this->edited_datetime )) {
-      return $this->edited_datetime;
-    }
-
-    $tz = new DateTimeZone( 'Etc/UTC' );
-    $dt = new DateTime( $this->edited_datetime );
-
-    $dt->setTimezone( $tz );
-
-    return $dt;
+  public function getDirection()
+  {
+    return $this->direction;
   }
 
-  public function getId() {
-    return $this->id;
-  }
-
-  public function getName() {
-    return sprintf('%s %s %s',
-      $this->getPacketDirectionTag(),
-      $this->getPacketId(true),
-      $this->getPacketName()
-    );
-  }
-
-  public function getOptionsBitmask() {
-    return $this->options_bitmask;
-  }
-
-  public function getPacketApplicationLayer() {
-    return new ApplicationLayer( $this->packet_application_layer );
-  }
-
-  public function getPacketApplicationLayerId() {
-    return $this->packet_application_layer_id;
-  }
-
-  public function getPacketDirectionId() {
-    return $this->packet_direction_id;
-  }
-
-  public function getPacketDirectionLabel() {
-    switch ($this->packet_direction_id) {
+  public function getDirectionLabel()
+  {
+    switch ($this->direction)
+    {
       case self::DIRECTION_CLIENT_SERVER: return 'Client to Server';
       case self::DIRECTION_SERVER_CLIENT: return 'Server to Client';
       case self::DIRECTION_PEER_TO_PEER:  return 'Peer to Peer';
-      default:
-        throw new UnexpectedValueException(sprintf(
-          'packet direction: %d is invalid', $this->packet_direction_id
-        ));
+      default: throw new UnexpectedValueException(sprintf(
+        'packet direction: %d is invalid', $this->direction
+      ));
     }
   }
 
-  public function getPacketDirectionTag() {
-    switch ($this->packet_direction_id) {
+  public function getDirectionTag()
+  {
+    switch ($this->direction)
+    {
       case self::DIRECTION_CLIENT_SERVER: return 'C>S';
       case self::DIRECTION_SERVER_CLIENT: return 'S>C';
       case self::DIRECTION_PEER_TO_PEER:  return 'P2P';
-      default:
-        throw new UnexpectedValueException(sprintf(
-          'packet direction: %d is invalid', $this->packet_direction_id
-        ));
+      default: throw new UnexpectedValueException(sprintf(
+        'packet direction: %d is invalid', $this->direction
+      ));
     }
   }
 
-  public function getPacketFormat() {
-    return $this->packet_format;
+  public function getEditedCount()
+  {
+    return $this->edited_count;
   }
 
-  public function getPacketName() {
-    return $this->packet_name;
+  public function getEditedDateTime()
+  {
+    return $this->edited_datetime;
   }
 
-  public function getPacketId( $format = false ) {
-    if (!$format) {
-      return $this->packet_id;
-    }
-
-    return '0x' . strtoupper( substr( '0' . dechex( $this->packet_id ), -2 ));
+  public function getFormat()
+  {
+    return $this->format;
   }
 
-  public function getPacketRemarks( $prepare ) {
-    if ( !$prepare ) {
-      return $this->packet_remarks;
-    }
-
-    if ( $this->options_bitmask & self::OPTION_MARKDOWN ) {
-      $md = new Parsedown();
-      return $md->text($this->packet_remarks);
-    }
-
-    return $this->packet_remarks;
+  public function getId()
+  {
+    return $this->id;
   }
 
-  public function getPacketTransportLayer() {
-    return new TransportLayer( $this->packet_transport_layer_id );
-  }
-
-  public function getPacketTransportLayerId() {
-    return $this->packet_transport_layer_id;
-  }
-
-  public static function getPacketsByUserId( $user_id ) {
-    if ( !isset( Common::$database )) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    try {
-
-      $stmt = Common::$database->prepare('
-        SELECT
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `options_bitmask`,
-          `packet_application_layer_id`,
-          `packet_direction_id`,
-          `packet_format`,
-          `packet_id`,
-          `packet_name`,
-          `packet_remarks`,
-          `packet_transport_layer_id`,
-          `user_id`
-        FROM `packets`
-        WHERE `user_id` = :user_id
-        ORDER BY `id` ASC;
-      ');
-
-      $stmt->bindParam( ':user_id', $user_id, PDO::PARAM_INT );
-
-      if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot query packets by user id' );
-      }
-
-      $packets = [];
-      while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
-        $packets[] = new self( $row );
-      }
-
-      $stmt->closeCursor();
-      return $packets;
-
-    } catch ( PDOException $e ) {
-      throw new QueryException( 'Cannot query packets by user id', $e );
-    }
-
-    return null;
-  }
-
-  public static function getPacketCount() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    try {
-
-      $stmt = Common::$database->prepare('SELECT COUNT(*) FROM `packets`;');
-
-      if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot query packet count' );
-      } else if ( $stmt->rowCount() == 0 ) {
-        throw new QueryException(
-          'Missing result while querying packet count'
-        );
-      }
-
-      $row = $stmt->fetch( PDO::FETCH_NUM );
-
-      $stmt->closeCursor();
-
-      return (int) $row[0];
-
-    } catch ( PDOException $e ) {
-
-      throw new QueryException( 'Cannot query packet count', $e );
-
-    }
-
-    return null;
-  }
-
-  public function getPublishedDateTime() {
-    if ( !is_null( $this->edited_datetime )) {
-      return $this->getEditedDateTime();
-    }
-
-    return $this->getCreatedDateTime();
-  }
-
-  public function getURI() {
-    return Common::relativeUrlToAbsolute(
-      '/packet/' . $this->getId() . '/' . Common::sanitizeForUrl(
-        $this->getPacketName(), true
-      )
+  public function getLabel()
+  {
+    return sprintf('%s %s %s',
+      $this->getDirectionTag(),
+      $this->getPacketId(true),
+      $this->getName()
     );
   }
 
-  public function getUsedBy() {
+  public function getName()
+  {
+    return $this->name;
+  }
 
-    if ( !isset( Common::$database )) {
+  public function getOption(int $option)
+  {
+    if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
+    }
+
+    return ($this->options & $option) === $option;
+  }
+
+  public function getOptions()
+  {
+    return $this->options;
+  }
+
+  public function getPacketId(bool $format = false)
+  {
+    if (!$format)
+    {
+      return $this->packet_id;
+    }
+
+    // Prints a value like "0xFF":
+    return sprintf('0x%02X', $this->packet_id);
+  }
+
+  public function getRemarks(bool $format)
+  {
+    if (!($format && $this->getOption(self::OPTION_MARKDOWN)))
+    {
+      return $this->remarks;
+    }
+
+    $md = new Parsedown();
+    return $md->text($this->remarks);
+  }
+
+  public function getTransportLayer()
+  {
+    return new TransportLayer( $this->transport_layer_id );
+  }
+
+  public function getTransportLayerId()
+  {
+    return $this->transport_layer_id;
+  }
+
+  public static function getPacketsByUserId(int $user_id)
+  {
+    if (!isset( Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    try {
+    $q = Common::$database->prepare('
+      SELECT
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `packet_application_layer_id`,
+        `packet_direction_id`,
+        `packet_format`,
+        `packet_id`,
+        `packet_name`,
+        `packet_remarks`,
+        `packet_transport_layer_id`,
+        `user_id`
+      FROM `packets`
+      WHERE `user_id` = :user_id
+      ORDER BY `id` ASC;
+    ');
+    $q->bindParam(':user_id', $user_id, PDO::PARAM_INT);
 
-      $stmt = Common::$database->prepare('
-        SELECT
-          `used`.`bnet_product_id`
-        FROM `packet_used_by` AS `used`
-        INNER JOIN
-          `products` AS `prods`
-        ON `used`.`bnet_product_id` = `prods`.`bnet_product_id`
-        WHERE `used`.`id` = :id
-        ORDER BY `prods`.`sort` ASC;
-      ');
+    $r = $q->execute();
+    if (!$r) return $r;
 
-      $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
-
-      if (!$stmt->execute()) {
-        throw new QueryException( 'Cannot query packet used by' );
-      }
-
-      $values = [];
-      while ( $row = $stmt->fetch( PDO::FETCH_OBJ )) {
-        $values[] = (int) $row->bnet_product_id;
-      }
-
-      $stmt->closeCursor();
-      return $values;
-
-    } catch ( PDOException $e ) {
-      throw new QueryException( 'Cannot query packet used by', $e );
+    $r = [];
+    while ($row = $q->fetch(PDO::FETCH_OBJ))
+    {
+      $r[] = new self( $row );
     }
 
-    return null;
+    $q->closeCursor();
+    return $r;
   }
 
-  public function getUser() {
-    if (is_null($this->user_id)) return null;
-    return new User($this->user_id);
+  public static function getPacketCount()
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $q = Common::$database->prepare('SELECT COUNT(*) FROM `packets`;');
+
+    $r = $q->execute();
+    if (!$r || $q->rowCount() === 0) return $r;
+
+    $r = $q->fetch(PDO::FETCH_NUM);
+    $q->closeCursor();
+    return (int) $r[0];
   }
 
-  public function getUserId() {
+  public function getPublishedDateTime()
+  {
+    return $this->getEditedDateTime() ?? $this->getCreatedDateTime();
+  }
+
+  public function getURI()
+  {
+    return Common::relativeUrlToAbsolute(sprintf('/packet/%d/%s', $this->getId(), Common::sanitizeForUrl($this->getName(), true)));
+  }
+
+  public function getUsedBy()
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $q = Common::$database->prepare('
+      SELECT `u`.`bnet_product_id` FROM `packet_used_by` AS `u`
+      INNER JOIN `products` AS `p` ON `u`.`bnet_product_id` = `p`.`bnet_product_id`
+      WHERE `u`.`id` = :id ORDER BY `p`.`sort` ASC;
+    ');
+    $q->bindParam(':id', $this->id, PDO::PARAM_INT);
+
+    $r = $q->execute();
+    if (!$r) return $r;
+
+    $r = [];
+    while ($row = $q->fetch(PDO::FETCH_NUM))
+    {
+      $r[] = (int) $row[0];
+    }
+
+    $q->closeCursor();
+    return $r;
+  }
+
+  public function getUser()
+  {
+    return (is_null($this->user_id) ? $this->user_id : new User($this->user_id));
+  }
+
+  public function getUserId()
+  {
     return $this->user_id;
   }
 
-  public function isDeprecated() {
-    return ($this->options_bitmask & self::OPTION_DEPRECATED);
+  public function incrementEdited()
+  {
+    $this->setEditedCount($this->getEditedCount() + 1);
+    $this->setEditedDateTime(new DateTime('now'));
+  }
+
+  public function isDeprecated()
+  {
+    return $this->getOption(self::OPTION_DEPRECATED);
   }
 
   public function isInResearch() {
-    return ($this->options_bitmask & self::OPTION_RESEARCH);
+    return $this->getOption(self::OPTION_RESEARCH);
   }
 
   public function isMarkdown() {
-    return ($this->options_bitmask & self::OPTION_MARKDOWN);
+    return $this->getOption(self::OPTION_MARKDOWN);
   }
 
   public function isPublished() {
-    return ($this->options_bitmask & self::OPTION_PUBLISHED);
+    return $this->getOption(self::OPTION_PUBLISHED);
   }
 
-  public function jsonSerialize() {
+  public function jsonSerialize()
+  {
     return [
       'created_datetime'            => $this->getCreatedDateTime(),
       'edited_count'                => $this->getEditedCount(),
       'edited_datetime'             => $this->getEditedDateTime(),
       'id'                          => $this->getId(),
-      'options_bitmask'             => $this->getOptionsBitmask(),
-      'packet_application_layer_id' => $this->getPacketApplicationLayerId(),
-      'packet_direction_id'         => $this->getPacketDirectionId(),
-      'packet_format'               => $this->getPacketFormat(),
+      'options_bitmask'             => $this->getOptions(),
+      'packet_application_layer_id' => $this->getApplicationLayerId(),
+      'packet_direction_id'         => $this->getDirection(),
+      'packet_format'               => $this->getFormat(),
       'packet_id'                   => $this->getPacketId(),
-      'packet_name'                 => $this->getPacketName(),
-      'packet_remarks'              => $this->getPacketRemarks( false ),
-      'packet_transport_layer_id'   => $this->getPacketTransportLayerId(),
+      'packet_name'                 => $this->getName(),
+      'packet_remarks'              => $this->getRemarks(false),
+      'packet_transport_layer_id'   => $this->getTransportLayerId(),
       'user'                        => $this->getUser(),
     ];
   }
 
-  protected static function normalize( StdClass &$data ) {
+  public function setApplicationLayerId(int $value)
+  {
+    if ($value < 0 || $value > self::MAX_APPLICATION_LAYER_ID)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_APPLICATION_LAYER_ID
+      ));
+    }
 
-    $data->created_datetime            = (string) $data->created_datetime;
-    $data->edited_count                = (int)    $data->edited_count;
-    $data->id                          = (int)    $data->id;
-    $data->options_bitmask             = (int)    $data->options_bitmask;
-    $data->packet_application_layer_id = (int)    $data->packet_application_layer_id;
-    $data->packet_direction_id         = (int)    $data->packet_direction_id;
-    $data->packet_format               = (string) $data->packet_format;
-    $data->packet_id                   = (int)    $data->packet_id;
-    $data->packet_name                 = (string) $data->packet_name;
-    $data->packet_remarks              = (string) $data->packet_remarks;
-    $data->packet_transport_layer_id   = (int)    $data->packet_transport_layer_id;
-
-    if (!is_null($data->edited_datetime))
-      $data->edited_datetime = $data->edited_datetime;
-
-    if (!is_null($data->user_id))
-      $data->user_id = (int) $data->user_id;
-
-    return true;
+    $this->application_layer_id = $value;
   }
 
-  public function refresh() {
-
-    if ( !isset( Common::$database )) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    try {
-
-      $stmt = Common::$database->prepare('
-        SELECT
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `options_bitmask`,
-          `packet_application_layer_id`,
-          `packet_direction_id`,
-          `packet_format`,
-          `packet_id`,
-          `packet_name`,
-          `packet_remarks`,
-          `packet_transport_layer_id`,
-          `user_id`
-        FROM `packets`
-        WHERE `id` = :id
-        LIMIT 1;
-      ');
-
-      $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
-
-      if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot refresh packet' );
-      } else if ( $stmt->rowCount() == 0 ) {
-        throw new PacketNotFoundException( $this->id );
-      }
-
-      $row = $stmt->fetch( PDO::FETCH_OBJ );
-
-      $stmt->closeCursor();
-
-      self::normalize( $row );
-
-      $this->created_datetime            = $row->created_datetime;
-      $this->edited_count                = $row->edited_count;
-      $this->edited_datetime             = $row->edited_datetime;
-      $this->id                          = $row->id;
-      $this->options_bitmask             = $row->options_bitmask;
-      $this->packet_application_layer_id = $row->packet_application_layer_id;
-      $this->packet_direction_id         = $row->packet_direction_id;
-      $this->packet_format               = $row->packet_format;
-      $this->packet_id                   = $row->packet_id;
-      $this->packet_name                 = $row->packet_name;
-      $this->packet_remarks              = $row->packet_remarks;
-      $this->packet_transport_layer_id   = $row->packet_transport_layer_id;
-      $this->user_id                     = $row->user_id;
-
-      return true;
-
-    } catch ( PDOException $e ) {
-
-      throw new QueryException( 'Cannot refresh packet', $e );
-
-    }
-
-    return false;
+  public function setCreatedDateTime(DateTime $value)
+  {
+    $this->created_datetime = $value;
   }
 
-  public function setDeprecated( $value ) {
-    if ( $value ) {
-      $this->options_bitmask |= self::OPTION_DEPRECATED;
-    } else {
-      $this->options_bitmask &= ~self::OPTION_DEPRECATED;
+  public function setDeprecated(bool $value)
+  {
+    $this->setOption(self::OPTION_DEPRECATED, $value);
+  }
+
+  public function setDirection(int $value)
+  {
+    switch ($value)
+    {
+      case self::DIRECTION_CLIENT_SERVER:
+      case self::DIRECTION_SERVER_CLIENT:
+      case self::DIRECTION_PEER_TO_PEER:
+        break;
+      default: throw new UnexpectedValueException(sprintf(
+        'packet direction: %d is invalid', $value
+      ));
     }
+
+    $this->direction = $value;
   }
 
   public function setEditedCount(int $value)
   {
     if ($value < 0 || $value > self::MAX_EDITED_COUNT)
     {
-      throw new OutOfBoundsException();
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_EDITED_COUNT
+      ));
     }
 
     $this->edited_count = $value;
   }
 
-  public function setEditedDateTime(DateTime $value)
+  public function setEditedDateTime(?DateTime $value)
   {
-    $this->edited_datetime = $value->format(self::DATE_SQL);
+    $this->edited_datetime = $value;
   }
 
-  public function setInResearch( $value ) {
-    if ( $value ) {
-      $this->options_bitmask |= self::OPTION_RESEARCH;
-    } else {
-      $this->options_bitmask &= ~self::OPTION_RESEARCH;
-    }
-  }
-
-  public function setMarkdown( $value ) {
-    if ( $value ) {
-      $this->options_bitmask |= self::OPTION_MARKDOWN;
-    } else {
-      $this->options_bitmask &= ~self::OPTION_MARKDOWN;
-    }
-  }
-
-  public function setPacketFormat(string $value)
+  public function setFormat(string $value)
   {
-    if (strlen($value) > self::MAX_PACKET_FORMAT)
+    if (strlen($value) > self::MAX_FORMAT)
     {
-      throw new OutOfBoundsException();
+      throw new OutOfBoundsException(sprintf(
+        'value must be less than or equal to %d characters', self::MAX_FORMAT
+      ));
     }
 
-    $this->packet_format = $value;
+    $this->format = $value;
   }
 
-  /**
-   * Sets the packet/message id
-   *
-   * @param mixed $value The packet id. Supports hexadecimal and octal input.
-   */
-  public function setPacketId($value)
+  public function setId(?int $value)
   {
-    if (is_string($value) && strlen($value) >= 2
-      && substr($value, 0, 2) == '0x')
+    if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
     {
-      $this->packet_id = hexdec(substr($value, 2));
+      throw new InvalidArgumentException(sprintf(
+        'value must be between 0-%d', self::MAX_ID
+      ));
     }
-    else if (is_string($value) && strlen($value) >= 1
-      && substr($value, 0, 1) == '0')
+
+    $this->id = $value;
+  }
+
+  public function setInResearch(bool $value)
+  {
+    $this->setOption(self::OPTION_RESEARCH, $value);
+  }
+
+  public function setMarkdown(bool $value)
+  {
+    $this->setOption(self::OPTION_MARKDOWN, $value);
+  }
+
+  public function setOption(int $option, bool $value)
+  {
+    if ($option < 0 || $option > self::MAX_OPTIONS)
     {
-      $this->packet_id = octdec(substr($value, 1));
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
     }
-    else if (is_numeric($value))
+
+    if ($value)
     {
-      $this->packet_id = (int) $value;
+      $this->options |= $option; // bitwise or
     }
     else
     {
-      throw new InvalidArgumentException();
-    }
-
-    if ($this->packet_id < 0 || $this->packet_id > self::MAX_PACKET_ID)
-    {
-      throw new OutOfBoundsException();
+      $this->options &= ~$option; // bitwise and ones complement
     }
   }
 
-  public function setPacketName(string $value)
+  public function setOptions(int $value)
   {
-    if (strlen($value) > self::MAX_PACKET_NAME)
+    if ($value < 0 || $value > self::MAX_OPTIONS)
     {
-      throw new OutOfBoundsException();
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
     }
 
-    $this->packet_name = $value;
+    $this->options = $value;
   }
 
-  public function setPacketRemarks(string $value)
+  public function setName(string $value)
   {
-    if (strlen($value) > self::MAX_PACKET_REMARKS)
+    if (strlen($value) > self::MAX_NAME)
     {
-      throw new OutOfBoundsException();
+      throw new OutOfBoundsException(sprintf(
+        'value must be less than or equal to %d characters', self::MAX_NAME
+      ));
     }
 
-    $this->packet_remarks = $value;
+    $this->name = $value;
   }
 
-  public function setPublished( $value ) {
-    if ( $value ) {
-      $this->options_bitmask |= self::OPTION_PUBLISHED;
-    } else {
-      $this->options_bitmask &= ~self::OPTION_PUBLISHED;
+  /**
+   * Sets the packet/message id. See also: setId()
+   *
+   * @param mixed $value The packet id. Supports decimal, hexadecimal, and octal format.
+   * @throws InvalidArgumentException if value cannot be translated into an integer.
+   * @throws OutOfBoundsException if value is not between zero and MAX_PACKET_ID.
+   */
+  public function setPacketId($value)
+  {
+    if (is_string($value) && strlen($value) >= 2 && (
+      substr($value, 0, 2) == '&b' || substr($value, 0, 2) == '&B'))
+    {
+      // Binary (&b1010011, &B1010011)
+      $v = bindec(substr($value, 2));
     }
+    else if (is_string($value) && strlen($value) >= 2 && (
+      substr($value, 0, 2) == '0x' ||
+      substr($value, 0, 2) == '&h' || substr($value, 0, 2) == '&H'))
+    {
+      // Hexadecimal (0x53, &h53, &H53)
+      $v = hexdec(substr($value, 2));
+    }
+    else if (is_string($value) && strlen($value) >= 1 && substr($value, 0, 1) == '0')
+    {
+      // Octal (0123)
+      $v = octdec(substr($value, 1));
+    }
+    else if (is_string($value) && strlen($value) >= 2 && (
+      substr($value, 0, 2) == '&o' || substr($value, 0, 2) == '&O'))
+    {
+      // Octal (&o123, &O123)
+      $v = octdec(substr($value, 1));
+    }
+    else if (is_numeric($value) && strpos($value, '.') === false)
+    {
+      // Decimal
+      $v = (int) $value;
+    }
+    else
+    {
+      throw new InvalidArgumentException(
+        'value must be a decimal, hexadecimal, or octal string or integer'
+      );
+    }
+
+    if ($v < 0 || $v > self::MAX_PACKET_ID)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_PACKET_ID
+      ));
+    }
+
+    $this->packet_id = $v;
   }
 
-  public function setUsedBy( $value ) {
-    if (!isset(Common::$database)) {
+  public function setPublished(bool $value)
+  {
+    $this->setOption(self::OPTION_PUBLISHED, $value);
+  }
+
+  public function setRemarks(string $value)
+  {
+    if (strlen($value) > self::MAX_REMARKS)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be less than or equal to %d characters', self::MAX_REMARKS
+      ));
+    }
+
+    $this->remarks = $value;
+  }
+
+  public function setTransportLayerId(int $value)
+  {
+    if ($value < 0 || $value > self::MAX_TRANSPORT_LAYER_ID)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_TRANSPORT_LAYER_ID
+      ));
+    }
+
+    $this->transport_layer_id = $value;
+  }
+
+  /**
+   * Sets the products this packet is used by.
+   *
+   * @param array $value The set of ProductId integers.
+   */
+  public function setUsedBy(array $value)
+  {
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    try {
+
+    try
+    {
       Common::$database->beginTransaction();
-      $stmt = Common::$database->prepare('
-        DELETE FROM `packet_used_by`
-        WHERE `id` = :id;
-      ');
-      $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException('Cannot update packet used by');
-      }
-      if ($value !== null && count($value) > 0) {
-        $insert = [];
-        $placeholders = [];
-        foreach ($value as $v) {
-          array_push($insert, $this->id, (int)$v);
-          $placeholders[] = '(?, ?)';
-        }
-        $stmt = Common::$database->prepare('
-          INSERT INTO `packet_used_by`
-            (`id`, `bnet_product_id`)
-          VALUES
-            ' . implode(', ', $placeholders) . '; 
-        ');
-        if (!$stmt->execute($insert)) {
+
+      $q = Common::$database->prepare('DELETE FROM `packet_used_by` WHERE `id` = :id;');
+      $q->bindParam(':id', $this->id, PDO::PARAM_INT);
+      $r = $q->execute();
+      if (!$r) return $r;
+
+      $q = Common::$database->prepare('INSERT INTO `packet_used_by` (`id`, `bnet_product_id`) VALUES (?, ?);');
+      foreach ($value as $v)
+      {
+        $r = $q->execute([(int) $this->id, (int) $v]);
+        if (!$r)
+        {
           Common::$database->rollBack();
-          throw new QueryException('Cannot update packet used by');
+          return $r;
         }
       }
 
       Common::$database->commit();
-    } catch (PDOException $e) {
+    }
+    catch (PDOException $e)
+    {
       Common::$database->rollBack();
-      throw new QueryException('Cannot update packet used by', $e);
+      throw $e;
     }
   }
 
-  public function update() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
+  public function setUser(?User $value)
+  {
+    $this->setUserId($value ? $value->getId() : $value);
+  }
 
-    try {
-
-      $stmt = Common::$database->prepare('
-        UPDATE `packets` SET
-          `created_datetime` = :dt1,
-          `edited_count` = :edit_count,
-          `edited_datetime` = :dt2,
-          `options_bitmask` = :options,
-          `packet_application_layer_id` = :app_layer_id,
-          `packet_direction_id` = :direction,
-          `packet_format` = :format,
-          `packet_id` = :pid,
-          `packet_name` = :name,
-          `packet_remarks` = :remarks,
-          `packet_transport_layer_id` = :transport_layer_id,
-          `user_id` = :user_id
-        WHERE
-          `id` = :id
-        LIMIT 1;
-      ');
-
-      $stmt->bindParam(
-        ':app_layer_id', $this->packet_application_layer_id, PDO::PARAM_INT
-      );
-
-      $stmt->bindParam(':dt1', $this->created_datetime, PDO::PARAM_STR);
-      $stmt->bindParam(':edit_count', $this->edited_count, PDO::PARAM_INT);
-
-      $stmt->bindParam(':dt2', $this->edited_datetime, (
-        is_null($this->edited_datetime) ? PDO::PARAM_NULL : PDO::PARAM_STR
+  public function setUserId(?int $value)
+  {
+    if (!is_null($value) && ($value < 0 || $value > self::MAX_USER_ID))
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_USER_ID
       ));
-
-      $stmt->bindParam(
-        ':direction', $this->packet_direction_id, PDO::PARAM_INT
-      );
-
-      $stmt->bindParam( ':format', $this->packet_format, PDO::PARAM_STR );
-      $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
-      $stmt->bindParam( ':name', $this->packet_name, PDO::PARAM_STR );
-      $stmt->bindParam( ':options', $this->options_bitmask, PDO::PARAM_INT );
-      $stmt->bindParam( ':pid', $this->packet_id, PDO::PARAM_INT );
-      $stmt->bindParam( ':remarks', $this->packet_remarks, PDO::PARAM_STR );
-
-      $stmt->bindParam(
-        ':transport_layer_id', $this->packet_transport_layer_id, PDO::PARAM_INT
-      );
-
-      if ( is_null( $this->user_id )) {
-        $stmt->bindParam( ':user_id', $this->user_id, PDO::PARAM_NULL );
-      } else {
-        $stmt->bindParam( ':user_id', $this->user_id, PDO::PARAM_INT );
-      }
-
-      if ( !$stmt->execute() ) {
-        throw new QueryException( 'Cannot update packet' );
-      }
-
-      $stmt->closeCursor();
-      return true;
-
-    } catch ( PDOException $e ) {
-      throw new QueryException( 'Cannot update packet', $e );
     }
-    return false;
-  }
 
+    $this->user_id = $value;
+  }
 }

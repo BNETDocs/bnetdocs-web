@@ -25,12 +25,12 @@ use \UnexpectedValueException;
 
 class User implements IDatabaseObject, JsonSerializable
 {
-  const DATE_SQL = 'Y-m-d H:i:s';
+  const DATE_SQL = 'Y-m-d H:i:s'; // DateTime::format() string for database
 
-  const DEFAULT_OPTION = 0x00000020;
+  const DEFAULT_OPTION = self::OPTION_ACL_COMMENT_CREATE;
   const DEFAULT_TZ = 'Etc/UTC';
 
-  # Maximum SQL field lengths, alter as appropriate.
+  // Maximum SQL field lengths, alter as appropriate
   const MAX_DISPLAY_NAME = 191;
   const MAX_EMAIL = 191;
   const MAX_ID = 0xFFFFFFFFFFFFFFFF;
@@ -41,8 +41,8 @@ class User implements IDatabaseObject, JsonSerializable
   const MAX_USERNAME = 191;
   const MAX_VERIFIER_TOKEN = 191;
 
-  const OPTION_DISABLED             = 0x00000001;
-  const OPTION_VERIFIED             = 0x00000002;
+  const OPTION_DISABLED             = 0x00000001; // User login disabled, active sessions force-expired
+  const OPTION_VERIFIED             = 0x00000002; // A token sent via email was returned to us
   const OPTION_ACL_DOCUMENT_CREATE  = 0x00000004;
   const OPTION_ACL_DOCUMENT_MODIFY  = 0x00000008;
   const OPTION_ACL_DOCUMENT_DELETE  = 0x00000010;
@@ -151,12 +151,12 @@ class User implements IDatabaseObject, JsonSerializable
     $r = $q->execute();
     if (!$r)
     {
-      throw new UnexpectedValueException('an error occurred finding user id');
+      throw new UnexpectedValueException(sprintf('an error occurred finding user id: %d', $id));
     }
 
     if ($q->rowCount() != 1)
     {
-      throw new UnexpectedValueException(sprintf('user id: %s not found', $id));
+      throw new UnexpectedValueException(sprintf('user id: %d not found', $id));
     }
 
     $r = $q->fetchObject();
@@ -230,8 +230,7 @@ class User implements IDatabaseObject, JsonSerializable
     $created_datetime = $this->created_datetime->format(self::DATE_SQL);
 
     $verified_datetime = (
-      is_null($this->verified_datetime) ? null :
-      $this->verified_datetime->format(self::DATE_SQL)
+      is_null($this->verified_datetime) ? null : $this->verified_datetime->format(self::DATE_SQL)
     );
 
     $q->bindParam(':c_dt', $created_datetime, PDO::PARAM_STR);

@@ -14,32 +14,23 @@ $url = Common::relativeUrlToAbsolute('/packet/' . urlencode($object_id));
 if ($object)
 {
   $created_dt = $object->getCreatedDateTime();
+  $deprecated = $object->isDeprecated();
+  $description = Common::stripUpTo(trim(filter_var($object->getRemarks(true), FILTER_SANITIZE_STRING)), "\n", 300);
   $edited_dt = $object->getEditedDateTime();
   $packet_id = $object->getPacketId(true);
-  $url = $object->getURI();
-  $title = $object->getName();
-  $description = Common::stripUpTo(trim(filter_var(
-    $object->getPacketRemarks(true), FILTER_SANITIZE_STRING
-  )), "\n", 300);
-
-  if ($object->getUserId() !== null)
-  {
-    $user_name   = $object->getUser()->getName();
-    $user_id     = $object->getUserId();
-    $user_url    = $object->getUser()->getURI();
-    $user_avatar = $object->getUser()->getAvatarURI(40);
-  }
-  else
-  {
-    $user_name   = null;
-    $user_id     = null;
-    $user_url    = null;
-    $user_avatar = null;
-  }
-
-  $deprecated = $object->isDeprecated();
-  $research   = $object->isInResearch();
   $published  = $object->isPublished();
+  $research   = $object->isInResearch();
+  $title = $object->getName();
+  $url = $object->getURI();
+  $user = $object->getUser();
+
+  if ($user)
+  {
+    $user_name   = $user->getName();
+    $user_id     = $user->getUserId();
+    $user_url    = $user->getURI();
+    $user_avatar = $user->getAvatarURI(40);
+  }
 }
 
 $this->opengraph->attach(new Pair('type', 'article'));
@@ -54,7 +45,7 @@ require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container">
 <? if ($object) { ?>
-  <a class="btn btn-sm btn-primary float-right mr-1" href="https://twitter.com/share?text=<?=urlencode($packet_id . ' ' . $object->getPacketName())?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
+  <a class="btn btn-sm btn-primary float-right mr-1" href="https://twitter.com/share?text=<?=urlencode($object->getLabel())?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
   <a class="btn btn-sm btn-primary float-right mr-1" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
 <? if ($delete_visible) { ?>
   <a class="btn btn-sm btn-danger float-right mr-1" href="<?=$delete_url?>" title="Delete">❌</a>
@@ -65,8 +56,8 @@ require('./header.inc.phtml'); ?>
   <h1><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
   <table class="table table-striped"><tbody>
     <tr><th class="text-right">Message Id:</th><td><code><?=$packet_id?></code></td></tr>
-    <tr><th class="text-right">Message Name:</th><td><code><?=filter_var($object->getPacketName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></td></tr>
-    <tr><th class="text-right">Direction:</th><td><?=filter_var($object->getPacketDirectionLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></td></tr>
+    <tr><th class="text-right">Message Name:</th><td><code><?=filter_var($object->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></td></tr>
+    <tr><th class="text-right">Direction:</th><td><?=filter_var($object->getDirectionLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></td></tr>
 <? if ($deprecated || $research || !$published) { ?>
     <tr><th class="text-right">Flags:</th><td>
       <? if ($deprecated) require('./Deprecated.inc.phtml'); ?>
@@ -95,12 +86,12 @@ require('./header.inc.phtml'); ?>
       }
     ?></td></tr>
     <tr><th class="text-right">Message Format:<br/><sup class="text-muted">(does not include protocol header)</sup></th><td>
-      <pre class="border border-primary overflow-auto rounded bg-dark text-light"><code class="language-objectivec"><?=$object->getPacketFormat()?></code></pre>
+      <pre class="border border-primary overflow-auto rounded bg-dark text-light"><code class="language-objectivec"><?=$object->getFormat()?></code></pre>
     </td></tr>
   </tbody></table>
 
   <h1>Remarks</h1>
-  <div class="container"><?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getPacketRemarks(true), true)?></div>
+  <div class="container"><?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getRemarks(true), true)?></div>
 
   <div class="card mt-3"><div class="card-body">
     <span class="float-right text-muted">

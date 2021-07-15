@@ -127,8 +127,8 @@ class View extends Controller
     if ($model->packets) {
       // Alphabetically sort the packets
       usort($model->packets, function($a, $b){
-        $a1 = $a->getPacketName();
-        $b1 = $b->getPacketName();
+        $a1 = $a->getName();
+        $b1 = $b->getName();
         if ($a1 == $b1) return 0;
         return ($a1 < $b1 ? -1 : 1);
       });

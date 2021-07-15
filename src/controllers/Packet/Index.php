@@ -95,7 +95,7 @@ class Index extends Controller {
 
     foreach ( $packets as $pkt ) {
       // This removes duplicates by overwriting keys that already exist
-      $pkts[ $pkt->getPacketId() . $pkt->getPacketName() ] = $pkt;
+      $pkts[ $pkt->getLabel() ] = $pkt;
     }
 
     return $pkts;

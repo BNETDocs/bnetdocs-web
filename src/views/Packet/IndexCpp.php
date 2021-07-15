@@ -44,8 +44,7 @@ class IndexCpp extends View {
     echo "\n";
 
     foreach ($model->packets as $pkt) {
-      echo '#define ' . $pkt->getPacketName() . ' '
-        . $pkt->getPacketId(true) . "\n";
+      echo '#define ' . $pkt->getName() . ' ' . $pkt->getPacketId(true) . "\n";
     }
 
     $model->_responseHeaders['Content-Type'] = $this->getMimeType();

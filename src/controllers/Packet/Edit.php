@@ -60,9 +60,9 @@ class Edit extends Controller {
 
       $model->deprecated = $model->packet->isDeprecated();
       $model->id         = $model->packet->getPacketId(true);
-      $model->name       = $model->packet->getPacketName();
-      $model->format     = $model->packet->getPacketFormat();
-      $model->remarks    = $model->packet->getPacketRemarks(false);
+      $model->name       = $model->packet->getName();
+      $model->format     = $model->packet->getFormat();
+      $model->remarks    = $model->packet->getRemarks(false);
       $model->research   = $model->packet->isInResearch();
       $model->markdown   = $model->packet->isMarkdown();
       $model->published  = $model->packet->isPublished();
@@ -119,44 +119,38 @@ class Edit extends Controller {
 
     $user_id = $model->user->getId();
 
-    try {
-
+    try
+    {
+      $model->packet->setDeprecated($model->deprecated ? true : false);
+      $model->packet->setEditedCount($model->packet->getEditedCount() + 1);
+      $model->packet->setEditedDateTime(new DateTime('now'));
+      $model->packet->setFormat($model->format);
+      $model->packet->setInResearch($model->research ? true : false);
+      $model->packet->setMarkdown($model->markdown ? true : false);
+      $model->packet->setName($model->name);
       $model->packet->setPacketId($model->id);
-      $model->packet->setPacketName($model->name);
-      $model->packet->setPacketFormat($model->format);
-      $model->packet->setPacketRemarks($model->remarks);
-      $model->packet->setMarkdown($model->markdown);
-      $model->packet->setDeprecated($model->deprecated);
-      $model->packet->setInResearch($model->research);
-      $model->packet->setPublished($model->published);
+      $model->packet->setPublished($model->published ? true : false);
+      $model->packet->setRemarks($model->remarks);
 
-      $model->packet->setEditedCount(
-        $model->packet->getEditedCount() + 1
-      );
-      $model->packet->setEditedDateTime(
-        new DateTime( 'now', new DateTimeZone( 'Etc/UTC' ))
-      );
-
-      $success = $model->packet->update();
+      $model->packet->commit();
+      $success = true;
 
       // Used-by is stored in a different table than packet data so it is
       // updated separately.
       $model->packet->setUsedBy($used_by);
-
-    } catch (OutOfBoundsException $e) {
-
+    }
+    catch (OutOfBoundsException $e)
+    {
       // Some value was outside of a boundary
       Logger::logException($e);
       $success = false;
-
-    } catch (QueryException $e) {
-
+    }
+    catch (QueryException $e)
+    {
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
-
       $success = false;
-
     }
 
     if (!$success) {
@@ -173,10 +167,10 @@ class Edit extends Controller {
         'error'           => $model->error,
         'id'              => $model->packet->getId(),
         'packet_id'       => $model->packet->getPacketId(true),
-        'name'            => $model->packet->getPacketName(),
-        'options_bitmask' => $model->packet->getOptionsBitmask(),
-        'format'          => $model->packet->getPacketFormat(),
-        'remarks'         => $model->packet->getPacketRemarks(false),
+        'name'            => $model->packet->getName(),
+        'options_bitmask' => $model->packet->getOptions(),
+        'format'          => $model->packet->getFormat(),
+        'remarks'         => $model->packet->getRemarks(false),
         'used_by'         => $used_by
       ])
     );

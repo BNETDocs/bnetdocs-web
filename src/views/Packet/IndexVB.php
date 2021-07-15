@@ -44,8 +44,8 @@ class IndexVB extends View {
     echo "\n";
 
     foreach ($model->packets as $pkt) {
-      echo 'CONST ' . $pkt->getPacketName() . '& = &H'
-        . substr('0' . strtoupper(dechex($pkt->getPacketId())), -2) . "\n";
+      echo 'CONST ' . $pkt->getName() . '& = ' .
+        str_replace('0x', '&H', $pkt->getPacketId(true)) . "\n";
     }
 
     $model->_responseHeaders['Content-Type'] = $this->getMimeType();

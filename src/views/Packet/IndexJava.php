@@ -44,8 +44,7 @@ class IndexJava extends View {
     echo "\n";
 
     foreach ($model->packets as $pkt) {
-      echo 'static final byte ' . $pkt->getPacketName() . ' = '
-        . $pkt->getPacketId(true) . ";\n";
+      echo 'static final byte ' . $pkt->getName() . ' = ' . $pkt->getPacketId(true) . ";\n";
     }
 
     $model->_responseHeaders['Content-Type'] = $this->getMimeType();
