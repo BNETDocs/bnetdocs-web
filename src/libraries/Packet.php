@@ -2,7 +2,6 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
-use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\IDatabaseObject;
 use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
 use \BNETDocs\Libraries\Packet\Transport as TransportLayer;
