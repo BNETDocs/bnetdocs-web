@@ -812,7 +812,7 @@ class Packet implements IDatabaseObject, JsonSerializable
       substr($value, 0, 2) == '&o' || substr($value, 0, 2) == '&O'))
     {
       // Octal (&o123, &O123)
-      $v = octdec(substr($value, 1));
+      $v = octdec(substr($value, 2));
     }
     else if (is_numeric($value) && strpos($value, '.') === false)
     {
