@@ -33,8 +33,8 @@ class User implements IDatabaseObject, JsonSerializable
   // Maximum SQL field lengths, alter as appropriate
   const MAX_DISPLAY_NAME = 191;
   const MAX_EMAIL = 191;
-  const MAX_ID = 0xFFFFFFFFFFFFFFFF;
-  const MAX_OPTIONS = 0xFFFFFFFFFFFFFFFF;
+  const MAX_ID = 0x7FFFFFFFFFFFFFFF;
+  const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
   const MAX_PASSWORD_HASH = 191;
   const MAX_PASSWORD_SALT = 191;
   const MAX_TIMEZONE = 191;

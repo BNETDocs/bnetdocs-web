@@ -1,5 +1,4 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Authentication;
@@ -10,174 +9,182 @@ use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Product;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\Packet\Edit as PacketEditModel;
-
+use \BNETDocs\Models\Packet\Form as FormModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
-
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \OutOfBoundsException;
 
-class Edit extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $data              = $router->getRequestQueryArray();
-    $model             = new PacketEditModel();
-    $model->comments   = null;
-    $model->deprecated = null;
-    $model->error      = null;
-    $model->format     = null;
-    $model->id         = null;
-    $model->markdown   = null;
-    $model->name       = null;
-    $model->packet     = null;
-    $model->packet_id  = (isset($data['id']) ? $data['id'] : null);
-    $model->products   = Product::getAllProducts();
-    $model->published  = null;
-    $model->remarks    = null;
-    $model->research   = null;
-    $model->used_by    = null;
-    $model->user       = Authentication::$user;
+class Edit extends Controller
+{
+  public function &run(Router &$router, View &$view, array &$args)
+  {
+    $model = new FormModel();
+    $model->active_user = Authentication::$user;
 
-    $model->acl_allowed = ($model->user && $model->user->getOption(
-      User::OPTION_ACL_PACKET_MODIFY
-    ));
+    if (!$model->active_user || !$model->active_user->getOption(User::OPTION_ACL_PACKET_MODIFY))
+    {
+      $model->error = FormModel::ERROR_ACL_DENIED;
+      $model->_responseCode = 401;
+      $view->render($model);
+      return $model;
+    }
 
-    try { $model->packet = new Packet($model->packet_id); }
+    $model->form_fields = array_merge(
+      // Conflicting request query string fields will be overridden by POST-body fields
+      $router->getRequestQueryArray() ?? [], $router->getRequestBodyArray() ?? []
+    );
+    $model->products = Product::getAllProducts();
+
+    $id = $model->form_fields['id'] ?? null;
+    try { if (!is_null($id)) $model->packet = new Packet($id); }
     catch (PacketNotFoundException $e) { $model->packet = null; }
     catch (InvalidArgumentException $e) { $model->packet = null; }
 
-    if ($model->packet === null) {
-      $model->error = 'NOT_FOUND';
-    } else {
-      $model->comments = Comment::getAll(
-        Comment::PARENT_TYPE_PACKET, $model->packet_id
+    if (is_null($model->packet))
+    {
+      $model->error = FormModel::ERROR_NOT_FOUND;
+      $model->_responseCode = 404;
+      $view->render($model);
+      return $model;
+    }
+
+    $model->comments = Comment::getAll(Comment::PARENT_TYPE_PACKET, $id);
+
+    self::assignDefault($model->form_fields, 'deprecated', $model->packet->isDeprecated());
+    self::assignDefault($model->form_fields, 'packet_id', $model->packet->getPacketId(true));
+    self::assignDefault($model->form_fields, 'name', $model->packet->getName());
+    self::assignDefault($model->form_fields, 'format', $model->packet->getFormat());
+    self::assignDefault($model->form_fields, 'remarks', $model->packet->getRemarks(false));
+    self::assignDefault($model->form_fields, 'research', $model->packet->isInResearch());
+    self::assignDefault($model->form_fields, 'markdown', $model->packet->isMarkdown());
+    self::assignDefault($model->form_fields, 'published', $model->packet->isPublished());
+    self::assignDefault($model->form_fields, 'used_by', Product::getProductsFromIds($model->packet->getUsedBy()));
+
+    if ($router->getRequestMethod() == 'POST')
+    {
+      $this->handlePost($router, $model);
+    }
+
+    if ($model->error === FormModel::ERROR_SUCCESS)
+    {
+      Logger::logEvent(
+        EventTypes::PACKET_EDITED,
+        $model->active_user->getId(),
+        getenv('REMOTE_ADDR'),
+        json_encode(['model' => $model, 'view' => get_class($view)])
       );
-
-      $model->deprecated = $model->packet->isDeprecated();
-      $model->id         = $model->packet->getPacketId(true);
-      $model->name       = $model->packet->getName();
-      $model->format     = $model->packet->getFormat();
-      $model->remarks    = $model->packet->getRemarks(false);
-      $model->research   = $model->packet->isInResearch();
-      $model->markdown   = $model->packet->isMarkdown();
-      $model->published  = $model->packet->isPublished();
-      $model->used_by    = $this->getUsedBy($model->packet);
-
-      if ($router->getRequestMethod() == 'POST') {
-        $this->handlePost($router, $model);
-      }
     }
 
     $view->render($model);
-    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
+    $model->_responseCode = 200;
     return $model;
   }
 
-  protected function handlePost(Router &$router, PacketEditModel &$model) {
-    if (!$model->acl_allowed) {
-      $model->error = 'ACL_NOT_SET';
-      return;
-    }
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
+  protected static function assignDefault(&$form_fields, $key, $value)
+  {
+    if (isset($form_fields[$key])) return;
+    $form_fields[$key] = $value;
+  }
 
-    $data       = $router->getRequestBodyArray();
-    $id         = (isset($data['id'        ]) ? $data['id'        ] : null);
-    $name       = (isset($data['name'      ]) ? $data['name'      ] : null);
-    $format     = (isset($data['format'    ]) ? $data['format'    ] : null);
-    $remarks    = (isset($data['remarks'   ]) ? $data['remarks'   ] : null);
-    $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
-    $content    = (isset($data['content'   ]) ? $data['content'   ] : null);
-    $deprecated = (isset($data['deprecated']) ? $data['deprecated'] : null);
-    $research   = (isset($data['research'  ]) ? $data['research'  ] : null);
-    $published  = (isset($data['published' ]) ? $data['published' ] : null);
-    $used_by    = (isset($data['used_by'   ]) ? $data['used_by'   ] : null);
-
-    $model->id         = $id;
-    $model->name       = $name;
-    $model->format     = $format;
-    $model->remarks    = $remarks;
-    $model->markdown   = $markdown;
-    $model->content    = $content;
-    $model->deprecated = $deprecated;
-    $model->research   = $research;
-    $model->published  = $published;
-
-    if (empty($name)) {
-      $model->error = 'EMPTY_NAME';
-    } else if (empty($format)) {
-      $model->error = 'EMPTY_FORMAT';
-    } else if (empty($remarks)) {
-      $model->error = 'EMPTY_REMARKS';
-    }
-
-    $user_id = $model->user->getId();
+  protected function handlePost(FormModel &$model)
+  {
+    $deprecated = $model->form_fields['deprecated'] ?? null;
+    $direction = $model->form_fields['direction'] ?? null;
+    $format = $model->form_fields['format'] ?? null;
+    $markdown = $model->form_fields['markdown'] ?? null;
+    $name = $model->form_fields['name'] ?? null;
+    $packet_id = $model->form_fields['packet_id'] ?? null;
+    $published = $model->form_fields['published'] ?? null;
+    $remarks = $model->form_fields['remarks'] ?? null;
+    $research = $model->form_fields['research'] ?? null;
+    $used_by = $model->form_fields['used_by'] ?? [];
 
     try
     {
-      $model->packet->setDeprecated($model->deprecated ? true : false);
-      $model->packet->setEditedCount($model->packet->getEditedCount() + 1);
-      $model->packet->setEditedDateTime(new DateTime('now'));
-      $model->packet->setFormat($model->format);
-      $model->packet->setInResearch($model->research ? true : false);
-      $model->packet->setMarkdown($model->markdown ? true : false);
-      $model->packet->setName($model->name);
-      $model->packet->setPacketId($model->id);
-      $model->packet->setPublished($model->published ? true : false);
-      $model->packet->setRemarks($model->remarks);
+      $model->packet->setDirection((int) $direction);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_DIRECTION;
+      return;
+    }
 
-      $model->packet->commit();
-      $success = true;
+    try
+    {
+      $model->packet->setPacketId($packet_id);
+    }
+    catch (InvalidArgumentException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_PACKET_ID;
+      return;
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_PACKET_ID;
+      return;
+    }
 
-      // Used-by is stored in a different table than packet data so it is
-      // updated separately.
+    try
+    {
+      $model->packet->setName($name);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_NAME;
+      return;
+    }
+
+    try
+    {
+      $model->packet->setFormat($format);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_FORMAT;
+      return;
+    }
+
+    try
+    {
+      $model->packet->setRemarks($remarks);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_REMARKS;
+      return;
+    }
+
+    try
+    {
       $model->packet->setUsedBy($used_by);
     }
     catch (OutOfBoundsException $e)
     {
-      // Some value was outside of a boundary
-      Logger::logException($e);
-      $success = false;
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_USED_BY;
+      return;
     }
-    catch (QueryException $e)
+
+    $model->packet->setOption(Packet::OPTION_DEPRECATED, $deprecated ? true : false);
+    $model->packet->setOption(Packet::OPTION_MARKDOWN, $markdown ? true : false);
+    $model->packet->setOption(Packet::OPTION_PUBLISHED, $published ? true : false);
+    $model->packet->setOption(Packet::OPTION_RESEARCH, $research ? true : false);
+    $model->packet->incrementEdited();
+
+    try
     {
-      // SQL error occurred. We can show a friendly message to the user while
-      // also notifying this problem to staff.
+      $model->packet->commit();
+      $model->error = FormModel::ERROR_SUCCESS;
+    }
+    catch (Exception $e)
+    {
       Logger::logException($e);
-      $success = false;
+      $model->error = FormModel::ERROR_INTERNAL;
     }
-
-    if (!$success) {
-      $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
-    }
-
-    Logger::logEvent(
-      EventTypes::PACKET_EDITED,
-      $user_id,
-      getenv('REMOTE_ADDR'),
-      json_encode([
-        'error'           => $model->error,
-        'id'              => $model->packet->getId(),
-        'packet_id'       => $model->packet->getPacketId(true),
-        'name'            => $model->packet->getName(),
-        'options_bitmask' => $model->packet->getOptions(),
-        'format'          => $model->packet->getFormat(),
-        'remarks'         => $model->packet->getRemarks(false),
-        'used_by'         => $used_by
-      ])
-    );
-  }
-
-  protected function getUsedBy(Packet &$packet) {
-    if (is_null($packet)) return null;
-    return Product::getProductsFromIds($packet->getUsedBy());
   }
 }

@@ -23,26 +23,26 @@ class Packet implements IDatabaseObject, JsonSerializable
 {
   const DATE_SQL = 'Y-m-d H:i:s'; // DateTime::format() string for database
 
-  const DEFAULT_APPLICATION_LAYER_ID = 1;
+  const DEFAULT_APPLICATION_LAYER_ID = 1; // SID
   const DEFAULT_DIRECTION = self::DIRECTION_CLIENT_SERVER;
   const DEFAULT_OPTION = self::OPTION_MARKDOWN;
-  const DEFAULT_TRANSPORT_LAYER_ID = 1;
+  const DEFAULT_TRANSPORT_LAYER_ID = 1; // TCP
 
-  const DIRECTION_CLIENT_SERVER = 1;
-  const DIRECTION_SERVER_CLIENT = 2;
-  const DIRECTION_PEER_TO_PEER  = 3;
+  const DIRECTION_CLIENT_SERVER = 1; // Client to Server
+  const DIRECTION_SERVER_CLIENT = 2; // Server to Client
+  const DIRECTION_PEER_TO_PEER  = 3; // Peer to Peer
 
   // Maximum SQL field lengths, alter as appropriate
-  const MAX_APPLICATION_LAYER_ID = 0xFFFFFFFFFFFFFFFF;
-  const MAX_EDITED_COUNT = 0xFFFFFFFFFFFFFFFF;
+  const MAX_APPLICATION_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
+  const MAX_EDITED_COUNT = 0x7FFFFFFFFFFFFFFF;
   const MAX_FORMAT = 0xFFFF;
-  const MAX_ID = 0xFFFFFFFFFFFFFFFF;
+  const MAX_ID = 0x7FFFFFFFFFFFFFFF;
   const MAX_NAME = 191;
-  const MAX_OPTIONS = 0xFFFFFFFFFFFFFFFF;
+  const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
   const MAX_PACKET_ID = 0xFF;
   const MAX_REMARKS = 0xFFFF;
-  const MAX_TRANSPORT_LAYER_ID = 0xFFFFFFFFFFFFFFFF;
-  const MAX_USER_ID = 0xFFFFFFFFFFFFFFFF;
+  const MAX_TRANSPORT_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
+  const MAX_USER_ID = 0x7FFFFFFFFFFFFFFF;
 
   const OPTION_MARKDOWN   = 0x00000001; // Markdown-formatted remarks
   const OPTION_PUBLISHED  = 0x00000002; // 'Draft' badge and visiblility to non-editors
@@ -65,6 +65,7 @@ class Packet implements IDatabaseObject, JsonSerializable
   protected $packet_id;
   protected $remarks;
   protected $transport_layer_id;
+  protected $used_by;
   protected $user_id;
 
   public function __construct($value)
@@ -209,7 +210,7 @@ class Packet implements IDatabaseObject, JsonSerializable
         `packet_transport_layer_id`,
         `user_id`
       ) VALUES (
-        :c_dt, :e_c, :e_dt, :id, :opts, :app_id, :id, :f, :pid, :n, :r, :tr_id, :uid
+        :c_dt, :e_c, :e_dt, :id, :opts, :app_id, :d, :f, :pid, :n, :r, :tr_id, :uid
       ) ON DUPLICATE KEY UPDATE
         `created_datetime` = :c_dt,
         `edited_count` = :e_c,
@@ -649,6 +650,11 @@ class Packet implements IDatabaseObject, JsonSerializable
     ];
   }
 
+  /**
+   * Sets the Application layer (SID/MCP/BNLS/etc.) associated with this Packet.
+   *
+   * @param int @value The application layer (id).
+   */
   public function setApplicationLayerId(int $value)
   {
     if ($value < 0 || $value > self::MAX_APPLICATION_LAYER_ID)
@@ -661,16 +667,32 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->application_layer_id = $value;
   }
 
+  /**
+   * Sets the Date and Time this Packet was created.
+   *
+   * @param DateTime $value The DateTime object.
+   */
   public function setCreatedDateTime(DateTime $value)
   {
     $this->created_datetime = $value;
   }
 
+  /**
+   * Toggles the 'Deprecated' badge for this Packet.
+   *
+   * @param bool $value If true, the 'Deprecated' badge is visible. If false, it is not visible.
+   */
   public function setDeprecated(bool $value)
   {
     $this->setOption(self::OPTION_DEPRECATED, $value);
   }
 
+  /**
+   * Sets the message direction for this Packet.
+   *
+   * @param int $value The message direction.
+   * @throws UnexpectedValueException if value is invalid
+   */
   public function setDirection(int $value)
   {
     switch ($value)
@@ -687,6 +709,12 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->direction = $value;
   }
 
+  /**
+   * Sets the number of times this Packet has been modified.
+   *
+   * @param int $value The total number of modifications.
+   * @throws OutOfBoundsException if value is not between zero and MAX_EDITED_COUNT.
+   */
   public function setEditedCount(int $value)
   {
     if ($value < 0 || $value > self::MAX_EDITED_COUNT)
@@ -699,28 +727,48 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->edited_count = $value;
   }
 
+  /**
+   * Sets the Date and Time that this Packet was last modified.
+   *
+   * @param ?DateTime $value The last modified DateTime, or null for not modified yet.
+   */
   public function setEditedDateTime(?DateTime $value)
   {
     $this->edited_datetime = $value;
   }
 
+  /**
+   * Sets the message format for this Packet. Values are typically multiline
+   * and each line prefixed with a data-type such as '(UINT32) field name'.
+   * The value is typically printed using a monospace font in a code block.
+   *
+   * @param string $value The message format.
+   * @throws OutOfBoundsException if value length length is not between one and MAX_FORMAT.
+   */
   public function setFormat(string $value)
   {
-    if (strlen($value) > self::MAX_FORMAT)
+    if (strlen($value) < 1 || strlen($value) > self::MAX_FORMAT)
     {
       throw new OutOfBoundsException(sprintf(
-        'value must be less than or equal to %d characters', self::MAX_FORMAT
+        'value must be between 1-%d characters', self::MAX_FORMAT
       ));
     }
 
     $this->format = $value;
   }
 
+  /**
+   * Sets the database id for this Packet object. Not to be confused with setPacketId().
+   *
+   * @param ?int $value The database id for this Packet object. When set to null, calling commit() will
+   *                    get a new id, however until then the Packet will not have a valid webpage/URI.
+   * @throws OutOfBoundsException if value is not between zero and MAX_ID, or null.
+   */
   public function setId(?int $value)
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
     {
-      throw new InvalidArgumentException(sprintf(
+      throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_ID
       ));
     }
@@ -728,16 +776,34 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->id = $value;
   }
 
+  /**
+   * Toggles the 'In Research' badge for this Packet.
+   *
+   * @param bool $value If true, the 'In Research' badge is visible. If false, it is not visible.
+   */
   public function setInResearch(bool $value)
   {
     $this->setOption(self::OPTION_RESEARCH, $value);
   }
 
+  /**
+   * Toggles the Markdown-format option, which alters how remarks are parsed and printed.
+   *
+   * @param bool @value If true, remarks are passed into the Parsedown class before being printed.
+   *                    If false, remarks are *not* passed into Parsedown before being printed.
+   */
   public function setMarkdown(bool $value)
   {
     $this->setOption(self::OPTION_MARKDOWN, $value);
   }
 
+  /**
+   * Alters one option out of the options bitmask for this Packet.
+   *
+   * @param int $option The option to change to the value.
+   * @param bool $value Changes option to true (1) or false (0) based on this value.
+   * @throws OutOfBoundsException if option is not between zero and MAX_OPTIONS.
+   */
   public function setOption(int $option, bool $value)
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
@@ -757,6 +823,12 @@ class Packet implements IDatabaseObject, JsonSerializable
     }
   }
 
+  /**
+   * Sets the options bitmask for this Packet.
+   *
+   * @param int $value The full set of options which will replace previous options.
+   * @throws OutOfBoundsException if value is not between zero and MAX_OPTIONS.
+   */
   public function setOptions(int $value)
   {
     if ($value < 0 || $value > self::MAX_OPTIONS)
@@ -769,12 +841,18 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->options = $value;
   }
 
+  /**
+   * Sets the Packet name, e.g. 'SID_NULL'
+   *
+   * @param string @value The name of the Packet.
+   * @throws OutOfBoundsException if value length is not between one and MAX_NAME.
+   */
   public function setName(string $value)
   {
-    if (strlen($value) > self::MAX_NAME)
+    if (strlen($value) < 1 || strlen($value) > self::MAX_NAME)
     {
       throw new OutOfBoundsException(sprintf(
-        'value must be less than or equal to %d characters', self::MAX_NAME
+        'value must be between 1-%d characters', self::MAX_NAME
       ));
     }
 
@@ -782,9 +860,9 @@ class Packet implements IDatabaseObject, JsonSerializable
   }
 
   /**
-   * Sets the packet/message id. See also: setId()
+   * Sets the Packet/message id. Not to be confused with the database id, set using setId().
    *
-   * @param mixed $value The packet id. Supports decimal, hexadecimal, and octal format.
+   * @param mixed $value The message id. Supports binary, decimal, hexadecimal, and octal input formats.
    * @throws InvalidArgumentException if value cannot be translated into an integer.
    * @throws OutOfBoundsException if value is not between zero and MAX_PACKET_ID.
    */
@@ -803,26 +881,26 @@ class Packet implements IDatabaseObject, JsonSerializable
       // Hexadecimal (0x53, &h53, &H53)
       $v = hexdec(substr($value, 2));
     }
-    else if (is_string($value) && strlen($value) >= 1 && substr($value, 0, 1) == '0')
-    {
-      // Octal (0123)
-      $v = octdec(substr($value, 1));
-    }
     else if (is_string($value) && strlen($value) >= 2 && (
       substr($value, 0, 2) == '&o' || substr($value, 0, 2) == '&O'))
     {
       // Octal (&o123, &O123)
       $v = octdec(substr($value, 2));
     }
+    else if (is_string($value) && strlen($value) >= 1 && substr($value, 0, 1) == '0')
+    {
+      // Octal (0123)
+      $v = octdec(substr($value, 1));
+    }
     else if (is_numeric($value) && strpos($value, '.') === false)
     {
-      // Decimal
+      // Decimal (123)
       $v = (int) $value;
     }
     else
     {
       throw new InvalidArgumentException(
-        'value must be a decimal, hexadecimal, or octal string or integer'
+        'value must be a binary, decimal, hexadecimal, or octal string or integer'
       );
     }
 
@@ -836,23 +914,41 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->packet_id = $v;
   }
 
+  /**
+   * Toggles draft status and visibility to non-editor user accounts.
+   *
+   * @param bool @value If true, enables 'Draft' badge and disables visibility to non-editors.
+   *                    If false, disables 'Draft' badge and enables visibility to everyone.
+   */
   public function setPublished(bool $value)
   {
     $this->setOption(self::OPTION_PUBLISHED, $value);
   }
 
+  /**
+   * Sets the remarks for this Packet.
+   *
+   * @param string $value The remarks.
+   * @throws OutOfBoundsException if value length is greater than MAX_REMARKS.
+   */
   public function setRemarks(string $value)
   {
     if (strlen($value) > self::MAX_REMARKS)
     {
       throw new OutOfBoundsException(sprintf(
-        'value must be less than or equal to %d characters', self::MAX_REMARKS
+        'value must be between 0-%d characters', self::MAX_REMARKS
       ));
     }
 
     $this->remarks = $value;
   }
 
+  /**
+   * Sets the Transport layer (TCP/UDP/etc.) associated with this Packet.
+   *
+   * @param int @value The transport layer (id).
+   * @throws OutOfBoundsException if value is not between zero and MAX_TRANSPORT_LAYER_ID.
+   */
   public function setTransportLayerId(int $value)
   {
     if ($value < 0 || $value > self::MAX_TRANSPORT_LAYER_ID)
@@ -866,7 +962,7 @@ class Packet implements IDatabaseObject, JsonSerializable
   }
 
   /**
-   * Sets the products this packet is used by.
+   * Sets the products this Packet is used by.
    *
    * @param array $value The set of ProductId integers.
    */
@@ -906,11 +1002,23 @@ class Packet implements IDatabaseObject, JsonSerializable
     }
   }
 
+  /**
+   * Set the user this packet was created by.
+   *
+   * @param ?User $value The User (object) that created this packet, or null for no user.
+   * @throws OutOfBoundsException if value (User) id is not between zero and MAX_USER_ID, or null.
+   */
   public function setUser(?User $value)
   {
     $this->setUserId($value ? $value->getId() : $value);
   }
 
+  /**
+   * Set the user this packet was created by.
+   *
+   * @param ?int $value The User (id) that created this packet, or null for no user.
+   * @throws OutOfBoundsException if value is not between zero and MAX_USER_ID, or null.
+   */
   public function setUserId(?int $value)
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_USER_ID))

@@ -1,7 +1,7 @@
 <?php
 namespace BNETDocs\Views\Packet;
 
-use \BNETDocs\Models\Packet\Create as PacketCreateModel;
+use \BNETDocs\Models\Packet\Form as FormModel;
 use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
 use \CarlBennett\MVC\Libraries\Model;
 use \CarlBennett\MVC\Libraries\Template;
@@ -16,7 +16,7 @@ class CreateHtml extends View
 
   public function render(Model &$model)
   {
-    if (!$model instanceof PacketCreateModel)
+    if (!$model instanceof FormModel)
     {
       throw new IncorrectModelException();
     }

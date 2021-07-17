@@ -9,7 +9,7 @@ use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Product;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\Packet\Create as PacketCreateModel;
+use \BNETDocs\Models\Packet\Form as FormModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
@@ -24,12 +24,12 @@ class Create extends Controller
 {
   public function &run(Router &$router, View &$view, array &$args)
   {
-    $model = new PacketCreateModel();
+    $model = new FormModel();
     $model->active_user = Authentication::$user;
 
     if (!$model->active_user || !$model->active_user->getOption(User::OPTION_ACL_PACKET_CREATE))
     {
-      $model->error = PacketCreateModel::ERROR_ACL_DENIED;
+      $model->error = FormModel::ERROR_ACL_DENIED;
       $model->_responseCode = 401;
       $view->render($model);
       return $model;
@@ -39,11 +39,22 @@ class Create extends Controller
       // Conflicting request query string fields will be overridden by POST-body fields
       $router->getRequestQueryArray() ?? [], $router->getRequestBodyArray() ?? []
     );
-    $model->packet = new Packet(null); // TODO : Refactor Packet class
+    $model->products = Product::getAllProducts();
+    $model->packet = new Packet(null);
 
     if ($router->getRequestMethod() == 'POST')
     {
       $this->handlePost($model);
+    }
+
+    if ($model->error === FormModel::ERROR_SUCCESS)
+    {
+      Logger::logEvent(
+        EventTypes::PACKET_CREATED,
+        $model->active_user->getId(),
+        getenv('REMOTE_ADDR'),
+        json_encode(['model' => $model, 'view' => get_class($view)])
+      );
     }
 
     $view->render($model);
@@ -51,9 +62,10 @@ class Create extends Controller
     return $model;
   }
 
-  protected function handlePost(PacketCreateModel &$model)
+  protected function handlePost(FormModel &$model)
   {
     $deprecated = $model->form_fields['deprecated'] ?? null;
+    $direction = $model->form_fields['direction'] ?? null;
     $format = $model->form_fields['format'] ?? null;
     $markdown = $model->form_fields['markdown'] ?? null;
     $name = $model->form_fields['name'] ?? null;
@@ -61,15 +73,30 @@ class Create extends Controller
     $published = $model->form_fields['published'] ?? null;
     $remarks = $model->form_fields['remarks'] ?? null;
     $research = $model->form_fields['research'] ?? null;
-    $used_by = $model->form_fields['used_by'] ?? null;
+    $used_by = $model->form_fields['used_by'] ?? [];
+
+    try
+    {
+      $model->packet->setDirection((int) $direction);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_DIRECTION;
+      return;
+    }
 
     try
     {
       $model->packet->setPacketId($packet_id);
     }
+    catch (InvalidArgumentException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_PACKET_ID;
+      return;
+    }
     catch (OutOfBoundsException $e)
     {
-      $model->error = PacketCreateModel::ERROR_OUTOFBOUNDS_ID;
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_PACKET_ID;
       return;
     }
 
@@ -79,7 +106,7 @@ class Create extends Controller
     }
     catch (OutOfBoundsException $e)
     {
-      $model->error = PacketCreateModel::ERROR_OUTOFBOUNDS_NAME;
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_NAME;
       return;
     }
 
@@ -89,7 +116,7 @@ class Create extends Controller
     }
     catch (OutOfBoundsException $e)
     {
-      $model->error = PacketCreateModel::ERROR_OUTOFBOUNDS_FORMAT;
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_FORMAT;
       return;
     }
 
@@ -99,7 +126,7 @@ class Create extends Controller
     }
     catch (OutOfBoundsException $e)
     {
-      $model->error = PacketCreateModel::ERROR_OUTOFBOUNDS_REMARKS;
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_REMARKS;
       return;
     }
 
@@ -109,34 +136,24 @@ class Create extends Controller
     }
     catch (OutOfBoundsException $e)
     {
-      $model->error = PacketCreateModel::ERROR_OUTOFBOUNDS_USED_BY;
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_USED_BY;
       return;
     }
 
-    $model->packet->setOption(Packet::OPTION_DEPRECATED, $deprecated);
-    $model->packet->setOption(Packet::OPTION_MARKDOWN, $markdown);
-    $model->packet->setOption(Packet::OPTION_PUBLISHED, $published);
-    $model->packet->setOption(Packet::OPTION_RESEARCH, $research);
+    $model->packet->setOption(Packet::OPTION_DEPRECATED, $deprecated ? true : false);
+    $model->packet->setOption(Packet::OPTION_MARKDOWN, $markdown ? true : false);
+    $model->packet->setOption(Packet::OPTION_PUBLISHED, $published ? true : false);
+    $model->packet->setOption(Packet::OPTION_RESEARCH, $research ? true : false);
 
     try
     {
       $model->packet->commit();
-      $model->error = PacketCreateModel::ERROR_CREATED;
+      $model->error = FormModel::ERROR_SUCCESS;
     }
     catch (Exception $e)
     {
       Logger::logException($e);
-      $model->error = PacketCreateModel::ERROR_INTERNAL;
-    }
-
-    if ($model->error == PacketCreateModel::ERROR_CREATED)
-    {
-      Logger::logEvent(
-        EventTypes::PACKET_CREATED,
-        $model->active_user->getId(),
-        getenv('REMOTE_ADDR'),
-        json_encode(['model' => $model, 'view' => get_class($view)])
-      );
+      $model->error = FormModel::ERROR_INTERNAL;
     }
   }
 }
