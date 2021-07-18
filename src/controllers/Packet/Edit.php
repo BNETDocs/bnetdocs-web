@@ -77,7 +77,11 @@ class Edit extends Controller
         EventTypes::PACKET_EDITED,
         $model->active_user->getId(),
         getenv('REMOTE_ADDR'),
-        json_encode(['model' => $model, 'view' => get_class($view)])
+        json_encode([
+          'active_user' => $model->active_user,
+          'edited_packet' => $model->packet,
+          'products' => $model->products,
+        ])
       );
     }
 

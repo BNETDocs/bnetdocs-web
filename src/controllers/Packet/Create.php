@@ -53,7 +53,11 @@ class Create extends Controller
         EventTypes::PACKET_CREATED,
         $model->active_user->getId(),
         getenv('REMOTE_ADDR'),
-        json_encode(['model' => $model, 'view' => get_class($view)])
+        json_encode([
+          'active_user' => $model->active_user,
+          'new_packet' => $model->packet,
+          'products' => $model->products,
+        ])
       );
     }
 
