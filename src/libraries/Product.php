@@ -1,18 +1,18 @@
 <?php
-
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\Exceptions\ProductNotFoundException;
+use \BNETDocs\Libraries\Exceptions\QueryException;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \BNETDocs\Libraries\Exceptions\ProductNotFoundException;
-use \BNETDocs\Libraries\Exceptions\QueryException;
 use \InvalidArgumentException;
+use \JsonSerializable;
 use \PDO;
 use \PDOException;
 use \StdClass;
 
-class Product {
+class Product implements JsonSerializable {
 
   protected $bnet_product_id;
   protected $bnet_product_raw;
@@ -106,6 +106,18 @@ class Product {
 
   public function getVersionByte() {
     return $this->version_byte;
+  }
+
+  public function jsonSerialize()
+  {
+    return [
+      'bnet_product_id' => $this->getBnetProductId(),
+      'bnet_product_raw' => $this->getBnetProductRaw(),
+      'bnls_product_id' => $this->getBnlsProductId(),
+      'label' => $this->getLabel(),
+      'sort' => $this->getSort(),
+      'version_byte' => $this->getVersionByte(),
+    ];
   }
 
   protected static function normalize(StdClass &$data) {
