@@ -68,7 +68,7 @@ class Edit extends Controller
 
     if ($router->getRequestMethod() == 'POST')
     {
-      $this->handlePost($router, $model);
+      $this->handlePost($model);
     }
 
     if ($model->error === FormModel::ERROR_SUCCESS)
@@ -78,7 +78,6 @@ class Edit extends Controller
         $model->active_user->getId(),
         getenv('REMOTE_ADDR'),
         json_encode([
-          'active_user' => $model->active_user,
           'edited_packet' => $model->packet,
           'products' => $model->products,
         ])
