@@ -614,13 +614,12 @@ class User implements IDatabaseObject, JsonSerializable
     ];
 
     return [
-      'avatar_url'        => $this->getAvatarURI(null),
-      'created_datetime'  => $created_datetime,
-      'id'                => $this->getId(),
-      'name'              => $this->getName(),
-      'timezone'          => $this->getTimezone(),
-      'url'               => $this->getURI(),
-      'verified_datetime' => $verified_datetime,
+      'avatar_url' => $this->getAvatarURI(null),
+      'id' => $this->getId(),
+      'member_for' => $this->getCreatedEstimate(),
+      'name' => $this->getName(),
+      'timezone' => $this->getTimezone(),
+      'url' => $this->getURI(),
     ];
   }
 
