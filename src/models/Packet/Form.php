@@ -1,6 +1,6 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Models\Packet;
-class Form extends \BNETDocs\Models\ActiveUser
+class Form extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
 {
   // possible values for $error:
   const ERROR_ACL_DENIED = 'ACL_DENIED';
@@ -21,4 +21,18 @@ class Form extends \BNETDocs\Models\ActiveUser
   public $form_fields;
   public $packet;
   public $products;
+
+  /**
+   * Implements the JSON serialization function from the JsonSerializable interface.
+   */
+  public function jsonSerialize()
+  {
+    return [
+      'comments' => $this->comments,
+      'error' => $this->error,
+      'form_fields' => $this->form_fields,
+      'packet' => $this->packet,
+      'products' => $this->products,
+    ];
+  }
 }
