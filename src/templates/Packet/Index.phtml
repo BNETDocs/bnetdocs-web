@@ -74,7 +74,7 @@ require('./header.inc.phtml'); ?>
       $tpl_packet_flags = ob_get_clean();
       if (!empty($tpl_packet_flags)) $tpl_packet_flags = ' ' . $tpl_packet_flags; ?>
       <tr>
-        <td><strong><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></strong><?=$tpl_packet_flags?><br/><span class="text-muted"><?=rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($packet->getRemarks(true), FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.')?></span></td>
+        <td><strong><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></strong><?=$tpl_packet_flags?><br/><span class="text-muted"><?=rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($packet->getRemarks(true), FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.')?></span></td>
         <td><? if ($user) { ?><a href="<? echo $user_url; ?>"><img class="avatar" src="<? echo $avatar_url; ?>"/>&nbsp;<? echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><? } else { ?>Anonymous<? } ?></td>
       </tr>
 <?  } ?>
