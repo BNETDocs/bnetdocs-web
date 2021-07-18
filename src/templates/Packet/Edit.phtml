@@ -2,6 +2,7 @@
 namespace BNETDocs\Templates\Packet;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Models\Packet\Form as FormModel;
+use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Edit Packet';
 $description = 'This form allows an individual to edit a packet.';
@@ -39,7 +40,7 @@ else if ($error === FormModel::ERROR_SUCCESS)
   printf('<h1 class="text-success">%s</h1>%s', $title, PHP_EOL);
   printf('<div class="alert alert-success"><p class="mb-0">%s</p></div>%s', $message, PHP_EOL);
   printf('<div class="text-center">%s', PHP_EOL);
-  printf('<a class="btn btn-primary" href="javascript:history.go(-1);">Back</a></div>%s', PHP_EOL);
+  printf('<a class="btn btn-primary" href="javascript:history.go(-1);">Back</a>%s', PHP_EOL);
   if (isset($packet))
   {
     printf('<a class="btn btn-success" href="%s">View Packet</a>%s', $packet->getURI(), PHP_EOL);
