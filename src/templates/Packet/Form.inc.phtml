@@ -5,7 +5,7 @@ use \BNETDocs\Libraries\Packet;
 use \CarlBennett\MVC\Libraries\Common; ?>
 <form method="POST">
   <div class="row">
-    <div class="col-md-3">
+    <div class="col-lg-3">
       <div class="form-group">
         <label class="font-weight-bold" for="direction">Direction:</label>
         <select class="bg-dark border border-primary custom-select text-light" name="direction" id="direction">
@@ -14,17 +14,17 @@ use \CarlBennett\MVC\Libraries\Common; ?>
           <option value="<?=Packet::DIRECTION_PEER_TO_PEER?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_PEER_TO_PEER ? ' checked="checked"' : '')?>>Peer to Peer</option>
         </select>
       </div>
-    </div><div class="col-md-3">
+    </div><div class="col-lg-3">
       <div class="form-group">
         <label class="font-weight-bold" for="packet_id">Id:</label>
         <input class="bg-dark border border-primary form-control text-light" type="text" name="packet_id" id="packet_id" placeholder="Enter the message id here" tabindex="1" required  autofocus="autofocus" value="<?=filter_var($form_fields['packet_id'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
       </div>
-    </div><div class="col-md-3">
+    </div><div class="col-lg-4">
       <div class="form-group">
         <label class="font-weight-bold" for="name">Name:</label>
         <input class="bg-dark border border-primary form-control text-light" type="text" name="name" id="name" placeholder="Enter the message name here" tabindex="2" required value="<?=$form_fields['name'] ?? ''?>"/>
       </div>
-    </div><div class="col-md-3">
+    </div><div class="col-lg-2">
       <div class="form-group">
         <label class="font-weight-bold">Options:</label>
         <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($form_fields['deprecated'] ?? null ? ' checked="checked"' : '')?> tabindex="6"/><label class="custom-control-label text-danger" for="deprecated">Deprecated</label></div>
