@@ -54,7 +54,6 @@ class Create extends Controller
         $model->active_user->getId(),
         getenv('REMOTE_ADDR'),
         json_encode([
-          'active_user' => $model->active_user,
           'new_packet' => $model->packet,
           'products' => $model->products,
         ])
@@ -148,6 +147,7 @@ class Create extends Controller
     $model->packet->setOption(Packet::OPTION_MARKDOWN, $markdown ? true : false);
     $model->packet->setOption(Packet::OPTION_PUBLISHED, $published ? true : false);
     $model->packet->setOption(Packet::OPTION_RESEARCH, $research ? true : false);
+    $model->packet->setUser($model->active_user);
 
     try
     {
