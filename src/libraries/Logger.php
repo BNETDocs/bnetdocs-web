@@ -32,8 +32,8 @@ class Logger extends LoggerMVCLib {
 
     $successful = false;
 
-    try {
-
+    try
+    {
       $stmt = Common::$database->prepare('
         INSERT INTO `event_log` (
           `event_type_id`, `event_datetime`, `user_id`, `ip_address`,
@@ -57,19 +57,23 @@ class Logger extends LoggerMVCLib {
       $successful = $stmt->execute();
       $stmt->closeCursor();
 
-      if ($successful) {
+      if ($successful)
+      {
         self::dispatchDiscordWebhook((int) Common::$database->lastInsertId());
       }
-
-    } catch (PDOException $e) {
+    }
+    catch (PDOException $e)
+    {
       throw new QueryException('Cannot log event', $e);
-
-    } finally {
+    }
+    finally
+    {
       return $successful;
     }
   }
 
-  protected static function dispatchDiscordWebhook($event_id) {
+  protected static function dispatchDiscordWebhook($event_id)
+  {
     $c = Common::$config->discord->forward_event_log;
     if (!$c->enabled) return;
 
@@ -87,63 +91,79 @@ class Logger extends LoggerMVCLib {
     $embed->setTimestamp($event->getEventDateTime());
 
     $user = $event->getUser();
-    if (!is_null($user)) {
+    if (!is_null($user))
+    {
       $author = new DiscordEmbedAuthor(
         $user->getName(), $user->getURI(), $user->getAvatarURI(null)
       );
       $embed->setAuthor($author);
     }
 
-    if (!$c->exclude_meta_data) {
+    if (!$c->exclude_meta_data)
+    {
       $data = json_decode($event->getMetadata(), true);
-      if (is_scalar($data)) {
 
-        if (is_string($data)) {
-          $f_value = substr($data, 0, DiscordEmbedField::MAX_VALUE - 3);
-          if (strlen($data) > DiscordEmbedField::MAX_VALUE - 3)
-            $f_value .= '...';
-        } else {
-          $f_value = $data;
-        }
+      $parse_fx = function($value, $key, $embed)
+      {
+        $field = null;
 
-        $field = new DiscordEmbedField('Meta Data', $f_value, true);
-        $embed->addField($field);
-
-      } else {
-
-        foreach ($data as $key => $value) {
-
-          $f_key = substr($key, 0, DiscordEmbedField::MAX_NAME - 3);
-          if (strlen($key) > DiscordEmbedField::MAX_NAME - 3)
-            $f_key .= '...';
-
-          if (is_scalar($value)) {
-
-            if (is_string($value)) {
-              $f_value = substr($value, 0, DiscordEmbedField::MAX_VALUE - 3);
-              if (strlen($value) > DiscordEmbedField::MAX_VALUE - 3)
-                $f_value .= '...';
-            } else {
-              $f_value = $value;
-            }
-
-            $field = new DiscordEmbedField($f_key, $f_value, true);
-
-          } else {
-
-            $field = new DiscordEmbedField($f_key, gettype($value), true);
-
+        if (!$field && is_string($value))
+        {
+          $v = substr($value, 0, DiscordEmbedField::MAX_VALUE - 3);
+          if (strlen($value) > DiscordEmbedField::MAX_VALUE - 3)
+          {
+            $v .= '...';
           }
-          $embed->addField($field);
-
-          if ($embed->fieldCount() >= DiscordEmbed::MAX_FIELDS) break;
+          $field = new DiscordEmbedField(
+            $key, $v, (strlen($v) < DiscordEmbedField::MAX_VALUE / 4)
+          );
         }
 
-      }
+        if (!$field && is_numeric($value))
+        {
+          $field = new DiscordEmbedField($key, $value, true);
+        }
+
+        if (!$field && is_bool($value))
+        {
+          $field = new DiscordEmbedField(
+            $key, ($value ? 'true' : 'false'), true
+          );
+        }
+
+        if (!$field)
+        {
+          $field = new DiscordEmbedField($key, gettype($value), true);
+        }
+
+        $embed->addField($field);
+      };
+
+      $flatten_fx = function(&$tree, &$flatten_fx, &$parse_fx, &$depth, &$embed)
+      {
+        if (!is_array($tree))
+        {
+          $parse_fx($tree, implode('_', $depth), $embed);
+          return;
+        }
+
+        array_push($depth, '');
+        if (count($depth) > 2) return;
+
+        foreach ($tree as $key => $value)
+        {
+          $depth[count($depth)-1] = $key;
+          $flatten_fx($value, $flatten_fx, $parse_fx, $depth, $embed);
+        }
+
+        array_pop($depth);
+      };
+
+      $depth = [];
+      $flatten_fx($data, $flatten_fx, $parse_fx, $depth, $embed);
     }
 
     $webhook->addEmbed($embed);
     $webhook->send();
   }
-
 }
