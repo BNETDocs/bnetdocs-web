@@ -4,7 +4,7 @@ namespace BNETDocs\Templates;
 /**
  * Adds CSS classes to Markdown output
  */
-function MarkdownBootstrapFix(string $v, bool $sm = false)
+function MarkdownBootstrapFix(string $v, bool $sm = false, bool $lpm = false)
 {
   // Tables
   $v = str_replace('<table>', '<table class="table table-hover table-markdown ' . ($sm ? 'table-sm ' : '') . 'table-striped">', $v);
@@ -20,6 +20,9 @@ function MarkdownBootstrapFix(string $v, bool $sm = false)
 
   // Code Blocks
   $v = str_replace('<pre><code', '<pre class="border border-primary overflow-auto pre-scrollable rounded bg-dark text-light"><code', $v);
+
+  // Last Paragraph Margin
+  if ($lpm) $v = preg_replace('/(?:<p>(.*)<\/p>)$/i', '<p class="mb-0">$1</p>', $v, 1);
 
   return $v;
 }

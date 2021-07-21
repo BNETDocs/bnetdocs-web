@@ -15,14 +15,21 @@ if ($object)
 {
   $created_dt = $object->getCreatedDateTime();
   $deprecated = $object->isDeprecated();
-  $description = Common::stripUpTo(trim(filter_var($object->getRemarks(true), FILTER_SANITIZE_STRING)), "\n", 300);
+  $brief = $object->getBrief(true);
   $edited_dt = $object->getEditedDateTime();
   $packet_id = $object->getPacketId(true);
-  $published  = $object->isPublished();
-  $research   = $object->isInResearch();
+  $published = $object->isPublished();
+  $remarks = $object->getRemarks(true);
+  $research = $object->isInResearch();
   $title = $object->getName();
   $url = $object->getURI();
   $user = $object->getUser();
+
+  $description = filter_var($brief, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  if (empty($description))
+  {
+    $description = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($remarks, FILTER_SANITIZE_STRING)), "\n", 300), '. ', 300), '.');
+  }
 
   if ($user)
   {
@@ -88,10 +95,11 @@ require('./header.inc.phtml'); ?>
     <tr><th class="text-right">Message Format:<br/><sup class="text-muted">(does not include protocol header)</sup></th><td>
       <pre class="border border-primary overflow-auto rounded bg-dark text-light"><code class="language-objectivec"><?=$object->getFormat()?></code></pre>
     </td></tr>
+<?=(!empty($brief) ? sprintf('<tr><th class="text-right">Brief:</th><td>%s</td></tr>', \BNETDocs\Templates\MarkdownBootstrapFix($brief, true, true)) : '')?>
   </tbody></table>
 
   <h1>Remarks</h1>
-  <div class="container"><?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getRemarks(true), true)?></div>
+  <div class="container"><?=\BNETDocs\Templates\MarkdownBootstrapFix($remarks, true, false)?></div>
 
   <div class="card mt-3"><div class="card-body">
     <span class="float-right text-muted">

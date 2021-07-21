@@ -36,6 +36,7 @@ class Packet implements IDatabaseObject, JsonSerializable
 
   // Maximum SQL field lengths, alter as appropriate
   const MAX_APPLICATION_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
+  const MAX_BRIEF = 191;
   const MAX_DIRECTION = 0x7FFFFFFFFFFFFFFF;
   const MAX_EDITED_COUNT = 0x7FFFFFFFFFFFFFFF;
   const MAX_FORMAT = 0xFFFF;
@@ -57,6 +58,7 @@ class Packet implements IDatabaseObject, JsonSerializable
   private $_id;
 
   protected $application_layer_id;
+  protected $brief;
   protected $created_datetime;
   protected $direction;
   protected $edited_count;
@@ -110,6 +112,7 @@ class Packet implements IDatabaseObject, JsonSerializable
     }
 
     $this->setApplicationLayerId(self::DEFAULT_APPLICATION_LAYER_ID);
+    $this->setBrief('');
     $this->setCreatedDateTime(new DateTime('now'));
     $this->setDirection(self::DEFAULT_DIRECTION);
     $this->setEditedCount(0);
@@ -136,6 +139,7 @@ class Packet implements IDatabaseObject, JsonSerializable
         `id`,
         `options_bitmask`,
         `packet_application_layer_id`,
+        `packet_brief`,
         `packet_direction_id`,
         `packet_format`,
         `packet_id`,
@@ -188,6 +192,7 @@ class Packet implements IDatabaseObject, JsonSerializable
     $tz = new DateTimeZone(self::TZ_SQL);
 
     $this->setApplicationLayerId($value->packet_application_layer_id);
+    $this->setBrief($value->packet_brief);
     $this->setCreatedDateTime(new DateTime($value->created_datetime, $tz));
     $this->setDirection($value->packet_direction_id);
     $this->setEditedCount($value->edited_count);
@@ -223,6 +228,7 @@ class Packet implements IDatabaseObject, JsonSerializable
         `id`,
         `options_bitmask`,
         `packet_application_layer_id`,
+        `packet_brief`,
         `packet_direction_id`,
         `packet_format`,
         `packet_id`,
@@ -231,7 +237,7 @@ class Packet implements IDatabaseObject, JsonSerializable
         `packet_transport_layer_id`,
         `user_id`
       ) VALUES (
-        :c_dt, :e_c, :e_dt, :id, :opts, :app_id, :d, :f, :pid, :n, :r, :tr_id, :uid
+        :c_dt, :e_c, :e_dt, :id, :opts, :app_id, :b, :d, :f, :pid, :n, :r, :tr_id, :uid
       ) ON DUPLICATE KEY UPDATE
         `created_datetime` = :c_dt,
         `edited_count` = :e_c,
@@ -239,6 +245,7 @@ class Packet implements IDatabaseObject, JsonSerializable
         `id` = :id,
         `options_bitmask` = :opts,
         `packet_application_layer_id` = :app_id,
+        `packet_brief` = :b,
         `packet_direction_id` = :d,
         `packet_format` = :f,
         `packet_id` = :pid,
@@ -255,6 +262,7 @@ class Packet implements IDatabaseObject, JsonSerializable
     );
 
     $q->bindParam(':app_id', $this->application_layer_id, PDO::PARAM_INT);
+    $q->bindParam(':b', $this->brief, (is_null($this->brief) ? PDO::PARAM_NULL : PDO::PARAM_STR));
     $q->bindParam(':c_dt', $created_datetime, PDO::PARAM_STR);
     $q->bindParam(':d', $this->direction, PDO::PARAM_INT);
     $q->bindParam(':e_c', $this->edited_count, PDO::PARAM_INT);
@@ -387,6 +395,17 @@ class Packet implements IDatabaseObject, JsonSerializable
   public function getApplicationLayerId()
   {
     return $this->application_layer_id;
+  }
+
+  public function getBrief(bool $format)
+  {
+    if (!($format && $this->getOption(self::OPTION_MARKDOWN)))
+    {
+      return $this->brief;
+    }
+
+    $md = new Parsedown();
+    return $md->text($this->brief);
   }
 
   public function getCreatedDateTime()
@@ -626,6 +645,7 @@ class Packet implements IDatabaseObject, JsonSerializable
       'id'                          => $this->getId(),
       'options_bitmask'             => $this->getOptions(),
       'packet_application_layer_id' => $this->getApplicationLayerId(),
+      'packet_brief'                => $this->getBrief(false),
       'packet_direction_id'         => $this->getDirection(),
       'packet_format'               => $this->getFormat(),
       'packet_id'                   => $this->getPacketId(),
@@ -651,6 +671,23 @@ class Packet implements IDatabaseObject, JsonSerializable
     }
 
     $this->application_layer_id = $value;
+  }
+
+  /**
+   * Sets the brief description of this packet.
+   *
+   * @param string $value The brief description.
+   */
+  public function setBrief(string $value)
+  {
+    if (strlen($value) > self::MAX_BRIEF)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d characters', self::MAX_BRIEF
+      ));
+    }
+
+    $this->brief = $value;
   }
 
   /**

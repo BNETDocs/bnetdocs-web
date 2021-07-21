@@ -18,6 +18,7 @@ $form_order_by = [
   'user-id-asc' => 'User Id (Ascending)',
   'user-id-desc' => 'User Id (Descending)',
 ];
+require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container">
   <h2><?=$title?></h2>
@@ -62,10 +63,21 @@ require('./header.inc.phtml'); ?>
         $avatar_url = $user->getAvatarURI(22);
         $user_url = $user->getURI();
       }
+      $brief = $packet->getBrief(true);
       $deprecated = $packet->isDeprecated();
       $packet_id = $packet->getPacketId(true);
       $published = $packet->isPublished();
+      $remarks = $packet->getRemarks(true);
       $research = $packet->isInResearch();
+
+      if (!empty($brief))
+      {
+        $brief = \BNETDocs\Templates\MarkdownBootstrapFix($brief, true, true);
+      }
+      else
+      {
+        $brief = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($remarks, FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.');
+      }
 
       ob_start();
       if ($deprecated) require('./Deprecated.inc.phtml');
@@ -74,7 +86,7 @@ require('./header.inc.phtml'); ?>
       $tpl_packet_flags = ob_get_clean();
       if (!empty($tpl_packet_flags)) $tpl_packet_flags = ' ' . $tpl_packet_flags; ?>
       <tr>
-        <td><strong><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></strong><?=$tpl_packet_flags?><br/><span class="text-muted"><?=rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($packet->getRemarks(true), FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.')?></span></td>
+        <td><strong><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></strong><?=$tpl_packet_flags?><br/><span class="text-muted"><?=$brief?></span></td>
         <td><? if ($user) { ?><a href="<? echo $user_url; ?>"><img class="avatar" src="<? echo $avatar_url; ?>"/>&nbsp;<? echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><? } else { ?>Anonymous<? } ?></td>
       </tr>
 <?  } ?>

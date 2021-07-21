@@ -57,6 +57,7 @@ class Edit extends Controller
     $model->comments = Comment::getAll(Comment::PARENT_TYPE_PACKET, $id);
 
     self::assignDefault($model->form_fields, 'application_layer', $model->packet->getApplicationLayerId());
+    self::assignDefault($model->form_fields, 'brief', $model->packet->getBrief(false));
     self::assignDefault($model->form_fields, 'deprecated', $model->packet->isDeprecated());
     self::assignDefault($model->form_fields, 'direction', $model->packet->getDirection());
     self::assignDefault($model->form_fields, 'format', $model->packet->getFormat());
@@ -86,6 +87,7 @@ class Edit extends Controller
         getenv('REMOTE_ADDR'),
         json_encode([
           'application_layer' => $model->packet->getApplicationLayer()->getLabel(),
+          'brief' => $model->packet->getBrief(false),
           'created_dt' => $model->packet->getCreatedDateTime(),
           'deprecated' => $model->packet->isDeprecated(),
           'direction' => $model->packet->getDirectionLabel(),
@@ -119,6 +121,7 @@ class Edit extends Controller
   protected function handlePost(FormModel &$model)
   {
     $application_layer = $model->form_fields['application_layer'] ?? null;
+    $brief = $model->form_fields['brief'] ?? null;
     $deprecated = $model->form_fields['deprecated'] ?? null;
     $direction = $model->form_fields['direction'] ?? null;
     $format = $model->form_fields['format'] ?? null;
@@ -138,6 +141,16 @@ class Edit extends Controller
     catch (OutOfBoundsException $e)
     {
       $model->error = FormModel::ERROR_OUTOFBOUNDS_APPLICATION_LAYER_ID;
+      return;
+    }
+
+    try
+    {
+      $model->packet->setBrief($brief);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_BRIEF;
       return;
     }
 
