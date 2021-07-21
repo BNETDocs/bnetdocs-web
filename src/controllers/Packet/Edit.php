@@ -78,8 +78,19 @@ class Edit extends Controller
         $model->active_user->getId(),
         getenv('REMOTE_ADDR'),
         json_encode([
-          'edited_packet' => $model->packet,
-          'products' => $model->products,
+          'created_dt' => $model->packet->getCreatedDateTime(),
+          'deprecated' => $model->packet->isDeprecated(),
+          'draft' => !$model->packet->isPublished(),
+          'edited_dt' => $model->packet->getEditedDateTime(),
+          'edits' => $model->packet->getEditedCount(),
+          'format' => $model->packet->getFormat(),
+          'id' => $model->packet->getId(),
+          'markdown' => $model->packet->isMarkdown(),
+          'name' => $model->packet->getName(),
+          'owner' => $model->packet->getUser(),
+          'remarks' => $model->packet->getRemarks(false),
+          'research' => $model->packet->isInResearch(),
+          'used_by' => $model->packet->getUsedBy(),
         ])
       );
     }
