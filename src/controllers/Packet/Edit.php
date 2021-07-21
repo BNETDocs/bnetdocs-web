@@ -88,6 +88,7 @@ class Edit extends Controller
           'application_layer' => $model->packet->getApplicationLayer()->getLabel(),
           'created_dt' => $model->packet->getCreatedDateTime(),
           'deprecated' => $model->packet->isDeprecated(),
+          'direction' => $model->packet->getDirectionLabel(),
           'draft' => !$model->packet->isPublished(),
           'edited_dt' => $model->packet->getEditedDateTime(),
           'edits' => $model->packet->getEditedCount(),

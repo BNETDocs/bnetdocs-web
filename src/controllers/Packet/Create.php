@@ -71,8 +71,10 @@ class Create extends Controller
         $model->active_user->getId(),
         getenv('REMOTE_ADDR'),
         json_encode([
+          'application_layer' => $model->packet->getApplicationLayer()->getLabel(),
           'created_dt' => $model->packet->getCreatedDateTime(),
           'deprecated' => $model->packet->isDeprecated(),
+          'direction' => $model->packet->getDirectionLabel(),
           'draft' => !$model->packet->isPublished(),
           'edited_dt' => $model->packet->getEditedDateTime(),
           'edits' => $model->packet->getEditedCount(),
@@ -83,6 +85,7 @@ class Create extends Controller
           'owner' => $model->packet->getUser(),
           'remarks' => $model->packet->getRemarks(false),
           'research' => $model->packet->isInResearch(),
+          'transport_layer' => $model->packet->getTransportLayer()->getLabel(),
           'used_by' => $model->packet->getUsedBy(),
         ])
       );
