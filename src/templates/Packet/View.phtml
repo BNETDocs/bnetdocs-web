@@ -13,6 +13,7 @@ $object_id = $this->getContext()->packet_id;
 $url = Common::relativeUrlToAbsolute('/packet/' . urlencode($object_id));
 if ($object)
 {
+  $application_layer = $object->getApplicationLayer();
   $created_dt = $object->getCreatedDateTime();
   $deprecated = $object->isDeprecated();
   $brief = $object->getBrief(true);
@@ -22,6 +23,7 @@ if ($object)
   $remarks = $object->getRemarks(true);
   $research = $object->isInResearch();
   $title = $object->getName();
+  $transport_layer = $object->getTransportLayer();
   $url = $object->getURI();
   $user = $object->getUser();
 
@@ -62,11 +64,13 @@ require('./header.inc.phtml'); ?>
 
   <h1><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
   <table class="table table-striped"><tbody>
+    <tr><th class="text-right">Transport Layer:</th><td><?=sprintf('%s (%s)', $transport_layer->getLabel(), $transport_layer->getTag())?></td></tr>
+    <tr><th class="text-right">Application Layer:</th><td><?=sprintf('%s (%s)', $application_layer->getLabel(), $application_layer->getTag())?></td></tr>
     <tr><th class="text-right">Message Id:</th><td><code><?=$packet_id?></code></td></tr>
     <tr><th class="text-right">Message Name:</th><td><code><?=filter_var($object->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></td></tr>
     <tr><th class="text-right">Direction:</th><td><?=filter_var($object->getDirectionLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></td></tr>
 <? if ($deprecated || $research || !$published) { ?>
-    <tr><th class="text-right">Flags:</th><td>
+    <tr><th class="text-right">Options:</th><td>
       <? if ($deprecated) require('./Deprecated.inc.phtml'); ?>
       <? if ($research) require('./InResearch.inc.phtml'); ?>
       <? if (!$published) require('./Draft.inc.phtml'); ?>
