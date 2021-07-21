@@ -84,25 +84,32 @@ require('./header.inc.phtml'); ?>
       if ($research) require('./InResearch.inc.phtml');
       if (!$published) require('./Draft.inc.phtml');
       $tpl_packet_flags = ob_get_clean();
-      if (!empty($tpl_packet_flags)) $tpl_packet_flags = ' ' . $tpl_packet_flags; ?>
-      <tr>
-        <td><strong><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></strong><?=$tpl_packet_flags?><br/><span class="text-muted"><?=$brief?></span></td>
-        <td><? if ($user) { ?><a href="<? echo $user_url; ?>"><img class="avatar" src="<? echo $avatar_url; ?>"/>&nbsp;<? echo filter_var($user->getName(), FILTER_SANITIZE_STRING); ?></a><? } else { ?>Anonymous<? } ?></td>
-      </tr>
-<?  } ?>
+      if (!empty($tpl_packet_flags)) $tpl_packet_flags = ' ' . $tpl_packet_flags;
+
+      echo '<tr>';
+      printf('<td><strong><a href="%s">%s</a></strong>%s<br/><span class="text-muted">%s</span></td>',
+        $packet->getURI(),
+        filter_var($packet->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+        $tpl_packet_flags,
+        $brief
+      );
+      printf('<td>%s</td>', (
+        $user ? sprintf('<a href="%s"><img class="mr-2 rounded" src="%s">%s</a>',
+          $user_url, $avatar_url, filter_var($user->getName(), FILTER_SANITIZE_STRING)
+        ) : 'Anonymous')
+      );
+      echo '</tr>';
+    } ?>
   </tbody></table>
-        </section>
-        <section>
-          <p>These packets are also available as constants in
+  <p>These packets are also available as constants in
 <? $q = getenv('QUERY_STRING'); if (!empty($q)) { $q = '?' . $q; } ?>
-            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.cpp' . $q); ?>">C++</a>,
-            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.java' . $q); ?>">Java</a>,
-            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.json' . $q); ?>">JSON</a>,
-            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.php' . $q); ?>">PHP</a>, and
-            <a href="<? echo Common::relativeUrlToAbsolute('/packet/index.vb' . $q); ?>">VB6</a>.
-          </p>
-        </section>
-      </article>
+    <a href="<?=Common::relativeUrlToAbsolute('/packet/index.cpp' . $q)?>">C++</a>,
+    <a href="<?=Common::relativeUrlToAbsolute('/packet/index.java' . $q)?>">Java</a>,
+    <a href="<?=Common::relativeUrlToAbsolute('/packet/index.json' . $q)?>">JSON</a>,
+    <a href="<?=Common::relativeUrlToAbsolute('/packet/index.php' . $q)?>">PHP</a>, and
+    <a href="<?=Common::relativeUrlToAbsolute('/packet/index.vb' . $q)?>">VB6</a>.
+  </p>
+</div>
 <? ob_start(); ?>
   <script type="text/javascript">
     $(document).ready(function(){
