@@ -58,6 +58,7 @@ class Edit extends Controller
 
     self::assignDefault($model->form_fields, 'application_layer', $model->packet->getApplicationLayerId());
     self::assignDefault($model->form_fields, 'deprecated', $model->packet->isDeprecated());
+    self::assignDefault($model->form_fields, 'direction', $model->packet->getDirection());
     self::assignDefault($model->form_fields, 'format', $model->packet->getFormat());
     self::assignDefault($model->form_fields, 'markdown', $model->packet->isMarkdown());
     self::assignDefault($model->form_fields, 'name', $model->packet->getName());
