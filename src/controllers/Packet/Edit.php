@@ -64,7 +64,11 @@ class Edit extends Controller
     self::assignDefault($model->form_fields, 'research', $model->packet->isInResearch());
     self::assignDefault($model->form_fields, 'markdown', $model->packet->isMarkdown());
     self::assignDefault($model->form_fields, 'published', $model->packet->isPublished());
-    self::assignDefault($model->form_fields, 'used_by', Product::getProductsFromIds($model->packet->getUsedBy()));
+
+    if ($router->getRequestMethod() == 'GET')
+    {
+      self::assignDefault($model->form_fields, 'used_by', Product::getProductsFromIds($model->packet->getUsedBy()));
+    }
 
     if ($router->getRequestMethod() == 'POST')
     {
