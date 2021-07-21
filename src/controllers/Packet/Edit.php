@@ -58,13 +58,13 @@ class Edit extends Controller
 
     self::assignDefault($model->form_fields, 'application_layer', $model->packet->getApplicationLayerId());
     self::assignDefault($model->form_fields, 'deprecated', $model->packet->isDeprecated());
-    self::assignDefault($model->form_fields, 'packet_id', $model->packet->getPacketId(true));
-    self::assignDefault($model->form_fields, 'name', $model->packet->getName());
     self::assignDefault($model->form_fields, 'format', $model->packet->getFormat());
+    self::assignDefault($model->form_fields, 'markdown', $model->packet->isMarkdown());
+    self::assignDefault($model->form_fields, 'name', $model->packet->getName());
+    self::assignDefault($model->form_fields, 'packet_id', $model->packet->getPacketId(true));
+    self::assignDefault($model->form_fields, 'published', $model->packet->isPublished());
     self::assignDefault($model->form_fields, 'remarks', $model->packet->getRemarks(false));
     self::assignDefault($model->form_fields, 'research', $model->packet->isInResearch());
-    self::assignDefault($model->form_fields, 'markdown', $model->packet->isMarkdown());
-    self::assignDefault($model->form_fields, 'published', $model->packet->isPublished());
     self::assignDefault($model->form_fields, 'transport_layer', $model->packet->getTransportLayerId());
 
     if ($router->getRequestMethod() == 'GET')
