@@ -52,7 +52,7 @@ use \CarlBennett\MVC\Libraries\Common; ?>
     <div class="col-lg-6">
       <div class="form-group">
         <label class="font-weight-bold" for="application_layer">Application layer:</label>
-        <select class="bg-dark border border-primary custom-select text-light" name="application_layer" id="application_layer" tabindex="7">
+        <select class="bg-dark border border-primary custom-select text-light" name="application_layer" id="application_layer" tabindex="8">
 <?      foreach (PacketAppLayer::getAllAsArray() as $id => $label)
         {
           printf('<option value="%s"%s>%s (%s)</option>',
@@ -65,7 +65,7 @@ use \CarlBennett\MVC\Libraries\Common; ?>
   </div>
   <div class="form-group">
     <label class="font-weight-bold" for="format">Format: <span class="small text-muted">(see <a rel="external" href="https://bnetdocs.org/document/19/notational-convention-sizes-types">Notational Convention</a> for help or <code>[blank]</code> for none)</span></label>
-    <textarea class="bg-dark border border-primary form-control language-objectivec text-light text-monospace" style="height:120px;" name="format" id="format" placeholder="Enter the message format here" tabindex="3" required><?=filter_var($form_fields['format'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></textarea>
+    <textarea class="bg-dark border border-primary form-control language-objectivec text-light text-monospace" style="height:120px;" name="format" id="format" placeholder="Enter the message format here" tabindex="9" required><?=filter_var($form_fields['format'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></textarea>
   </div>
   <div class="form-group">
     <label class="font-weight-bold">Used by: <span class="small text-muted">(products that currently use or have used this packet)</span></label>
@@ -88,15 +88,15 @@ use \CarlBennett\MVC\Libraries\Common; ?>
     <label class="font-weight-bold" for="remarks">Remarks: <span class="small text-muted">(a description of what, when, where, and why this packet is used, and any related info)</span></label>
     <span class="float-right">
       <div class="custom-control custom-switch">
-        <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="5"
+        <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="10"
         title="Use markdown or use raw HTML" value="1"<?=($form_fields['markdown'] ?? null ? ' checked' : '')?>/>
         <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown</label>
       </div>
     </span>
-    <textarea class="bg-dark border border-primary form-control text-light" style="height:200px;" name="remarks" id="remarks" placeholder="Enter the message remarks here" tabindex="4" required><?=filter_var($form_fields['remarks'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></textarea>
+    <textarea class="bg-dark border border-primary form-control text-light" style="height:200px;" name="remarks" id="remarks" placeholder="Enter the message remarks here" tabindex="11" required><?=filter_var($form_fields['remarks'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></textarea>
   </div>
   <div class="form-group text-center">
-    <input class="btn btn-success" type="submit" value="Save" tabindex="9"/>
+    <input class="btn btn-success" type="submit" value="Save" tabindex="12"/>
   </div>
 </form>
 <? if (isset($comments)) { $comment_parent_type = Comment::PARENT_TYPE_PACKET; $comment_parent_id = $form_fields['packet_id'] ?? null; require('./Comment/Section.inc.phtml'); } ?>
