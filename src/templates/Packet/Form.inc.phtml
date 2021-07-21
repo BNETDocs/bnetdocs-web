@@ -16,12 +16,12 @@ use \CarlBennett\MVC\Libraries\Common; ?>
       </div>
     </div><div class="col-lg-3">
       <div class="form-group">
-        <label class="font-weight-bold" for="packet_id">Id:</label>
+        <label class="font-weight-bold" for="packet_id">Id: <span class="small text-muted">(supports prefixes like &amp;h, 0x, etc.)</span></label>
         <input class="bg-dark border border-primary form-control text-light" type="text" name="packet_id" id="packet_id" placeholder="Enter the message id here" tabindex="1" required  autofocus="autofocus" value="<?=filter_var($form_fields['packet_id'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
       </div>
     </div><div class="col-lg-4">
       <div class="form-group">
-        <label class="font-weight-bold" for="name">Name:</label>
+        <label class="font-weight-bold" for="name">Name: <span class="small text-muted">(e.g. SID_NULL)</span></label>
         <input class="bg-dark border border-primary form-control text-light" type="text" name="name" id="name" placeholder="Enter the message name here" tabindex="2" required value="<?=$form_fields['name'] ?? ''?>"/>
       </div>
     </div><div class="col-lg-2">
@@ -34,11 +34,11 @@ use \CarlBennett\MVC\Libraries\Common; ?>
     </div>
   </div>
   <div class="form-group">
-    <label class="font-weight-bold" for="format">Format:</label>
+    <label class="font-weight-bold" for="format">Format: <span class="small text-muted">(see <a rel="external" href="https://bnetdocs.org/document/19/notational-convention-sizes-types">Notational Convention</a> for help or <code>[blank]</code> for none)</span></label>
     <textarea class="bg-dark border border-primary form-control language-objectivec text-light text-monospace" style="height:120px;" name="format" id="format" placeholder="Enter the message format here" tabindex="3" required><?=filter_var($form_fields['format'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></textarea>
   </div>
   <div class="form-group">
-    <label class="font-weight-bold">Used by:</label>
+    <label class="font-weight-bold">Used by: <span class="small text-muted">(products that currently use or have used this packet)</span></label>
     <table class="table table-borderless table-sm">
       <thead></thead><tbody>
 <?      $p_ubound = count($form_products);
@@ -55,7 +55,7 @@ use \CarlBennett\MVC\Libraries\Common; ?>
     </table>
   </div>
   <div class="form-group">
-    <label class="font-weight-bold" for="remarks">Remarks:</label>
+    <label class="font-weight-bold" for="remarks">Remarks: <span class="small text-muted">(a description of what, when, where, and why this packet is used, and any related info)</span></label>
     <span class="float-right">
       <div class="custom-control custom-switch">
         <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="5"
