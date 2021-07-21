@@ -2,34 +2,64 @@
 namespace BNETDocs\Templates\Packet;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Packet;
+use \BNETDocs\Libraries\Packet\Application as PacketAppLayer;
+use \BNETDocs\Libraries\Packet\Transport as PacketTransportLayer;
 use \CarlBennett\MVC\Libraries\Common; ?>
 <form method="POST">
   <div class="row">
     <div class="col-lg-3">
       <div class="form-group">
         <label class="font-weight-bold" for="direction">Direction:</label>
-        <select class="bg-dark border border-primary custom-select text-light" name="direction" id="direction">
-          <option value="<?=Packet::DIRECTION_CLIENT_SERVER?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_CLIENT_SERVER ? ' checked="checked"' : '')?>>Client to Server</option>
-          <option value="<?=Packet::DIRECTION_SERVER_CLIENT?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_SERVER_CLIENT ? ' checked="checked"' : '')?>>Server to Client</option>
-          <option value="<?=Packet::DIRECTION_PEER_TO_PEER?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_PEER_TO_PEER ? ' checked="checked"' : '')?>>Peer to Peer</option>
+        <select class="bg-dark border border-primary custom-select text-light" name="direction" id="direction" tabindex="1">
+          <option value="<?=Packet::DIRECTION_CLIENT_SERVER?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_CLIENT_SERVER ? ' selected' : '')?>>Client to Server</option>
+          <option value="<?=Packet::DIRECTION_SERVER_CLIENT?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_SERVER_CLIENT ? ' selected' : '')?>>Server to Client</option>
+          <option value="<?=Packet::DIRECTION_PEER_TO_PEER?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_PEER_TO_PEER ? ' selected' : '')?>>Peer to Peer</option>
         </select>
       </div>
     </div><div class="col-lg-3">
       <div class="form-group">
         <label class="font-weight-bold" for="packet_id">Id: <span class="small text-muted">(supports prefixes like &amp;h, 0x, etc.)</span></label>
-        <input class="bg-dark border border-primary form-control text-light" type="text" name="packet_id" id="packet_id" placeholder="Enter the message id here" tabindex="1" required  autofocus="autofocus" value="<?=filter_var($form_fields['packet_id'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+        <input class="bg-dark border border-primary form-control text-light" type="text" name="packet_id" id="packet_id" placeholder="Enter the message id here" tabindex="2" required  autofocus="autofocus" value="<?=filter_var($form_fields['packet_id'] ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
       </div>
     </div><div class="col-lg-4">
       <div class="form-group">
         <label class="font-weight-bold" for="name">Name: <span class="small text-muted">(e.g. SID_NULL)</span></label>
-        <input class="bg-dark border border-primary form-control text-light" type="text" name="name" id="name" placeholder="Enter the message name here" tabindex="2" required value="<?=$form_fields['name'] ?? ''?>"/>
+        <input class="bg-dark border border-primary form-control text-light" type="text" name="name" id="name" placeholder="Enter the message name here" tabindex="3" required value="<?=$form_fields['name'] ?? ''?>"/>
       </div>
     </div><div class="col-lg-2">
       <div class="form-group">
         <label class="font-weight-bold">Options:</label>
-        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($form_fields['deprecated'] ?? null ? ' checked="checked"' : '')?> tabindex="6"/><label class="custom-control-label text-danger" for="deprecated">Deprecated</label></div>
-        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="research" name="research" value="1"<?=($form_fields['research'] ?? null ? ' checked="checked"' : '')?> tabindex="7"/> <label class="custom-control-label text-warning" for="research">In Research</label></div>
-        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="published" name="published" value="1"<?=($form_fields['published'] ?? null ? ' checked="checked"' : '')?> tabindex="8"/> <label class="custom-control-label text-success" for="published">Published</label></div>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($form_fields['deprecated'] ?? null ? ' selected' : '')?> tabindex="4"/><label class="custom-control-label text-danger" for="deprecated">Deprecated</label></div>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="research" name="research" value="1"<?=($form_fields['research'] ?? null ? ' selected' : '')?> tabindex="5"/> <label class="custom-control-label text-warning" for="research">In Research</label></div>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="published" name="published" value="1"<?=($form_fields['published'] ?? null ? ' selected' : '')?> tabindex="6"/> <label class="custom-control-label text-success" for="published">Published</label></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="form-group">
+        <label class="font-weight-bold" for="transport_layer">Transport layer:</label>
+        <select class="bg-dark border border-primary custom-select text-light" name="transport_layer" id="transport_layer" tabindex="7">
+<?      foreach (PacketTransportLayer::getAllAsArray() as $id => $label)
+        {
+          printf('<option value="%s"%s>%s (%s)</option>',
+            $id, ($id === ($form_fields['transport_layer'] ?? null) ? ' selected' : ''), $label[1], $label[0]
+          );
+        } ?>
+        </select>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="form-group">
+        <label class="font-weight-bold" for="application_layer">Application layer:</label>
+        <select class="bg-dark border border-primary custom-select text-light" name="application_layer" id="application_layer" tabindex="7">
+<?      foreach (PacketAppLayer::getAllAsArray() as $id => $label)
+        {
+          printf('<option value="%s"%s>%s (%s)</option>',
+            $id, ($id === ($form_fields['application_layer'] ?? null) ? ' selected' : ''), $label[1], $label[0]
+          );
+        } ?>
+        </select>
       </div>
     </div>
   </div>
@@ -48,7 +78,7 @@ use \CarlBennett\MVC\Libraries\Common; ?>
         $p = $form_products[$p_i];
         $p_id = $p->getBnetProductId();
         $p_label = $p->getLabel();
-        printf('<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="used_by_%s" name="used_by[]" value="%s"%s/><label class="custom-control-label" for="used_by_%s">%s</label></div></td>', $p_id, $p_id, (in_array($p, $form_fields['used_by'] ?? []) ? ' checked="checked"' : ''), $p_id, $p_label);
+        printf('<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="used_by_%s" name="used_by[]" value="%s"%s/><label class="custom-control-label" for="used_by_%s">%s</label></div></td>', $p_id, $p_id, (in_array($p, $form_fields['used_by'] ?? []) ? ' selected' : ''), $p_id, $p_label);
         if ($p_i % 2 === 1) echo '</tr>';
       } ?>
       </tbody>
@@ -59,7 +89,7 @@ use \CarlBennett\MVC\Libraries\Common; ?>
     <span class="float-right">
       <div class="custom-control custom-switch">
         <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="5"
-        title="Use markdown or use raw HTML" value="1"<?=($form_fields['markdown'] ?? null ? ' checked="checked"' : '')?>/>
+        title="Use markdown or use raw HTML" value="1"<?=($form_fields['markdown'] ?? null ? ' selected' : '')?>/>
         <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown</label>
       </div>
     </span>

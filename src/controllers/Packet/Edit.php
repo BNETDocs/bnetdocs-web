@@ -56,6 +56,7 @@ class Edit extends Controller
 
     $model->comments = Comment::getAll(Comment::PARENT_TYPE_PACKET, $id);
 
+    self::assignDefault($model->form_fields, 'application_layer', $model->packet->getApplicationLayerId());
     self::assignDefault($model->form_fields, 'deprecated', $model->packet->isDeprecated());
     self::assignDefault($model->form_fields, 'packet_id', $model->packet->getPacketId(true));
     self::assignDefault($model->form_fields, 'name', $model->packet->getName());
@@ -64,6 +65,7 @@ class Edit extends Controller
     self::assignDefault($model->form_fields, 'research', $model->packet->isInResearch());
     self::assignDefault($model->form_fields, 'markdown', $model->packet->isMarkdown());
     self::assignDefault($model->form_fields, 'published', $model->packet->isPublished());
+    self::assignDefault($model->form_fields, 'transport_layer', $model->packet->getTransportLayerId());
 
     if ($router->getRequestMethod() == 'GET')
     {
@@ -82,6 +84,7 @@ class Edit extends Controller
         $model->active_user->getId(),
         getenv('REMOTE_ADDR'),
         json_encode([
+          'application_layer' => $model->packet->getApplicationLayer()->getLabel(),
           'created_dt' => $model->packet->getCreatedDateTime(),
           'deprecated' => $model->packet->isDeprecated(),
           'draft' => !$model->packet->isPublished(),
@@ -94,6 +97,7 @@ class Edit extends Controller
           'owner' => $model->packet->getUser(),
           'remarks' => $model->packet->getRemarks(false),
           'research' => $model->packet->isInResearch(),
+          'transport_layer' => $model->packet->getTransportLayer()->getLabel(),
           'used_by' => $model->packet->getUsedBy(),
         ])
       );
@@ -112,6 +116,7 @@ class Edit extends Controller
 
   protected function handlePost(FormModel &$model)
   {
+    $application_layer = $model->form_fields['application_layer'] ?? null;
     $deprecated = $model->form_fields['deprecated'] ?? null;
     $direction = $model->form_fields['direction'] ?? null;
     $format = $model->form_fields['format'] ?? null;
@@ -121,7 +126,18 @@ class Edit extends Controller
     $published = $model->form_fields['published'] ?? null;
     $remarks = $model->form_fields['remarks'] ?? null;
     $research = $model->form_fields['research'] ?? null;
+    $transport_layer = $model->form_fields['transport_layer'] ?? null;
     $used_by = $model->form_fields['used_by'] ?? [];
+
+    try
+    {
+      $model->packet->setApplicationLayerId($application_layer);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_APPLICATION_LAYER_ID;
+      return;
+    }
 
     try
     {
@@ -175,6 +191,16 @@ class Edit extends Controller
     catch (OutOfBoundsException $e)
     {
       $model->error = FormModel::ERROR_OUTOFBOUNDS_REMARKS;
+      return;
+    }
+
+    try
+    {
+      $model->packet->setTransportLayerId($transport_layer);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_TRANSPORT_LAYER_ID;
       return;
     }
 

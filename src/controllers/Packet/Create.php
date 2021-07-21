@@ -42,6 +42,22 @@ class Create extends Controller
     $model->products = Product::getAllProducts();
     $model->packet = new Packet(null);
 
+    self::assignDefault($model->form_fields, 'application_layer', $model->packet->getApplicationLayerId());
+    self::assignDefault($model->form_fields, 'deprecated', $model->packet->isDeprecated());
+    self::assignDefault($model->form_fields, 'packet_id', $model->packet->getPacketId(true));
+    self::assignDefault($model->form_fields, 'name', $model->packet->getName());
+    self::assignDefault($model->form_fields, 'format', $model->packet->getFormat());
+    self::assignDefault($model->form_fields, 'remarks', $model->packet->getRemarks(false));
+    self::assignDefault($model->form_fields, 'research', $model->packet->isInResearch());
+    self::assignDefault($model->form_fields, 'markdown', $model->packet->isMarkdown());
+    self::assignDefault($model->form_fields, 'published', $model->packet->isPublished());
+    self::assignDefault($model->form_fields, 'transport_layer', $model->packet->getTransportLayerId());
+
+    if ($router->getRequestMethod() == 'GET')
+    {
+      self::assignDefault($model->form_fields, 'used_by', Product::getProductsFromIds($model->packet->getUsedBy()));
+    }
+
     if ($router->getRequestMethod() == 'POST')
     {
       $this->handlePost($model);
@@ -76,8 +92,15 @@ class Create extends Controller
     return $model;
   }
 
+  protected static function assignDefault(&$form_fields, $key, $value)
+  {
+    if (isset($form_fields[$key])) return;
+    $form_fields[$key] = $value;
+  }
+
   protected function handlePost(FormModel &$model)
   {
+    $application_layer = $model->form_fields['application_layer'] ?? null;
     $deprecated = $model->form_fields['deprecated'] ?? null;
     $direction = $model->form_fields['direction'] ?? null;
     $format = $model->form_fields['format'] ?? null;
@@ -87,7 +110,18 @@ class Create extends Controller
     $published = $model->form_fields['published'] ?? null;
     $remarks = $model->form_fields['remarks'] ?? null;
     $research = $model->form_fields['research'] ?? null;
+    $transport_layer = $model->form_fields['transport_layer'] ?? null;
     $used_by = $model->form_fields['used_by'] ?? [];
+
+    try
+    {
+      $model->packet->setApplicationLayerId($application_layer);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_APPLICATION_LAYER_ID;
+      return;
+    }
 
     try
     {
@@ -141,6 +175,16 @@ class Create extends Controller
     catch (OutOfBoundsException $e)
     {
       $model->error = FormModel::ERROR_OUTOFBOUNDS_REMARKS;
+      return;
+    }
+
+    try
+    {
+      $model->packet->setTransportLayerId($transport_layer);
+    }
+    catch (OutOfBoundsException $e)
+    {
+      $model->error = FormModel::ERROR_OUTOFBOUNDS_TRANSPORT_LAYER_ID;
       return;
     }
 

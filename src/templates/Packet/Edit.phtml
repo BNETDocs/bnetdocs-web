@@ -17,11 +17,14 @@ switch ($error)
   case FormModel::ERROR_INTERNAL: $message = 'An internal error occurred. Try again later.'; break;
   case FormModel::ERROR_NONE: $message = null; break;
   case FormModel::ERROR_NOT_FOUND: $message = 'The requested packet does not exist or could not be found.'; break;
+  case FormModel::ERROR_OUTOFBOUNDS_APPLICATION_LAYER_ID: $message = sprintf('The application layer must be between 0-%d.', Packet::MAX_APPLICATION_LAYER_ID); break;
+  case FormModel::ERROR_OUTOFBOUNDS_DIRECTION: $message = sprintf('The direction must be between 0-%d.', Packet::MAX_DIRECTION); break;
   case FormModel::ERROR_OUTOFBOUNDS_FORMAT: $message = sprintf('The format length must be between 1-%d.', Packet::MAX_FORMAT); break;
   case FormModel::ERROR_OUTOFBOUNDS_ID: $message = sprintf('The id must be between 0-%d.', Packet::MAX_ID); break;
   case FormModel::ERROR_OUTOFBOUNDS_NAME: $message = sprintf('The name length must be between 1-%d.', Packet::MAX_NAME); break;
   case FormModel::ERROR_OUTOFBOUNDS_PACKET_ID: $message = sprintf('The packet id must be between 0-%d.', Packet::MAX_PACKET_ID); break;
   case FormModel::ERROR_OUTOFBOUNDS_REMARKS: $message = sprintf('The remarks length must be between 0-%d.', Packet::MAX_REMARKS); break;
+  case FormModel::ERROR_OUTOFBOUNDS_TRANSPORT_LAYER_ID: $message = sprintf('The transport layer must be between 0-%d.', Packet::MAX_TRANSPORT_LAYER_ID); break;
   case FormModel::ERROR_OUTOFBOUNDS_USED_BY: $message = 'The products selected as using this packet were invalid.'; break;
   case FormModel::ERROR_SUCCESS: $message = 'The packet has been edited successfully!'; break;
   default: $message = $error;

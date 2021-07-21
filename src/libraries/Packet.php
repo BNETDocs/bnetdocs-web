@@ -36,6 +36,7 @@ class Packet implements IDatabaseObject, JsonSerializable
 
   // Maximum SQL field lengths, alter as appropriate
   const MAX_APPLICATION_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
+  const MAX_DIRECTION = 0x7FFFFFFFFFFFFFFF;
   const MAX_EDITED_COUNT = 0x7FFFFFFFFFFFFFFF;
   const MAX_FORMAT = 0xFFFF;
   const MAX_ID = 0x7FFFFFFFFFFFFFFF;
