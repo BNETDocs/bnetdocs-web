@@ -2,9 +2,11 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
+use \BNETDocs\Libraries\Exceptions\ProductNotFoundException;
 use \BNETDocs\Libraries\IDatabaseObject;
 use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
 use \BNETDocs\Libraries\Packet\Transport as TransportLayer;
+use \BNETDocs\Libraries\Product;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
@@ -116,6 +118,7 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->setPacketId(0);
     $this->setRemarks('');
     $this->setTransportLayerId(self::DEFAULT_TRANSPORT_LAYER_ID);
+    $this->setUsedBy([]);
 
     if (is_null($id)) return;
 
@@ -154,10 +157,26 @@ class Packet implements IDatabaseObject, JsonSerializable
       throw new UnexpectedValueException(sprintf('packet id: %d not found', $id));
     }
 
-    $r = $q->fetchObject();
+    $o = $q->fetchObject();
     $q->closeCursor();
 
-    $this->allocateObject($r);
+    $q = Common::$database->prepare('
+      SELECT `u`.`bnet_product_id` AS `used_by` FROM `packet_used_by` AS `u`
+      INNER JOIN `products` AS `p` ON `u`.`bnet_product_id` = `p`.`bnet_product_id`
+      WHERE `u`.`id` = ? ORDER BY `p`.`sort` ASC;
+    ');
+    $r = $q->execute([(int) $this->id]);
+    if (!$r) return $r;
+
+    $used_by = [];
+    while ($row = $q->fetch(PDO::FETCH_NUM))
+    {
+      $used_by[] = new Product((int) $row[0]);
+    }
+    $o->used_by = $used_by;
+    $q->closeCursor();
+
+    $this->allocateObject($o);
   }
 
   /**
@@ -182,6 +201,8 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->setRemarks($value->packet_remarks);
     $this->setTransportLayerId($value->packet_transport_layer_id);
     $this->setUserId($value->user_id);
+    if (!isset($value->used_by)) throw new \RuntimeException();
+    $this->setUsedBy($value->used_by);
   }
 
   /**
@@ -225,9 +246,7 @@ class Packet implements IDatabaseObject, JsonSerializable
         `packet_remarks` = :r,
         `packet_transport_layer_id` = :tr_id,
         `user_id` = :uid
-      ;
-      SELECT LAST_INSERT_ID();
-    ');
+    ;');
 
     $created_datetime = $this->created_datetime->format(self::DATE_SQL);
 
@@ -252,10 +271,29 @@ class Packet implements IDatabaseObject, JsonSerializable
     $r = $q->execute();
     if (!$r) return $r;
 
-    $q->nextRowset();
-    $this->setId($q->fetch(PDO::FETCH_NUM)[0]);
+    if (is_null($this->id))
+    {
+      $this->setId(Common::$database->lastInsertId());
+    }
 
-    $q->closeCursor();
+    $q = Common::$database->prepare('DELETE FROM `packet_used_by` WHERE `id` = :id;');
+    $q->bindParam(':id', $this->id, PDO::PARAM_INT);
+    $r = $q->execute();
+    if (!$r) return $r;
+
+    $q = Common::$database->prepare('INSERT INTO `packet_used_by` (`id`, `bnet_product_id`) VALUES (:id, :p);');
+    foreach ($this->used_by as $v)
+    {
+      $p = $v->getBnetProductId();
+      $q->bindParam(':id', $this->id, PDO::PARAM_INT);
+      $q->bindParam(':p', $p, PDO::PARAM_INT);
+      $r = $q->execute();
+      if (!$r)
+      {
+        return $r;
+      }
+    }
+
     return $r;
   }
 
@@ -342,32 +380,17 @@ class Packet implements IDatabaseObject, JsonSerializable
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $q = Common::$database->prepare(sprintf('
-      SELECT
-        `created_datetime`,
-        `edited_count`,
-        `edited_datetime`,
-        `id`,
-        `options_bitmask`,
-        `packet_application_layer_id`,
-        `packet_direction_id`,
-        `packet_format`,
-        `packet_id`,
-        `packet_name`,
-        `packet_remarks`,
-        `packet_transport_layer_id`,
-        `user_id`
-      FROM `packets`
-      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC LIMIT %s;', $count
+    $q = Common::$database->prepare(sprintf(
+      'SELECT `id` FROM `packets` ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC LIMIT %d;', $count
     ));
 
     $r = $q->execute();
     if (!$r) return $r;
 
     $r = [];
-    while ($row = $q->fetch(PDO::FETCH_OBJ))
+    while ($row = $q->fetch(PDO::FETCH_NUM))
     {
-      $r[] = new self($row);
+      $r[] = new self($row[0]);
     }
 
     $q->closeCursor();
@@ -964,42 +987,18 @@ class Packet implements IDatabaseObject, JsonSerializable
   /**
    * Sets the products this Packet is used by.
    *
-   * @param array $value The set of ProductId integers.
+   * @param array $value The set of Product objects, or Product::$id integers.
    */
   public function setUsedBy(array $value)
   {
-    if (!isset(Common::$database))
+    $used_by = [];
+
+    foreach ($value as $v)
     {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+      $used_by[] = ($v instanceof Product ? $v : new Product($v));
     }
 
-    try
-    {
-      Common::$database->beginTransaction();
-
-      $q = Common::$database->prepare('DELETE FROM `packet_used_by` WHERE `id` = :id;');
-      $q->bindParam(':id', $this->id, PDO::PARAM_INT);
-      $r = $q->execute();
-      if (!$r) return $r;
-
-      $q = Common::$database->prepare('INSERT INTO `packet_used_by` (`id`, `bnet_product_id`) VALUES (?, ?);');
-      foreach ($value as $v)
-      {
-        $r = $q->execute([(int) $this->id, (int) $v]);
-        if (!$r)
-        {
-          Common::$database->rollBack();
-          return $r;
-        }
-      }
-
-      Common::$database->commit();
-    }
-    catch (PDOException $e)
-    {
-      Common::$database->rollBack();
-      throw $e;
-    }
+    $this->used_by = $used_by;
   }
 
   /**
