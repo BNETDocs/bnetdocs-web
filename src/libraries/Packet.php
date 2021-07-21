@@ -201,7 +201,6 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->setRemarks($value->packet_remarks);
     $this->setTransportLayerId($value->packet_transport_layer_id);
     $this->setUserId($value->user_id);
-    if (!isset($value->used_by)) throw new \RuntimeException();
     $this->setUsedBy($value->used_by);
   }
 
@@ -342,31 +341,14 @@ class Packet implements IDatabaseObject, JsonSerializable
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $q = Common::$database->prepare(sprintf('
-      SELECT
-        `created_datetime`,
-        `edited_count`,
-        `edited_datetime`,
-        `id`,
-        `options_bitmask`,
-        `packet_application_layer_id`,
-        `packet_direction_id`,
-        `packet_format`,
-        `packet_id`,
-        `packet_name`,
-        `packet_remarks`,
-        `packet_transport_layer_id`,
-        `user_id`
-      FROM `packets` %s ORDER BY %s;', $where_clause, $order_clause
-    ));
-
+    $q = Common::$database->prepare(sprintf('SELECT `id` FROM `packets` %s ORDER BY %s;', $where_clause, $order_clause));
     $r = $q->execute();
     if (!$r) return $r;
 
     $r = [];
-    while ($row = $q->fetch(PDO::FETCH_OBJ))
+    while ($row = $q->fetch(PDO::FETCH_NUM))
     {
-      $r[] = new self($row);
+      $r[] = new self($row[0]);
     }
 
     $q->closeCursor();
@@ -383,7 +365,6 @@ class Packet implements IDatabaseObject, JsonSerializable
     $q = Common::$database->prepare(sprintf(
       'SELECT `id` FROM `packets` ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC LIMIT %d;', $count
     ));
-
     $r = $q->execute();
     if (!$r) return $r;
 
@@ -533,34 +514,15 @@ class Packet implements IDatabaseObject, JsonSerializable
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $q = Common::$database->prepare('
-      SELECT
-        `created_datetime`,
-        `edited_count`,
-        `edited_datetime`,
-        `id`,
-        `options_bitmask`,
-        `packet_application_layer_id`,
-        `packet_direction_id`,
-        `packet_format`,
-        `packet_id`,
-        `packet_name`,
-        `packet_remarks`,
-        `packet_transport_layer_id`,
-        `user_id`
-      FROM `packets`
-      WHERE `user_id` = :user_id
-      ORDER BY `id` ASC;
-    ');
-    $q->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-
+    $q = Common::$database->prepare('SELECT `id` FROM `packets` WHERE `user_id` = :id ORDER BY `id` ASC;');
+    $q->bindParam(':id', $user_id, PDO::PARAM_INT);
     $r = $q->execute();
     if (!$r) return $r;
 
     $r = [];
-    while ($row = $q->fetch(PDO::FETCH_OBJ))
+    while ($row = $q->fetch(PDO::FETCH_NUM))
     {
-      $r[] = new self( $row );
+      $r[] = new self($row[0]);
     }
 
     $q->closeCursor();

@@ -82,7 +82,8 @@ class View extends Controller
     );
 
     // Process documents
-    if ($model->documents) {
+    if ($model->documents)
+    {
       // Alphabetically sort the documents
       usort($model->documents, function($a, $b){
         $a1 = $a->getTitle();
@@ -93,9 +94,10 @@ class View extends Controller
 
       // Remove documents that are not published
       $i = count($model->documents) - 1;
-      while ($i >= 0) {
-        if (!($model->documents[$i]->getOptionsBitmask()
-          & Document::OPTION_PUBLISHED)) {
+      while ($i >= 0)
+      {
+        if (!($model->documents[$i]->isPublished()))
+        {
           unset($model->documents[$i]);
         }
         --$i;
@@ -103,7 +105,8 @@ class View extends Controller
     }
 
     // Process news posts
-    if ($model->news_posts) {
+    if ($model->news_posts)
+    {
       // Alphabetically sort the news posts
       usort($model->news_posts, function($a, $b){
         $a1 = $a->getTitle();
@@ -114,9 +117,10 @@ class View extends Controller
 
       // Remove news posts that are not published
       $i = count($model->news_posts) - 1;
-      while ($i >= 0) {
-        if (!($model->news_posts[$i]->getOptionsBitmask()
-          & NewsPost::OPTION_PUBLISHED)) {
+      while ($i >= 0)
+      {
+        if (!($model->news_posts[$i]->isPublished()))
+        {
           unset($model->news_posts[$i]);
         }
         --$i;
@@ -124,7 +128,8 @@ class View extends Controller
     }
 
     // Process packets
-    if ($model->packets) {
+    if ($model->packets)
+    {
       // Alphabetically sort the packets
       usort($model->packets, function($a, $b){
         $a1 = $a->getName();
@@ -135,9 +140,10 @@ class View extends Controller
 
       // Remove packets that are not published
       $i = count($model->packets) - 1;
-      while ($i >= 0) {
-        if (!($model->packets[$i]->getOptionsBitmask()
-          & Packet::OPTION_PUBLISHED)) {
+      while ($i >= 0)
+      {
+        if (!($model->packets[$i]->isPublished()))
+        {
           unset($model->packets[$i]);
         }
         --$i;
