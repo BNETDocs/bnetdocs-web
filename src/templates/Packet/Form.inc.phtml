@@ -29,9 +29,9 @@ use \CarlBennett\MVC\Libraries\Common; ?>
     </div><div class="col-lg-2">
       <div class="form-group">
         <label class="font-weight-bold">Options:</label>
-        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($form_fields['deprecated'] ?? null ? ' selected' : '')?> tabindex="4"/><label class="custom-control-label text-danger" for="deprecated">Deprecated</label></div>
-        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="research" name="research" value="1"<?=($form_fields['research'] ?? null ? ' selected' : '')?> tabindex="5"/> <label class="custom-control-label text-warning" for="research">In Research</label></div>
-        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="published" name="published" value="1"<?=($form_fields['published'] ?? null ? ' selected' : '')?> tabindex="6"/> <label class="custom-control-label text-success" for="published">Published</label></div>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="deprecated" name="deprecated" value="1"<?=($form_fields['deprecated'] ?? null ? ' checked' : '')?> tabindex="4"/><label class="custom-control-label text-danger" for="deprecated">Deprecated</label></div>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="research" name="research" value="1"<?=($form_fields['research'] ?? null ? ' checked' : '')?> tabindex="5"/> <label class="custom-control-label text-warning" for="research">In Research</label></div>
+        <div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="published" name="published" value="1"<?=($form_fields['published'] ?? null ? ' checked' : '')?> tabindex="6"/> <label class="custom-control-label text-success" for="published">Published</label></div>
       </div>
     </div>
   </div>
@@ -78,7 +78,7 @@ use \CarlBennett\MVC\Libraries\Common; ?>
         $p = $form_products[$p_i];
         $p_id = $p->getBnetProductId();
         $p_label = $p->getLabel();
-        printf('<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="used_by_%s" name="used_by[]" value="%s"%s/><label class="custom-control-label" for="used_by_%s">%s</label></div></td>', $p_id, $p_id, (in_array($p, $form_fields['used_by'] ?? []) ? ' selected' : ''), $p_id, $p_label);
+        printf('<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" id="used_by_%s" name="used_by[]" value="%s"%s/><label class="custom-control-label" for="used_by_%s">%s</label></div></td>', $p_id, $p_id, (in_array($p, $form_fields['used_by'] ?? []) ? ' checked' : ''), $p_id, $p_label);
         if ($p_i % 2 === 1) echo '</tr>';
       } ?>
       </tbody>
@@ -89,7 +89,7 @@ use \CarlBennett\MVC\Libraries\Common; ?>
     <span class="float-right">
       <div class="custom-control custom-switch">
         <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="5"
-        title="Use markdown or use raw HTML" value="1"<?=($form_fields['markdown'] ?? null ? ' selected' : '')?>/>
+        title="Use markdown or use raw HTML" value="1"<?=($form_fields['markdown'] ?? null ? ' checked' : '')?>/>
         <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown</label>
       </div>
     </span>
