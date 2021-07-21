@@ -11,9 +11,9 @@ use \CarlBennett\MVC\Libraries\Common; ?>
       <div class="form-group">
         <label class="font-weight-bold" for="direction">Direction:</label>
         <select class="bg-dark border border-primary custom-select text-light" name="direction" id="direction" tabindex="1">
-          <option value="<?=Packet::DIRECTION_CLIENT_SERVER?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_CLIENT_SERVER ? ' selected' : '')?>>Client to Server</option>
-          <option value="<?=Packet::DIRECTION_SERVER_CLIENT?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_SERVER_CLIENT ? ' selected' : '')?>>Server to Client</option>
-          <option value="<?=Packet::DIRECTION_PEER_TO_PEER?>"<?=($form_fields['direction'] ?? null === Packet::DIRECTION_PEER_TO_PEER ? ' selected' : '')?>>Peer to Peer</option>
+          <option value="<?=Packet::DIRECTION_CLIENT_SERVER?>"<?=(($form_fields['direction'] ?? null) === Packet::DIRECTION_CLIENT_SERVER ? ' selected' : '')?>>Client to Server</option>
+          <option value="<?=Packet::DIRECTION_SERVER_CLIENT?>"<?=(($form_fields['direction'] ?? null) === Packet::DIRECTION_SERVER_CLIENT ? ' selected' : '')?>>Server to Client</option>
+          <option value="<?=Packet::DIRECTION_PEER_TO_PEER?>"<?=(($form_fields['direction'] ?? null) === Packet::DIRECTION_PEER_TO_PEER ? ' selected' : '')?>>Peer to Peer</option>
         </select>
       </div>
     </div><div class="col-lg-3">
