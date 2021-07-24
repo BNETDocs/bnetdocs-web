@@ -57,7 +57,7 @@ class Index extends Controller {
     if ($model->documents) {
       $i = count($model->documents) - 1;
       while ($i >= 0) {
-        if (!($model->documents[$i]->getOptionsBitmask()
+        if (!($model->documents[$i]->getOptions()
           & Document::OPTION_PUBLISHED)) {
           unset($model->documents[$i]);
         }
@@ -80,7 +80,7 @@ class Index extends Controller {
                                   $document->getEditedDateTime()
                                 ),
           'id'               => $document->getId(),
-          'options_bitmask'  => $document->getOptionsBitmask(),
+          'options_bitmask'  => $document->getOptions(),
           'title'            => $document->getTitle(),
           'user'             => $document->getUser(),
         ];

@@ -69,22 +69,21 @@ class Create extends Controller {
 
     try {
 
-      $success = Document::create(
-        $user_id, $options_bitmask, $title, $content
-      );
+      $document = new Document(null);
+      $document->setContent($content);
+      $document->setOptions($options_bitmask);
+      $document->setTitle($title);
+      $document->setUserId($user_id);
+      $document->commit();
+      $model->error = false;
 
     } catch (QueryException $e) {
 
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
-
-    }
-
-    if (!$success) {
       $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
+
     }
 
     Logger::logEvent(

@@ -677,6 +677,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * Sets the brief description of this packet.
    *
    * @param string $value The brief description.
+   * @throws OutOfBoundsException if value is not between one and MAX_BRIEF.
    */
   public function setBrief(string $value)
   {
@@ -810,10 +811,10 @@ class Packet implements IDatabaseObject, JsonSerializable
   }
 
   /**
-   * Toggles the Markdown-format option, which alters how remarks are parsed and printed.
+   * Toggles the Markdown-format option, which alters how brief and remarks are parsed and printed.
    *
-   * @param bool @value If true, remarks are passed into the Parsedown class before being printed.
-   *                    If false, remarks are *not* passed into Parsedown before being printed.
+   * @param bool @value If true, value is passed into the Parsedown class before being printed.
+   *                    If false, value is *not* passed into Parsedown before being printed.
    */
   public function setMarkdown(bool $value)
   {

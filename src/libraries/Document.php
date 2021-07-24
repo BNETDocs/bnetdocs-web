@@ -1,144 +1,284 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\IDatabaseObject;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
+use \JsonSerializable;
+use \OutOfBoundsException;
 use \PDO;
 use \PDOException;
 use \Parsedown;
 use \StdClass;
+use \UnexpectedValueException;
 
-class Document {
+class Document implements IDatabaseObject, JsonSerializable
+{
+  const DATE_SQL = 'Y-m-d H:i:s'; // DateTime::format() string for database
 
-  const OPTION_MARKDOWN  = 0x00000001;
-  const OPTION_PUBLISHED = 0x00000002;
+  const DEFAULT_OPTION = self::OPTION_MARKDOWN;
 
+  // Maximum SQL field lengths, alter as appropriate
+  const MAX_BRIEF = 0xFF;
+  const MAX_CONTENT = 0xFFFF;
+  const MAX_EDITED_COUNT = 0x7FFFFFFFFFFFFFFF;
+  const MAX_ID = 0x7FFFFFFFFFFFFFFF;
+  const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
+  const MAX_TITLE = 0xFF;
+  const MAX_USER_ID = 0x7FFFFFFFFFFFFFFF;
+
+  const OPTION_MARKDOWN  = 0x00000001; // Markdown-formatted brief and content
+  const OPTION_PUBLISHED = 0x00000002; // 'Draft' badge and visiblility to non-editors
+
+  const TZ_SQL = 'Etc/UTC'; // database values are stored in this TZ
+
+  private $_id;
+
+  protected $brief;
   protected $content;
   protected $created_datetime;
   protected $edited_count;
   protected $edited_datetime;
   protected $id;
-  protected $options_bitmask;
+  protected $options;
   protected $title;
   protected $user_id;
 
-  public function __construct($data) {
-    if (is_numeric($data)) {
-      $this->content          = null;
-      $this->created_datetime = null;
-      $this->edited_count     = null;
-      $this->edited_datetime  = null;
-      $this->id               = (int) $data;
-      $this->options_bitmask  = null;
-      $this->title            = null;
-      $this->user_id          = null;
-      $this->refresh();
-    } else if ($data instanceof StdClass) {
-      self::normalize($data);
-      $this->content          = $data->content;
-      $this->created_datetime = $data->created_datetime;
-      $this->edited_count     = $data->edited_count;
-      $this->edited_datetime  = $data->edited_datetime;
-      $this->id               = $data->id;
-      $this->options_bitmask  = $data->options_bitmask;
-      $this->title            = $data->title;
-      $this->user_id          = $data->user_id;
-    } else {
-      throw new InvalidArgumentException("Cannot use data argument");
+  public function __construct($value)
+  {
+    if (is_string($value) && is_numeric($value) && strpos($value, '.') === false)
+    {
+      // something is lazily providing an int value in a string type
+      $value = (int) $value;
     }
+
+    if (is_null($value) || is_int($value))
+    {
+      $this->_id = $value;
+      $this->allocate();
+      return;
+    }
+
+    if ($value instanceof StdClass)
+    {
+      $this->allocateObject($value);
+      return;
+    }
+
+    throw new InvalidArgumentException(sprintf(
+      'value must be null, an integer, or StdClass; %s given', gettype($value)
+    ));
   }
 
-  public static function create(
-    $user_id, $options_bitmask, $title, $content
-  ) {
-    if (!isset(Common::$database)) {
+  /**
+   * Implements the allocate function from the IDatabaseObject interface
+   */
+  public function allocate()
+  {
+    $id = $this->_id;
+
+    if (!(is_null($id) || is_int($id)))
+    {
+      throw new InvalidArgumentException('value must be null or an integer');
+    }
+
+    $this->setBrief('');
+    $this->setContent('');
+    $this->setCreatedDateTime(new DateTime('now'));
+    $this->setEditedCount(0);
+    $this->setId($id);
+    $this->setOptions(self::DEFAULT_OPTION);
+    $this->setTitle('');
+
+    if (is_null($id)) return;
+
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare("
-        INSERT INTO `documents` (
-          `id`, `created_datetime`, `edited_datetime`, `edited_count`,
-          `user_id`, `options_bitmask`, `title`, `content`
-        ) VALUES (
-          NULL, NOW(), NULL, 0, :user_id, :options_bitmask, :title, :content
-        );
-      ");
-      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
-      $stmt->bindParam(":options_bitmask", $options_bitmask, PDO::PARAM_INT);
-      $stmt->bindParam(":title", $title, PDO::PARAM_STR);
-      $stmt->bindParam(":content", $content, PDO::PARAM_STR);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot create document", $e);
-    } finally {
-      //Credits::getTopContributorsByDocuments(true); // Refresh statistics
-      return $successful;
+
+    $q = Common::$database->prepare(
+     'SELECT
+        `brief`,
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `title`,
+        `user_id`
+      FROM `documents` WHERE `id` = :id LIMIT 1;'
+    );
+    $q->bindParam(':id', $id, PDO::PARAM_INT);
+
+    $r = $q->execute();
+    if (!$r)
+    {
+      throw new UnexpectedValueException(sprintf('an error occurred finding document id: %d', $id));
     }
+
+    if ($q->rowCount() != 1)
+    {
+      throw new UnexpectedValueException(sprintf('document id: %d not found', $id));
+    }
+
+    $o = $q->fetchObject();
+    $q->closeCursor();
+
+    $this->allocateObject($o);
   }
 
-  public static function delete($id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare("
-        DELETE FROM `documents` WHERE `id` = :id LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot delete document", $e);
-    } finally {
-      //Credits::getTopContributorsByNewsPosts(true); // Refresh statistics
-      return $successful;
-    }
+  /**
+   * Internal function to process and translate StdClass objects into properties.
+   */
+  protected function allocateObject(StdClass $value)
+  {
+    $tz = new DateTimeZone(self::TZ_SQL);
+
+    $this->setBrief($value->brief);
+    $this->setContent($value->content);
+    $this->setCreatedDateTime(new DateTime($value->created_datetime, $tz));
+    $this->setEditedCount($value->edited_count);
+    $this->setEditedDateTime(
+      $value->edited_datetime ? new DateTime($value->edited_datetime) : null
+    );
+    $this->setId($value->id);
+    $this->setOptions($value->options_bitmask);
+    $this->setTitle($value->title);
+    $this->setUserId($value->user_id);
   }
 
-  public static function getAllDocuments( $order = null ) {
-    if (!isset(Common::$database)) {
+  /**
+   * Implements the commit function from the IDatabaseObject interface
+   */
+  public function commit()
+  {
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    try {
-      $stmt = Common::$database->prepare('
-        SELECT
-          `content`,
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `options_bitmask`,
-          `title`,
-          `user_id`
-        FROM `documents`
-        ORDER BY
-          ' . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
-          `id` ' . ($order ? $order[1] : 'ASC') . ';'
-      );
-      if (!$stmt->execute()) {
-        throw new QueryException('Cannot refresh documents');
-      }
-      $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $objects[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $objects;
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot refresh documents', $e);
+
+    $q = Common::$database->prepare(
+      'INSERT INTO `documents` (
+        `brief`,
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `options_bitmask`,
+        `title`,
+        `user_id`
+      ) VALUES (
+        :b, :c, :cdt, :ec, :edt, :id, :o, :t, :uid
+      ) ON DUPLICATE KEY UPDATE
+        `brief` = :b,
+        `content` = :c,
+        `created_datetime` = :cdt,
+        `edited_count` = :ec,
+        `edited_datetime` = :edt,
+        `id` = :id,
+        `options_bitmask` = :o,
+        `title` = :t,
+        `user_id` = :uid
+    ;');
+
+    $created_datetime = $this->created_datetime->format(self::DATE_SQL);
+
+    $edited_datetime = (
+      is_null($this->edited_datetime) ? null : $this->edited_datetime->format(self::DATE_SQL)
+    );
+
+    $q->bindParam(':b', $this->brief, (is_null($this->brief) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':c', $this->content, PDO::PARAM_STR);
+    $q->bindParam(':cdt', $created_datetime, PDO::PARAM_STR);
+    $q->bindParam(':ec', $this->edited_count, PDO::PARAM_INT);
+    $q->bindParam(':edt', $edited_datetime, (is_null($edited_datetime) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':id', $this->id, (is_null($this->id) ? PDO::PARAM_NULL : PDO::PARAM_INT));
+    $q->bindParam(':o', $this->options, PDO::PARAM_INT);
+    $q->bindParam(':t', $this->title, PDO::PARAM_STR);
+    $q->bindParam(':uid', $this->user_id, (is_null($this->user_id) ? PDO::PARAM_NULL : PDO::PARAM_INT));
+
+    $r = $q->execute();
+    if (!$r) return $r;
+
+    if (is_null($this->id))
+    {
+      $this->setId(Common::$database->lastInsertId());
     }
-    return null;
+
+    return $r;
+  }
+
+  public static function delete($id)
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $q = Common::$database->prepare('DELETE FROM `documents` WHERE `id` = :id LIMIT 1;');
+    $q->bindParam(':id', $id, PDO::PARAM_INT);
+    return $q->execute();
+  }
+
+  public static function getAllDocuments(?array $order = null)
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+
+    $q = Common::$database->prepare(
+     'SELECT `id` FROM `documents`
+      ORDER BY
+        ' . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
+        `id` ' . ($order ? $order[1] : 'ASC') . ';'
+    );
+    $r = $q->execute();
+    if (!$r) return $r;
+
+    $r = [];
+    while ($row = $q->fetch(PDO::FETCH_NUM))
+    {
+      $r[] = new self($row[0]);
+    }
+
+    $q->closeCursor();
+    return $r;
+  }
+
+  public function getBrief(bool $format)
+  {
+    if (!($format && $this->getOption(self::OPTION_MARKDOWN)))
+    {
+      return $this->brief;
+    }
+
+    $md = new Parsedown();
+    return $md->text($this->brief);
+  }
+
+  public function getContent(bool $format)
+  {
+    if (!($format && $this->getOption(self::OPTION_MARKDOWN)))
+    {
+      return $this->content;
+    }
+
+    $md = new Parsedown();
+    return $md->text($this->content);
+  }
+
+  public function getCreatedDateTime()
+  {
+    return $this->created_datetime;
   }
 
   public static function getDocumentsByLastEdited(int $count)
@@ -148,285 +288,343 @@ class Document {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $stmt = Common::$database->prepare(
-     'SELECT
-        `content`,
-        `created_datetime`,
-        `edited_count`,
-        `edited_datetime`,
-        `id`,
-        `options_bitmask`,
-        `title`,
-        `user_id`
-      FROM `documents`
+    $q = Common::$database->prepare(sprintf(
+     'SELECT `id` FROM `documents`
       ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC
-      LIMIT ' . $count . ';'
-    );
+      LIMIT %d;', $count
+    ));
 
-    $r = $stmt->execute();
-    if (!$r)
-    {
-      throw new QueryException('Cannot refresh documents');
-      return $r;
-    }
+    $r = $q->execute();
+    if (!$r) return $r;
 
     $r = [];
-    while ($row = $stmt->fetch(PDO::FETCH_OBJ))
+    while ($row = $q->fetch(PDO::FETCH_NUM))
     {
-      $r[] = new self($row);
+      $r[] = new self($row[0]);
     }
 
-    $stmt->closeCursor();
+    $q->closeCursor();
     return $r;
   }
 
-  public function getContent($prepare) {
-    if (!$prepare) {
-      return $this->content;
-    }
-    if ($this->options_bitmask & self::OPTION_MARKDOWN) {
-      $md = new Parsedown();
-      return $md->text($this->content);
-    } else {
-      return $this->content;
-    }
-  }
-
-  public function getCreatedDateTime() {
-    if (is_null($this->created_datetime)) {
-      return $this->created_datetime;
-    } else {
-      $tz = new DateTimeZone( 'Etc/UTC' );
-      $dt = new DateTime($this->created_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
-    }
-  }
-
-  public static function getDocumentsByUserId($user_id) {
-    if (!isset(Common::$database)) {
+  public static function getDocumentsByUserId(int $user_id)
+  {
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `content`,
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `options_bitmask`,
-          `title`,
-          `user_id`
-        FROM `documents`
-        WHERE `user_id` = :user_id
-        ORDER BY `id` ASC;
-      ");
-      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot query documents by user id");
-      }
-      $documents = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $documents[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $documents;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot query documents by user id", $e);
+    $q = Common::$database->prepare(
+     'SELECT `id` FROM `documents` WHERE `user_id` = :id ORDER BY `id` ASC;'
+    );
+    $q->bindParam(':id', $user_id, PDO::PARAM_INT);
+    $r = $q->execute();
+    if (!$r) return $r;
+
+    $r = [];
+    while ($row = $q->fetch(PDO::FETCH_NUM))
+    {
+      $r[] = new self($row[0]);
     }
-    return null;
+
+    $q->closeCursor();
+    return $r;
   }
 
-  public function getEditedCount() {
+  public function getEditedCount()
+  {
     return $this->edited_count;
   }
 
-  public function getEditedDateTime() {
-    if (is_null($this->edited_datetime)) {
-      return $this->edited_datetime;
-    } else {
-      $tz = new DateTimeZone( 'Etc/UTC' );
-      $dt = new DateTime($this->edited_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
-    }
+  public function getEditedDateTime()
+  {
+    return $this->edited_datetime;
   }
 
-  public function getId() {
+  public function getId()
+  {
     return $this->id;
   }
 
-  public function getOptionsBitmask() {
-    return $this->options_bitmask;
-  }
-
-  public function getPublishedDateTime() {
-    if (!is_null($this->edited_datetime)) {
-      return $this->getEditedDateTime();
-    } else {
-      return $this->getCreatedDateTime();
+  public function getOption(int $option)
+  {
+    if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
     }
+
+    return ($this->options & $option) === $option;
   }
 
-  public function getTitle() {
-    return $this->title;
+  public function getOptions()
+  {
+    return $this->options;
   }
 
-  public function getURI() {
-    return Common::relativeUrlToAbsolute(
-      "/document/" . $this->getId() . "/" . Common::sanitizeForUrl(
-        $this->getTitle(), true
-      )
+  public function getPublishedDateTime()
+  {
+    return (!is_null($this->edited_datetime) ?
+      $this->getEditedDateTime() : $this->getCreatedDateTime()
     );
   }
 
-  public function getUser() {
-    if (is_null($this->user_id)) return null;
-    return new User($this->user_id);
+  public function getTitle()
+  {
+    return $this->title;
   }
 
-  public function getUserId() {
+  public function getURI()
+  {
+    return Common::relativeUrlToAbsolute(sprintf('/document/%s/%s',
+      $this->getId(), Common::sanitizeForUrl($this->getTitle(), true)
+    ));
+  }
+
+  public function getUser()
+  {
+    return (is_null($this->user_id) ? $this->user_id : new User($this->user_id));
+  }
+
+  public function getUserId()
+  {
     return $this->user_id;
   }
 
-  public function isMarkdown() {
-    return ($this->options_bitmask & self::OPTION_MARKDOWN);
+  public function incrementEdited()
+  {
+    $this->setEditedCount($this->getEditedCount() + 1);
+    $this->setEditedDateTime(new DateTime('now'));
   }
 
-  public function isPublished() {
-    return ($this->options_bitmask & self::OPTION_PUBLISHED);
+  public function isMarkdown()
+  {
+    return $this->getOption(self::OPTION_MARKDOWN);
   }
 
-  protected static function normalize(StdClass &$data) {
-    $data->content          = (string) $data->content;
-    $data->created_datetime = (string) $data->created_datetime;
-    $data->edited_count     = (int)    $data->edited_count;
-    $data->id               = (int)    $data->id;
-    $data->options_bitmask  = (int)    $data->options_bitmask;
-    $data->title            = (string) $data->title;
-
-    if (!is_null($data->edited_datetime))
-      $data->edited_datetime = $data->edited_datetime;
-
-    if (!is_null($data->user_id))
-      $data->user_id = (int) $data->user_id;
-
-    return true;
+  public function isPublished()
+  {
+    return $this->getOption(self::OPTION_PUBLISHED);
   }
 
-  public function refresh() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+  public function jsonSerialize()
+  {
+    return [
+      'brief' => $this->getBrief(false),
+      'content' => $this->getContent(false),
+      'created_datetime' => $this->getCreatedDateTime(),
+      'edited_count' => $this->getEditedCount(),
+      'edited_datetime' => $this->getEditedDateTime(),
+      'id' => $this->getId(),
+      'options_bitmask' => $this->getOptions(),
+      'title' => $this->getTitle(),
+      'user' => $this->getUser(),
+    ];
+  }
+
+  /**
+   * Sets the brief description of this document.
+   *
+   * @param string $value The brief description.
+   * @throws OutOfBoundsException if value length is not between zero and MAX_BRIEF.
+   */
+  public function setBrief(string $value)
+  {
+    if (strlen($value) > self::MAX_BRIEF)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d characters', self::MAX_BRIEF
+      ));
     }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `content`,
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `options_bitmask`,
-          `title`,
-          `user_id`
-        FROM `documents`
-        WHERE `id` = :id
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh document");
-      } else if ($stmt->rowCount() == 0) {
-        throw new DocumentNotFoundException($this->id);
-      }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      self::normalize($row);
-      $this->content          = $row->content;
-      $this->created_datetime = $row->created_datetime;
-      $this->edited_count     = $row->edited_count;
-      $this->edited_datetime  = $row->edited_datetime;
-      $this->id               = $row->id;
-      $this->options_bitmask  = $row->options_bitmask;
-      $this->title            = $row->title;
-      $this->user_id          = $row->user_id;
-      return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh document", $e);
-    }
-    return false;
+
+    $this->brief = $value;
   }
 
-  public function save() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+  /**
+   * Sets the content of this document.
+   * 
+   * @param string $value The content.
+   * @throws OutOfBoundsException if value length is not between zero and MAX_CONTENT.
+   */
+  public function setContent(string $value)
+  {
+    if (strlen($value) > self::MAX_CONTENT)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d characters', self::MAX_CONTENT
+      ));
     }
-    try {
-      $stmt = Common::$database->prepare("
-        UPDATE
-          `documents`
-        SET
-          `content` = :content,
-          `created_datetime` = :created_dt,
-          `edited_count` = :edited_count,
-          `edited_datetime` = :edited_dt,
-          `options_bitmask` = :options,
-          `title` = :title,
-          `user_id` = :user_id
-        WHERE
-          `id` = :id
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":content", $this->content, PDO::PARAM_STR);
-      $stmt->bindParam(":created_dt", $this->created_datetime, PDO::PARAM_STR);
-      $stmt->bindParam(":edited_count", $this->edited_count, PDO::PARAM_INT);
-      $stmt->bindParam(":edited_dt", $this->edited_datetime, PDO::PARAM_STR);
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(":options", $this->options_bitmask, PDO::PARAM_INT);
-      $stmt->bindParam(":title", $this->title, PDO::PARAM_STR);
-      $stmt->bindParam(":user_id", $this->user_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot save document");
-      }
-      $stmt->closeCursor();
-      return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot save document", $e);
-    }
-    return false;
-  }
 
-  public function setContent($value) {
     $this->content = $value;
   }
 
-  public function setEditedCount($value) {
+  /**
+   * Sets the Date and Time this Document was created.
+   *
+   * @param DateTime $value The DateTime object.
+   */
+  public function setCreatedDateTime(DateTime $value)
+  {
+    $this->created_datetime = $value;
+  }
+
+  /**
+   * Sets the number of times this Document has been modified.
+   *
+   * @param int $value The total number of modifications.
+   * @throws OutOfBoundsException if value is not between zero and MAX_EDITED_COUNT.
+   */
+  public function setEditedCount(int $value)
+  {
+    if ($value < 0 || $value > self::MAX_EDITED_COUNT)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_EDITED_COUNT
+      ));
+    }
+
     $this->edited_count = $value;
   }
 
-  public function setEditedDateTime(\DateTime $value) {
-    $this->edited_datetime = $value->format("Y-m-d H:i:s");
+  /**
+   * Sets the Date and Time that this Document was last modified.
+   *
+   * @param ?DateTime $value The last modified DateTime, or null for not modified yet.
+   */
+  public function setEditedDateTime(?DateTime $value) {
+    $this->edited_datetime = $value;
   }
 
-  public function setMarkdown($value) {
-    if ($value) {
-      $this->options_bitmask |= self::OPTION_MARKDOWN;
-    } else {
-      $this->options_bitmask &= ~self::OPTION_MARKDOWN;
+  /**
+   * Sets the database id for this Document object.
+   *
+   * @param ?int $value The database id for this Document object. When set to null, calling commit() will
+   *                    get a new id, however until then the Document will not have a valid webpage/URI.
+   * @throws OutOfBoundsException if value is not between zero and MAX_ID, or null.
+   */
+  public function setId(?int $value)
+  {
+    if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_ID
+      ));
+    }
+
+    $this->id = $value;
+  }
+
+  /**
+   * Toggles the Markdown-format option, which alters how brief and content are parsed and printed.
+   *
+   * @param bool @value If true, value is passed into the Parsedown class before being printed.
+   *                    If false, value is *not* passed into Parsedown before being printed.
+   */
+  public function setMarkdown(bool $value)
+  {
+    $this->setOption(self::OPTION_MARKDOWN, $value);
+  }
+
+  /**
+   * Alters one option out of the options bitmask for this Document.
+   *
+   * @param int $option The option to change to the value.
+   * @param bool $value Changes option to true (1) or false (0) based on this value.
+   * @throws OutOfBoundsException if option is not between zero and MAX_OPTIONS.
+   */
+  public function setOption(int $option, bool $value)
+  {
+    if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
+    }
+
+    if ($value)
+    {
+      $this->options |= $option; // bitwise or
+    }
+    else
+    {
+      $this->options &= ~$option; // bitwise and ones complement
     }
   }
 
-  public function setPublished($value) {
-    if ($value) {
-      $this->options_bitmask |= self::OPTION_PUBLISHED;
-    } else {
-      $this->options_bitmask &= ~self::OPTION_PUBLISHED;
+  /**
+   * Sets the options bitmask for this Document.
+   *
+   * @param int $value The full set of options which will replace previous options.
+   * @throws OutOfBoundsException if value is not between zero and MAX_OPTIONS.
+   */
+  public function setOptions(int $value)
+  {
+    if ($value < 0 || $value > self::MAX_OPTIONS)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_OPTIONS
+      ));
     }
+
+    $this->options = $value;
   }
 
-  public function setTitle($value) {
+  /**
+   * Toggles draft status and visibility to non-editor user accounts.
+   *
+   * @param bool @value If true, enables 'Draft' badge and disables visibility to non-editors.
+   *                    If false, disables 'Draft' badge and enables visibility to everyone.
+   */
+  public function setPublished(bool $value)
+  {
+    $this->setOption(self::OPTION_PUBLISHED, $value);
+  }
+
+  /**
+   * Sets the title for this Document object.
+   * 
+   * @param string $value The title.
+   * @throws OutOfBoundsException if value length is not between zero and MAX_TITLE.
+   */
+  public function setTitle(string $value)
+  {
+    if (strlen($value) > self::MAX_TITLE)
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d characters', self::MAX_TITLE
+      ));
+    }
+
     $this->title = $value;
+  }
+
+  /**
+   * Set the user this Document was created by.
+   *
+   * @param ?User $value The User (object) that created this Document (object), or null for no user.
+   * @throws OutOfBoundsException if value (User) id is not between zero and MAX_USER_ID, or null.
+   */
+  public function setUser(?User $value)
+  {
+    $this->setUserId($value ? $value->getId() : $value);
+  }
+
+  /**
+   * Set the user this Document was created by.
+   *
+   * @param ?int $value The User (id) that created this Document (object), or null for no user.
+   * @throws OutOfBoundsException if value is not between zero and MAX_USER_ID, or null.
+   */
+  public function setUserId(?int $value)
+  {
+    if (!is_null($value) && ($value < 0 || $value > self::MAX_USER_ID))
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be between 0-%d', self::MAX_USER_ID
+      ));
+    }
+
+    $this->user_id = $value;
   }
 
 }

@@ -45,16 +45,14 @@ class Edit extends Controller {
     if ($model->document === null) {
       $model->error = 'NOT_FOUND';
     } else {
-      $flags = $model->document->getOptionsBitmask();
-
       $model->comments = Comment::getAll(
         Comment::PARENT_TYPE_DOCUMENT,
         $model->document_id
       );
 
       $model->content   = $model->document->getContent(false);
-      $model->markdown  = ($flags & Document::OPTION_MARKDOWN);
-      $model->published = ($flags & Document::OPTION_PUBLISHED);
+      $model->markdown  = $model->document->isMarkdown();
+      $model->published = $model->document->isPublished();
       $model->title     = $model->document->getTitle();
 
       if ($router->getRequestMethod() == 'POST') {
@@ -63,7 +61,7 @@ class Edit extends Controller {
     }
 
     $view->render($model);
-    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
+    $model->_responseCode = ($model->acl_allowed ? 200 : 401);
     return $model;
   }
 
@@ -102,31 +100,19 @@ class Edit extends Controller {
       $model->document->setTitle($model->title);
       $model->document->setMarkdown($model->markdown);
       $model->document->setContent($model->content);
-      $model->document->setPublished($publish);
+      $model->document->setPublished($publish ? true : false);
 
-      $model->document->setEditedCount(
-        $model->document->getEditedCount() + 1
-      );
-      $model->document->setEditedDateTime(
-        new DateTime( 'now', new DateTimeZone( 'Etc/UTC' ))
-      );
-
-      $success = $model->document->save();
+      $model->document->incrementEdited();
+      $model->document->commit();
+      $model->error = false;
 
     } catch (QueryException $e) {
 
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
-
-      $success = false;
-
-    }
-
-    if (!$success) {
       $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
+
     }
 
     Logger::logEvent(
@@ -136,7 +122,7 @@ class Edit extends Controller {
       json_encode([
         'error'           => $model->error,
         'document_id'     => $model->document_id,
-        'options_bitmask' => $model->document->getOptionsBitmask(),
+        'options_bitmask' => $model->document->getOptions(),
         'title'           => $model->document->getTitle(),
         'content'         => $model->document->getContent(false),
       ])
