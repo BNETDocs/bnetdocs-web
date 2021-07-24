@@ -22,7 +22,7 @@ if ($object)
   $published = $object->isPublished();
   $remarks = $object->getRemarks(true);
   $research = $object->isInResearch();
-  $title = $object->getName();
+  $title = $object->getLabel();
   $transport_layer = $object->getTransportLayer();
   $url = $object->getURI();
   $user = $object->getUser();
