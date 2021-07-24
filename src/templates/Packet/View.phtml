@@ -96,7 +96,7 @@ require('./header.inc.phtml'); ?>
         }
       }
     ?></td></tr>
-    <tr><th class="text-right">Message Format:<br/><sup class="text-muted">(does not include protocol header)</sup></th><td>
+    <tr><th class="text-right">Message Format:<br/><sup class="text-muted">(does not include <a rel="external" href="https://bnetdocs.org/document/16/protocol-headers">protocol header</a>)</sup></th><td>
       <pre class="border border-primary overflow-auto rounded bg-dark text-light"><code class="language-objectivec"><?=$object->getFormat()?></code></pre>
     </td></tr>
 <?=(!empty($brief) ? sprintf('<tr><th class="text-right">Brief:</th><td>%s</td></tr>', \BNETDocs\Templates\MarkdownBootstrapFix($brief, true, true)) : '')?>
