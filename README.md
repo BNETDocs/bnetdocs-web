@@ -1,8 +1,17 @@
 # BNETDocs
 
-[![Build Status](https://travis-ci.org/BNETDocs/bnetdocs-web.svg?branch=phoenix)](https://travis-ci.org/BNETDocs/bnetdocs-web)
-![PHP ^7.2](https://img.shields.io/badge/php-%5E7.2-blue)
-![License Badge](https://img.shields.io/github/license/BNETDocs/bnetdocs-web)
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/BNETDocs/bnetdocs-web/bnetdocs-web/develop?style=for-the-badge)](https://github.com/BNETDocs/bnetdocs-web/actions?query=workflow%3Abnetdocs-web)
+![PHP ^7.2](https://img.shields.io/badge/php-%5E7.2-blue?style=for-the-badge)
+![License Badge](https://img.shields.io/github/license/BNETDocs/bnetdocs-web?style=for-the-badge)
+
+[![GitHub watchers](https://img.shields.io/github/watchers/BNETDocs/bnetdocs-web?style=for-the-badge)](https://github.com/BNETDocs/bnetdocs-web/watchers)
+[![GitHub Repo stars](https://img.shields.io/github/stars/BNETDocs/bnetdocs-web?style=for-the-badge)](https://github.com/BNETDocs/bnetdocs-web/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/BNETDocs/bnetdocs-web?style=for-the-badge)](https://github.com/BNETDocs/bnetdocs-web/network/members)
+![GitHub contributors](https://img.shields.io/github/contributors/BNETDocs/bnetdocs-web?style=for-the-badge)
+
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/BNETDocs/bnetdocs-web?style=for-the-badge)
+[![GitHub All Releases](https://img.shields.io/github/downloads/BNETDocs/bnetdocs-web/total?style=for-the-badge)](https://github.com/BNETDocs/bnetdocs-web/releases/latest)
+[![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/BNETDocs/bnetdocs-web?include_prereleases&label=latest%20release&style=for-the-badge)](https://github.com/BNETDocs/bnetdocs-web/releases/latest)
 
 BNETDocs is a documentation and discussion website for Blizzard Entertainment's
 Battle.net&trade; and in-game protocols.
