@@ -28,12 +28,14 @@ $c_delete_visible_admin = ($active_user && $active_user->getOption(User::OPTION_
         $c_user_string = ($c_user ? sprintf('<a href="%s"><img class="rounded" src="%s"/> %s</a>', $c_user_url, $c_user_avatar, $c_user_name) : $c_user_name);
         $c_time_string = sprintf('<time class="small text-muted" datetime="%s">%s</time>', $c_created_dt->format('c'), $c_created_dt->format('D M j, Y g:ia T'));
 
+        $c_context_visible = (isset($comment_show_parent) && $comment_show_parent);
         $c_edit_visible = ($c_user_id === $active_user_id || $c_edit_visible_admin);
         $c_delete_visible = ($c_user_id === $active_user_id || $c_delete_visible_admin);
 
         $c_content = (
           ($c_delete_visible ? '<a class="btn btn-sm btn-danger float-right m-1" href="' . Common::relativeUrlToAbsolute('/comment/delete?id=' . $c_id) . '" title="Delete">❌</a>' : '') .
           ($c_edit_visible ? '<a class="btn btn-sm btn-secondary float-right m-1" href="' . Common::relativeUrlToAbsolute('/comment/edit?id=' . $c_id) . '" title="Edit">📝</a>' : '') .
+          ($c_context_visible ? '<a class="btn btn-sm btn-secondary float-right m-1" href="' . $c_parent_url . '" title="Context">🔎</a>' : '') .
           $c->getContent(true)
         );
 
@@ -41,7 +43,7 @@ $c_delete_visible_admin = ($active_user && $active_user->getOption(User::OPTION_
     }} ?>
   </div>
 </div>
-<? if ($active_user) { ?>
+<? if (isset($active_user) && !is_null($active_user) && isset($comment_parent_type) && isset($comment_parent_id)) { ?>
 <div class="row mb-3 justify-content-center">
   <div class="col-md-8">
     <form method="POST" action="<?=Common::relativeUrlToAbsolute('/comment/create')?>">

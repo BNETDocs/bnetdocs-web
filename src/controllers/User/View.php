@@ -2,6 +2,7 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Credits;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
@@ -47,27 +48,24 @@ class View extends Controller
     $model->user_profile = ($model->user ? $model->user->getUserProfile() : null);
 
     // Summary of contributions
-    $model->sum_documents = Credits::getTotalDocumentsByUserId(
-      $model->user_id
-    );
-    $model->sum_news_posts = Credits::getTotalNewsPostsByUserId(
-      $model->user_id
-    );
-    $model->sum_packets = Credits::getTotalPacketsByUserId(
-      $model->user_id
-    );
-    $model->sum_servers = Credits::getTotalServersByUserId(
-      $model->user_id
-    );
+    $model->sum_comments = Credits::getTotalCommentsByUserId($model->user_id);
+    $model->sum_documents = Credits::getTotalDocumentsByUserId($model->user_id);
+    $model->sum_news_posts = Credits::getTotalNewsPostsByUserId($model->user_id);
+    $model->sum_packets = Credits::getTotalPacketsByUserId($model->user_id);
+    $model->sum_servers = Credits::getTotalServersByUserId($model->user_id);
 
     // Total number of contributions
     $model->contributions = 0;
+    $model->contributions += $model->sum_comments;
     $model->contributions += $model->sum_documents;
     $model->contributions += $model->sum_news_posts;
     $model->contributions += $model->sum_packets;
     $model->contributions += $model->sum_servers;
 
     // References to the contributions
+    $model->comments = ($model->sum_comments ?
+      Comment::getCommentsByUserId($model->user_id, true) : null
+    );
     $model->documents = ($model->sum_documents ?
       Document::getDocumentsByUserId($model->user_id) : null
     );

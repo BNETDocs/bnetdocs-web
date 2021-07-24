@@ -151,6 +151,20 @@ class Credits {
     return $result;
   }
 
+  public static function getTotalCommentsByUserId($user_id) {
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $stmt = Common::$database->prepare("
+      SELECT COUNT(*) AS `sum` FROM `comments` WHERE `user_id` = :id;
+    ");
+    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $obj = $stmt->fetch(PDO::FETCH_OBJ);
+    $stmt->closeCursor();
+    return (int) $obj->sum;
+  }
+
   public static function getTotalDocumentsByUserId($user_id) {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();

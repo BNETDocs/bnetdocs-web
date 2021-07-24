@@ -1,14 +1,16 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
-use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\Comment;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $active_user = $this->getContext()->active_user;
+$comments = $this->getContext()->comments;
 $contributions = $this->getContext()->contributions;
 $documents = $this->getContext()->documents;
 $news_posts = $this->getContext()->news_posts;
 $packets = $this->getContext()->packets;
 $servers = $this->getContext()->servers;
+$sum_comments = $this->getContext()->sum_comments;
 $sum_documents = $this->getContext()->sum_documents;
 $sum_news_posts = $this->getContext()->sum_news_posts;
 $sum_packets = $this->getContext()->sum_packets;
@@ -102,6 +104,7 @@ require('./header.inc.phtml'); ?>
           </tr>
 <? } ?>
           <tr class="text-muted"><th scope="row" class="align-middle text-right">Member for</th><td><?=$user_est?></td></tr>
+          <tr class="text-muted"><th scope="row" class="align-middle text-right">Comments made</th><td><?=number_format($sum_comments)?></td></tr>
           <tr class="text-muted"><th scope="row" class="align-middle text-right">Documents authored</th><td><?=number_format($sum_documents)?></td></tr>
           <tr class="text-muted"><th scope="row" class="align-middle text-right">News posted</th><td><?=number_format($sum_news_posts)?></td></tr>
           <tr class="text-muted"><th scope="row" class="align-middle text-right">Packets authored</th><td><?=number_format($sum_packets)?></td></tr>
@@ -204,5 +207,9 @@ require('./header.inc.phtml'); ?>
     </div>
 <? } ?>
   </div>
+<? if (!empty($comments)) {
+    $comment_show_parent = true;
+    require('./Comment/Section.inc.phtml');
+  } ?>
 </div>
 <? require('./footer.inc.phtml'); ?>

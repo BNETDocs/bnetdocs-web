@@ -148,6 +148,47 @@ class Comment implements JsonSerializable {
     return null;
   }
 
+  public static function getCommentsByUserId(int $user_id, bool $descending)
+  {
+    $o = ($descending ? 'DESC' : 'ASC');
+    if (!isset(Common::$database)) {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    try
+    {
+      $stmt = Common::$database->prepare(sprintf('
+        SELECT
+          `content`,
+          `created_datetime`,
+          `edited_count`,
+          `edited_datetime`,
+          `id`,
+          `parent_id`,
+          `parent_type`,
+          `user_id`
+        FROM `comments`
+        WHERE `user_id` = :id ORDER BY `created_datetime` %s, `id` %s;
+      ', $o, $o));
+      $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
+      if (!$stmt->execute())
+      {
+        throw new QueryException('Cannot get comments by user id');
+      }
+      $objects = [];
+      while ($row = $stmt->fetch(PDO::FETCH_OBJ))
+      {
+        $objects[] = new self($row);
+      }
+      $stmt->closeCursor();
+      return $objects;
+    }
+    catch (PDOException $e)
+    {
+      throw new QueryException('Cannot get comments by user id', $e);
+    }
+    return null;
+  }
+
   public function getContent($prepare) {
     if (!$prepare) {
       return $this->content;
