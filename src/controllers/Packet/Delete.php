@@ -38,7 +38,7 @@ class Delete extends Controller {
     if ($model->packet === null) {
       $model->error = 'NOT_FOUND';
     } else {
-      $model->title = $model->packet->getName();
+      $model->title = $model->packet->getLabel();
 
       if ($router->getRequestMethod() == 'POST') {
         $this->tryDelete($router, $model);
