@@ -573,7 +573,9 @@ class Packet implements IDatabaseObject, JsonSerializable
 
   public function getURI()
   {
-    return Common::relativeUrlToAbsolute(sprintf('/packet/%d/%s', $this->getId(), Common::sanitizeForUrl($this->getName(), true)));
+    $id = $this->getId();
+    if (is_null($id)) return $id;
+    return Common::relativeUrlToAbsolute(sprintf('/packet/%d/%s', $id, Common::sanitizeForUrl($this->getName(), true)));
   }
 
   public function getUsedBy()

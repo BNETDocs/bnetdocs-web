@@ -376,9 +376,9 @@ class Document implements IDatabaseObject, JsonSerializable
 
   public function getURI()
   {
-    return Common::relativeUrlToAbsolute(sprintf('/document/%s/%s',
-      $this->getId(), Common::sanitizeForUrl($this->getTitle(), true)
-    ));
+    $id = $this->getId();
+    if (is_null($id)) return $id;
+    return Common::relativeUrlToAbsolute(sprintf('/document/%d/%s', $id, Common::sanitizeForUrl($this->getTitle(), true)));
   }
 
   public function getUser()
