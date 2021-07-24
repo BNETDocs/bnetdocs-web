@@ -5,18 +5,22 @@ namespace BNETDocs\Templates\Document; ?>
       <label class="font-weight-bold" class="form-label" for="title">Title:</label><br/>
       <input class="border border-primary form-control bg-dark text-light" type="text" name="title" id="title" tabindex="1" required autofocus="autofocus" placeholder="Enter the document title here" value="<?=$form_title?>"/>
     </div>
+  <div class="form-group">
+    <label class="font-weight-bold" for="brief">Brief: <span class="small text-muted">(a brief description, for use in margins around the site &ndash; if blank, the first part from the content is used instead)</span></label>
+    <input class="bg-dark border border-primary form-control text-light" type="text" name="brief" id="brief" placeholder="Enter the optional brief description here" tabindex="2" value="<?=filter_var($form_brief ?? null, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+  </div>
     <div class="form-group">
       <label class="font-weight-bold" for="content">Content:</label>
       <div class="custom-control custom-switch float-right">
-        <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="3" title="Use markdown or use raw HTML" value="1"<?=($form_markdown ? ' checked="checked"' : '')?>/>
+        <input class="custom-control-input" type="checkbox" name="markdown" id="markdown" tabindex="4" title="Use markdown or use raw HTML" value="1"<?=($form_markdown ? ' checked="checked"' : '')?>/>
         <label class="custom-control-label" for="markdown" title="Use markdown or use raw HTML">Markdown</label>
       </div>
-      <textarea class="border border-primary form-control bg-dark text-light" name="content" id="content" tabindex="2" required placeholder="Enter the document content here" style="height:200px;"><?=$form_content?></textarea>
+      <textarea class="border border-primary form-control bg-dark text-light" name="content" id="content" tabindex="3" required placeholder="Enter the document content here" style="height:200px;"><?=$form_content?></textarea>
     </div>
     <div class="form-group text-center">
-      <a class="btn btn-primary" href="<?=($document_url ?? 'javascript:history.go(-1);')?>" tabindex="4">Back</a>
+      <a class="btn btn-primary" href="<?=($document_url ?? 'javascript:history.go(-1);')?>" tabindex="5">Back</a>
       <span class="m-1"></span>
-      <input class="btn btn-secondary" type="submit" name="save" value="Save Draft" tabindex="5"/>
-      <input class="btn btn-success" type="submit" name="publish" value="Publish" tabindex="6"/>
+      <input class="btn btn-secondary" type="submit" name="save" value="Save Draft" tabindex="6"/>
+      <input class="btn btn-success" type="submit" name="publish" value="Publish" tabindex="7"/>
     </div>
   </form>

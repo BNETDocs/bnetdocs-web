@@ -16,11 +16,18 @@ if ($object)
 {
   $url = $object->getURI();
   $title = $object->getTitle();
-  $description = Common::stripUpTo(trim(filter_var($object->getContent(true), FILTER_SANITIZE_STRING)), "\n", 300);
+  $brief = $object->getBrief(true);
+  $content = $object->getContent(true);
   $created_dt = $object->getCreatedDateTime();
   $edited_dt = $object->getEditedDateTime();
   $user = $object->getUser();
   $draft = !$object->isPublished();
+
+  $description = filter_var($brief, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  if (empty($description))
+  {
+    $description = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($content, FILTER_SANITIZE_STRING)), "\n", 300), '. ', 300), '.');
+  }
 }
 $this->opengraph->attach(new Pair('url', $url));
 $edit_url = Common::relativeUrlToAbsolute('/document/edit?id=' . rawurlencode($object_id));
@@ -43,6 +50,7 @@ require('./header.inc.phtml'); ?>
 <? } ?>
 
   <h1 class="display-4"><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
+<?=(!empty($brief) ? sprintf('  <div class="alert alert-secondary"><span class="float-left font-weight-bold mr-1">Brief:</span> %s</div>', \BNETDocs\Templates\MarkdownBootstrapFix($brief, true, true)) : '')?>
   <?=\BNETDocs\Templates\MarkdownBootstrapFix($object->getContent(true), true)?>
 
   <div class="card"><div class="card-body">

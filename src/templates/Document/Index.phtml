@@ -20,6 +20,7 @@ $form_order_by = [
   'user-id-asc' => 'User Id (Ascending)',
   'user-id-desc' => 'User Id (Descending)',
 ];
+require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container">
   <h2><?=$title?></h2>
@@ -39,13 +40,22 @@ require('./header.inc.phtml'); ?>
 <?  foreach ($this->getContext()->documents as $document)
     {
       $doc_title = filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-      $doc_brief = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($document->getContent(true), FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.');
+      $doc_brief = $document->getBrief(true);
+      $doc_content = $document->getContent(true);
       $doc_user = $document->getUser();
       $doc_user_string = ($doc_user ?
         sprintf('<a href="%s"><img class="mr-2 rounded" src="%s"/>%s</a>',
           $doc_user->getURI(), $doc_user->getAvatarURI(40), filter_var($doc_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
         ) : 'Anonymous'
       );
+      if (!empty($doc_brief))
+      {
+        $doc_brief = \BNETDocs\Templates\MarkdownBootstrapFix($doc_brief, true, true);
+      }
+      else
+      {
+        $doc_brief = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($doc_content, FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.');
+      }
       printf('<tr><td><strong><a href="%s">%s</a></strong><br/><span class="text-muted">%s</span></td><td>%s</td></tr>',
         $document->getURI(), $doc_title, $doc_brief, $doc_user_string
       );

@@ -17,6 +17,7 @@ switch ($error)
   case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
   default: $message = $error;
 }
+$form_brief = filter_var($this->getContext()->brief, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $form_content = filter_var($this->getContext()->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $form_markdown = $this->getContext()->markdown;
 $form_title = filter_var($this->getContext()->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);

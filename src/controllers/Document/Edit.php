@@ -23,16 +23,10 @@ use \InvalidArgumentException;
 
 class Edit extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
-    $data                = $router->getRequestQueryArray();
-    $model               = new DocumentEditModel();
-    $model->content      = null;
-    $model->document     = null;
-    $model->document_id  = (isset($data['id']) ? $data['id'] : null);
-    $model->error        = null;
-    $model->markdown     = null;
-    $model->published    = null;
-    $model->title        = null;
-    $model->user         = Authentication::$user;
+    $data = $router->getRequestQueryArray();
+    $model = new DocumentEditModel();
+    $model->document_id = (isset($data['id']) ? $data['id'] : null);
+    $model->user = Authentication::$user;
 
     $model->acl_allowed = ($model->user && $model->user->getOption(
       User::OPTION_ACL_DOCUMENT_MODIFY
@@ -50,6 +44,7 @@ class Edit extends Controller {
         $model->document_id
       );
 
+      $model->brief     = $model->document->getBrief(false);
       $model->content   = $model->document->getContent(false);
       $model->markdown  = $model->document->isMarkdown();
       $model->published = $model->document->isPublished();
@@ -74,16 +69,21 @@ class Edit extends Controller {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $data       = $router->getRequestBodyArray();
-    $category   = (isset($data['category'  ]) ? $data['category'  ] : null);
-    $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
-    $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
-    $content    = (isset($data['content'   ]) ? $data['content'   ] : null);
-    $publish    = (isset($data['publish'   ]) ? $data['publish'   ] : null);
-    $save       = (isset($data['save'      ]) ? $data['save'      ] : null);
+    $data = $router->getRequestBodyArray();
+    $brief = $data['brief'] ?? null;
+    $category = $data['category'] ?? null;
+    $content = $data['content'] ?? null;
+    $markdown = $data['markdown'] ?? null;
+    $publish = $data['publish'] ?? null;
+    $save = $data['save'] ?? null;
+    $title = $data['title'] ?? null;
+
+    $markdown = ($markdown ? true : false);
+    $publish = ($publish ? true : false);
 
     $model->category = $category;
     $model->title    = $title;
+    $model->brief    = $brief;
     $model->markdown = $markdown;
     $model->content  = $content;
 
@@ -98,9 +98,10 @@ class Edit extends Controller {
     try {
 
       $model->document->setTitle($model->title);
-      $model->document->setMarkdown($model->markdown);
+      $model->document->setBrief($model->brief);
+      $model->document->setMarkdown($markdown);
       $model->document->setContent($model->content);
-      $model->document->setPublished($publish ? true : false);
+      $model->document->setPublished($publish);
 
       $model->document->incrementEdited();
       $model->document->commit();
@@ -120,11 +121,12 @@ class Edit extends Controller {
       $user_id,
       getenv('REMOTE_ADDR'),
       json_encode([
-        'error'           => $model->error,
+        'brief'           => $model->document->getBrief(false),
+        'content'         => $model->document->getContent(false),
         'document_id'     => $model->document_id,
+        'error'           => $model->error,
         'options_bitmask' => $model->document->getOptions(),
         'title'           => $model->document->getTitle(),
-        'content'         => $model->document->getContent(false),
       ])
     );
   }

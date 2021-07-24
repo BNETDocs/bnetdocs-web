@@ -7,6 +7,7 @@ use \CarlBennett\MVC\Libraries\Model;
 class Edit extends Model {
 
   public $acl_allowed;
+  public $brief;
   public $category;
   public $content;
   public $document;

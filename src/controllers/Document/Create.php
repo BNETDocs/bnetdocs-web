@@ -44,16 +44,21 @@ class Create extends Controller {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-    $data       = $router->getRequestBodyArray();
-    $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
-    $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
-    $content    = (isset($data['content'   ]) ? $data['content'   ] : null);
-    $publish    = (isset($data['publish'   ]) ? $data['publish'   ] : null);
-    $save       = (isset($data['save'      ]) ? $data['save'      ] : null);
+    $data = $router->getRequestBodyArray();
+    $title = $data['title'] ?? null;
+    $markdown = $data['markdown'] ?? null;
+    $brief = $data['brief'] ?? null;
+    $content = $data['content'] ?? null;
+    $publish = $data['publish'] ?? null;
+    $save = $data['save'] ?? null;
 
-    $model->title    = $title;
+    $markdown = ($markdown ? true : false);
+    $publish = ($publish ? true : false);
+
+    $model->title = $title;
+    $model->brief = $brief;
     $model->markdown = $markdown;
-    $model->content  = $content;
+    $model->content = $content;
 
     if (empty($title)) {
       $model->error = 'EMPTY_TITLE';
@@ -61,17 +66,15 @@ class Create extends Controller {
       $model->error = 'EMPTY_CONTENT';
     }
 
-    $options_bitmask = 0;
-    if ($markdown) $options_bitmask |= Document::OPTION_MARKDOWN;
-    if ($publish ) $options_bitmask |= Document::OPTION_PUBLISHED;
-
     $user_id = $model->user->getId();
 
     try {
 
       $document = new Document(null);
+      $document->setBrief($brief);
       $document->setContent($content);
-      $document->setOptions($options_bitmask);
+      $document->setMarkdown($markdown);
+      $document->setPublished($publish);
       $document->setTitle($title);
       $document->setUserId($user_id);
       $document->commit();
@@ -91,10 +94,12 @@ class Create extends Controller {
       $user_id,
       getenv('REMOTE_ADDR'),
       json_encode([
-        'error'           => $model->error,
-        'options_bitmask' => $options_bitmask,
-        'title'           => $title,
-        'content'         => $content,
+        'brief'     => $brief,
+        'content'   => $content,
+        'error'     => $model->error,
+        'markdown'  => $markdown,
+        'published' => $publish,
+        'title'     => $title,
       ])
     );
   }

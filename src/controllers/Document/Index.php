@@ -19,7 +19,6 @@ use \DateTimeZone;
 class Index extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $model = new DocumentIndexModel();
-
     $query = $router->getRequestQueryArray();
 
     $model->order = (
