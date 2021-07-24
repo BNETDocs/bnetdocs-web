@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eaa58bd6c1cf3d88686e1a6c5b231006",
+    "content-hash": "20095af5a6da56191e8bed36b443251c",
     "packages": [
         {
             "name": "carlbennett/php-mvc",
@@ -213,7 +213,7 @@
         "ext-mbstring": "*",
         "ext-mcrypt": "*",
         "ext-pdo": "*",
-        "php-64bit": "^7.2"
+        "php-64bit": "^7.3"
     },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"
