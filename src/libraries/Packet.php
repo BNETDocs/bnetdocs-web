@@ -44,7 +44,7 @@ class Packet implements IDatabaseObject, JsonSerializable
   const MAX_NAME = 0xFF;
   const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
   const MAX_PACKET_ID = 0xFF;
-  const MAX_REMARKS = 0xFFFF;
+  const MAX_REMARKS = 0xFFFFFF;
   const MAX_TRANSPORT_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
   const MAX_USER_ID = 0x7FFFFFFFFFFFFFFF;
 

@@ -26,7 +26,7 @@ class Document implements IDatabaseObject, JsonSerializable
 
   // Maximum SQL field lengths, alter as appropriate
   const MAX_BRIEF = 0xFF;
-  const MAX_CONTENT = 0xFFFF;
+  const MAX_CONTENT = 0xFFFFFF;
   const MAX_EDITED_COUNT = 0x7FFFFFFFFFFFFFFF;
   const MAX_ID = 0x7FFFFFFFFFFFFFFF;
   const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
