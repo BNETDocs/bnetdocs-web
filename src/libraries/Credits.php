@@ -23,6 +23,40 @@ class Credits {
     return (int) $obj->sum;
   }
 
+  public function getTopContributorsByComments()
+  {
+    if (!isset(Common::$database))
+    {
+      Common::$database = DatabaseDriver::getDatabaseObject();
+    }
+    $q = Common::$database->prepare('
+      SELECT
+        `u`.`id` AS `user_id`,
+        IFNULL(
+          IFNULL(`u`.`display_name`, `u`.`username`), \'Anonymous\'
+        ) AS `name`,
+        COUNT(`c`.`id`) AS `comments_made`
+      FROM
+        `users` AS `u`
+      RIGHT JOIN
+        `comments` AS `c` ON `c`.`user_id` = `u`.`id`
+      GROUP BY
+        `u`.`id`
+      ORDER BY
+        `comments_made` DESC,
+        `c`.`created_datetime` ASC
+      LIMIT 5;
+    ');
+    $r = $q->execute();
+    if (!$r) return $r;
+    $r = [];
+    while ($o = $q->fetch(PDO::FETCH_OBJ))
+    {
+      $r[] = $o;
+    }
+    return $r;
+  }
+
   public function getTopContributorsByDocuments() {
     if (!isset(Common::$database)) {
       Common::$database = DatabaseDriver::getDatabaseObject();

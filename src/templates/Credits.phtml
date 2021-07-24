@@ -7,6 +7,7 @@ $title = 'Contributors';
 $description = 'The top contributors to BNETDocs grouped by different types of content.';
 $this->opengraph->attach(new Pair('url', '/credits'));
 $total_users = $this->getContext()->total_users;
+$top_contributors_by_comments = $this->getContext()->top_contributors_by_comments;
 $top_contributors_by_documents = $this->getContext()->top_contributors_by_documents;
 $top_contributors_by_news_posts = $this->getContext()->top_contributors_by_news_posts;
 $top_contributors_by_packets = $this->getContext()->top_contributors_by_packets;
@@ -18,127 +19,178 @@ require('./header.inc.phtml');
   <h2>Contributors</h2>
   <p>We have a total of <strong><?=number_format($total_users)?> users</strong>, of which the following are our top contributors grouped by content.</p>
 
-  <h3>Documents</h3>
-  <p>Top contributors by most documents authored.</p>
+  <h3>Comments</h3>
+  <p>Top contributors by most comments made.</p>
   <table class="table table-hover table-striped"><thead>
-    <tr>
-      <th class="rank">Rank</th>
-      <th class="who">Who</th>
-      <th class="sum">Sum</th>
-    </tr>
+    <tr><th>Rank</th><th>Who</th><th>Sum</th></tr>
   </thead><tbody>
 <? $rank = 0;
-  foreach ($top_contributors_by_documents as $item) {
+  foreach ($top_contributors_by_comments as $item)
+  {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $item_sum = number_format($item->documents_authored);
-    $item_sum_str = sprintf('%d document', $item_sum);
-    if ($item_sum != 1) $item_sum_str .= 's';
-    if (is_null($item->user_id)) {
-      echo '<tr><td>' . $rank . '</td><td>' . $item_name . '</td><td>' . $item_sum_str . '</td></tr>' . PHP_EOL;
-    } else {
-      if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-      $item_user = sprintf(
-        '<a href="%s"><img src="%s"/> %s</a>',
+    $item_sum = number_format($item->comments_made);
+    $item_sum_str = sprintf('%d comment%s', $item_sum, ($item_sum != 1 ? 's' : ''));
+    if (is_null($item->user_id))
+    {
+      $item_user = null;
+      $item_user_string = $item_name;
+    }
+    else
+    {
+      $item_user = $users[$item->user_id] ?? null;
+      if (!$item_user)
+      {
+        $users[$item->user_id] = $item_user = new User($item->user_id);
+      }
+
+      $item_user_string = sprintf('<a href="%s"><img class="rounded mr-2" src="%s"/>%s</a>',
         $users[$item->user_id]->getURI(),
         $users[$item->user_id]->getAvatarURI(22),
         $item_name
       );
     }
-    echo '<tr><td>' . $rank . '</td><td>' . $item_user . '</td><td>' . $item_sum_str . '</td></tr>' . PHP_EOL;
+    printf('<tr><td>%s</td><td>%s</td><td>%s</td></tr>%s', $rank, $item_user_string, $item_sum_str, PHP_EOL);
+  } ?>
+  </tbody></table>
+
+  <h3>Documents</h3>
+  <p>Top contributors by most documents authored.</p>
+  <table class="table table-hover table-striped"><thead>
+    <tr><th>Rank</th><th>Who</th><th>Sum</th></tr>
+  </thead><tbody>
+<? $rank = 0;
+  foreach ($top_contributors_by_documents as $item)
+  {
+    ++$rank;
+    $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $item_sum = number_format($item->documents_authored);
+    $item_sum_str = sprintf('%d document%s', $item_sum, ($item_sum != 1 ? 's' : ''));
+    if (is_null($item->user_id))
+    {
+      $item_user = null;
+      $item_user_string = $item_name;
+    }
+    else
+    {
+      $item_user = $users[$item->user_id] ?? null;
+      if (!$item_user)
+      {
+        $users[$item->user_id] = $item_user = new User($item->user_id);
+      }
+
+      $item_user_string = sprintf('<a href="%s"><img class="rounded mr-2" src="%s"/>%s</a>',
+        $users[$item->user_id]->getURI(),
+        $users[$item->user_id]->getAvatarURI(22),
+        $item_name
+      );
+    }
+    printf('<tr><td>%s</td><td>%s</td><td>%s</td></tr>%s', $rank, $item_user_string, $item_sum_str, PHP_EOL);
   } ?>
   </tbody></table>
 
   <h3>News Posts</h3>
   <p>Top contributors by most news posts created.</p>
   <table class="table table-hover table-striped"><thead>
-    <tr>
-      <th class="rank">Rank</th>
-      <th class="who">Who</th>
-      <th class="sum">Sum</th>
-    </tr>
+    <tr><th>Rank</th><th>Who</th><th>Sum</th></tr>
   </thead><tbody>
 <? $rank = 0;
-  foreach ($top_contributors_by_news_posts as $item) {
+  foreach ($top_contributors_by_news_posts as $item)
+  {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $item_sum = number_format($item->news_posts_created);
-    $item_sum_str = sprintf('%d news post', $item_sum);
-    if ($item_sum != 1) $item_sum_str .= 's';
-    if (is_null($item->user_id)) {
-      echo '<tr><td>' . $rank . '</td><td>' . $item_name . '</td><td>' . $item_sum_str . '</td></tr>' . PHP_EOL;
-    } else {
-      if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-      $item_user = sprintf(
-        '<a href="%s"><img src="%s"/> %s</a>',
+    $item_sum_str = sprintf('%d news post%s', $item_sum, ($item_sum != 1 ? 's' : ''));
+    if (is_null($item->user_id))
+    {
+      $item_user = null;
+      $item_user_string = $item_name;
+    }
+    else
+    {
+      $item_user = $users[$item->user_id] ?? null;
+      if (!$item_user)
+      {
+        $users[$item->user_id] = $item_user = new User($item->user_id);
+      }
+
+      $item_user_string = sprintf('<a href="%s"><img class="rounded mr-2" src="%s"/>%s</a>',
         $users[$item->user_id]->getURI(),
         $users[$item->user_id]->getAvatarURI(22),
         $item_name
       );
-      echo '<tr><td>' . $rank . '</td><td>' . $item_user . '</td><td>' . $item_sum_str . '</td></tr>' . PHP_EOL;
     }
+    printf('<tr><td>%s</td><td>%s</td><td>%s</td></tr>%s', $rank, $item_user_string, $item_sum_str, PHP_EOL);
   } ?>
   </tbody></table>
 
   <h3>Packets</h3>
   <p>Top contributors by most packets authored.</p>
   <table class="table table-hover table-striped"><thead>
-    <tr>
-      <th class="rank">Rank</th>
-      <th class="who">Who</th>
-      <th class="sum">Sum</th>
-    </tr>
+    <tr><th>Rank</th><th>Who</th><th>Sum</th></tr>
   </thead><tbody>
 <? $rank = 0;
-  foreach ($top_contributors_by_packets as $item) {
+  foreach ($top_contributors_by_packets as $item)
+  {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $item_sum = number_format($item->packets_authored);
-    $item_sum_str = sprintf('%d packet', $item_sum);
-    if ($item_sum != 1) $item_sum_str .= 's';
-    if (is_null($item->user_id)) {
-      echo '<tr><td>' . $rank . '</td><td>' . $item_name . '</td><td>' . $item_sum_str . '</td></tr>' . PHP_EOL;
-    } else {
-      if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-      $item_user = sprintf(
-        '<a href="%s"><img src="%s"/> %s</a>',
+    $item_sum_str = sprintf('%d packet%s', $item_sum, ($item_sum != 1 ? 's' : ''));
+    if (is_null($item->user_id))
+    {
+      $item_user = null;
+      $item_user_string = $item_name;
+    }
+    else
+    {
+      $item_user = $users[$item->user_id] ?? null;
+      if (!$item_user)
+      {
+        $users[$item->user_id] = $item_user = new User($item->user_id);
+      }
+
+      $item_user_string = sprintf('<a href="%s"><img class="rounded mr-2" src="%s"/>%s</a>',
         $users[$item->user_id]->getURI(),
         $users[$item->user_id]->getAvatarURI(22),
         $item_name
       );
-      echo '<tr><td>' . $rank . '</td><td>' . $item_user . '</td><td>' . $item_sum_str . '</td></tr>' . PHP_EOL;
     }
+    printf('<tr><td>%s</td><td>%s</td><td>%s</td></tr>%s', $rank, $item_user_string, $item_sum_str, PHP_EOL);
   } ?>
   </tbody></table>
 
   <h3>Servers</h3>
   <p>Top contributors by most servers owned.</p>
   <table class="table table-hover table-striped"><thead>
-    <tr>
-      <th class="rank">Rank</th>
-      <th class="who">Who</th>
-      <th class="sum">Sum</th>
-    </tr>
+    <tr><th>Rank</th><th>Who</th><th>Sum</th></tr>
   </thead><tbody>
 <? $rank = 0;
-  foreach ($top_contributors_by_servers as $item) {
+  foreach ($top_contributors_by_servers as $item)
+  {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $item_sum = number_format($item->servers_owned);
-    $item_sum_str = sprintf('%d server', $item_sum);
-    if ($item_sum != 1) $item_sum_str .= 's';
-    if (is_null($item->user_id)) {
-      echo '<tr><td>' . $rank . '</td><td>' . $item_name . '</td><td>' . $item_sum_str . '</td></tr>' . PHP_EOL;
-    } else {
-      if (!isset($users[$item->user_id])) $users[$item->user_id] = new User($item->user_id);
-      $item_user = sprintf(
-        '<a href="%s"><img src="%s"/> %s</a>',
+    $item_sum_str = sprintf('%d server%s', $item_sum, ($item_sum != 1 ? 's' : ''));
+    if (is_null($item->user_id))
+    {
+      $item_user = null;
+      $item_user_string = $item_name;
+    }
+    else
+    {
+      $item_user = $users[$item->user_id] ?? null;
+      if (!$item_user)
+      {
+        $users[$item->user_id] = $item_user = new User($item->user_id);
+      }
+
+      $item_user_string = sprintf('<a href="%s"><img class="rounded mr-2" src="%s"/>%s</a>',
         $users[$item->user_id]->getURI(),
         $users[$item->user_id]->getAvatarURI(22),
         $item_name
       );
-      echo '<tr><td>' . $rank . '</td><td>' . $item_user . '</td><td>' . $item_sum_str . '</td></tr>' . PHP_EOL;
     }
+    printf('<tr><td>%s</td><td>%s</td><td>%s</td></tr>%s', $rank, $item_user_string, $item_sum_str, PHP_EOL);
   } ?>
   </tbody></table>
 </div>
