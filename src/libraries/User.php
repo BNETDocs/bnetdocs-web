@@ -31,15 +31,15 @@ class User implements IDatabaseObject, JsonSerializable
   const DEFAULT_TZ = 'Etc/UTC';
 
   // Maximum SQL field lengths, alter as appropriate
-  const MAX_DISPLAY_NAME = 191;
-  const MAX_EMAIL = 191;
+  const MAX_DISPLAY_NAME = 0xFF;
+  const MAX_EMAIL = 0xFF;
   const MAX_ID = 0x7FFFFFFFFFFFFFFF;
   const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
-  const MAX_PASSWORD_HASH = 191;
-  const MAX_PASSWORD_SALT = 191;
-  const MAX_TIMEZONE = 191;
-  const MAX_USERNAME = 191;
-  const MAX_VERIFIER_TOKEN = 191;
+  const MAX_PASSWORD_HASH = 0xFF;
+  const MAX_PASSWORD_SALT = 0xFF;
+  const MAX_TIMEZONE = 0xFF;
+  const MAX_USERNAME = 0xFF;
+  const MAX_VERIFIER_TOKEN = 0xFF;
 
   const OPTION_DISABLED             = 0x00000001; // User login disabled, active sessions force-expired
   const OPTION_VERIFIED             = 0x00000002; // A token sent via email was returned to us
