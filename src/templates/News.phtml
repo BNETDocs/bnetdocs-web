@@ -54,7 +54,7 @@ if (is_null($news_posts) || empty($news_posts)) { ?>
 <?  } ?>
     <div style="background-color:rgba(0,0,0,0.45);" class="font-weight-bold float-left mb-2 mr-2 p-2 rounded small shadow text-center"><img alt="<?=$news_post->getCategory()->getLabel()?>" title="<?=$news_post->getCategory()->getLabel()?>" src="<?=Common::relativeUrlToAbsolute('/a/news_categories/' . $news_post->getCategory()->getFilename())?>"/><br/><?=$news_post->getCategory()->getLabel()?></div><?=$news_post->getContent(true)?>
   </div></div>
-  <div class="row"><div class="col">
+  <div class="row mb-4"><div class="col">
     <div class="card"><div class="card-body">
       <span class="float-right text-muted">
         <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
