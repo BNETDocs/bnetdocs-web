@@ -1,5 +1,4 @@
 <?php
-
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Discord\Embed as DiscordEmbed;
@@ -8,18 +7,11 @@ use \BNETDocs\Libraries\Discord\EmbedField as DiscordEmbedField;
 use \BNETDocs\Libraries\Discord\Webhook as DiscordWebhook;
 use \BNETDocs\Libraries\Event;
 use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Libraries\VersionInfo;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Logger as LoggerMVCLib;
-
-use \Exception;
-use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
-use \RuntimeException;
 
 class Logger extends LoggerMVCLib {
 
