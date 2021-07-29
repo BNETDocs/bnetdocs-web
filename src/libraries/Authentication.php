@@ -1,37 +1,36 @@
-<?php
-
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\User;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
+use \OutOfBoundsException;
 use \PDO;
 use \PDOException;
+use \UnexpectedValueException;
 
 /**
  * Authentication
  * The class that handles authenticating and verifying a client.
  */
-class Authentication {
-
+class Authentication
+{
   const COOKIE_NAME    = 'sid';
-  const DATE_SQL       = 'Y-m-d H:i:s';
-  const MAX_USER_AGENT = 255;
+  const DATE_SQL       = 'Y-m-d H:i:s'; // DateTime::format() string for database
+  const MAX_USER_AGENT = 0xFF;
   const TTL            = 2592000; // 1 month
+  const TZ_SQL         = 'Etc/UTC'; // database values are stored in this TZ
 
   /**
-   * @var string $key
+   * @var string $key The unique identifying token, shared between server and client.
    */
   private static $key;
 
   /**
-   * @var User $user
+   * @var User $user The account which has been authenticated by the client, or null for not authenticated.
    */
   public static $user;
 
@@ -48,85 +47,73 @@ class Authentication {
    * Discards fingerprint server-side so lookup cannot succeed.
    *
    * @param string $key The secret key.
-   *
    * @return bool Indicates if the operation succeeded.
+   * @throws PDOException if a PDO error occurs.
    */
-  protected static function discard(string $key) {
-    if (!isset(Common::$database)) {
+  protected static function discard(string $key)
+  {
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
-
-    try {
-      $stmt = Common::$database->prepare('
-        DELETE FROM `user_sessions` WHERE `id` = :id LIMIT 1;
-      ');
-
-      $stmt->bindParam(':id', $key, PDO::PARAM_STR);
-
-      $r = $stmt->execute();
-      $stmt->closeCursor();
-
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot delete user session key', $e);
-    } finally {
-      return $r;
-    }
+    $q = Common::$database->prepare('DELETE FROM `user_sessions` WHERE `id` = :id LIMIT 1;');
+    $q->bindParam(':id', $key, PDO::PARAM_STR);
+    return $q->execute();
   }
 
   /**
    * getFingerprint()
-   * Generates a fingerprint that we can use to identify a returning client.
+   * Generates a fingerprint that may be used to identify a returning client.
    *
    * @param User $user The User object to be used for fingerprinting.
-   *
-   * @return array The fingerprint details.
+   * @return array The fingerprint dictionary containing key-value pairs.
    */
-  protected static function getFingerprint(User &$user) {
-    $fingerprint = array();
-
-    $fingerprint['ip_address'] = getenv('REMOTE_ADDR');
-    $fingerprint['user_id']    = (is_null($user) ? null : $user->getId());
-    $fingerprint['user_agent'] = substr(
-      getenv('HTTP_USER_AGENT'), 0, self::MAX_USER_AGENT
-    );
-
-    return $fingerprint;
+  protected static function getFingerprint(User $user)
+  {
+    return [
+      'ip_address' => getenv('REMOTE_ADDR'),
+      'user_agent' => substr(getenv('HTTP_USER_AGENT'), 0, self::MAX_USER_AGENT),
+      'user_id' => $user->getId(),
+    ];
   }
 
   /**
    * getPartialIP()
-   * Gets the first /24 or /64 for IPv4 or IPv6 addresses respectively.
+   * Gets the first /24 or /64 bits from IPv4 or IPv6 addresses respectively.
    *
    * @return string The partial IP address.
+   * @throws InvalidArgumentException when value is not a valid IP address.
    */
-  protected static function getPartialIP(string $ip) {
-    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-      return long2ip(ip2long($ip) & 0xFFFFFF00);
-    } else if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-      return inet_ntop(substr(inet_pton($ip), 0, 8) . str_repeat(chr(0), 8));
-    } else {
-      throw new InvalidArgumentException('$ip is not a valid IP address');
+  protected static function getPartialIP(string $value)
+  {
+    if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
+    {
+      return long2ip(ip2long($value) & 0xFFFFFF00);
+    }
+    else if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6))
+    {
+      return inet_ntop(substr(inet_pton($value), 0, 8) . str_repeat(chr(0), 8));
+    }
+    else
+    {
+      throw new InvalidArgumentException('value is not a valid IP address');
     }
   }
 
   /**
-   * getUniqueKey()
-   * Returns a unique string based on unique user data and other entropy.
+   * getUniqueToken()
+   * Returns a SHA-256 digest hash of unique entropy.
    *
    * @param User $user The User object to be used for user data.
-   *
-   * @return string The unique string.
+   * @return string The generated unique data, hexadecimal-formatted (64 bytes).
    */
-  protected static function getUniqueKey(User &$user) {
-    if (!$user instanceof User) {
-      throw new InvalidArgumentException('$user is not instance of User');
-    }
-    return hash( 'sha1',
-      mt_rand() . getenv('REMOTE_ADDR') .
-      $user->getId() . $user->getEmail() . $user->getUsername() .
-      $user->getPasswordHash() . $user->getPasswordSalt() .
+  protected static function getUniqueToken(User $user)
+  {
+    return hash('sha256', sprintf('%d%s%d%s%s%s%s%s',
+      mt_rand(), getenv('REMOTE_ADDR'), $user->getId(), $user->getEmail(),
+      $user->getUsername(), $user->getPasswordHash(), $user->getPasswordSalt(),
       Common::$config->bnetdocs->user_password_pepper
-    );
+    ));
   }
 
   /**
@@ -134,16 +121,12 @@ class Authentication {
    * Tells the client's browser to store authentication info.
    * Also sets self::$key and self::$user to derived and given values.
    *
-   * @param User &$user The User object.
-   *
+   * @param User $user The User object being logged into.
    * @return bool Indicates if the browser cookie was sent.
    */
-  public static function login(User &$user) {
-    if (!$user instanceof User) {
-      throw new InvalidArgumentException('$user is not instance of User');
-    }
-
-    self::$key  = self::getUniqueKey($user);
+  public static function login(User $user)
+  {
+    self::$key = self::getUniqueToken($user);
     self::$user = $user;
 
     $fingerprint = self::getFingerprint($user);
@@ -170,10 +153,10 @@ class Authentication {
    *
    * @return bool Indicates if the browser cookie was sent.
    */
-  public static function logout() {
+  public static function logout()
+  {
     self::discard(self::$key);
-
-    self::$key  = '';
+    self::$key = '';
     self::$user = null;
 
     // 'domain' is an empty string to only allow this specific http host to
@@ -195,105 +178,110 @@ class Authentication {
    * lookup()
    * Retrieves fingerprint based on secret key.
    *
-   * @param string $key The secret key, typically from the client.
-   *
+   * @param string $key The unique key, ostensibly from the client,
+*                       hexadecimal-formatted and must be 64 bytes in length.
    * @return array The fingerprint details, or false if not found.
+   * @throws OutOfBoundsException if key is not 64 bytes in length.
+   * @throws PDOException if a PDO error occurs.
+   * @throws UnexpectedValueException if key is not a hexadecimal-formatted string.
    */
-  protected static function lookup(string $key) {
-    if (!isset(Common::$database)) {
+  protected static function lookup(string $key)
+  {
+    if (strlen($key) !== 64)
+    {
+      throw new OutOfBoundsException('key must be 64 bytes');
+    }
+
+    if (!preg_match('/^(?:(0x|0X)?[a-fA-F0-9]+)$/', $key))
+    {
+      throw new UnexpectedValueException('key must be a hexadecimal-formatted string');
+    }
+
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $dt_now_str = (new DateTime(
-      'now', new DateTimeZone('Etc/UTC')
-    ))->format(self::DATE_SQL);
+    $now = (new DateTime('now'))->format(self::DATE_SQL);
 
-    $fingerprint = false;
+    $q = Common::$database->prepare(
+     'SELECT `ip_address`, `user_agent`, `user_id`
+      FROM `user_sessions` WHERE `id` = UNHEX(:id) AND
+        (`expires_datetime` = NULL OR `expires_datetime` > :dt)
+      LIMIT 1;'
+    );
 
-    try {
-      $stmt = Common::$database->prepare('
-        SELECT `user_id`, `ip_address`, `user_agent`
-        FROM `user_sessions`
-        WHERE `id` = :id AND (
-          `expires_datetime` = NULL OR
-          :dt < `expires_datetime`
-        ) LIMIT 1;
-      ');
+    $q->bindParam(':id', $key, PDO::PARAM_STR);
+    $q->bindParam(':dt', $now, PDO::PARAM_STR);
 
-      $stmt->bindParam(':id', $key, PDO::PARAM_STR);
-      $stmt->bindParam(':dt', $dt_now_str, PDO::PARAM_STR);
+    $r = $q->execute();
+    if (!$r) return $r;
 
-      $r = $stmt->execute();
-
-      if ($r) {
-        $fingerprint = $stmt->fetch(PDO::FETCH_ASSOC);
-      }
-
-      $stmt->closeCursor();
-
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot lookup user session key', $e);
-    } finally {
-      return $fingerprint;
-    }
+    return $q->fetch(PDO::FETCH_ASSOC);
   }
 
   /**
    * store()
    * Stores authentication info server-side for lookup later.
    *
-   * @param string $key         The secret key.
-   * @param array  $fingerprint The fingerprint details.
-   *
+   * @param string $key The unique key, hexadecimal-formatted and
+   *                    must be 64 bytes in length.
+   * @param array &$fingerprint The fingerprint details.
    * @return bool Indicates if the operation succeeded.
+   * @throws OutOfBoundsException if key is not 64 bytes in length.
+   * @throws PDOException if a PDO error occurs.
+   * @throws UnexpectedValueException if key is not a hexadecimal-formatted string.
    */
-  protected static function store(string $key, array &$fingerprint) {
-    if (!isset(Common::$database)) {
+  protected static function store(string $key, array &$fingerprint)
+  {
+    if (strlen($key) !== 64)
+    {
+      throw new OutOfBoundsException('key must be 64 bytes');
+    }
+
+    if (!preg_match('/^(?:(0x|0X)?[a-fA-F0-9]+)$/', $key))
+    {
+      throw new UnexpectedValueException('key must be a hexadecimal-formatted string');
+    }
+
+    if (!isset(Common::$database))
+    {
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $tz = new DateTimeZone('Etc/UTC');
+    $tz = new DateTimeZone(self::TZ_SQL);
 
-    $user_id     = $fingerprint['user_id'];
-    $ip_address  = $fingerprint['ip_address'];
-    $user_agent  = $fingerprint['user_agent'];
-    $created_dt  = new DateTime('now', $tz);
-    $created_str = $created_dt->format(self::DATE_SQL);
+    $ip_address = $fingerprint['ip_address'];
+    $user_agent = $fingerprint['user_agent'];
+    $user_id = $fingerprint['user_id'];
+
+    $created_dt = new DateTime('now', $tz);
+    $created = $created_dt->format(self::DATE_SQL);
     $expires_dt = new DateTime(
       '@' . ($created_dt->getTimestamp() + self::TTL), $tz
     );
-    $expires_str = $expires_dt->format(self::DATE_SQL);
+    $expires = $expires_dt->format(self::DATE_SQL);
 
-    $r = false;
+    $q = Common::$database->prepare('
+      INSERT INTO `user_sessions` (
+        `id`, `user_id`, `ip_address`, `user_agent`,
+        `created_datetime`, `expires_datetime`
+      ) VALUES (
+        UNHEX(:id), :user_id, :ip_address, :user_agent,
+        :created, :expires
+      ) ON DUPLICATE KEY UPDATE
+        `ip_address` = :ip_address, `user_agent` = :user_agent
+      ;
+    ');
 
-    try {
-      $stmt = Common::$database->prepare('
-        INSERT INTO `user_sessions` (
-          `id`, `user_id`, `ip_address`, `user_agent`,
-          `created_datetime`, `expires_datetime`
-        ) VALUES (
-          :id, :user_id, :ip_address, :user_agent,
-          :created_dt, :expires_dt
-        ) ON DUPLICATE KEY UPDATE
-          `ip_address` = :ip_address, `user_agent` = :user_agent
-        ;
-      ');
+    $q->bindParam(':id', $key, PDO::PARAM_STR);
+    $q->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $q->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
+    $q->bindParam(':user_agent', $user_agent, PDO::PARAM_STR);
+    $q->bindParam(':created', $created, PDO::PARAM_STR);
+    $q->bindParam(':expires', $expires, PDO::PARAM_STR);
 
-      $stmt->bindParam(':id', $key, PDO::PARAM_STR);
-      $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-      $stmt->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
-      $stmt->bindParam(':user_agent', $user_agent, PDO::PARAM_STR);
-      $stmt->bindParam(':created_dt', $created_str, PDO::PARAM_STR);
-      $stmt->bindParam(':expires_dt', $expires_str, PDO::PARAM_STR);
-
-      $r = $stmt->execute();
-      $stmt->closeCursor();
-
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot store user session key', $e);
-    } finally {
-      return $r;
-    }
+    return $q->execute();
   }
 
   /**
@@ -302,11 +290,10 @@ class Authentication {
    *
    * @return bool Indicates if verification succeeded.
    */
-  public static function verify() {
+  public static function verify()
+  {
     // get client's lookup key
-    self::$key = (
-      isset($_COOKIE[self::COOKIE_NAME]) ? $_COOKIE[self::COOKIE_NAME] : ''
-    );
+    self::$key = $_COOKIE[self::COOKIE_NAME] ?? '';
 
     // no user yet
     self::$user = null;
@@ -318,36 +305,42 @@ class Authentication {
     $lookup = self::lookup(self::$key);
 
     // logout and return if we could not verify their info
-    if (!$lookup) {
+    if (!$lookup)
+    {
       self::logout();
       return false;
     }
 
+    // get remote address
+    $ip = getenv('REMOTE_ADDR');
+
     // logout and return if their fingerprint ip address does not match
-    if (self::getPartialIP($lookup['ip_address'])
-      !== self::getPartialIP(getenv('REMOTE_ADDR'))) {
+    if (self::getPartialIP($lookup['ip_address']) !== self::getPartialIP($ip))
+    {
       self::logout();
       return false;
     }
 
     // logout and return if their fingerprint user agent does not match
-    if ($lookup['user_agent'] !== getenv('HTTP_USER_AGENT')) {
+    if ($lookup['user_agent'] !== getenv('HTTP_USER_AGENT'))
+    {
       self::logout();
       return false;
     }
 
     // verified info, let's get the user object
-    if (isset($lookup['user_id'])) {
+    if (isset($lookup['user_id']))
+    {
       self::$user = new User($lookup['user_id']);
     }
 
     // if IP is different, update session
-    if ($lookup['ip_address'] !== getenv('REMOTE_ADDR')) {
+    if ($lookup['ip_address'] !== $ip)
+    {
       $new_fingerprint = self::getFingerprint(self::$user);
       self::store(self::$key, $new_fingerprint);
     }
 
     return true;
   }
-
 }
