@@ -179,22 +179,25 @@ class Authentication
    * Retrieves fingerprint based on secret key.
    *
    * @param string $key The unique key, ostensibly from the client,
-*                       hexadecimal-formatted and must be 64 bytes in length.
+   *                       hexadecimal-formatted and must be 64 bytes in length.
+   * @param bool $throw Whether to throw exceptions or simply return false on error.
    * @return array The fingerprint details, or false if not found.
    * @throws OutOfBoundsException if key is not 64 bytes in length.
    * @throws PDOException if a PDO error occurs.
    * @throws UnexpectedValueException if key is not a hexadecimal-formatted string.
    */
-  protected static function lookup(string $key)
+  protected static function lookup(string $key, bool $throw = true)
   {
     if (strlen($key) !== 64)
     {
-      throw new OutOfBoundsException('key must be 64 bytes');
+      if ($throw) throw new OutOfBoundsException('key must be 64 bytes');
+      else return false;
     }
 
     if (!preg_match('/^(?:(0x|0X)?[a-fA-F0-9]+)$/', $key))
     {
-      throw new UnexpectedValueException('key must be a hexadecimal-formatted string');
+      if ($throw) throw new UnexpectedValueException('key must be a hexadecimal-formatted string');
+      else return false;
     }
 
     if (!isset(Common::$database))
@@ -302,7 +305,7 @@ class Authentication
     if (empty(self::$key)) { return false; }
 
     // lookup key in our store
-    $lookup = self::lookup(self::$key);
+    $lookup = self::lookup(self::$key, false);
 
     // logout and return if we could not verify their info
     if (!$lookup)
