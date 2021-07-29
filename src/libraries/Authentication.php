@@ -205,7 +205,7 @@ class Authentication
       Common::$database = DatabaseDriver::getDatabaseObject();
     }
 
-    $now = (new DateTime('now'))->format(self::DATE_SQL);
+    $now = (new DateTime('now', new DateTimeZone(self::TZ_SQL)))->format(self::DATE_SQL);
 
     $q = Common::$database->prepare(
      'SELECT `ip_address`, `user_agent`, `user_id`
