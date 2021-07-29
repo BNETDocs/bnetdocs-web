@@ -1,16 +1,10 @@
 <?php
-
 namespace BNETDocs\Libraries;
 
-use \CarlBennett\MVC\Libraries\Database;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \BNETDocs\Libraries\Exceptions\NewsCategoryNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Markdown;
-use \DateTime;
-use \DateTimeZone;
 use \InvalidArgumentException;
 use \PDO;
 use \PDOException;

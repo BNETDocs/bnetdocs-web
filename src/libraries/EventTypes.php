@@ -1,9 +1,7 @@
 <?php
-
 namespace BNETDocs\Libraries;
-
-class EventTypes {
-
+class EventTypes
+{
   const LOG_NOTE = 0;
   const SITE_DEPLOY = 1;
   const BLIZZARD_VISIT = 2;
@@ -47,5 +45,4 @@ class EventTypes {
   const SERVER_CREATED = 40;
   const SERVER_EDITED = 41;
   const SERVER_DELETED = 42;
-
 }
