@@ -7,6 +7,9 @@ use \DateTime;
 $title = 'All Users';
 $description = 'All users currently registered on BNETDocs';
 $this->opengraph->attach(new Pair('url', '/user/index'));
+$active_user = $this->getContext()->active_user;
+$acl_user_delete = ($active_user && $active_user->getOption(User::OPTION_ACL_USER_DELETE));
+$acl_user_modify = ($active_user && $active_user->getOption(User::OPTION_ACL_USER_MODIFY));
 $page = $this->getContext()->page;
 $pages = $this->getContext()->pages;
 $limit = $this->getContext()->limit;
@@ -33,22 +36,31 @@ require('./header.inc.phtml'); ?>
     <select class="form-control form-control-sm" name="order" id="order" onchange="form.submit();" style="display:inline-block;width:200px;">
 <?  foreach ($form_order_by as $item_value => $item_label) {
       $item_selected = ($order === $item_value ? ' selected="selected"' : '');
-      echo sprintf('<option value="%s"%s>%s</option>' . PHP_EOL, $item_value, $item_selected, $item_label);
+      printf('<option value="%s"%s>%s</option>%s', $item_value, $item_selected, $item_label, PHP_EOL);
     } ?>
     </select>
     <input class="btn btn-sm btn-secondary" type="submit" value="Reorder"/>
   </form>
   <table class="table table-hover table-sm table-striped" id="users_tbl">
-    <thead><tr><th>Account</th><th>Member for</th></tr></thead><tbody>
+    <thead><tr><th>Account</th><th>Member for</th><?=($acl_user_modify || $acl_user_delete ? '<th>Action</th>' : '')?></tr></thead><tbody>
 <?  foreach ($this->getContext()->users as $user)
     {
-      $user_url = $user->getURI();
-      $avatar_url = $user->getAvatarURI(22); ?>
-      <tr>
-        <td><a href="<?=$user_url?>"><img class="mr-2" src="<?=$avatar_url?>"/><?=filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></td>
-        <td><?=($user->getCreatedEstimate() ?? '<em>(null)</em>')?></td>
-      </tr>
-<?  } ?>
+      printf(
+        '<tr><td><a href="%s"><img class="mr-2" src="%s"/>%s</a></td><td>%s</td>%s</tr>%s',
+        $user->getURI(),
+        $user->getAvatarURI(22),
+        filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+        ($user->getCreatedEstimate() ?? '<em>(null)</em>'),
+        ($acl_user_modify || $acl_user_delete ? (
+          sprintf('<td>%s%s</td>', (
+            $acl_user_modify ? sprintf('<a class="mr-1 btn btn-sm btn-secondary" href="%s" title="Modify">📝</a>', Common::relativeUrlToAbsolute('/user/update?id=' . rawurlencode($user->getId()))) : ''
+          ), (
+            $acl_user_delete ? sprintf('<a class="ml-1 btn btn-sm btn-danger" href="%s" title="Delete">❌</a>', Common::relativeUrlToAbsolute('/user/delete?id=' . rawurlencode($user->getId()))) : ''
+          ))
+        ) : ''),
+        PHP_EOL
+      );
+    } ?>
   </tbody></table>
   <nav aria-label="User list navigation" class="d-flex justify-content-center">
     <ul class="pagination">

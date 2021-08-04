@@ -1,24 +1,24 @@
 <?php
-
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Index as UserIndexModel;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 
-class Index extends Controller {
-
+class Index extends Controller
+{
   const PAGINATION_LIMIT_DEF = 20;  // The default amount of items per page.
   const PAGINATION_LIMIT_MIN = 5;   // The least amount of items per page.
   const PAGINATION_LIMIT_MAX = 250; // The most amount of items per page.
 
-  public function &run(Router &$router, View &$view, array &$args) {
+  public function &run(Router &$router, View &$view, array &$args)
+  {
     $model = new UserIndexModel();
-
+    $model->active_user = Authentication::$user;
     $query = $router->getRequestQueryArray();
 
     $model->order = (

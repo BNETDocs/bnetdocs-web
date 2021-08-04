@@ -1,16 +1,11 @@
 <?php
-
 namespace BNETDocs\Models\User;
-
-use \CarlBennett\MVC\Libraries\Model;
-
-class Index extends Model {
-
+class Index extends \BNETDocs\Models\ActiveUser
+{
   public $limit;
   public $order;
   public $page;
   public $pages;
   public $sum_users;
   public $users;
-
 }
