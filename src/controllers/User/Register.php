@@ -7,6 +7,7 @@ use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\Exceptions\QueryException;
 use \BNETDocs\Libraries\Exceptions\RecaptchaException;
 use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \BNETDocs\Libraries\GeoIP;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Recaptcha;
 use \BNETDocs\Libraries\User;
@@ -136,8 +137,9 @@ class Register extends Controller {
         }
       }
     }
-    if (function_exists('geoip_country_code_by_name')) {
-      $their_country = geoip_country_code_by_name(getenv('REMOTE_ADDR'));
+    $geoip_record = GeoIP::getRecord(getenv('REMOTE_ADDR'));
+    if ($geoip_record) {
+      $their_country = $geoip_record->country->isoCode;
       foreach ($countrycode_denylist as $bad_country => $reason) {
         if (strtoupper($their_country) == strtoupper($bad_country)) {
           $model->error = 'COUNTRY_DENIED';

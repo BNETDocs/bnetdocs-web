@@ -91,6 +91,10 @@
     "smtp_tls": false,
     "smtp_user": ""
   },
+  "geoip": {
+    "database_file": "/usr/share/GeoIP/GeoLite2-City.mmdb",
+    "database_type": "city"
+  },
   "mysql": {
     "character_set": "utf8",
     "database": "bnetdocs_phoenix",
