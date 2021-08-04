@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "969117bdae57631be1899e453715a042",
+    "content-hash": "499d4929814efd7aa86c22ddaa61b874",
     "packages": [
         {
             "name": "carlbennett/php-mvc",
@@ -454,7 +454,6 @@
     "prefer-lowest": false,
     "platform": {
         "ext-curl": "*",
-        "ext-geoip": "*",
         "ext-gmp": "*",
         "ext-http": "*",
         "ext-json": "*",
