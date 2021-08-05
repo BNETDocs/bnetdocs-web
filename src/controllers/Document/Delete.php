@@ -1,5 +1,4 @@
 <?php
-
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\Authentication;
@@ -9,13 +8,12 @@ use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Document\Delete as DocumentDeleteModel;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
-
 use \InvalidArgumentException;
+use \UnexpectedValueException;
 
 class Delete extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
@@ -34,6 +32,7 @@ class Delete extends Controller {
     try { $model->document = new Document($model->id); }
     catch (DocumentNotFoundException $e) { $model->document = null; }
     catch (InvalidArgumentException $e) { $model->document = null; }
+    catch (UnexpectedValueException $e) { $model->document = null; }
 
     if ($model->document === null) {
       $model->error = 'NOT_FOUND';

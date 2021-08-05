@@ -1,5 +1,4 @@
 <?php
-
 namespace BNETDocs\Controllers\Document;
 
 use \BNETDocs\Libraries\Authentication;
@@ -10,16 +9,15 @@ use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\Document\Edit as DocumentEditModel;
-
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
-
 use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
+use \UnexpectedValueException;
 
 class Edit extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
@@ -35,6 +33,7 @@ class Edit extends Controller {
     try { $model->document = new Document($model->document_id); }
     catch (DocumentNotFoundException $e) { $model->document = null; }
     catch (InvalidArgumentException $e) { $model->document = null; }
+    catch (UnexpectedValueException $e) { $model->document = null; }
 
     if ($model->document === null) {
       $model->error = 'NOT_FOUND';
