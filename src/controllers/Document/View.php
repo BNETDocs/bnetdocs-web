@@ -22,11 +22,9 @@ class View extends Controller {
     $model->active_user = Authentication::$user;
     $model->document_id = array_shift($args);
 
-    try {
-      $model->document  = new Document($model->document_id);
-    } catch (DocumentNotFoundException $e) {
-      $model->document  = null;
-    }
+    try { $model->document = new Document($model->document_id); }
+    catch (DocumentNotFoundException $e) { $model->document = null; }
+    catch (InvalidArgumentException $e) { $model->document = null; }
 
     if ($model->document) {
       $model->comments = Comment::getAll(
