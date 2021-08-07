@@ -19,7 +19,7 @@ class Legal extends Controller {
     $model->email_domain    = Common::$config->bnetdocs->privacy->contact->email_domain;
     $model->email_mailbox   = Common::$config->bnetdocs->privacy->contact->email_mailbox;
     $model->license         = file_get_contents(self::LICENSE_FILE);
-    $model->license_version = VersionInfo::$version->bnetdocs[3];
+    $model->license_version = VersionInfo::$version->bnetdocs[3] ?? null;
 
     if (!is_null($model->license_version)) {
       $model->license_version = explode( ' ', $model->license_version );
