@@ -24,7 +24,7 @@ require('./header.inc.phtml'); ?>
     <div class="alert alert-danger">
       <p class="mb-0">Are you sure you wish to delete this packet?</p>
     </div>
-    <pre><code class="language-objectivec"><? echo filter_var($this->getContext()->title, FILTER_SANITIZE_STRING); ?></code></pre>
+    <pre><code class="language-objectivec"><?=filter_var($this->getContext()->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></pre>
     <input class="btn btn-danger" type="submit" value="Delete Packet" tabindex="2" autofocus="autofocus"/>
   </form>
 <? } else if ($error === false) { ?>

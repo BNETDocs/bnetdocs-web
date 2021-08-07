@@ -60,7 +60,7 @@ require('./header.inc.phtml'); ?>
       <a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
       <a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
     </span>
-    <h1><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_STRING)?></a></h1>
+    <h1><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
 <?  if (!($object->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
     <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>
 <?  } ?>
@@ -89,8 +89,8 @@ $comment_parent_type = Comment::PARENT_TYPE_NEWS_POST; $comment_parent_id = $obj
 require("./Comment/Section.inc.phtml");
 
 } else { ?>
-  <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_STRING)?></h1>
-  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_STRING)?></div></div>
+  <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></h1>
+  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></div></div>
 <? } ?>
 </div>
 <? require("./footer.inc.phtml"); ?>

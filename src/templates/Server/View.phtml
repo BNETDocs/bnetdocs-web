@@ -55,8 +55,8 @@ $this->opengraph->attach(new Pair('url', $url));
 require('./header.inc.phtml'); ?>
 <div class="container">
 <? if (!$server) { ?>
-  <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_STRING)?></h1>
-  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_STRING)?></div></div>
+  <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></h1>
+  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></div></div>
 <? } else { ?>
   <span class="float-right">
     <a class="btn btn-sm btn-primary" href="<?=$url_json?>">JSON</a>

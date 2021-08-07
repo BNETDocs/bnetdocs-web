@@ -33,7 +33,7 @@ require('./header.inc.phtml'); ?>
   <p class="text-danger">Are you sure you wish to delete this comment?</p>
   <form method="POST" action="?id=<?=rawurlencode($id)?>">
     <table class="table table-striped text-white-50"><tbody>
-      <tr><td><a href="<?=$c_user_url?>"><img class="avatar" src="<?=$c_user_avatar?>"/> <?=filter_var($c_user_name, FILTER_SANITIZE_STRING)?></a><br/><time class="comment_timestamp" datetime="<?=$c->getCreatedDateTime()->format('c')?>"><?=$c->getCreatedDateTime()->format('D M j, Y g:ia T')?></time></td><td><?=$c->getContent(true)?></td></tr>
+      <tr><td><a href="<?=$c_user_url?>"><img class="avatar" src="<?=$c_user_avatar?>"/> <?=filter_var($c_user_name, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a><br/><time class="comment_timestamp" datetime="<?=$c->getCreatedDateTime()->format('c')?>"><?=$c->getCreatedDateTime()->format('D M j, Y g:ia T')?></time></td><td><?=$c->getContent(true)?></td></tr>
     </tbody></table>
     <a class="btn btn-primary" href="javascript:history.go(-1);">Back</a>
     <input class="btn btn-danger" type="submit" value="Delete" tabindex="1" autofocus="autofocus"/>
