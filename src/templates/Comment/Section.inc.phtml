@@ -22,10 +22,10 @@ $c_delete_visible_admin = ($active_user && $active_user->getOption(User::OPTION_
         $c_user        = $c->getUser();
         $c_user_id     = $c->getUserId();
         $c_user_url    = ($c_user ? $c_user->getURI() : '');
-        $c_user_avatar = ($c_user ? $c_user->getAvatarURI(22) : '');
+        $c_user_avatar = ($c_user ? $c_user->getAvatarURI(28) : '');
         $c_user_name   = ($c_user ? filter_var($c_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS) : 'Anonymous');
 
-        $c_user_string = ($c_user ? sprintf('<a href="%s"><img class="rounded" src="%s"/> %s</a>', $c_user_url, $c_user_avatar, $c_user_name) : $c_user_name);
+        $c_user_string = ($c_user ? sprintf('<a href="%s"><img class="mr-2 rounded" src="%s"/>%s</a>', $c_user_url, $c_user_avatar, $c_user_name) : $c_user_name);
         $c_time_string = sprintf('<time class="small text-muted" datetime="%s">%s</time>', $c_created_dt->format('c'), $c_created_dt->format('D M j, Y g:ia T'));
 
         $c_context_visible = (isset($comment_show_parent) && $comment_show_parent);
