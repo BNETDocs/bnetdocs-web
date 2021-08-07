@@ -1,129 +1,104 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates;
+use \BNETDocs\Libraries\VersionInfo; ?>
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Error &ndash; BNETDocs</title>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
-    <style type="text/css" media="all">
-      body {
-        background: #272727 url("/a/main_bg.png") repeat fixed center;
-        color: #ddd;
-        font: 11pt source sans pro, verdana, arial, sans-serif;
-        margin: 48px 0px 0px 0px;
-        padding: 0px;
-      }
-      a,a:focus {
-        outline: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      a:link {
-        color: #00c0ff;
-        text-decoration: none;
-      }
-      a:visited {
-        color: #00a0cf;
-      }
-      header.main-page {
-        background-color: rgba(64,64,64,0.8);
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        cursor: default;
-        color: rgba(0,222,180,0.9);
-        font: 20pt source sans pro, verdana, arial, sans-serif;
-        left: 0px;
-        line-height: 32px;
-        padding: 8px 12px;
-        position: fixed;
-        right: 0px;
-        top: 0px;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
-      main {
-        overflow: hidden;
-        width: 100%;
-      }
-      main > article,
-      main.slim > article {
-        margin: 10px auto;
-        max-width: 600px;
-        overflow: hidden;
-      }
-      main > article:first-of-type,
-      main.slim > article:first-of-type {
-        margin-top: 10px;
-      }
-      main > article:last-of-type,
-      main.slim > article:last-of-type {
-        margin-bottom: 0px;
-      }
-      main > article > header {
-        background-color: rgba(64,64,64,0.6);
-        display: block;
-        font: 14pt source sans pro;
-        padding: 10px;
-      }
-      main > article header.red {
-        background-color: rgba(128,64,64,0.6);
-      }
-      main > article .header-button {
-        border-radius: 4px;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        display: inline-block;
-        height: 24px;
-        line-height: 24px;
-        margin: 4px 4px 4px 0px;
-        padding: 6px;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        vertical-align: top;
-      }
-      main > article section {
-        background-color: rgba(64,64,64,0.4);
-        padding: 10px;
-      }
-      main > article section.red {
-        background-color: rgba(128,64,64,0.4);
-      }
-      main > article section > p:first-of-type {
-        margin-top: 0px;
-      }
-      main > article section > p:last-of-type {
-        margin-bottom: 0px;
-      }
-      main > article section img {
-        max-width: 100%;
-      }
-      main > article > footer {
-        background-color: rgba(64, 64, 64, 0.6);
-        display: block;
-        font: 12pt source sans pro;
-        margin: 0px;
-        min-height: 20px;
-        padding: 10px;
-      }
-    </style>
-  </head>
-  <body>
-    <header class="main-page">BNETDocs</header>
-    <main class="slim">
-      <article>
-        <header class="red">Internal Error</header>
-        <section class="red">
-          <p>An internal server error occurred while processing your request.</p>
-          <p>The BNETDocs staff have been notified of this issue.</p>
-          <p>Please <a href="https://github.com/BNETDocs/bnetdocs-web/issues/new?title=Internal+Error">report this issue to GitHub</a> if it persists.</p>
-        </section>
-      </article>
-    </main>
-  </body>
-</html>
+<html lang="en-US" class="h-100">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<title>Internal Error &ndash; BNETDocs</title>
+<link rel="stylesheet" href="/a/bootstrap-4.4.1-slate.min.css" integrity="sha384-tfnMnZ6k273p3mDqSKikc9aXSvumltGq76Tbo+VMydpXeD5EDZwbQWo7nbZz+wc9" crossorigin="anonymous" />
+<link rel="stylesheet" href="/a/datatables.min.css?v=20210807204512" type="text/css" media="all" />
+<link rel="stylesheet" href="/a/highlight/styles/vs2015.min.css?v=20210807204512" type="text/css" media="all" />
+<link rel="stylesheet" href="/a/footer.css?v=20210807204512" type="text/css" media="all" />
+<link rel="icon" href="/a/VSZX0bJ.png" type="image/png" sizes="156x174" />
+<script type="text/javascript" src="/a/BNETDocs.js?v=20210807204512" async><![CDATA[]]></script>
+<link rel="alternate" href="/news.rss" type="application/rss+xml" title="BNETDocs News" />
+<link rel="license" href="/legal" />
+<meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding" />
+<meta name="description" content="The requested resource does not exist or could not be found." />
+<meta property="og:description" content="The requested resource does not exist or could not be found." />
+<meta property="twitter:description" content="The requested resource does not exist or could not be found." />
+<meta property="og:site_name" content="BNETDocs" />
+<meta property="og:locale" content="en_US" />
+<meta property="twitter:card" content="summary" />
+<meta property="twitter:site" content="@BNETDocs" />
+<meta property="og:title" content="Internal Error" />
+<meta property="twitter:title" content="Internal Error" />
+<meta property="og:image" content="/a/eNoi70A.png" />
+<meta property="og:type" content="website" />
+</head>
+<body class="d-flex flex-column h-100">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
+<a class="navbar-brand" style="color:#00ccad;" href="/welcome"><img class="float-left mr-2" src="/a/VSZX0bJ.png" style="height:32px;" /> BNETDocs</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-auto">
+<li class="nav-item"><a class="nav-link" href="/welcome">Welcome</a></li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarCommunityDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Community</a>
+<div class="dropdown-menu" aria-labelledby="navbarCommunityDropdown">
+<a class="dropdown-item" href="/discord">Discord</a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" href="/credits">Contributors</a>
+<a class="dropdown-item" href="/donate">Support Us</a>
+<a class="dropdown-item" href="/servers">Server List</a>
+<a class="dropdown-item" href="/user/index">Users</a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" href="/privacy">Privacy Notice</a>
+<a class="dropdown-item" href="/legal">Disclaimer &amp; TOS</a>
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" href="https://files.bnetdocs.org/">File Archive</a>
+<a class="dropdown-item" href="https://redux.bnetdocs.org/">BNETDocs Redux</a>
+</div></li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarNewsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">News</a>
+<div class="dropdown-menu" aria-labelledby="navbarNewsDropdown">
+<a class="dropdown-item text-info" href="/news">All News</a>
+</div></li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarDocumentsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documents</a>
+<div class="dropdown-menu" aria-labelledby="navbarDocumentsDropdown">
+<a class="dropdown-item text-info" href="/document/index">All Documents</a>
+</div></li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarPacketsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Packets</a>
+<div class="dropdown-menu" aria-labelledby="navbarPacketsDropdown">
+<a class="dropdown-item text-info" href="/packet/index">All Packets</a>
+</div></li>
+</ul>
+</div>
+</nav>
+<main class="mb-3">
+<div class="container">
+<div class="alert alert-danger" role="alert">
+<h4 class="alert-heading">Internal Error</h4>
+<p class="mb-0">The requested resource does not exist or could not be found.</p>
+</div>
+</div>
+</main>
+<footer class="footer mt-auto py-3">
+<div class="container text-center">
+<p class="small text-muted"><? if ( VersionInfo::$version->bnetdocs ) { ?><a href="https://github.com/BNETDocs/bnetdocs-web/tree/<?=VersionInfo::$version->bnetdocs[1]?>" rel="external" title="Contribute to the BNETDocs source code!">BNETDocs <?=VersionInfo::$version->bnetdocs[0]?></a><? } else { ?>(Development)<?php } ?> &copy; 2003-2021 BNETDocs | <a href="/legal" title="BNETDocs Legal Page">Legal</a> | <a href="/privacy" title="BNETDocs Privacy Notice">Privacy Notice</a></p>
+<p class="small text-muted">
+BNETDocs is a documentation and discussion website for Blizzard Entertainment's
+Battle.net&trade; and in-game protocols. You hereby acknowledge that BNETDocs
+content is offered as is and without warranty. BNETDocs content may be
+inaccurate as it is solely from third-party observations. BNETDocs is not
+affiliated or partnered with Blizzard Entertainment in absolutely any way.
+Battle.net&trade;, Starcraft&trade;, Warcraft&trade;, and Diablo&trade; are
+trademarks or registered trademarks of Blizzard Entertainment, Inc., in the U.S.
+and/or other countries.
+</p>
+</div>
+</footer>
+<script type="text/javascript" src="/a/datatables.min.js?v=20210807204512" async><![CDATA[]]></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"63cd2fecedab4ab49dbf49032bd6934b"}'></script>
+<script src="/a/jquery-3.4.1.slim.min.js?v=20210807204512" type="text/javascript" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"><![CDATA[]]></script>
+<script src="/a/popper-1.16.0.min.js?v=20210807204512" type="text/javascript" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"><![CDATA[]]></script>
+<script src="/a/bootstrap-4.4.1.min.js?v=20210807204512" type="text/javascript" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"><![CDATA[]]></script>
+<script src="/a/datatables.min.js?v=20210807204512" type="text/javascript" crossorigin="anonymous" charset="utf8"><![CDATA[]]></script>
+<script src="/a/highlight/highlight.min.js?v=20210807204512" type="text/javascript" crossorigin="anonymous" charset="utf8"><![CDATA[]]></script>
+<script type="text/javascript">$(document).ready(function(){hljs.highlightAll()});</script>
+<script src="/a/moment-2.24.0.min.js?v=20210807204512" type="text/javascript" crossorigin="anonymous" charset="utf8"><![CDATA[]]></script>
+</body></html>
