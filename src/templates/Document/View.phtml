@@ -68,10 +68,8 @@ require('./header.inc.phtml'); ?>
   </div></div>
 <? $comment_parent_type = Comment::PARENT_TYPE_DOCUMENT; $comment_parent_id = $object_id; require('./Comment/Section.inc.phtml');
   } else { ?>
-  <div class="alert alert-danger">
-    <p><strong><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></strong></p>
-    <p class="mb-0"><?=filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></p>
-  </div>
+  <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_STRING)?></h1>
+  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_STRING)?></div></div>
 <? } ?>
 </div>
 <? require('./footer.inc.phtml'); ?>
