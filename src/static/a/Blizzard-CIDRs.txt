@@ -1,21 +1,19 @@
-# These are IPs collected from services such as ARIN and RIPE, or otherwise
-# from Autonomous System Numbers (ASNs) given to Blizzard Entertainment, Inc.
+# Blizzard CIDR Tracker
+# (CIDR: Classless Inter-Domain Routing)
 #
-# A good resource for finding more of these ASNs can be found at:
-# <http://www.tcpiputils.com/search?q="Blizzard+Entertainment">
+# These are IP address ranges collected from services such as ARIN and RIPE, or
+# otherwise from Autonomous System Numbers (ASNs) given to
+# Blizzard Entertainment, Inc. or other interesting entities.
 #
-# Of course, we can also do a reverse lookup of .blizzard.com and .battle.net,
-# but these yield limited results, whereas ASNs provide much more detail.
-# Nevertheless, those reverse lookups are also included below.
+# This is meant to be a comprehensive list, regardless of their purpose
+# (external/internal servers, offices/IT, etc.)
 #
-# This is meant to be a very comprehensive list of IPs assigned to Blizzard,
-# regardless of their purpose (e.g. external/internal servers, offices).
+# Please assist BNETDocs by extending this list when you discover staleness or
+# missing ranges, as well as by condensing any CIDRs where possible.
 #
-# Please help out by extending this list when you find more, as well as by
-# condensing the CIDRs where possible.
-#
+# ASN 57976: Blizzard Entertainment, Inc.
 2620:10b:9000::/44
-2a04:e800::/31
+2a04:e800::/29
 5.42.160.0/19
 5.42.176.0/20
 12.41.72.0/28
@@ -51,17 +49,24 @@
 12.130.95.0/24
 12.130.244.0/22
 12.148.80.0/22
-24.105.0.0/19
-24.105.32.0/19
+24.105.0.0/18
+59.153.40.0/22
 63.240.197.56/29
 63.240.202.0/24
 63.241.73.96/29
 63.241.80.136/29
 63.241.83.0/24
 63.241.86.0/24
+103.198.32.0/23
+110.45.128.0/17
+117.52.0.0/16
 121.254.128.0/17
-185.60.112.0/23
-185.60.114.0/23
+137.221.64.0/18
+158.115.192.0/19
+176.117.192.0/19
+182.162.0.0/16
+185.60.112.0/22
+198.74.32.0/21
 199.107.65.224/27
 199.108.32.0/20
 199.108.48.0/20
