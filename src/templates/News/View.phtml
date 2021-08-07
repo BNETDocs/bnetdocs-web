@@ -89,8 +89,8 @@ $comment_parent_type = Comment::PARENT_TYPE_NEWS_POST; $comment_parent_id = $obj
 require("./Comment/Section.inc.phtml");
 
 } else { ?>
-  <header class="red"><? echo filter_var($title, FILTER_SANITIZE_STRING); ?></header>
-  <section class="red"><? echo filter_var($description, FILTER_SANITIZE_STRING); ?></section>
+  <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_STRING)?></h1>
+  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_STRING)?></div></div>
 <? } ?>
 </div>
 <? require("./footer.inc.phtml"); ?>
