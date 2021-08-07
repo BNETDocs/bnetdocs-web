@@ -19,6 +19,7 @@ use \DateTime;
 use \DateTimeZone;
 use \InvalidArgumentException;
 use \OutOfBoundsException;
+use \UnexpectedValueException;
 
 class Edit extends Controller
 {
@@ -45,6 +46,7 @@ class Edit extends Controller
     try { if (!is_null($id)) $model->packet = new Packet($id); }
     catch (PacketNotFoundException $e) { $model->packet = null; }
     catch (InvalidArgumentException $e) { $model->packet = null; }
+    catch (UnexpectedValueException $e) { $model->packet = null; }
 
     if (is_null($model->packet))
     {
