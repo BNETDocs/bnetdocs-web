@@ -11,14 +11,13 @@
 # Please assist BNETDocs by extending this list when you discover staleness or
 # missing ranges, as well as by condensing any CIDRs where possible.
 #
-# ASN 57976: Blizzard Entertainment, Inc.
+# ASN 32163: BLIZZARD ENTERTAINMENT (ARIN)
+# ASN 55497: BLIZZARD-AP (APNIC)
+# ASN 57976: Blizzard Entertainment, Inc. (RIPE)
 2620:10b:9000::/44
 2a04:e800::/29
 5.42.160.0/19
-5.42.176.0/20
-12.41.72.0/28
-12.41.72.16/29
-12.41.72.128/25
+12.41.72.0/24
 12.129.196.224/29
 12.129.200.192/27
 12.129.201.0/24
@@ -58,6 +57,7 @@
 63.241.83.0/24
 63.241.86.0/24
 103.198.32.0/23
+103.4.114.0/23
 110.45.128.0/17
 117.52.0.0/16
 121.254.128.0/17
@@ -67,9 +67,11 @@
 182.162.0.0/16
 185.60.112.0/22
 198.74.32.0/21
+198.74.40.0/23
 199.107.65.224/27
 199.108.32.0/20
 199.108.48.0/20
+202.9.66.0/23
 206.16.234.0/23
 206.17.175.0/24
 216.39.107.112/29
