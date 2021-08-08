@@ -31,24 +31,45 @@ class Update extends Controller
       $model->_responseCode = 200;
 
       $conf = &Common::$config; // local variable for accessing config.
-      $data = $router->getRequestBodyArray();
+      $data = array_merge(
+        // Conflicting request query string fields will be overridden by POST-body fields
+        $router->getRequestQueryArray() ?? [], $router->getRequestBodyArray() ?? []
+      );
+
+      $id = $data['id'] ?? null;
+      if (!is_null($id) && strlen($id) > 0 && $model->active_user->getOption(User::OPTION_ACL_USER_MODIFY))
+      {
+        try
+        {
+          $model->user = new User($id);
+        }
+        catch (InvalidArgumentException $e)
+        {
+          $model->user = null;
+        }
+      }
+      if (!$model->user)
+      {
+        $id = $model->active_user->getId();
+        $model->user = $model->active_user;
+      }
 
       // init model
 
-      $model->username = $model->active_user->getUsername();
+      $model->username = $model->user->getUsername();
       $model->username_error = [null, null];
       $model->username_max_len = $conf->bnetdocs->user_register_requirements->username_length_max;
 
-      $model->email_1 = $model->active_user->getEmail();
+      $model->email_1 = $model->user->getEmail();
       $model->email_2 = '';
       $model->email_error = [null, null];
 
-      $model->display_name = $model->active_user->getDisplayName();
+      $model->display_name = $model->user->getDisplayName();
       $model->display_name_error = [null, null];
 
       try
       {
-        $model->profile = new UserProfile($model->active_user->getId());
+        $model->profile = new UserProfile($id);
       }
       catch (UserProfileNotFoundException $e)
       {
@@ -83,7 +104,7 @@ class Update extends Controller
         $profile->skype_username     = $model->skype_username;
         $profile->steam_id           = $model->steam_id;
         $profile->twitter_username   = $model->twitter_username;
-        $profile->user_id            = $model->active_user->getId();
+        $profile->user_id            = $model->user->getId();
         $profile->website            = $model->website;
 
         $model->profile = new UserProfile($profile);
@@ -113,7 +134,7 @@ class Update extends Controller
         $req = &Common::$config->bnetdocs->user_register_requirements;
 
         // username change request
-        if ($model->username !== $model->active_user->getUsername())
+        if ($model->username !== $model->user->getUsername())
         {
           $username_len = strlen($model->username);
           if (empty($model->username))
@@ -136,8 +157,8 @@ class Update extends Controller
             // initiate username change
             try
             {
-              $model->active_user->setUsername($model->username);
-              $model->active_user->commit();
+              $model->user->setUsername($model->username);
+              $model->user->commit();
               $model->username_error = ['success', 'CHANGE_SUCCESS'];
             }
             catch (Exception $e)
@@ -148,7 +169,7 @@ class Update extends Controller
         }
 
         // email change request
-        if ($model->email_1 !== $model->active_user->getEmail())
+        if ($model->email_1 !== $model->user->getEmail())
         {
           // email denylist check
           $email_not_allowed = false;
@@ -190,8 +211,8 @@ class Update extends Controller
             // initiate email change
             try
             {
-              $model->active_user->setEmail($model->email_2);
-              $model->active_user->commit();
+              $model->user->setEmail($model->email_2);
+              $model->user->commit();
               $model->email_error = ['success', 'CHANGE_SUCCESS'];
             }
             catch (Exception $e)
@@ -206,21 +227,21 @@ class Update extends Controller
         if (empty($display_name) && !is_null($display_name))
         {
           $display_name = null; // blank strings become typed null
-          $new_name = $model->active_user->getUsername();
+          $new_name = $model->user->getUsername();
         }
         else
         {
           $new_name = $display_name;
         }
         $display_name_diff = (
-          $model->active_user->getDisplayName() !== $display_name
+          $model->user->getDisplayName() !== $display_name
         );
         if ($display_name_diff)
         {
           try
           {
-            $model->active_user->setDisplayName($display_name);
-            $model->active_user->commit();
+            $model->user->setDisplayName($display_name);
+            $model->user->commit();
             $model->display_name_error = ['success', 'CHANGE_SUCCESS', $new_name];
           }
           catch (Exception $e)
@@ -420,7 +441,7 @@ class Update extends Controller
             'steam_id_error'           => $model->steam_id_error,
             'twitter_username_error'   => $model->twitter_username_error,
             'website_error'            => $model->website_error,
-            'user_id'                  => $model->active_user->getId(),
+            'user_id'                  => $model->user->getId(),
             'username'                 => $model->username,
             'email_1'                  => $model->email_1,
             'email_2'                  => $model->email_2,

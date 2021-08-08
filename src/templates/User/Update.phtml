@@ -110,7 +110,7 @@ switch ($this->getContext()->website_error[1] ?? null)
   case 'CHANGE_SUCCESS': $website_error = 'Your website url was updated.'; break;
   default: $website_error = 'Internal error: ' . $this->getContext()->website_error[1];
 }
-$avatar = ($this->getContext()->active_user ? $this->getContext()->active_user->getAvatarURI(512) : null);
+$avatar = ($this->getContext()->user ? $this->getContext()->user->getAvatarURI(512) : null);
 require('./header.inc.phtml'); ?>
 <div class="container">
 <? if ($this->getContext()->_responseCode == 401) { ?>
@@ -122,6 +122,10 @@ require('./header.inc.phtml'); ?>
 <? } else { ?>
   <h1><?=$title?></h1>
   <p><?=$description?></p>
+
+<? if ($this->getContext()->user->getId() !== $this->getContext()->active_user->getId()) { ?>
+  <div class="alert alert-danger"><p class="mb-0">You are changing the details for a different account than yours. Click <a href="<?=Common::relativeUrlToAbsolute('/user/update')?>">here</a> to change your account details.</p></div>
+<? } ?>
 
   <!-- This here notice below is for GDPR purposes -->
   <div class="alert alert-info"><p class="mb-0">Our <a href="<?=Common::relativeUrlToAbsolute('/privacy')?>">privacy notice</a> page clarifies your data rights. You agree to giving (or not giving) the info contained herein on this page.</p></div>

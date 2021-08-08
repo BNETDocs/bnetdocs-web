@@ -3,6 +3,8 @@ class Update extends \BNETDocs\Models\ActiveUser
 {
   const MAX_LEN = 255; // table design: varchar(255)
 
+  public $user;
+
   public $display_name_1;
   public $display_name_2;
   public $display_name_error;
