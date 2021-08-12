@@ -31,6 +31,7 @@ if ($user)
   $user_created_dt = $user->getCreatedDateTime();
   $user_est = $user->getCreatedEstimate();
   $user_name = filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $user_record_updated_dt = $user->getRecordUpdated();
   $user_verified_dt = $user->getVerifiedDateTime();
 }
 
@@ -102,9 +103,13 @@ require('./header.inc.phtml'); ?>
             <th scope="row" class="align-middle text-right">Date created</th>
             <td><time datetime="<?=$user_created_dt->format('c')?>"><?=$user_created_dt->format('D M j, Y')?></time></td>
           </tr>
-          <tr class="text-<?=($user->isVerified() ? 'info' : 'danger')?>">
+          <tr class="text-<?=($user->isVerified() ? 'success' : 'danger')?>">
             <th scope="row" class="align-middle text-right">Date verified</th>
             <td><?=($user->isVerified() ? '<time datetime="' . $user_verified_dt->format('c') . '">' . $user_verified_dt->format('D M j, Y') . '</time>' : '<em>(not verified)</em>')?></td>
+          </tr>
+          <tr class="text-info">
+            <th scope="row" class="align-middle text-right">Record last updated</th>
+            <td><time datetime="<?=$user_record_updated_dt->format('c')?>"><?=$user_record_updated_dt->format('D M j, Y')?></time></td>
           </tr>
 <? } ?>
           <tr class="text-muted"><th scope="row" class="align-middle text-right">Member for</th><td><?=$user_est?></td></tr>
