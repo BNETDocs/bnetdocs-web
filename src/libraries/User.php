@@ -233,6 +233,8 @@ class User implements IDatabaseObject, JsonSerializable
       ;'
     );
 
+    $this->setRecordUpdated(new DateTime('now', new DateTimeZone(self::TZ_SQL)));
+
     $created_datetime = $this->created_datetime->format(self::DATE_SQL);
     $record_updated = $this->record_updated->format(self::DATE_SQL);
 
