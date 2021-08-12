@@ -5,17 +5,11 @@ use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $active_user = $this->getContext()->active_user;
-$comments = $this->getContext()->comments;
 $contributions = $this->getContext()->contributions;
 $documents = $this->getContext()->documents;
 $news_posts = $this->getContext()->news_posts;
 $packets = $this->getContext()->packets;
 $servers = $this->getContext()->servers;
-$sum_comments = $this->getContext()->sum_comments;
-$sum_documents = $this->getContext()->sum_documents;
-$sum_news_posts = $this->getContext()->sum_news_posts;
-$sum_packets = $this->getContext()->sum_packets;
-$sum_servers = $this->getContext()->sum_servers;
 $user = $this->getContext()->user;
 $user_id = $this->getContext()->user_id;
 $user_profile = $this->getContext()->user_profile;
@@ -27,6 +21,13 @@ if ($user)
 {
   $this->opengraph->attach(new Pair('profile:username', $user->getName()));
   $this->opengraph->attach(new Pair('image', $user->getAvatarURI(null)));
+
+  $comments = $this->getContext()->comments;
+  $sum_comments = $this->getContext()->sum_comments;
+  $sum_documents = $this->getContext()->sum_documents;
+  $sum_news_posts = $this->getContext()->sum_news_posts;
+  $sum_packets = $this->getContext()->sum_packets;
+  $sum_servers = $this->getContext()->sum_servers;
 
   $user_created_dt = $user->getCreatedDateTime();
   $user_est = $user->getCreatedEstimate();

@@ -16,6 +16,8 @@ use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View as ViewLib;
 use \DateTime;
+use \InvalidArgumentException;
+use \UnexpectedValueException;
 
 class View extends Controller
 {
@@ -35,15 +37,10 @@ class View extends Controller
   protected function getUserInfo(UserViewModel &$model)
   {
     // Try to get the user
-    try
-    {
-      $model->user = new User($model->user_id);
-    }
-    catch (UserNotFoundException $e)
-    {
-      $model->user = null;
-      return;
-    }
+    try { $model->user = new User($model->user_id); }
+    catch (UserNotFoundException $e) { $model->user = null; return; }
+    catch (InvalidArgumentException $e) { $model->user = null; return; }
+    catch (UnexpectedValueException $e) { $model->user = null; return; }
 
     $model->user_profile = ($model->user ? $model->user->getUserProfile() : null);
 
