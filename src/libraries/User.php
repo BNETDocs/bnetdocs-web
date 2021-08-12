@@ -76,6 +76,7 @@ class User implements IDatabaseObject, JsonSerializable
   protected $options;
   protected $password_hash;
   protected $password_salt;
+  protected $record_updated;
   protected $timezone;
   protected $username;
   protected $verified_datetime;
@@ -122,6 +123,7 @@ class User implements IDatabaseObject, JsonSerializable
     $this->setCreatedDateTime(new DateTime('now'));
     $this->setId($id);
     $this->setOptions(self::DEFAULT_OPTION);
+    $this->setRecordUpdated(new DateTime('now'));
     $this->setTimezone(self::DEFAULT_TZ);
 
     if (is_null($id)) return;
@@ -140,6 +142,7 @@ class User implements IDatabaseObject, JsonSerializable
         `options_bitmask`,
         `password_hash`,
         `password_salt`,
+        `record_updated`,
         `timezone`,
         `username`,
         `verified_datetime`,
@@ -179,10 +182,11 @@ class User implements IDatabaseObject, JsonSerializable
     $this->setOptions($value->options_bitmask);
     $this->setPasswordHash($value->password_hash);
     $this->setPasswordSalt($value->password_salt);
+    $this->setRecordUpdated(new DateTime($value->record_updated, $tz));
     $this->setTimezone($value->timezone);
     $this->setUsername($value->username);
     $this->setVerifiedDateTime(
-      $value->verified_datetime ? new DateTime($value->verified_datetime) : null
+      $value->verified_datetime ? new DateTime($value->verified_datetime, $tz) : null
     );
     $this->setVerifierToken($value->verifier_token);
   }
@@ -206,12 +210,13 @@ class User implements IDatabaseObject, JsonSerializable
         `options_bitmask`,
         `password_hash`,
         `password_salt`,
+        `record_updated`,
         `timezone`,
         `username`,
         `verified_datetime`,
         `verifier_token`
       ) VALUES (
-        :c_dt, :d_name, :email, :id, :opts, :p_hash, :p_salt, :tz, :u_name, :v_dt, :v_t
+        :c_dt, :d_name, :email, :id, :opts, :p_hash, :p_salt, :rec_up_dt, :tz, :u_name, :v_dt, :v_t
       ) ON DUPLICATE KEY UPDATE
         `created_datetime` = :c_dt,
         `display_name` = :d_name,
@@ -220,6 +225,7 @@ class User implements IDatabaseObject, JsonSerializable
         `options_bitmask` = :opts,
         `password_hash` = :p_hash,
         `password_salt` = :p_salt,
+        `record_updated` = :rec_up_dt,
         `timezone` = :tz,
         `username` = :u_name,
         `verified_datetime` = :v_dt,
@@ -228,6 +234,7 @@ class User implements IDatabaseObject, JsonSerializable
     );
 
     $created_datetime = $this->created_datetime->format(self::DATE_SQL);
+    $record_updated = $this->record_updated->format(self::DATE_SQL);
 
     $verified_datetime = (
       is_null($this->verified_datetime) ? null : $this->verified_datetime->format(self::DATE_SQL)
@@ -240,6 +247,7 @@ class User implements IDatabaseObject, JsonSerializable
     $q->bindParam(':opts', $this->options, PDO::PARAM_INT);
     $q->bindParam(':p_hash', $this->password_hash, (is_null($this->password_hash) ? PDO::PARAM_NULL : PDO::PARAM_STR));
     $q->bindParam(':p_salt', $this->password_salt, (is_null($this->password_salt) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+    $q->bindParam(':rec_up_dt', $record_updated, PDO::PARAM_STR);
     $q->bindParam(':tz', $this->timezone, (is_null($this->timezone) ? PDO::PARAM_NULL : PDO::PARAM_STR));
     $q->bindParam(':u_name', $this->username, PDO::PARAM_STR);
     $q->bindParam(':v_dt', $verified_datetime, (is_null($verified_datetime) ? PDO::PARAM_NULL : PDO::PARAM_STR));
@@ -391,6 +399,7 @@ class User implements IDatabaseObject, JsonSerializable
           `options_bitmask`,
           `password_hash`,
           `password_salt`,
+          `record_updated`,
           `timezone`,
           `username`,
           `verified_datetime`,
@@ -494,6 +503,11 @@ class User implements IDatabaseObject, JsonSerializable
   public function getPasswordSalt()
   {
     return $this->password_salt;
+  }
+
+  public function getRecordUpdated()
+  {
+    return $this->record_updated;
   }
 
   public function getURI()
@@ -601,18 +615,6 @@ class User implements IDatabaseObject, JsonSerializable
 
   public function jsonSerialize()
   {
-    $created_datetime = $this->getCreatedDateTime();
-    if (!is_null($created_datetime)) $created_datetime = [
-      'iso'  => $created_datetime->format('r'),
-      'unix' => $created_datetime->getTimestamp(),
-    ];
-
-    $verified_datetime = $this->getVerifiedDateTime();
-    if (!is_null($verified_datetime)) $verified_datetime = [
-      'iso'  => $verified_datetime->format('r'),
-      'unix' => $verified_datetime->getTimestamp(),
-    ];
-
     return [
       'avatar_url' => $this->getAvatarURI(null),
       'id' => $this->getId(),
@@ -728,6 +730,11 @@ class User implements IDatabaseObject, JsonSerializable
     }
 
     $this->password_salt = $value;
+  }
+
+  public function setRecordUpdated(DateTime $value)
+  {
+    $this->record_updated = $value;
   }
 
   public function setTimezone(?string $value)
