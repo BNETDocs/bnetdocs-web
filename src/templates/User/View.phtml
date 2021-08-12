@@ -13,6 +13,7 @@ $servers = $this->getContext()->servers;
 $user = $this->getContext()->user;
 $user_id = $this->getContext()->user_id;
 $user_profile = $this->getContext()->user_profile;
+$user_verified = $user && $user->isVerified();
 $title = ($user ? $user->getName() : 'User Not Found');
 $description = ($user ? $user->getName() . '\'s user profile on BNETDocs' : 'The requested user does not exist or could not be found.');
 $url = ($user ? $user->getURI() : Common::relativeUrlToAbsolute('/user/' . rawurlencode($user_id)));
@@ -104,9 +105,9 @@ require('./header.inc.phtml'); ?>
             <th scope="row" class="align-middle text-right">Date created</th>
             <td><time datetime="<?=$user_created_dt->format('c')?>"><?=$user_created_dt->format('D M j, Y')?></time></td>
           </tr>
-          <tr class="text-<?=($user->isVerified() ? 'success' : 'danger')?>">
+          <tr class="text-<?=($user_verified && $user_verified_dt ? 'success' : 'danger')?>">
             <th scope="row" class="align-middle text-right">Date verified</th>
-            <td><?=($user->isVerified() ? '<time datetime="' . $user_verified_dt->format('c') . '">' . $user_verified_dt->format('D M j, Y') . '</time>' : '<em>(not verified)</em>')?></td>
+            <td><?=($user_verified && $user_verified_dt ? '<time datetime="' . $user_verified_dt->format('c') . '">' . $user_verified_dt->format('D M j, Y') . '</time>' : '<em>(not verified)</em>')?></td>
           </tr>
           <tr class="text-info">
             <th scope="row" class="align-middle text-right">Record last updated</th>
