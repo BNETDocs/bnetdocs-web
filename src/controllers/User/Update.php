@@ -114,12 +114,11 @@ class Update extends Controller
       if ($router->getRequestMethod() == 'POST')
       {
         // replace model values with form input
-        $model->username = $data['username'] ?? null;
-        $model->email_1 = $data['email_1'] ?? null;
-        $model->email_2 = $data['email_2'] ?? null;
-        $model->display_name = $data['display_name'] ?? null;
         $model->biography = $data['biography'] ?? null;
         $model->discord_username = $data['discord_username'] ?? null;
+        $model->display_name = $data['display_name'] ?? null;
+        $model->email_1 = $data['email_1'] ?? null;
+        $model->email_2 = $data['email_2'] ?? null;
         $model->facebook_username = $data['facebook_username'] ?? null;
         $model->github_username = $data['github_username'] ?? null;
         $model->instagram_username = $data['instagram_username'] ?? null;
@@ -128,9 +127,27 @@ class Update extends Controller
         $model->skype_username = $data['skype_username'] ?? null;
         $model->steam_id = $data['steam_id'] ?? null;
         $model->twitter_username = $data['twitter_username'] ?? null;
+        $model->username = $data['username'] ?? null;
         $model->website = $data['website'] ?? null;
 
-        // process input
+        // convert empty strings to null
+        if (empty($model->biography)) $model->biography = null;
+        if (empty($model->discord_username)) $model->discord_username = null;
+        if (empty($model->display_name)) $model->display_name = null;
+        if (empty($model->email_1)) $model->email_1 = null;
+        if (empty($model->email_2)) $model->email_2 = null;
+        if (empty($model->facebook_username)) $model->facebook_username = null;
+        if (empty($model->github_username)) $model->github_username = null;
+        if (empty($model->instagram_username)) $model->instagram_username = null;
+        if (empty($model->phone)) $model->phone = null;
+        if (empty($model->reddit_username)) $model->reddit_username = null;
+        if (empty($model->skype_username)) $model->skype_username = null;
+        if (empty($model->steam_id)) $model->steam_id = null;
+        if (empty($model->twitter_username)) $model->twitter_username = null;
+        if (empty($model->username)) $model->username = null;
+        if (empty($model->website)) $model->website = null;
+
+        // get user account restrictions
         $req = &Common::$config->bnetdocs->user_register_requirements;
 
         // username change request
