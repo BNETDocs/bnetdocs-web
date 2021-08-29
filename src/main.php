@@ -189,6 +189,9 @@ function main() {
     $router->addRoute( // URL: /packet/index
       "#^/packet/index/?$#", "Packet\\Index", "Packet\\IndexHtml"
     );
+    $router->addRoute( // URL: /phpinfo
+      '#^/phpinfo/?$#', 'PhpInfo', 'PhpInfoHtml'
+    );
     $router->addRoute( // URL: /privacy
       '#^/privacy/?$#', 'PrivacyNotice', 'PrivacyNoticeHtml'
     );

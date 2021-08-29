@@ -1,0 +1,36 @@
+<?php /* vim: set colorcolumn=0: */
+namespace BNETDocs\Templates;
+use \BNETDocs\Libraries\User;
+use \CarlBennett\MVC\Libraries\Common;
+$title = 'Php Info';
+$active_user = $this->getContext()->active_user;
+$phpinfo = $this->getContext()->phpinfo;
+
+// do replacements from raw phpinfo() buffer
+$phpinfo = preg_replace('#^\<\!DOCTYPE.*\n#', '', $phpinfo);
+$phpinfo = preg_replace('#^\<html.*\n#', '', $phpinfo);
+$phpinfo = preg_replace('#\<style.*\</style\>\n#ms', '', $phpinfo);
+$phpinfo = preg_replace('#\</head\>#', '', $phpinfo);
+$phpinfo = preg_replace('#\<body\>#', '', $phpinfo);
+$phpinfo = preg_replace('#\<title\>.+\</title\>#', '', $phpinfo);
+$phpinfo = preg_replace('#\<table\>#', '<table class="table table-striped">', $phpinfo);
+$phpinfo = preg_replace('#style=\'background-color: white; text-align: center\'\>\<a style=\'color: \#317E1E; background-color: transparent; font-weight: bold; text-decoration: underline\'#', 'class="table-info"><a', $phpinfo);
+$phpinfo = preg_replace('#\<i\>no value\</i\>#', '<em class="text-muted">no value</em>', $phpinfo);
+$phpinfo = preg_replace('#\</body\>#', '', $phpinfo);
+$phpinfo = preg_replace('#\</html\>#', '', $phpinfo);
+
+require('./header.inc.phtml');
+
+if (!($active_user && $active_user->getOption(User::OPTION_ACL_PHPINFO)))
+{
+  echo '<div class="container">';
+  require('./LoginRequired.inc.phtml');
+}
+else
+{
+  echo '<div class="container-fluid">';
+  echo $phpinfo;
+}
+
+echo '</div>';
+require('./footer.inc.phtml');

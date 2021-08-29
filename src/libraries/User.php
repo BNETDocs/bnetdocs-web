@@ -64,6 +64,7 @@ class User implements IDatabaseObject, JsonSerializable
   const OPTION_ACL_USER_CREATE      = 0x00100000;
   const OPTION_ACL_USER_MODIFY      = 0x00200000;
   const OPTION_ACL_USER_DELETE      = 0x00400000;
+  const OPTION_ACL_PHPINFO          = 0x00800000;
 
   const TZ_SQL = 'Etc/UTC'; // database values are stored in this TZ
 

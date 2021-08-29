@@ -68,9 +68,13 @@ $_header_nav = [
     ['label' => 'Create Packet', 'url' => '/packet/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_PACKET_CREATE],
     ['label' => '', 'recent_packets' => true],
   ]],
-  ['label' => 'Admin', 'acl' => User::OPTION_ACL_SERVER_CREATE | User::OPTION_ACL_EVENT_LOG_VIEW, 'class' => 'text-danger', 'dropdown' => [
+  ['label' => 'Admin', 'acl' => (
+      User::OPTION_ACL_SERVER_CREATE | User::OPTION_ACL_EVENT_LOG_VIEW | User::OPTION_ACL_PHPINFO
+    ), 'class' => 'text-danger', 'dropdown' => [
     ['label' => 'Create Server', 'url' => '/server/create', 'class' => 'text-success', 'acl' => User::OPTION_ACL_SERVER_CREATE],
     ['label' => 'Event Logs', 'url' => '/eventlog/index', 'acl' => User::OPTION_ACL_EVENT_LOG_VIEW],
+    ['label' => '-', 'acl' => (User::OPTION_ACL_EVENT_LOG_VIEW | User::OPTION_ACL_PHPINFO)],
+    ['label' => 'Php Info', 'url' => '/phpinfo', 'acl' => User::OPTION_ACL_PHPINFO],
   ]],
 ];
 function _header_nav_html($nav)
