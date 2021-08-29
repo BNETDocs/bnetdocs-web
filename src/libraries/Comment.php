@@ -194,6 +194,7 @@ class Comment implements JsonSerializable {
       return $this->content;
     }
     $md = new Parsedown();
+    $md->setBreaksEnabled(true);
     $md->setSafeMode(true); // unsafe user-input
     return $md->text($this->content);
   }

@@ -405,6 +405,7 @@ class Packet implements IDatabaseObject, JsonSerializable
     }
 
     $md = new Parsedown();
+    $md->setBreaksEnabled(true);
     return $md->text($this->brief);
   }
 
@@ -514,6 +515,7 @@ class Packet implements IDatabaseObject, JsonSerializable
     }
 
     $md = new Parsedown();
+    $md->setBreaksEnabled(true);
     return $md->text($this->remarks);
   }
 

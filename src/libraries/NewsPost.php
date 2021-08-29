@@ -239,6 +239,7 @@ class NewsPost {
     }
     if ($this->options_bitmask & self::OPTION_MARKDOWN) {
       $md = new Parsedown();
+      $md->setBreaksEnabled(true);
       return $md->text($this->content);
     } else {
       return filter_var($this->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
