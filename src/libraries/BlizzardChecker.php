@@ -40,7 +40,7 @@ class BlizzardChecker
           'referer'    => getenv('HTTP_REFERER'),
           'uri'        => Common::relativeUrlToAbsolute(getenv('REQUEST_URI')),
           'user_agent' => getenv('HTTP_USER_AGENT'),
-          'version'    => VersionInfo::get(),
+          'version'    => VersionInfo::$version,
         ])
       );
     }

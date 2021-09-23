@@ -29,8 +29,8 @@ $_header_user = Authentication::$user;
 $_unique_asset = (
   !Common::$config->bnetdocs->asset_versioning ? '' :
   (
-    !is_null(VersionInfo::$version->bnetdocs) ?
-    '?v=' . VersionInfo::$version->bnetdocs[1] :
+    !is_null(VersionInfo::$version['bnetdocs']) ?
+    '?v=' . VersionInfo::$version['bnetdocs'][1] :
     '?v=' . date('YmdHis')
   )
 );
