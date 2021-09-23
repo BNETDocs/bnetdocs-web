@@ -35,6 +35,9 @@ require('./header.inc.phtml'); ?>
     </div>
     <div class="form-group">
       <table class="table table-borderless table-sm d-inline-block"><thead><tr><th colspan="3" class="text-center">Packet Types</th></tr></thead><tbody>
+        <td colspan="3" class="text-center">
+          <div class="custom-control custom-checkbox d-inline-block"><input class="custom-control-input" type="checkbox" id="pktapplayer_all"><label class="custom-control-label" for="pktapplayer_all">All</label></div>
+        </td>
 <?    $x = 0;
       foreach ($this->getContext()->application_layers as $layer)
       {
@@ -118,6 +121,38 @@ require('./header.inc.phtml'); ?>
         'language': {'zeroRecords': 'No matching packets found'},
         'pageLength': 50,
         'responsive': false,
+      });
+
+      $('#pktapplayer_all').change(function(){
+          if (this.checked) {
+              $('input[name="pktapplayer[]"]').each(function(){
+                  this.checked=true;
+              });
+          } else {
+              $('input[name="pktapplayer[]"]').each(function(){
+                  this.checked=false;
+              });
+          }
+      });
+
+      $('input[name="pktapplayer[]"]').click(function(){
+          if ($(this).is(':checked')) {
+            var isAllChecked = 1;
+
+            $('input[name="pktapplayer[]"]').each(function(){
+              if (!this.checked)
+                isAllChecked = 0;
+            });
+
+            if (isAllChecked == 1) {
+              $('#pktapplayer_all').prop('indeterminate', false);
+              $('#pktapplayer_all').prop('checked', true);
+              return;
+            }
+          }
+
+          $('#pktapplayer_all').prop('checked', false);
+          $('#pktapplayer_all').prop('indeterminate', true);
       });
     });
   </script>
