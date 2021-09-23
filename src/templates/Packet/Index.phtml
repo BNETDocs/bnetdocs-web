@@ -135,25 +135,31 @@ require('./header.inc.phtml'); ?>
           }
       });
 
-      $('input[name="pktapplayer[]"]').click(function(){
-          if ($(this).is(':checked')) {
-            var isAllChecked = 1;
+      var sync_pktapplayer_all = function(){
+          var isAllChecked = 1;
+          var isAllNotChecked = 1;
 
-            $('input[name="pktapplayer[]"]').each(function(){
-              if (!this.checked)
-                isAllChecked = 0;
-            });
+          $('input[name="pktapplayer[]"]').each(function(){
+            if (!this.checked)
+              isAllChecked = 0;
+            if (this.checked)
+              isAllNotChecked = 0;
+          });
 
-            if (isAllChecked == 1) {
-              $('#pktapplayer_all').prop('indeterminate', false);
-              $('#pktapplayer_all').prop('checked', true);
-              return;
-            }
+          if (isAllChecked == 1) {
+            $('#pktapplayer_all').prop('indeterminate', false);
+            $('#pktapplayer_all').prop('checked', true);
+          } else if (isAllNotChecked == 1) {
+            $('#pktapplayer_all').prop('indeterminate', false);
+            $('#pktapplayer_all').prop('checked', false);
+          } else {
+            $('#pktapplayer_all').prop('checked', false);
+            $('#pktapplayer_all').prop('indeterminate', true);
           }
+      };
 
-          $('#pktapplayer_all').prop('checked', false);
-          $('#pktapplayer_all').prop('indeterminate', true);
-      });
+      sync_pktapplayer_all();
+      $('input[name="pktapplayer[]"]').click(sync_pktapplayer_all);
     });
   </script>
 <? $_footer_script = ob_get_clean(); require('./footer.inc.phtml'); ?>
