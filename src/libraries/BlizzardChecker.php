@@ -9,6 +9,12 @@ use \CarlBennett\MVC\Libraries\IP;
 
 class BlizzardChecker
 {
+  const StatusUnknown = 0;
+  const StatusNotBlizzard = 1;
+  const StatusBlizzard = 2;
+
+  private static int $status = self::StatusUnknown;
+
   /**
    * Block instantiation of this object.
    */
@@ -21,7 +27,19 @@ class BlizzardChecker
     $CIDRs = preg_replace("/^#.*?\n/sm", '', $CIDRs);
     $CIDRs = Common::stripLinesWith($CIDRs, "\n");
     $CIDRs = explode("\n", $CIDRs);
-    return IP::checkCIDRArray($IP, $CIDRs);
+    self::$status = (
+      IP::checkCIDRArray($IP, $CIDRs) ?
+      self::StatusBlizzard : self::StatusNotBlizzard
+    );
+    return (self::$status === self::StatusBlizzard);
+  }
+
+  public static function isBlizzard()
+  {
+    if (self::$status === self::StatusUnknown)
+      return self::checkIfBlizzard();
+    else
+      return (self::$status === self::StatusBlizzard);
   }
 
   public static function logIfBlizzard()
@@ -29,7 +47,7 @@ class BlizzardChecker
     $user_id = (
       isset(Authentication::$user) ? Authentication::$user->getId() : null
     );
-    if (self::checkIfBlizzard())
+    if (self::isBlizzard())
     {
       Logger::logEvent(
         EventTypes::BLIZZARD_VISIT,
