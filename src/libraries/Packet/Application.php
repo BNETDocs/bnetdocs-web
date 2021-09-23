@@ -10,12 +10,12 @@ class Application extends Layer {
   protected static $table = array(
     1 => array('Battle.net v1 TCP Messages', 'SID'),
     2 => array('Battle.net v1 UDP Messages', 'PKT'),
-    3 => array('Realm Messages', 'MCP'),
-    4 => array('D2GS Messages', 'D2GS'),
-    5 => array('W3GS Messages', 'W3GS'),
+    3 => array('Diablo II Realm Messages', 'MCP'),
+    4 => array('Diablo II In-Game Messages', 'D2GS'),
+    5 => array('Warcraft III In-Game Messages', 'W3GS'),
     6 => array('BotNet Messages', 'PACKET'),
     7 => array('BNLS Messages', 'BNLS'),
-    8 => array('SCGP Messages', 'SCGP'),
+    8 => array('Starcraft In-Game Messages', 'SCGP'),
     9 => array('Battle.net v2 TCP Messages', 'SID2'),
   );
 
