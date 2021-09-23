@@ -38,7 +38,7 @@ class BlizzardChecker
         json_encode([
           'method'     => getenv('REQUEST_METHOD'),
           'referer'    => getenv('HTTP_REFERER'),
-          'uri'        => getenv('REQUEST_URI'),
+          'uri'        => Common::relativeUrlToAbsolute(getenv('REQUEST_URI')),
           'user_agent' => getenv('HTTP_USER_AGENT'),
           'version'    => VersionInfo::get(),
         ])
