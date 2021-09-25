@@ -320,30 +320,23 @@ class User implements IDatabaseObject, JsonSerializable
 
   public static function findIdByEmail(string $email)
   {
-    if (!isset(Common::$database))
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL))
     {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+      throw new UnexpectedValueException('email is not a valid email address');
     }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT `id`
-        FROM `users`
-        WHERE `email` = :email
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":email", $email, PDO::PARAM_STR);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot query user id by email");
-      } else if ($stmt->rowCount() == 0) {
-        throw new UserNotFoundException($email);
-      }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      return (int) $row->id;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot query user id by email", $e);
-    }
-    return null;
+
+    if (!isset(Common::$database)) Common::$database = DatabaseDriver::getDatabaseObject();
+
+    $q = Common::$database->prepare(
+      'SELECT `id` FROM `users` WHERE `email` = :email LIMIT 1;'
+    );
+    $q->bindParam(':email', $email, PDO::PARAM_STR);
+
+    if (!$q->execute()) return false;
+    if ($q->rowCount() == 0) throw new UserNotFoundException($email);
+
+    $r = $q->fetch(PDO::FETCH_NUM);
+    return (int) $r[0];
   }
 
   public static function findIdByUsername(string $username)
