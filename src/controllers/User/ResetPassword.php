@@ -16,6 +16,7 @@ use \Exception;
 use \InvalidArgumentException;
 use \PHPMailer\PHPMailer\PHPMailer;
 use \StdClass;
+use \UnexpectedValueException;
 
 class ResetPassword extends Controller
 {
@@ -70,7 +71,7 @@ class ResetPassword extends Controller
     {
       $model->user = null;
     }
-    catch (InvalidArgumentException $e)
+    catch (UnexpectedValueException $e)
     {
       return ResetPasswordModel::E_BAD_EMAIL;
     }
