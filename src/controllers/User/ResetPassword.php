@@ -198,7 +198,6 @@ class ResetPassword extends Controller
       $mail->AltBody = ob_get_clean();
 
       $mail->send();
-      $model->error = false;
 
       Logger::logEvent(
         EventTypes::EMAIL_SENT,
@@ -217,7 +216,7 @@ class ResetPassword extends Controller
     }
     catch (Exception $e)
     {
-      $model->error = ResetPasswordModel::E_INTERNAL_ERROR;
+      return ResetPasswordModel::E_INTERNAL_ERROR;
     }
 
     return ResetPasswordModel::E_SUCCESS;
