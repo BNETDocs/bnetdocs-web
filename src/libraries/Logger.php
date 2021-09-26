@@ -106,6 +106,10 @@ class Logger extends LoggerMVCLib {
           {
             $v .= '...';
           }
+          if (strlen($value) == 0)
+          {
+            $v = '*(empty)*';
+          }
           $field = new DiscordEmbedField(
             $key, $v, (strlen($v) < DiscordEmbedField::MAX_VALUE / 4)
           );
