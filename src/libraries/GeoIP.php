@@ -5,6 +5,7 @@ use \CarlBennett\MVC\Libraries\Common;
 use \GeoIp2\Database\Reader;
 use \GeoIp2\Exception\AddressNotFoundException;
 use \MaxMind\Db\InvalidDatabaseException;
+use \UnexpectedValueException;
 
 class GeoIP
 {
