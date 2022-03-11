@@ -36,6 +36,7 @@ class SlackCheck
     ];
 
     $ignored_fingerprint = [
+      'ACCEPT_ENCODING',
       'CDN_LOOP',
       'CF_CONNECTING_IP',
       'CF_IPCOUNTRY',
