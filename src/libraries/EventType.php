@@ -105,6 +105,8 @@ class EventType {
         return 'Server Edited';
       case EventTypes::SERVER_DELETED:
         return 'Server Deleted';
+      case EventTypes::SLACK_UNFURL:
+        return 'Slack Unfurl';
       default:
         throw UnexpectedValueException();
     }

@@ -45,4 +45,5 @@ class EventTypes
   const SERVER_CREATED = 40;
   const SERVER_EDITED = 41;
   const SERVER_DELETED = 42;
+  const SLACK_UNFURL = 43;
 }

@@ -1,7 +1,9 @@
 <?php
 namespace BNETDocs\Controllers;
 
+use \BNETDocs\Libraries\BlizzardCheck;
 use \BNETDocs\Libraries\GeoIP;
+use \BNETDocs\Libraries\SlackCheck;
 use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Status as StatusModel;
 use \CarlBennett\MVC\Libraries\Common;
@@ -52,6 +54,8 @@ class Status extends Controller
       'healthcheck' => [
         'database' => (Common::$database instanceof Database),
       ],
+      'is_blizzard' => BlizzardCheck::is_blizzard(),
+      'is_slack' => SlackCheck::is_slack(),
       'remote_address' => $remote_address,
       'remote_geoinfo' => GeoIP::getRecord($remote_address),
       'remote_is_browser' => Common::isBrowser($ua),

@@ -1,7 +1,7 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\BlizzardChecker;
+use \BNETDocs\Libraries\BlizzardCheck;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsPost;
@@ -266,4 +266,4 @@ $_campaign_vultr = (
 
 <?=_header_nav_html($_header_nav)?>
 <main class="mb-3">
-<?=(BlizzardChecker::isBlizzard() && !empty(Common::$config->bnetdocs->blizzard_greeting_html) ? sprintf('<div class="container mb-3"><div class="alert alert-info">%s</div></div>', Common::$config->bnetdocs->blizzard_greeting_html) : '')?>
+<?=(BlizzardCheck::is_blizzard() && !empty(Common::$config->bnetdocs->blizzard_greeting_html) ? sprintf('<div class="container mb-3"><div class="alert alert-info">%s</div></div>', Common::$config->bnetdocs->blizzard_greeting_html) : '')?>

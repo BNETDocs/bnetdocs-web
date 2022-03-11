@@ -21,8 +21,9 @@
 namespace BNETDocs;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\BlizzardChecker;
+use \BNETDocs\Libraries\BlizzardCheck;
 use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\SlackCheck;
 use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
@@ -65,7 +66,8 @@ function main() {
 
   Authentication::verify();
 
-  BlizzardChecker::logIfBlizzard();
+  BlizzardCheck::log_blizzard_request();
+  SlackCheck::log_slack_request();
 
   $router = new Router(
     "BNETDocs\\Controllers\\",
