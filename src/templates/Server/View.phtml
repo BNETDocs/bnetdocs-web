@@ -40,15 +40,12 @@ else
     $server_user_string = sprintf('<a href="%s"><img class="mr-2 rounded" src="%s"/>%s</a>', $server_user_url, $server_user_avatar, $server_user_name);
   }
 
-  $server_status_bitmask = $server->getStatusBitmask();
-  $server_status = (
-    ($server_status_bitmask & Server::STATUS_ONLINE) ?
-    '<span class="text-success">Online</span>' :
-    '<span class="text-danger">Offline</span>'
-  ) . (
-    ($server_status_bitmask & Server::STATUS_DISABLED) ?
-    ', <span class="text-danger">Disabled</span>' : ''
-  );
+  $server_online = $server->isOnline();
+  $server_status = sprintf('<span class="text-%s">%s</span>', ($server_online ? 'success' : 'danger'), ($server_online ? 'Online' : 'Offline'));
+  if ($server->isDisabled())
+  {
+    $server_status .= ', <span class="text-warning">Disabled</span>';
+  }
 }
 $this->opengraph->attach(new Pair('type', 'article'));
 $this->opengraph->attach(new Pair('url', $url));
@@ -70,7 +67,7 @@ require('./header.inc.phtml'); ?>
     <tr><th class="text-right">Address</th><td onclick="bnetdocs.fSelectText(this);"><code><?=$server_address?></td></tr>
     <tr><th class="text-right">Owner</th><td><?=$server_user_string?></td></tr>
     <tr><th class="text-right">Type</th><td><?=$server_type_label?></td></tr>
-    <tr><th class="text-right">Current Status</th><td><?=$server_status?></td></tr>
+    <tr><th class="text-right">Current Status</th><td class="font-weight-bold"><?=$server_status?></td></tr>
   </tbody></table>
 <? } ?>
 </div>

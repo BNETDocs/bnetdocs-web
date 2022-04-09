@@ -23,7 +23,7 @@ require('./header.inc.phtml'); ?>
     <ul>
       <li><span class="text-success">Online</span>: The port is open.</li>
       <li><span class="text-danger">Offline</span>: The port is closed.</li>
-      <li><span class="text-danger">Disabled</span>: The server is not actively checked.</li>
+      <li><span class="text-warning">Disabled</span>: The server is not actively checked.</li>
     </ul>
     <p>We have a total of <strong><?=number_format(count($this->context->servers))?> servers</strong> that we monitor. <a href="<?=Common::relativeUrlToAbsolute('/servers.json')?>">Click here</a> to see this list in JSON format.</p>
   </div></div>
@@ -37,17 +37,9 @@ require('./header.inc.phtml'); ?>
         printf('<tr><th scope="row" colspan="4">%s</th></tr>', $server_type_label);
         foreach ($servers as $server)
         {
-          $server_label = filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-          $status_bitmask = $server->getStatusBitmask();
-          if ($status_bitmask & Server::STATUS_ONLINE) {
-            $status_subclass = 'success'; $status = 'Online';
-          } else if ($status_bitmask & Server::STATUS_DISABLED) {
-            $status_subclass = 'danger'; $status = 'Disabled';
-          } else {
-            $status_subclass = 'danger'; $status = 'Offline';
-          } ?>
+          $server_label = filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>
         <tr>
-          <td class="text-center text-<?=$status_subclass?>"><?=$status?></td>
+          <td class="font-weight-bold text-center"><span class="text-<?=($server->isOnline() ? 'success' : 'danger')?>"><?=($server->isOnline() ? 'Online' : 'Offline')?></span><?=($server->isDisabled() ? ', <span class="text-warning">Disabled</span>' : '')?></td>
           <td><?=($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server_label : '&nbsp;')?></td>
           <td><code><?=$server->getAddress()?>:<?=$server->getPort()?></code></td>
           <td><a class="btn btn-sm btn-primary" href="<?=$server->getURI()?>" title="View Server Details for <?=$server_label?>">🔎</a></td>
