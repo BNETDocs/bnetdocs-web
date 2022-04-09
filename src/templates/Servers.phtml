@@ -37,9 +37,21 @@ require('./header.inc.phtml'); ?>
         printf('<tr><th scope="row" colspan="4">%s</th></tr>', $server_type_label);
         foreach ($servers as $server)
         {
-          $server_label = filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>
+          $server_label = filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+          $server_online = $server->isOnline();
+          if ($server->isDisabled())
+          {
+            $server_status = '<span class="text-warning">Disabled</span>';
+          }
+          else
+          {
+            $server_status = sprintf('<span class="text-%s">%s</span>',
+              ($server_online ? 'success' : 'danger'), ($server_online ? 'Online' : 'Offline')
+            );
+          }
+?>
         <tr>
-          <td class="font-weight-bold text-center"><span class="text-<?=($server->isOnline() ? 'success' : 'danger')?>"><?=($server->isOnline() ? 'Online' : 'Offline')?></span><?=($server->isDisabled() ? ', <span class="text-warning">Disabled</span>' : '')?></td>
+          <td class="font-weight-bold text-center"><?=$server_status?></td>
           <td><?=($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server_label : '&nbsp;')?></td>
           <td><code><?=$server->getAddress()?>:<?=$server->getPort()?></code></td>
           <td><a class="btn btn-sm btn-primary" href="<?=$server->getURI()?>" title="View Server Details for <?=$server_label?>">🔎</a></td>
