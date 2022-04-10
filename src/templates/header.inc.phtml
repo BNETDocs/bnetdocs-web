@@ -78,7 +78,7 @@ $_header_nav = [
     ['label' => 'Php Info', 'url' => '/phpinfo', 'acl' => User::OPTION_ACL_PHPINFO],
   ]],
 ];
-function _header_nav_html($nav)
+function _header_nav_html($nav, $unique_asset)
 {
   function _line(string $format) { call_user_func_array('printf', func_get_args()); echo PHP_EOL; }
 
@@ -87,7 +87,7 @@ function _header_nav_html($nav)
 
   // Brand
   _line('<a class="navbar-brand" style="color:#00ccad;" href="%s"><img class="float-left mr-2" src="%s" style="height:32px;" /> %s</a>',
-    Common::$config->bnetdocs->navigation->front_page, '/a/VSZX0bJ.png', 'BNETDocs'
+    Common::$config->bnetdocs->navigation->front_page, '/a/VSZX0bJ.png' . $unique_asset ?? '', 'BNETDocs'
   );
 
   // Collapsible Hamburger Menu (Start)
@@ -212,7 +212,7 @@ $_campaign_vultr = (
   '<a href="' . Common::relativeUrlToAbsolute(
     Common::$config->bnetdocs->campaigns->vultr
   ) . '"><img id="vultr-campaign" src="' . Common::relativeUrlToAbsolute(
-    '/a/vultr_logo_ondark.svg' . $_unique_asset
+    '/a/vultr_logo_ondark.svg' . $_unique_asset ?? ''
   ) . '"/></a>'  : ''
 );*/
 ?><!DOCTYPE html>
@@ -225,15 +225,15 @@ $_campaign_vultr = (
     <link rel="canonical" href="<?=$url?>"/>
 <?  } ?>
 <?=Logger::getTimingHeader()?>
-    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/bootstrap-4.4.1-slate.min.css')?>" integrity="sha384-tfnMnZ6k273p3mDqSKikc9aXSvumltGq76Tbo+VMydpXeD5EDZwbQWo7nbZz+wc9" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/datatables.min.css' . $_unique_asset)?>" type="text/css" media="all"/>
-    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/highlight/styles/vs2015.min.css' . $_unique_asset)?>" type="text/css" media="all"/>
-    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/footer.css' . $_unique_asset)?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/bootstrap-4.4.1-slate.min.css' . $_unique_asset ?? '')?>" integrity="sha384-tfnMnZ6k273p3mDqSKikc9aXSvumltGq76Tbo+VMydpXeD5EDZwbQWo7nbZz+wc9" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/datatables.min.css' . $_unique_asset ?? '')?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/highlight/styles/vs2015.min.css' . $_unique_asset ?? '')?>" type="text/css" media="all"/>
+    <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/footer.css' . $_unique_asset ?? '')?>" type="text/css" media="all"/>
 <?  foreach ($this->additional_css as $css_path) {
-      echo '<link rel="stylesheet" type="text/css" href="' . Common::relativeUrlToAbsolute($css_path . $_unique_asset) . '" media="all"/>' . PHP_EOL;
+      echo '<link rel="stylesheet" type="text/css" href="' . Common::relativeUrlToAbsolute($css_path . $_unique_asset ?? '') . '" media="all"/>' . PHP_EOL;
     } ?>
-    <link rel="icon" href="<?=Common::relativeUrlToAbsolute('/a/VSZX0bJ.png')?>" type="image/png" sizes="156x174"/>
-    <script type="text/javascript" src="<?=Common::relativeUrlToAbsolute('/a/BNETDocs.js' . $_unique_asset)?>" async><![CDATA[]]></script>
+    <link rel="icon" href="<?=Common::relativeUrlToAbsolute('/a/VSZX0bJ.png' . $_unique_asset ?? '')?>" type="image/png" sizes="156x174"/>
+    <script type="text/javascript" src="<?=Common::relativeUrlToAbsolute('/a/BNETDocs.js' . $_unique_asset ?? '')?>" async><![CDATA[]]></script>
     <link rel="alternate" href="<?=Common::relativeUrlToAbsolute('/news.rss')?>" type="application/rss+xml" title="BNETDocs News"/>
     <link rel="license" href="<?=Common::relativeUrlToAbsolute('/legal')?>"/>
     <meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding"/>
@@ -264,6 +264,6 @@ $_campaign_vultr = (
   </head>
   <body class="d-flex flex-column h-100">
 
-<?=_header_nav_html($_header_nav)?>
+<?=_header_nav_html($_header_nav, $_unique_asset)?>
 <main class="mb-3">
 <?=(BlizzardCheck::is_blizzard() && !empty(Common::$config->bnetdocs->blizzard_greeting_html) ? sprintf('<div class="container mb-3"><div class="alert alert-info">%s</div></div>', Common::$config->bnetdocs->blizzard_greeting_html) : '')?>
