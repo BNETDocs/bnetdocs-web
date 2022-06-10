@@ -34,11 +34,13 @@ if (!$object instanceof Event)
   $description = 'The event you tried to access could not be found.';
 }
 
-$tpl_user = (
-  is_null($object_user) ? '<em>(null)</em>' :
-  '<a href="' . $object_user->getURI() . '"><img class="mr-2" src="' .
-  $object_user->getAvatarURI(22) . '"/>' .
-  filter_var($object_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+$tpl_user = sprintf('(<code>Id:%d</code>) ', $object_user_id) . (
+  is_null($object_user) ? '<em>(null)</em>' : sprintf(
+    '<a href="%s"><img class="mr-2" src="%s"/>%s</a>',
+    $object_user->getURI(),
+    $object_user->getAvatarURI(22),
+    filter_var($object_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+  )
 );
 
 $tpl_metadata_j = @json_decode($object_metadata);
