@@ -1,6 +1,6 @@
 /**
  *  BNETDocs, the documentation and discussion website for Blizzard protocols
- *  Copyright (C) 2003-2021 "Arta", Don Cullen "Kyro", Carl Bennett, others
+ *  Copyright (C) 2003-2022 "Arta", Don Cullen "Kyro", Carl Bennett, others
  *  This file is part of BNETDocs.
  *
  *  BNETDocs is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ function BNETDocs() {
 
   var self = this;
 
-  this.dateToString = function(date) {    
+  this.dateToString = function(date) {
     let options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', time: 'long' };
     return date.toLocaleTimeString(undefined, options);
   };

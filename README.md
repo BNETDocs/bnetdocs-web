@@ -27,7 +27,7 @@ This project is licensed under the AGPLv3. A copy of the GNU Affero General
 Public License can be found [here](/LICENSE.txt).
 
     BNETDocs, the documentation and discussion website for Blizzard protocols
-    Copyright (C) 2003-2021  "Arta", Don Cullen "Kyro", Carl Bennett, others
+    Copyright (C) 2003-2022  "Arta", Don Cullen "Kyro", Carl Bennett, others
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
