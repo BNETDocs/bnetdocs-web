@@ -5,6 +5,7 @@ namespace BNETDocs\Libraries;
 use \BNETDocs\Libraries\EventType;
 use \BNETDocs\Libraries\Exceptions\EventNotFoundException;
 use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
@@ -14,6 +15,7 @@ use \InvalidArgumentException;
 use \PDO;
 use \PDOException;
 use \StdClass;
+use \UnexpectedValueException;
 
 class Event {
 
@@ -169,7 +171,13 @@ class Event {
 
   public function getUser() {
     if ( is_null( $this->user_id ) ) { return null; }
-    return new User( $this->user_id );
+    try {
+      return new User( $this->user_id );
+    } catch (UnexpectedValueException $e) {
+      return null;
+    } catch (UserNotFoundException $e) {
+      return null;
+    }
   }
 
   public function getUserId() {
