@@ -17,16 +17,8 @@ $user = $this->getContext()->user;
 
 $object_ip_address = ($object instanceof Event ? $object->getIPAddress() : null);
 $object_metadata = ($object instanceof Event ? $object->getMetadata() : null);
+$object_user = ($object instanceof Event ? $object->getUser() : null);
 $object_user_id = ($object instanceof Event ? $object->getUserId() : null);
-
-try
-{
-  $object_user = (!is_null($object_user_id) ? new User($object_user_id) : null);
-}
-catch (UserNotFoundException $e)
-{
-  $object_user = null;
-}
 
 if (!$object instanceof Event)
 {
