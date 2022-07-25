@@ -16,9 +16,12 @@ use \Exception;
 class ChangePassword extends Controller {
   public function &run(Router &$router, View &$view, array &$args) {
     $model = new UserChangePasswordModel();
+    $model->active_user = Authentication::$user;
     $model->error = null;
 
-    if ($router->getRequestMethod() == 'POST') {
+    if (!$model->active_user) {
+      $model->error = 'NOT_LOGGED_IN';
+    } else if ($router->getRequestMethod() == 'POST') {
       $this->tryChangePassword($router, $model);
     }
 
@@ -30,7 +33,7 @@ class ChangePassword extends Controller {
   protected function tryChangePassword(
     Router &$router, UserChangePasswordModel &$model
   ) {
-    if ( !isset( Authentication::$user )) {
+    if (!$model->active_user) {
       $model->error = 'NOT_LOGGED_IN';
       return;
     }
