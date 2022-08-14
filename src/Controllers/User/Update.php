@@ -13,7 +13,9 @@ use \CarlBennett\MVC\Libraries\Controller;
 use \CarlBennett\MVC\Libraries\Router;
 use \CarlBennett\MVC\Libraries\View;
 use \Exception;
+use \InvalidArgumentException;
 use \StdClass;
+use \UnexpectedValueException;
 
 class Update extends Controller
 {
@@ -44,6 +46,10 @@ class Update extends Controller
           $model->user = new User($id);
         }
         catch (InvalidArgumentException $e)
+        {
+          $model->user = null;
+        }
+        catch (UnexpectedValueException $e)
         {
           $model->user = null;
         }
