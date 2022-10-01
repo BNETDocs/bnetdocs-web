@@ -27,7 +27,6 @@ use \BNETDocs\Libraries\SlackCheck;
 use \BNETDocs\Libraries\VersionInfo;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\GlobalErrorHandler;
 use \CarlBennett\MVC\Libraries\Router;
 
 function main() {
@@ -38,8 +37,6 @@ function main() {
   }
   require(__DIR__ . "/../lib/autoload.php");
 
-  GlobalErrorHandler::createOverrides();
-
   date_default_timezone_set('Etc/UTC');
 
   Common::$config = json_decode(file_get_contents(
@@ -48,7 +45,7 @@ function main() {
 
   VersionInfo::$version = VersionInfo::get();
 
-  // This must come after GlobalErrorHandler::createOverrides() so that Logger
+  // This must come after other registered error handlers so that Logger
   // has a chance to create its own error handlers for Application Performance
   // Monitoring (APM) purposes. This must also come after assignment of
   // Common::$config because we may need access tokens from the config.
