@@ -2,15 +2,12 @@
 
 namespace BNETDocs\Models\Packet;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Index extends Model {
-
+class Index extends \BNETDocs\Models\ActiveUser
+{
   public $application_layers;
   public $order;
   public $packets;
   public $pktapplayer;
   public $timestamp;
   public $user;
-
 }

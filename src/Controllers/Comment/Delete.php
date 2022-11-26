@@ -2,123 +2,63 @@
 
 namespace BNETDocs\Controllers\Comment;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\Comment;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\Comment\Delete as CommentDeleteModel;
+use \BNETDocs\Libraries\Router;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-use \InvalidArgumentException;
-use \UnexpectedValueException;
-
-class Delete extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $data                = $router->getRequestQueryArray();
-    $model               = new CommentDeleteModel();
-    $model->comment      = null;
-    $model->error        = null;
-    $model->id           = (isset($data['id']) ? $data['id'] : null);
-    $model->parent_id    = null;
-    $model->parent_type  = null;
-    $model->user         = Authentication::$user;
-
-    try { $model->comment = new Comment($model->id); }
-    catch (CommentNotFoundException $e) { $model->comment = null; }
-    catch (InvalidArgumentException $e) { $model->comment = null; }
-
-    $model->acl_allowed = ($model->user && (
-      $model->user->getOption(User::OPTION_ACL_COMMENT_DELETE) ||
-      $model->user->getId() == $model->comment->getUserId()
-    ));
-
-    if ($model->comment === null) {
-      $model->error = 'NOT_FOUND';
-    } else {
-      $model->content     = $model->comment->getContent(true);
-      $model->parent_type = $model->comment->getParentType();
-      $model->parent_id   = $model->comment->getParentId();
-
-      if ($router->getRequestMethod() == 'POST') {
-        $this->tryDelete($router, $model);
-      }
-    }
-
-    $view->render($model);
-    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    return $model;
+class Delete extends \BNETDocs\Controllers\Base
+{
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Comment\Delete();
   }
 
-  protected function tryDelete(Router &$router, CommentDeleteModel &$model) {
-    if (!isset($model->user)) {
-      $model->error = 'NOT_LOGGED_IN';
-      return;
-    }
-    if (!$model->acl_allowed) {
-      $model->error = 'ACL_NOT_SET';
-      return;
-    }
+  public function invoke(?array $args): bool
+  {
+    $this->model->id = Router::query()['id'] ?? null;
 
-    $model->error = false;
-    $id           = (int) $model->id;
-    $parent_type  = (int) $model->parent_type;
-    $parent_id    = (int) $model->parent_id;
-    $user_id      = $model->user->getId();
+    try { $this->model->comment = new \BNETDocs\Libraries\Comment($this->model->id); }
+    catch (\UnexpectedValueException) { $this->model->comment = null; }
 
-    $log_key = null;
-    switch ($parent_type) {
-      case Comment::PARENT_TYPE_DOCUMENT:
-        $log_key = EventTypes::COMMENT_DELETED_DOCUMENT; break;
-      case Comment::PARENT_TYPE_COMMENT:
-        $log_key = EventTypes::COMMENT_DELETED_COMMENT; break;
-      case Comment::PARENT_TYPE_NEWS_POST:
-        $log_key = EventTypes::COMMENT_DELETED_NEWS; break;
-      case Comment::PARENT_TYPE_PACKET:
-        $log_key = EventTypes::COMMENT_DELETED_PACKET; break;
-      case Comment::PARENT_TYPE_SERVER:
-        $log_key = EventTypes::COMMENT_DELETED_SERVER; break;
-      case Comment::PARENT_TYPE_USER:
-        $log_key = EventTypes::COMMENT_DELETED_USER; break;
-      default: throw new UnexpectedValueException(
-        'Parent type: ' . $parent_type
-      );
+    $this->model->acl_allowed = ($this->model->active_user && (
+      $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_COMMENT_DELETE) ||
+      ($this->model->comment && $this->model->active_user->getId() == $this->model->comment->getUserId())
+    ));
+
+    if (!$this->model->acl_allowed)
+    {
+      $this->model->_responseCode = 403;
+      $this->model->error = 'ACL_NOT_SET';
+      return true;
     }
 
-    try {
-
-      $success = Comment::delete($id, $parent_type, $parent_id);
-
-    } catch (QueryException $e) {
-
-      // SQL error occurred. We can show a friendly message to the user while
-      // also notifying this problem to staff.
-      Logger::logException($e);
-
-      $success = false;
-
+    if (!$this->model->comment)
+    {
+      $this->model->_responseCode = 404;
+      $this->model->error = 'NOT_FOUND';
+      return true;
     }
 
-    if (!$success) {
-      $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
-    }
+    $this->model->content = $this->model->comment->getContent(true);
+    $this->model->parent_type = $this->model->comment->getParentType();
+    $this->model->parent_id = $this->model->comment->getParentId();
 
-    Logger::logEvent(
-      $log_key,
-      $user_id,
+    if (Router::requestMethod() == Router::METHOD_POST) $this->tryDelete();
+
+    $this->model->_responseCode = 200;
+    return true;
+  }
+
+  protected function tryDelete() : void
+  {
+    $this->model->error = $this->model->comment->deallocate() ? false : 'INTERNAL_ERROR';
+    \BNETDocs\Libraries\Logger::logEvent(
+      $this->model->comment->getParentTypeDeletedEventId(),
+      $this->model->active_user->getId(),
       getenv('REMOTE_ADDR'),
       json_encode([
-        'error'       => $model->error,
-        'comment_id'  => $id,
-        'parent_type' => $parent_type,
-        'parent_id'   => $parent_id
+        'error' => $this->model->error,
+        'comment' => $this->model->comment,
+        'parent_type' => $this->model->parent_type,
+        'parent_id' => $this->model->parent_id
       ])
     );
   }

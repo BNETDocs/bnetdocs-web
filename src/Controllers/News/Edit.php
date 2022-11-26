@@ -1,169 +1,103 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+
 namespace BNETDocs\Controllers\News;
 
-use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\NewsCategory;
-use \BNETDocs\Libraries\NewsPost;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\News\Edit as NewsEditModel;
+use \BNETDocs\Libraries\Router;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-use \DateTime;
-use \DateTimeZone;
-use \InvalidArgumentException;
-
-class Edit extends Controller
+class Edit extends \BNETDocs\Controllers\Base
 {
-  public function &run(Router &$router, View &$view, array &$args)
+  public function __construct()
   {
-    $data                   = $router->getRequestQueryArray();
-    $model                  = new NewsEditModel();
-    $model->active_user     = Authentication::$user;
-    $model->category        = null;
-    $model->content         = null;
-    $model->error           = null;
-    $model->markdown        = null;
-    $model->news_categories = null;
-    $model->news_post_id    = (isset($data['id']) ? $data['id'] : null);
-    $model->news_post       = null;
-    $model->published       = null;
-    $model->rss_exempt      = null;
-    $model->title           = null;
+    $this->model = new \BNETDocs\Models\News\Edit();
+  }
+  public function invoke(?array $args): bool
+  {
+    $this->model->acl_allowed = $this->model->active_user
+      && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_NEWS_MODIFY);
 
-    $model->acl_allowed = ($model->active_user && $model->active_user->getOption(
-      User::OPTION_ACL_NEWS_MODIFY
-    ));
-
-    if (!$model->acl_allowed)
+    if (!$this->model->acl_allowed)
     {
-      $model->_responseCode = 403;
-      $model->error = 'ACL_NOT_SET';
-      $view->render($model);
-      return $model;
+      $this->model->_responseCode = 403;
+      $this->model->error = 'ACL_NOT_SET';
+      return true;
     }
 
-    try { $model->news_post = new NewsPost($model->news_post_id); }
-    catch (NewsPostNotFoundException $e) { $model->news_post = null; }
-    catch (InvalidArgumentException $e) { $model->news_post = null; }
+    $q = Router::query();
+    $this->model->news_post_id = $q['id'] ?? null;
 
-    if ($model->news_post === null) {
-      $model->error = 'NOT_FOUND';
-    } else {
-      $flags = $model->news_post->getOptionsBitmask();
+    try { $this->model->news_post = new \BNETDocs\Libraries\NewsPost($this->model->news_post_id); }
+    catch (\UnexpectedValueException) { $this->model->news_post = null; }
 
-      $model->comments = Comment::getAll(
-        Comment::PARENT_TYPE_NEWS_POST,
-        $model->news_post_id
-      );
-
-      $model->news_categories = NewsCategory::getAll();
-      usort($model->news_categories, function($a, $b){
-        $oA = $a->getSortId();
-        $oB = $b->getSortId();
-        if ($oA == $oB) return 0;
-        return ($oA < $oB) ? -1 : 1;
-      });
-
-      $model->category   = $model->news_post->getCategoryId();
-      $model->content    = $model->news_post->getContent(false);
-      $model->markdown   = ($flags & NewsPost::OPTION_MARKDOWN);
-      $model->published  = ($flags & NewsPost::OPTION_PUBLISHED);
-      $model->rss_exempt = ($flags & NewsPost::OPTION_RSS_EXEMPT);
-      $model->title      = $model->news_post->getTitle();
-
-      if ($router->getRequestMethod() == 'POST') {
-        $this->handlePost($router, $model);
-      }
+    if (!$this->model->news_post)
+    {
+      $this->model->_responseCode = 404;
+      $this->model->error = 'NOT_FOUND';
+      return true;
     }
 
-    $view->render($model);
-    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    return $model;
+    $this->model->news_categories = \BNETDocs\Libraries\NewsCategory::getAll();
+    usort($this->model->news_categories, function($a, $b){
+      $oA = $a->getSortId();
+      $oB = $b->getSortId();
+      if ($oA == $oB) return 0;
+      return ($oA < $oB) ? -1 : 1;
+    });
+
+    $this->model->comments = Comment::getAll(Comment::PARENT_TYPE_NEWS_POST, $this->model->news_post_id);
+    $this->model->category = $this->model->news_post->getCategoryId();
+    $this->model->content = $this->model->news_post->getContent(false);
+    $this->model->markdown = $this->model->news_post->isMarkdown();
+    $this->model->published = $this->model->news_post->isPublished();
+    $this->model->rss_exempt = $this->model->news_post->isRSSExempt();
+    $this->model->title = $this->model->news_post->getTitle();
+
+    if (Router::requestMethod() == Router::METHOD_POST) $this->handlePost();
+
+    $this->model->_responseCode = 200;
+    return $this->model;
   }
 
-  protected function handlePost(Router &$router, NewsEditModel &$model)
+  protected function handlePost() : void
   {
-    if (!$model->acl_allowed)
-    {
-      $model->error = 'ACL_NOT_SET';
-      return;
-    }
+    $q = Router::query();
+    $category = $q['category'] ?? null;
+    $title = $q['title'] ?? null;
+    $markdown = $q['markdown'] ?? null;
+    $content = $q['content'] ?? null;
+    $rss_exempt = $q['rss_exempt'] ?? null;
+    $publish = $q['publish'] ?? null;
 
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
+    $this->model->category = $category;
+    $this->model->title = $title;
+    $this->model->markdown = $markdown;
+    $this->model->content = $content;
+    $this->model->rss_exempt = $rss_exempt;
 
-    $data       = $router->getRequestBodyArray();
-    $category   = (isset($data['category'  ]) ? $data['category'  ] : null);
-    $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
-    $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
-    $content    = (isset($data['content'   ]) ? $data['content'   ] : null);
-    $rss_exempt = (isset($data['rss_exempt']) ? $data['rss_exempt'] : null);
-    $publish    = (isset($data['publish'   ]) ? $data['publish'   ] : null);
-    $save       = (isset($data['save'      ]) ? $data['save'      ] : null);
+    $this->model->error = empty($title) ? 'EMPTY_TITLE' : (empty($content) ? 'EMPTY_CONTENT' : null);
+    if ($this->model->error) return;
 
-    $model->category   = $category;
-    $model->title      = $title;
-    $model->markdown   = $markdown;
-    $model->content    = $content;
-    $model->rss_exempt = $rss_exempt;
+    $this->model->news_post->setCategoryId($this->model->category);
+    $this->model->news_post->setTitle($this->model->title);
+    $this->model->news_post->setMarkdown($this->model->markdown);
+    $this->model->news_post->setContent($this->model->content);
+    $this->model->news_post->setRSSExempt($this->model->rss_exempt);
+    $this->model->news_post->setPublished($publish);
+    $this->model->news_post->incrementEdited();
 
-    $model->error = (empty($title) ? 'EMPTY_TITLE' : (empty($content) ? 'EMPTY_CONTENT' : null));
+    $this->model->error = $this->model->news_post->commit() ? false : 'INTERNAL_ERROR';
 
-    if ($model->error) return;
-
-    try
-    {
-      $model->news_post->setCategoryId($model->category);
-      $model->news_post->setTitle($model->title);
-      $model->news_post->setMarkdown($model->markdown);
-      $model->news_post->setContent($model->content);
-      $model->news_post->setRSSExempt($model->rss_exempt);
-      $model->news_post->setPublished($publish);
-
-      $model->news_post->setEditedCount(
-        $model->news_post->getEditedCount() + 1
-      );
-      $model->news_post->setEditedDateTime(
-        new DateTime( 'now', new DateTimeZone( 'Etc/UTC' ))
-      );
-
-      $success = $model->news_post->save();
-      $model->error = false;
-    }
-    catch (QueryException $e)
-    {
-      // SQL error occurred. We can show a friendly message to the user while
-      // also notifying this problem to staff.
-      Logger::logException($e);
-
-      $success = false;
-      $model->error = 'INTERNAL_ERROR';
-    }
-
-    Logger::logEvent
-    (
-      EventTypes::NEWS_EDITED,
-      ($model->active_user ? $model->active_user->getId() : null),
+    \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\EventTypes::NEWS_EDITED,
+      $this->model->active_user ? $this->model->active_user->getId() : null,
       getenv('REMOTE_ADDR'),
-      json_encode
-      ([
-        'error'           => $model->error,
-        'news_post_id'    => $model->news_post_id,
-        'category_id'     => $model->news_post->getCategoryId(),
-        'options_bitmask' => $model->news_post->getOptionsBitmask(),
-        'title'           => $model->news_post->getTitle(),
-        'content'         => $model->news_post->getContent(false),
+      json_encode([
+        'error' => $this->model->error,
+        'news_post_id' => $this->model->news_post_id,
+        'category_id' => $this->model->news_post->getCategoryId(),
+        'options_bitmask' => $this->model->news_post->getOptionsBitmask(),
+        'title' => $this->model->news_post->getTitle(),
+        'content' => $this->model->news_post->getContent(false),
       ])
     );
   }

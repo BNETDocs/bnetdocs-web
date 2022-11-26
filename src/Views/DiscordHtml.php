@@ -2,24 +2,14 @@
 
 namespace BNETDocs\Views;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\Discord as DiscordModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
+class DiscordHtml extends \BNETDocs\Views\Base\Html
+{
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  {
+    if (!$model instanceof \BNETDocs\Models\Discord)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-class DiscordHtml extends View {
-
-  public function getMimeType() {
-    return 'text/html;charset=utf-8';
+    (new \BNETDocs\Libraries\Template($model, 'Discord'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
-
-  public function render(Model &$model) {
-    if ( !$model instanceof DiscordModel ) {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'Discord'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
-  }
-
 }

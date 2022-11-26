@@ -2,115 +2,103 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Exceptions\ServerTypeNotFoundException;
-
+use \BNETDocs\Libraries\Database;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-
-use \InvalidArgumentException;
-use \JsonSerializable;
-use \PDO;
-use \PDOException;
 use \StdClass;
 
-class ServerType implements JsonSerializable {
+class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
+{
+  protected ?int $id;
+  protected string $label;
 
-  protected $id;
-  protected $label;
-
-  public function __construct($data) {
-    if (is_numeric($data)) {
-      $this->id    = (int) $data;
-      $this->label = null;
-      $this->refresh();
-    } else if ($data instanceof StdClass) {
-      self::normalize($data);
-      $this->id    = $data->id;
-      $this->label = $data->label;
-    } else {
-      throw new InvalidArgumentException("Cannot use data argument");
+  public function __construct(StdClass|int|null $value)
+  {
+    if ($value instanceof StdClass)
+    {
+      $this->allocateObject($value);
+    }
+    else
+    {
+      $this->setId($value);
+      if (!$this->allocate()) throw new \UnexpectedValueException();
     }
   }
 
-  public static function getAllServerTypes() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `id`,
-          `label`
-        FROM `server_types`
-        ORDER BY `id` ASC;
-      ");
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh server types");
-      }
-      $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $objects[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $objects;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh server types", $e);
-    }
-    return null;
-  }
-
-  public function getId() {
-    return $this->id;
-  }
-
-  public function getLabel() {
-    return $this->label;
-  }
-
-  public function jsonSerialize() {
-    return array(
-      'id'    => $this->id,
-      'label' => $this->label,
-    );
-  }
-
-  protected static function normalize(StdClass &$data) {
-    $data->id    = (int)    $data->id;
-    $data->label = (string) $data->label;
-
+  public function allocate() : bool
+  {
+    $this->setLabel('');
+    $id = $this->getId();
+    if (is_null($id)) return true;
+    $q = Database::instance()->prepare('SELECT `id`, `label` FROM `server_types` WHERE `id` = ? LIMIT 1;');
+    if (!$q || !$q->execute([$id]) || $q->rowCount() != 1) return false;
+    $this->allocateObject($q->fetchObject());
+    $q->closeCursor();
     return true;
   }
 
-  public function refresh() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `id`,
-          `label`
-        FROM `server_types`
-        WHERE `id` = :id
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh server type");
-      } else if ($stmt->rowCount() == 0) {
-        throw new ServerTypeNotFoundException($this->id);
-      }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      self::normalize($row);
-      $this->label = $row->label;
-      return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh server type", $e);
-    }
-    return false;
+  private function allocateObject(StdClass $value)
+  {
+    $this->setId($value->id);
+    $this->setLabel($value->label);
   }
 
+  public function commit() : bool
+  {
+    $q = Database::instance()->prepare('UPDATE `server_types` SET `id` = :id, `label` = :label WHERE `id` = :id LIMIT 1;');
+    $p = [':id' => $this->getId(), ':label' => $this->getLabel()];
+    try { return $q && $q->execute($p) && $q->rowCount() === 1; }
+    finally { if ($q) $q->closeCursor(); }
+  }
+
+  /**
+   * Deallocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
+   */
+  public function deallocate() : bool
+  {
+    $id = $this->getId();
+    if (is_null($id)) return false;
+    $q = Database::instance()->prepare('DELETE FROM `server_types` WHERE `id` = ? LIMIT 1;');
+    try { return $q && $q->execute([$id]); }
+    finally { $q->closeCursor(); }
+  }
+
+  public static function getAllServerTypes() : ?array
+  {
+    $q = Database::instance()->prepare('SELECT `id`, `label` FROM `server_types` ORDER BY `id` ASC;');
+    if (!$q || !$q->execute()) return null;
+    $r = [];
+    while ($row = $q->fetchObject()) $r[] = new self($row);
+    $q->closeCursor();
+    return $r;
+  }
+
+  public function getId() : ?int
+  {
+    return $this->id;
+  }
+
+  public function getLabel() : string
+  {
+    return $this->label;
+  }
+
+  public function jsonSerialize() : mixed
+  {
+    return [
+      'id' => $this->getId(),
+      'label' => $this->getLabel(),
+    ];
+  }
+
+  public function setId(?int $value) : void
+  {
+    $this->id = $value;
+  }
+
+  public function setLabel(string $value) : void
+  {
+    $this->label = $value;
+  }
 }

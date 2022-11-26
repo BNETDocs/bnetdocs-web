@@ -1,22 +1,23 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Server;
-use \BNETDocs\Libraries\Server;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Server Not Found';
 $description = 'The requested server does not exist or could not be found.';
 $server = $this->getContext()->server;
-$server_id = $this->getContext()->server_id;
-$server_type = $this->getContext()->server_type;
 if (!$server)
 {
+  $server_id = null;
+  $server_type = null;
   $server_user = null;
-  $url = Common::relativeUrlToAbsolute(sprintf('/server/', rawurlencode($server_id)));
+  $url = null;
 }
 else
 {
   $server_address = filter_var(sprintf('%s:%s', $server->getAddress(), $server->getPort()), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $server_id = $server->getId();
   $server_name = filter_var($server->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $server_type = $server->getType();
 
   $title = $server_name;
   $description = sprintf('The server details and status for %s', $server_name);
@@ -54,7 +55,7 @@ else
   }
 }
 $this->opengraph->attach(new Pair('type', 'article'));
-$this->opengraph->attach(new Pair('url', $url));
+if (!empty($url)) $this->opengraph->attach(new Pair('url', $url));
 require('./header.inc.phtml'); ?>
 <div class="container">
 <? if (!$server) { ?>

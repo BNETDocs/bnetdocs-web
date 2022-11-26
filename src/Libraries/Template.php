@@ -2,28 +2,25 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Exceptions\TemplateNotFoundException;
-use \BNETDocs\Libraries\Logger;
 use \SplObjectStorage;
 
 class Template
 {
     public SplObjectStorage $opengraph;
 
-    private $context;
+    private mixed $context;
     private string $template_directory = 'Templates';
     private string $template_extension = '.phtml';
     private string $template_file = '';
 
-    public function __construct(&$context, string $template_file)
+    public function __construct(mixed $context, string $template_file)
     {
         $this->opengraph = new SplObjectStorage();
-
         $this->setContext($context);
         $this->setTemplateFile($template_file);
     }
 
-    public function getContext()
+    public function getContext() : mixed
     {
         return $this->context;
     }
@@ -43,7 +40,7 @@ class Template
         return $this->template_file;
     }
 
-    public function render() : void
+    public function invoke() : void
     {
         try
         {
@@ -51,7 +48,7 @@ class Template
             \chdir($cwd . \DIRECTORY_SEPARATOR . $this->template_directory);
             if (!\file_exists($this->template_file))
             {
-                $e = new TemplateNotFoundException($this);
+                $e = new \BNETDocs\Exceptions\TemplateNotFoundException($this);
                 throw $e;
             }
             require($this->template_file);
@@ -62,7 +59,13 @@ class Template
         }
     }
 
-    public function setContext(&$context) : void
+    public function render() : void
+    {
+        \trigger_error('render() is deprecated, use invoke() instead', \E_USER_DEPRECATED);
+        $this->invoke();
+    }
+
+    public function setContext(mixed &$context) : void
     {
         $this->context = $context;
     }
@@ -84,7 +87,7 @@ class Template
             \str_replace('/', \DIRECTORY_SEPARATOR, $template_file),
             $this->template_extension
         );
-        Logger::logMetric('template', $this->template_file);
+        \BNETDocs\Libraries\Logger::logMetric('template', $this->template_file);
     }
 }
 

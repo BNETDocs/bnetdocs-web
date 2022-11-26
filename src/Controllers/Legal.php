@@ -1,41 +1,54 @@
 <?php
+
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\VersionInfo;
-use \BNETDocs\Models\Legal as LegalModel;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-use \DateTime;
+use \BNETDocs\Libraries\DateTimeImmutable;
 use \DateTimeZone;
 
-class Legal extends Controller {
+class Legal extends Base
+{
+  public const LICENSE_FILE = '../LICENSE.txt';
 
-  const LICENSE_FILE = '../LICENSE.txt';
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Legal();
+  }
 
-  public function &run(Router &$router, View &$view, array &$args) {
-    $model                  = new LegalModel();
-    $model->email_domain    = Common::$config->bnetdocs->privacy->contact->email_domain;
-    $model->email_mailbox   = Common::$config->bnetdocs->privacy->contact->email_mailbox;
-    $model->license         = file_get_contents(self::LICENSE_FILE);
-    $model->license_version = VersionInfo::$version['bnetdocs'][3] ?? null;
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $privacy_contact = &\CarlBennett\MVC\Libraries\Common::$config->bnetdocs->privacy->contact;
+    $this->model->email_domain = $privacy_contact->email_domain;
+    $this->model->email_mailbox = $privacy_contact->email_mailbox;
 
-    if (!is_null($model->license_version)) {
-      $model->license_version = explode( ' ', $model->license_version );
-      $model->license_version[1] = new DateTime(
-        $model->license_version[1], new DateTimeZone( 'Etc/UTC' )
+    $this->model->license = \file_get_contents(self::LICENSE_FILE);
+    $this->model->license_version = \BNETDocs\Libraries\VersionInfo::$version['bnetdocs'][3] ?? null;
+
+    if (!\is_null($this->model->license_version))
+    {
+      $this->model->license_version = \explode(' ', $this->model->license_version);
+      $this->model->license_version[1] = new DateTimeImmutable(
+        $this->model->license_version[1], new DateTimeZone('Etc/UTC')
       );
-    } else {
-      $model->license_version = array();
-      $model->license_version[0] = null;
-      $model->license_version[1] = new DateTime(
-        '@' . filemtime(self::LICENSE_FILE), new DateTimeZone( 'Etc/Utc' )
+    }
+    else
+    {
+      $this->model->license_version = [];
+      $this->model->license_version[0] = null;
+      $this->model->license_version[1] = new DateTimeImmutable(
+        '@' . \filemtime(self::LICENSE_FILE), new DateTimeZone('Etc/UTC')
       );
     }
 
-    $view->render( $model );
-    $model->_responseCode = 200;
-    return $model;
+    $this->model->_responseCode = 200;
+    return true;
   }
 }

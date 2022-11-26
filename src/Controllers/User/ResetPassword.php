@@ -1,163 +1,118 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\ResetPassword as ResetPasswordModel;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-use \Exception;
-use \InvalidArgumentException;
 use \PHPMailer\PHPMailer\PHPMailer;
 use \StdClass;
 use \UnexpectedValueException;
 
-class ResetPassword extends Controller
+class ResetPassword extends \BNETDocs\Controllers\Base
 {
-  public function &run(Router &$router, View &$view, array &$args)
+  public function __construct()
   {
-    $model = new ResetPasswordModel();
-    $model->active_user = Authentication::$user;
-    $model->form_fields = array_merge(
-      // Conflicting request query string fields will be overridden by POST-body fields
-      $router->getRequestQueryArray() ?? [], $router->getRequestBodyArray() ?? []
-    );
+    $this->model = new ResetPasswordModel();
+  }
 
-    $model->email = $model->form_fields['email'] ?? null;
-    $model->pw1 = $model->form_fields['pw1'] ?? null;
-    $model->pw2 = $model->form_fields['pw2'] ?? null;
-    $model->token = $model->form_fields['t'] ?? null;
+  public function invoke(?array $args): bool
+  {
+    $this->model->form_fields = Router::query();
+    $this->model->email = $this->model->form_fields['email'] ?? null;
+    $this->model->pw1 = $this->model->form_fields['pw1'] ?? null;
+    $this->model->pw2 = $this->model->form_fields['pw2'] ?? null;
+    $this->model->token = $this->model->form_fields['t'] ?? null;
 
-    if ($router->getRequestMethod() == 'POST')
+    if (Router::requestMethod() == Router::METHOD_POST)
     {
-      $model->error = $this->doPasswordReset($model);
+      $this->model->error = $this->doPasswordReset();
       Logger::logEvent(
         EventTypes::USER_PASSWORD_RESET,
-        ($model->user ? $model->user->getId() : null),
+        $this->model->active_user ? $this->model->active_user->getId() : null,
         getenv('REMOTE_ADDR'),
         json_encode([
-          'active_user' => $model->active_user,
-          'email' => $model->email,
-          'error' => $model->error,
-          'user' => $model->user,
+          'active_user' => $this->model->active_user,
+          'email' => $this->model->email,
+          'error' => $this->model->error,
+          'user' => $this->model->user,
         ])
       );
     }
 
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
+    $this->model->_responseCode = 200;
+    return true;
   }
 
-  protected function doPasswordReset(ResetPasswordModel &$model)
+  protected function doPasswordReset() : mixed
   {
-    if (empty($model->email))
-    {
-      return ResetPasswordModel::E_EMPTY_EMAIL;
-    }
+    if (empty($this->model->email)) return ResetPasswordModel::E_EMPTY_EMAIL;
 
     try
     {
-      $user_id = User::findIdByEmail($model->email);
-      if ($user_id !== false) $model->user = new User($user_id);
+      $user_id = User::findIdByEmail($this->model->email);
+      if (!is_null($user_id)) $this->model->user = new User($user_id);
     }
-    catch (UserNotFoundException $e)
-    {
-      $model->user = null;
-    }
-    catch (UnexpectedValueException $e)
+    catch (UnexpectedValueException)
     {
       return ResetPasswordModel::E_BAD_EMAIL;
     }
 
-    if (!$model->user)
-      return ResetPasswordModel::E_USER_NOT_FOUND;
+    if (!$this->model->user) return ResetPasswordModel::E_USER_NOT_FOUND;
 
-    if (empty($model->token))
+    if (empty($this->model->token))
     {
       // User sent POST with email but no token, send email with new token to verify
-      try
-      {
-        $model->user->setVerifierToken(
-          User::generateVerifierToken($model->user->getUsername() ?? '', $model->user->getEmail() ?? '')
-        );
-        $model->user->commit();
-      }
-      catch (Exception $e)
-      {
-        return ResetPasswordModel::E_INTERNAL_ERROR;
-      }
-      return self::sendEmail($model);
+      $this->model->user->setVerifierToken(
+        User::generateVerifierToken(
+          $this->model->user->getUsername() ?? '', $this->model->user->getEmail() ?? ''
+        )
+      );
+
+      return $this->model->user->commit() ? self::sendEmail() : ResetPasswordModel::E_INTERNAL_ERROR;
     }
 
-    if ($model->token !== $model->user->getVerifierToken())
-    {
+    if ($this->model->token !== $this->model->user->getVerifierToken())
       return ResetPasswordModel::E_BAD_TOKEN;
-    }
 
-    if ($model->pw1 !== $model->pw2)
-    {
+    if ($this->model->pw1 !== $this->model->pw2)
       return ResetPasswordModel::E_PASSWORD_MISMATCH;
-    }
 
-    $req = Common::$config->bnetdocs->user_register_requirements;
-    $pwlen = strlen($model->pw1);
+    $req = &Common::$config->bnetdocs->user_register_requirements;
+    $pwlen = strlen($this->model->pw1);
 
     if (is_numeric($req->password_length_max) && $pwlen > $req->password_length_max)
-    {
       return ResetPasswordModel::E_PASSWORD_TOO_LONG;
-    }
 
     if (is_numeric($req->password_length_min) && $pwlen < $req->password_length_min)
-    {
       return ResetPasswordModel::E_PASSWORD_TOO_SHORT;
-    }
 
-    if (!$req->password_allow_email && stripos($model->pw1, $model->user->getEmail()))
-    {
+    if (!$req->password_allow_email && stripos($this->model->pw1, $this->model->user->getEmail()))
       return ResetPasswordModel::E_PASSWORD_CONTAINS_EMAIL;
-    }
 
-    if (!$req->password_allow_username && stripos($model->pw1, $model->user->getUsername()))
-    {
+    if (!$req->password_allow_username && stripos($this->model->pw1, $this->model->user->getUsername()))
       return ResetPasswordModel::E_PASSWORD_CONTAINS_USERNAME;
-    }
 
-    if ($model->user->isDisabled())
-    {
-      return ResetPasswordModel::E_USER_DISABLED;
-    }
+    if ($this->model->user->isDisabled()) return ResetPasswordModel::E_USER_DISABLED;
 
-    try
-    {
-      $model->user->setPassword($model->pw1);
-      $model->user->setVerified(true);
-      $model->user->commit();
-    }
-    catch (Exception $e)
-    {
-      return ResetPasswordModel::E_INTERNAL_ERROR;
-    }
-
-    return ResetPasswordModel::E_SUCCESS;
+    $this->model->user->setPassword($this->model->pw1);
+    $this->model->user->setVerified(true);
+    return $this->model->user->commit() ? ResetPasswordModel::E_SUCCESS : ResetPasswordModel::E_INTERNAL_ERROR;
   }
 
-  protected function sendEmail(ResetPasswordModel &$model)
+  protected function sendEmail() : mixed
   {
     $mail = new PHPMailer(true); // true enables exceptions
     $mail_config = Common::$config->email;
 
     $state = new StdClass();
-    $state->email = $model->user->getEmail();
+    $state->email = $this->model->user->getEmail();
     $state->mail = &$mail;
-    $state->token = $model->user->getVerifierToken();
-    $state->username = $model->user->getName();
+    $state->token = $this->model->user->getVerifierToken();
+    $state->username = $this->model->user->getName();
 
     try
     {
@@ -178,7 +133,7 @@ class ResetPassword extends Controller
         $mail->setFrom($mail_config->recipient_from[0], $mail_config->recipient_from[1]);
       }
 
-      $mail->addAddress($model->user->getEmail(), $model->user->getName());
+      $mail->addAddress($this->model->user->getEmail(), $this->model->user->getName());
 
       if (isset($mail_config->recipient_reply_to[0]))
       {
@@ -191,18 +146,18 @@ class ResetPassword extends Controller
       $mail->CharSet = PHPMailer::CHARSET_UTF8;
 
       ob_start();
-      (new Template($state, 'Email/User/ResetPassword.rich'))->render();
+      (new Template($state, 'Email/User/ResetPassword.rich'))->invoke();
       $mail->Body = ob_get_clean();
 
       ob_start();
-      (new Template($state, 'Email/User/ResetPassword.plain'))->render();
+      (new Template($state, 'Email/User/ResetPassword.plain'))->invoke();
       $mail->AltBody = ob_get_clean();
 
       $mail->send();
 
       Logger::logEvent(
         EventTypes::EMAIL_SENT,
-        $model->user->getId(),
+        $this->model->user->getId(),
         getenv('REMOTE_ADDR'),
         json_encode([
           'from' => $mail->From,
@@ -215,10 +170,7 @@ class ResetPassword extends Controller
         ])
       );
     }
-    catch (Exception $e)
-    {
-      return ResetPasswordModel::E_INTERNAL_ERROR;
-    }
+    catch (\PHPMailer\PHPMailer\Exception) { return ResetPasswordModel::E_INTERNAL_ERROR; }
 
     return ResetPasswordModel::E_SUCCESS;
   }

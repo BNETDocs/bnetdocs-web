@@ -1,24 +1,15 @@
 <?php
+
 namespace BNETDocs\Views\Packet;
 
-use \BNETDocs\Models\Packet\View as PacketViewModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
-
-class ViewPlain extends View
+class ViewPlain extends \BNETDocs\Views\Base\Plain
 {
-  public function getMimeType()
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
   {
-    return 'text/plain;charset=utf-8';
-  }
+    if (!$model instanceof \BNETDocs\Models\Packet\View)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-  public function render(Model &$model)
-  {
-    if (!$model instanceof PacketViewModel)
-    {
-      throw new IncorrectModelException();
-    }
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
 
     $created = $model->packet->getCreatedDateTime()->format(DATE_RFC2822);
     $direction = $model->packet->getDirectionLabel();
@@ -32,7 +23,7 @@ class ViewPlain extends View
     $remarks = $model->packet->getRemarks(false);
     $used_by = $model->used_by;
 
-    $options = array();
+    $options = [];
     if ($model->packet->isDeprecated()) $options[] = 'Deprecated';
     if ($model->packet->isInResearch()) $options[] = 'In Research';
     if ($model->packet->isMarkdown()) $options[] = 'Markdown';
@@ -49,12 +40,9 @@ class ViewPlain extends View
       $edited_s, $edited_c, ($edited_c === 1 ? '' : 's')
     );
     echo "\n## Used By\n\n";
-    foreach ($model->used_by as $p)
-      printf("- %s\n", $p->getLabel());
+    foreach ($used_by as $p) printf("- %s\n", $p->getLabel());
     echo "\n";
     printf("## Message Format\n\n```\n%s\n```\n\n", $format);
     printf("## Remarks\n\n%s\n\n", $remarks);
-
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
   }
 }

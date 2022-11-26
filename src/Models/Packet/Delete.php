@@ -2,15 +2,10 @@
 
 namespace BNETDocs\Models\Packet;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Delete extends Model {
-
-  public $acl_allowed;
-  public $error;
-  public $id;
-  public $packet;
-  public $title;
-  public $user;
-
+class Delete extends \BNETDocs\Models\ActiveUser
+{
+  public bool $acl_allowed = false;
+  public ?int $id = null;
+  public ?\BNETDocs\Libraries\Packet $packet = null;
+  public ?string $title = null;
 }

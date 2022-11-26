@@ -2,10 +2,8 @@
 
 namespace BNETDocs\Models;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Legacy extends Model {
-
+class Legacy extends ActiveUser
+{
   public $did;
   public $is_legacy;
   public $lang;
@@ -13,5 +11,4 @@ class Legacy extends Model {
   public $op;
   public $pid;
   public $url;
-
 }

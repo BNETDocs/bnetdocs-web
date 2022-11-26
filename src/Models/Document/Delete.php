@@ -2,15 +2,17 @@
 
 namespace BNETDocs\Models\Document;
 
-use \CarlBennett\MVC\Libraries\Model;
+class Delete extends \BNETDocs\Models\ActiveUser
+{
+  public const ERROR_ACCESS_DENIED = 'ACCESS_DENIED';
+  public const ERROR_INTERNAL = 'INTERNAL';
+  public const ERROR_NONE = 'NONE';
+  public const ERROR_NOT_FOUND = 'NOT_FOUND';
+  public const ERROR_SUCCESS = 'SUCCESS';
 
-class Delete extends Model {
-
-  public $acl_allowed;
-  public $document;
-  public $error;
-  public $id;
-  public $title;
-  public $user;
-
+  public bool $acl_allowed = false;
+  public ?\BNETDocs\Libraries\Document $document = null;
+  public mixed $error = self::ERROR_NONE;
+  public ?int $id = null;
+  public ?string $title = null;
 }

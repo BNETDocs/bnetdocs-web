@@ -1,140 +1,114 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Credits;
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\Exceptions\UserProfileNotFoundException;
-use \BNETDocs\Libraries\IDatabaseObject;
+use \BNETDocs\Libraries\Database;
+use \BNETDocs\Libraries\DateTimeImmutable;
 use \BNETDocs\Libraries\UserProfile;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Gravatar;
-use \DateTime;
+use \DateTimeInterface;
 use \DateTimeZone;
-use \Exception;
-use \InvalidArgumentException;
-use \JsonSerializable;
 use \OutOfBoundsException;
-use \PDO;
-use \PDOException;
-use \RuntimeException;
 use \StdClass;
 use \UnexpectedValueException;
 
-class User implements IDatabaseObject, JsonSerializable
+class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
-  const DATE_SQL = 'Y-m-d H:i:s'; // DateTime::format() string for database
-
-  const DEFAULT_OPTION = self::OPTION_ACL_COMMENT_CREATE;
-  const DEFAULT_TZ = 'Etc/UTC';
+  public const DEFAULT_OPTION = self::OPTION_ACL_COMMENT_CREATE;
+  public const DEFAULT_TZ = null; // null means no timezone preference/automatic.
 
   // Maximum SQL field lengths, alter as appropriate
-  const MAX_DISPLAY_NAME = 0xFF;
-  const MAX_EMAIL = 0xFF;
-  const MAX_ID = 0x7FFFFFFFFFFFFFFF;
-  const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
-  const MAX_PASSWORD_HASH = 0xFF;
-  const MAX_PASSWORD_SALT = 0xFF;
-  const MAX_TIMEZONE = 0xFF;
-  const MAX_USERNAME = 0xFF;
-  const MAX_VERIFIER_TOKEN = 0xFF;
+  public const MAX_DISPLAY_NAME = 0xFF;
+  public const MAX_EMAIL = 0xFF;
+  public const MAX_ID = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_PASSWORD_HASH = 0xFF;
+  public const MAX_PASSWORD_SALT = 0xFF;
+  public const MAX_TIMEZONE = 0xFF;
+  public const MAX_USERNAME = 0xFF;
+  public const MAX_VERIFIER_TOKEN = 0xFF;
 
-  const OPTION_DISABLED             = 0x00000001; // User login disabled, active sessions force-expired
-  const OPTION_VERIFIED             = 0x00000002; // A token sent via email was returned to us
-  const OPTION_ACL_DOCUMENT_CREATE  = 0x00000004;
-  const OPTION_ACL_DOCUMENT_MODIFY  = 0x00000008;
-  const OPTION_ACL_DOCUMENT_DELETE  = 0x00000010;
-  const OPTION_ACL_COMMENT_CREATE   = 0x00000020;
-  const OPTION_ACL_COMMENT_MODIFY   = 0x00000040;
-  const OPTION_ACL_COMMENT_DELETE   = 0x00000080;
-  const OPTION_ACL_EVENT_LOG_VIEW   = 0x00000100;
-  const OPTION_ACL_EVENT_LOG_MODIFY = 0x00000200;
-  const OPTION_ACL_EVENT_LOG_DELETE = 0x00000400;
-  const OPTION_ACL_NEWS_CREATE      = 0x00000800;
-  const OPTION_ACL_NEWS_MODIFY      = 0x00001000;
-  const OPTION_ACL_NEWS_DELETE      = 0x00002000;
-  const OPTION_ACL_PACKET_CREATE    = 0x00004000;
-  const OPTION_ACL_PACKET_MODIFY    = 0x00008000;
-  const OPTION_ACL_PACKET_DELETE    = 0x00010000;
-  const OPTION_ACL_SERVER_CREATE    = 0x00020000;
-  const OPTION_ACL_SERVER_MODIFY    = 0x00040000;
-  const OPTION_ACL_SERVER_DELETE    = 0x00080000;
-  const OPTION_ACL_USER_CREATE      = 0x00100000;
-  const OPTION_ACL_USER_MODIFY      = 0x00200000;
-  const OPTION_ACL_USER_DELETE      = 0x00400000;
-  const OPTION_ACL_PHPINFO          = 0x00800000;
+  public const OPTION_DISABLED             = 0x00000001; // User login disabled, active sessions force-expired
+  public const OPTION_VERIFIED             = 0x00000002; // A token sent via email was returned to us
+  public const OPTION_ACL_DOCUMENT_CREATE  = 0x00000004;
+  public const OPTION_ACL_DOCUMENT_MODIFY  = 0x00000008;
+  public const OPTION_ACL_DOCUMENT_DELETE  = 0x00000010;
+  public const OPTION_ACL_COMMENT_CREATE   = 0x00000020;
+  public const OPTION_ACL_COMMENT_MODIFY   = 0x00000040;
+  public const OPTION_ACL_COMMENT_DELETE   = 0x00000080;
+  public const OPTION_ACL_EVENT_LOG_VIEW   = 0x00000100;
+  public const OPTION_ACL_EVENT_LOG_MODIFY = 0x00000200;
+  public const OPTION_ACL_EVENT_LOG_DELETE = 0x00000400;
+  public const OPTION_ACL_NEWS_CREATE      = 0x00000800;
+  public const OPTION_ACL_NEWS_MODIFY      = 0x00001000;
+  public const OPTION_ACL_NEWS_DELETE      = 0x00002000;
+  public const OPTION_ACL_PACKET_CREATE    = 0x00004000;
+  public const OPTION_ACL_PACKET_MODIFY    = 0x00008000;
+  public const OPTION_ACL_PACKET_DELETE    = 0x00010000;
+  public const OPTION_ACL_SERVER_CREATE    = 0x00020000;
+  public const OPTION_ACL_SERVER_MODIFY    = 0x00040000;
+  public const OPTION_ACL_SERVER_DELETE    = 0x00080000;
+  public const OPTION_ACL_USER_CREATE      = 0x00100000;
+  public const OPTION_ACL_USER_MODIFY      = 0x00200000;
+  public const OPTION_ACL_USER_DELETE      = 0x00400000;
+  public const OPTION_ACL_PHPINFO          = 0x00800000;
 
-  const TZ_SQL = 'Etc/UTC'; // database values are stored in this TZ
+  protected DateTimeInterface $created_datetime;
+  protected ?string $display_name;
+  protected string $email;
+  protected ?int $id;
+  protected int $options;
+  protected ?string $password_hash;
+  protected ?string $password_salt;
+  protected DateTimeInterface $record_updated;
+  protected ?string $timezone;
+  protected string $username;
+  protected ?DateTimeInterface $verified_datetime;
+  protected ?string $verifier_token;
 
-  private $_id;
-
-  protected $created_datetime;
-  protected $display_name;
-  protected $email;
-  protected $id;
-  protected $options;
-  protected $password_hash;
-  protected $password_salt;
-  protected $record_updated;
-  protected $timezone;
-  protected $username;
-  protected $verified_datetime;
-  protected $verifier_token;
-
-  public function __construct($value)
+  /**
+   * Constructs a User object from properties, a user id to lookup, or null for a new record.
+   *
+   * @param StdClass|integer|null $value Object properties, user id, or null.
+   */
+  public function __construct(StdClass|int|null $value)
   {
-    if (is_string($value) && is_numeric($value) && strpos($value, '.') === false)
-    {
-      // something is lazily providing an int value in a string type
-      $value = (int) $value;
-    }
-
-    if (is_null($value) || is_int($value))
-    {
-      $this->_id = $value;
-      $this->allocate();
-      return;
-    }
-
     if ($value instanceof StdClass)
     {
       $this->allocateObject($value);
-      return;
     }
-
-    throw new InvalidArgumentException(sprintf(
-      'value must be null, an integer, or StdClass; %s given', gettype($value)
-    ));
+    else
+    {
+      $this->setId($value);
+      if (!$this->allocate()) throw new \BNETDocs\Exceptions\UserNotFoundException($this);
+    }
   }
 
   /**
-   * Implements the allocate function from the IDatabaseObject interface
+   * Allocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
    */
-  public function allocate()
+  public function allocate() : bool
   {
-    $id = $this->_id;
-
-    if (!(is_null($id) || is_int($id)))
-    {
-      throw new InvalidArgumentException('value must be null or an integer');
-    }
-
-    $this->setCreatedDateTime(new DateTime('now'));
-    $this->setId($id);
+    // Set initial property values, but skip the id property.
+    $this->setCreatedDateTime(new DateTimeImmutable('now'));
+    $this->setDisplayName(null);
+    $this->setEmail('', true);
     $this->setOptions(self::DEFAULT_OPTION);
-    $this->setRecordUpdated(new DateTime('now'));
+    $this->setPasswordHash(null);
+    $this->setPasswordSalt(null);
+    $this->setRecordUpdated(new DateTimeImmutable('now'));
     $this->setTimezone(self::DEFAULT_TZ);
+    $this->setUsername('', true);
+    $this->setVerifiedDateTime(null);
+    $this->setVerifierToken(null);
 
-    if (is_null($id)) return;
+    // Get database record only if the id property is not null.
+    $id = $this->getId();
+    if (is_null($id)) return true;
 
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare('
+    $q = Database::instance()->prepare('
       SELECT
         `created_datetime`,
         `display_name`,
@@ -150,60 +124,40 @@ class User implements IDatabaseObject, JsonSerializable
         `verifier_token`
       FROM `users` WHERE `id` = :id LIMIT 1;
     ');
-    $q->bindParam(':id', $id, PDO::PARAM_INT);
-
-    $r = $q->execute();
-    if (!$r)
-    {
-      throw new UnexpectedValueException(sprintf('an error occurred finding user id: %d', $id));
-    }
-
-    if ($q->rowCount() != 1)
-    {
-      throw new UnexpectedValueException(sprintf('user id: %d not found', $id));
-    }
-
-    $r = $q->fetchObject();
+    if (!$q || !$q->execute([':id' => $id]) || $q->rowCount() != 1) return false;
+    $this->allocateObject($q->fetchObject());
     $q->closeCursor();
-
-    $this->allocateObject($r);
+    return true;
   }
 
   /**
    * Internal function to process and translate StdClass objects into properties.
    */
-  protected function allocateObject(StdClass $value)
+  protected function allocateObject(StdClass $value) : void
   {
-    $tz = new DateTimeZone(self::TZ_SQL);
-
-    $this->setCreatedDateTime(new DateTime($value->created_datetime, $tz));
+    $this->setCreatedDateTime($value->created_datetime);
     $this->setDisplayName($value->display_name);
     $this->setEmail($value->email);
     $this->setId($value->id);
     $this->setOptions($value->options_bitmask);
     $this->setPasswordHash($value->password_hash);
     $this->setPasswordSalt($value->password_salt);
-    $this->setRecordUpdated(new DateTime($value->record_updated, $tz));
+    $this->setRecordUpdated($value->record_updated);
     $this->setTimezone($value->timezone);
     $this->setUsername($value->username);
-    $this->setVerifiedDateTime(
-      $value->verified_datetime ? new DateTime($value->verified_datetime, $tz) : null
-    );
+    $this->setVerifiedDateTime($value->verified_datetime);
     $this->setVerifierToken($value->verifier_token);
   }
 
   /**
-   * Implements the commit function from the IDatabaseObject interface
+   * Commits the properties of this object to the database.
+   *
+   * @return boolean Whether the operation was successful.
    */
-  public function commit()
+  public function commit() : bool
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare(
-      'INSERT INTO `users` (
+    $q = Database::instance()->prepare('
+      INSERT INTO `users` (
         `created_datetime`,
         `display_name`,
         `email`,
@@ -217,63 +171,57 @@ class User implements IDatabaseObject, JsonSerializable
         `verified_datetime`,
         `verifier_token`
       ) VALUES (
-        :c_dt, :d_name, :email, :id, :opts, :p_hash, :p_salt, :rec_up_dt, :tz, :u_name, :v_dt, :v_t
+        :cdt, :dn, :e, :id, :o, :pwh, :pws, :rudt, :tz, :u, :vdt, :vt
       ) ON DUPLICATE KEY UPDATE
-        `created_datetime` = :c_dt,
-        `display_name` = :d_name,
-        `email` = :email,
+        `created_datetime` = :cdt,
+        `display_name` = :dn,
+        `email` = :e,
         `id` = :id,
-        `options_bitmask` = :opts,
-        `password_hash` = :p_hash,
-        `password_salt` = :p_salt,
-        `record_updated` = :rec_up_dt,
+        `options_bitmask` = :o,
+        `password_hash` = :pwh,
+        `password_salt` = :pws,
+        `record_updated` = :rudt,
         `timezone` = :tz,
-        `username` = :u_name,
-        `verified_datetime` = :v_dt,
-        `verifier_token` = :v_t
-      ;'
-    );
+        `username` = :u,
+        `verified_datetime` = :vdt,
+        `verifier_token` = :vt;
+    ');
 
-    $this->setRecordUpdated(new DateTime('now', new DateTimeZone(self::TZ_SQL)));
+    $this->setRecordUpdated(new DateTimeImmutable('now', new DateTimeZone(self::DATE_TZ)));
 
-    $created_datetime = $this->created_datetime->format(self::DATE_SQL);
-    $record_updated = $this->record_updated->format(self::DATE_SQL);
+    $p = [
+      ':cdt' => $this->getCreatedDateTime(),
+      ':dn' => $this->getDisplayName(),
+      ':e' => $this->getEmail(),
+      ':id' => $this->getId(),
+      ':o' => $this->getOptions(),
+      ':pwh' => $this->getPasswordHash(),
+      ':pws' => $this->getPasswordSalt(),
+      ':rudt' => $this->getRecordUpdated(),
+      ':tz' => $this->getTimezone(),
+      ':u' => $this->getUsername(),
+      ':vdt' => $this->getVerifiedDateTime(),
+      ':vt' => $this->getVerifierToken(),
+    ];
 
-    $verified_datetime = (
-      is_null($this->verified_datetime) ? null : $this->verified_datetime->format(self::DATE_SQL)
-    );
+    foreach ($p as $k => $v)
+      if ($v instanceof DateTimeInterface)
+        $p[$k] = $v->format(self::DATE_SQL);
 
-    $q->bindParam(':c_dt', $created_datetime, PDO::PARAM_STR);
-    $q->bindParam(':d_name', $this->display_name, (is_null($this->display_name) ? PDO::PARAM_NULL : PDO::PARAM_STR));
-    $q->bindParam(':email', $this->email, PDO::PARAM_STR);
-    $q->bindParam(':id', $this->id, (is_null($this->id) ? PDO::PARAM_NULL : PDO::PARAM_INT));
-    $q->bindParam(':opts', $this->options, PDO::PARAM_INT);
-    $q->bindParam(':p_hash', $this->password_hash, (is_null($this->password_hash) ? PDO::PARAM_NULL : PDO::PARAM_STR));
-    $q->bindParam(':p_salt', $this->password_salt, (is_null($this->password_salt) ? PDO::PARAM_NULL : PDO::PARAM_STR));
-    $q->bindParam(':rec_up_dt', $record_updated, PDO::PARAM_STR);
-    $q->bindParam(':tz', $this->timezone, (is_null($this->timezone) ? PDO::PARAM_NULL : PDO::PARAM_STR));
-    $q->bindParam(':u_name', $this->username, PDO::PARAM_STR);
-    $q->bindParam(':v_dt', $verified_datetime, (is_null($verified_datetime) ? PDO::PARAM_NULL : PDO::PARAM_STR));
-    $q->bindParam(':v_t', $this->verifier_token, (is_null($this->verifier_token) ? PDO::PARAM_NULL : PDO::PARAM_STR));
-
-    $r = $q->execute();
-    if (!$r) return $r;
-
+    if (!$q || !$q->execute($p)) return false;
+    if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
     $q->closeCursor();
-
-    $q = Common::$database->prepare('SELECT `id` FROM `users` WHERE `username` = :u_name LIMIT 1;');
-    $q->bindParam(':u_name', $this->username, PDO::PARAM_STR);
-
-    $r = $q->execute();
-    if (!$r) return $r;
-
-    $this->setId($q->fetch(PDO::FETCH_NUM)[0]);
-
-    $q->closeCursor();
-    return $r;
+    return true;
   }
 
-  public function checkPassword(string $password)
+  /**
+   * Checks whether this user's password matches or not against cleartext input.
+   * The match will always fail if this user's password needs rehashing.
+   *
+   * @param string $password The cleartext input.
+   * @return boolean Whether this user's password matches.
+   */
+  public function checkPassword(string $password) : bool
   {
     if (is_null($this->password_hash))
     {
@@ -312,131 +260,153 @@ class User implements IDatabaseObject, JsonSerializable
     }
   }
 
-  public static function createPassword(string $password)
+  /**
+   * Creates a password bcrypt hash from a cleartext password input.
+   *
+   * @param string $password The cleartext password.
+   * @return string The hashed password.
+   */
+  public static function createPassword(string $password) : string
   {
     $cost = Common::$config->bnetdocs->user_password_bcrypt_cost;
     return password_hash($password, PASSWORD_BCRYPT, array('cost' => $cost));
   }
 
-  public static function findIdByEmail(string $email)
+  /**
+   * Deallocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
+   */
+  public function deallocate() : bool
   {
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-    {
-      throw new UnexpectedValueException('email is not a valid email address');
-    }
-
-    if (!isset(Common::$database)) Common::$database = DatabaseDriver::getDatabaseObject();
-
-    $q = Common::$database->prepare(
-      'SELECT `id` FROM `users` WHERE `email` = :email LIMIT 1;'
-    );
-    $q->bindParam(':email', $email, PDO::PARAM_STR);
-
-    if (!$q->execute()) return false;
-    if ($q->rowCount() == 0) throw new UserNotFoundException($email);
-
-    $r = $q->fetch(PDO::FETCH_NUM);
-    return (int) $r[0];
+    $id = $this->getId();
+    if (is_null($id)) return false;
+    $q = Database::instance()->prepare('DELETE FROM `users` WHERE `id` = ? LIMIT 1;');
+    try { return $q && $q->execute([$id]); }
+    finally { $q->closeCursor(); }
   }
 
-  public static function findIdByUsername(string $username)
+  /**
+   * Retrieves the user id of a user record by email address.
+   *
+   * @param string $value The email address.
+   * @return integer|null The user id of the user, or null if not found.
+   */
+  public static function findIdByEmail(string $value) : ?int
   {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT `id`
-        FROM `users`
-        WHERE `username` = :username
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":username", $username, PDO::PARAM_STR);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot query user id by username");
-      } else if ($stmt->rowCount() == 0) {
-        throw new UserNotFoundException($username);
-      }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      return (int) $row->id;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot query user id by username", $e);
-    }
-    return null;
+    if (!filter_var($value, FILTER_VALIDATE_EMAIL))
+      throw new UnexpectedValueException('email is not formatted as a valid email address');
+
+    $q = Database::instance()->prepare('SELECT `id` FROM `users` WHERE `email` = ? LIMIT 1;');
+    if (!$q || !$q->execute([$value]) || $q->rowCount() == 0) return null;
+    $r = $q->fetchObject();
+    $q->closeCursor();
+    return (int) $r->id;
   }
 
-  public static function generateVerifierToken(string $username, string $email)
+  /**
+   * Retrieves the user id of a user record by username.
+   *
+   * @param string $value The username.
+   * @return integer|null The user id of the user, or null if not found.
+   */
+  public static function findIdByUsername(string $value) : ?int
   {
-    // entropy
-    $digest = sprintf('%s%s%s', mt_rand(), $username, $email);
-    return hash('sha256', $digest);
+    $q = Database::instance()->prepare('SELECT `id` FROM `users` WHERE `username` = ? LIMIT 1;');
+    if (!$q || !$q->execute([$value]) || $q->rowCount() == 0) return null;
+    $r = $q->fetchObject();
+    $q->closeCursor();
+    return (int) $r->id;
   }
 
-  public static function &getAllUsers($order = null, $limit = null, $index = null)
+  /**
+   * Generates a verifier token for use with setVerifierToken().
+   *
+   * @param string $username The username, for entropy.
+   * @param string $email The email address, for entropy.
+   * @return string The verifier token.
+   */
+  public static function generateVerifierToken(string $username, string $email) : string
   {
-    if (!(is_numeric($limit) || is_numeric($index))) {
+    return hash('sha256', sprintf('%s%s%s', mt_rand(), $username, $email));
+  }
+
+  /**
+   * Retrieves all possible User record objects as one array.
+   *
+   * @param array|null $order The column to order by.
+   * @param integer|null $limit The limit of records to return.
+   * @param integer|null $index The starting index of records to return, as limited by $limit.
+   * @return array|null The User object records, or null on error.
+   */
+  public static function &getAllUsers(?array $order = null, ?int $limit = null, ?int $index = null) : ?array
+  {
+    if (!is_null($limit) && !is_null($index))
+      $limit_clause = sprintf('LIMIT %d,%d', $index, $limit);
+    else if (!is_null($limit))
+      $limit_clause = sprintf('LIMIT %d', $limit);
+    else
       $limit_clause = '';
-    } else if (!is_numeric($index)) {
-      $limit_clause = 'LIMIT ' . (int) $limit;
-    } else {
-      $limit_clause = 'LIMIT ' . (int) $index . ',' . (int) $limit;
-    }
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare('
-        SELECT
-          `created_datetime`,
-          `display_name`,
-          `email`,
-          `id`,
-          `options_bitmask`,
-          `password_hash`,
-          `password_salt`,
-          `record_updated`,
-          `timezone`,
-          `username`,
-          `verified_datetime`,
-          `verifier_token`
-        FROM `users`
-        ORDER BY
-          ' . ($order ? '`' . $order[0] . '` ' . $order[1] . ',' : '') . '
-          `id` ' . ($order ? $order[1] : 'ASC') . ' ' . $limit_clause . ';'
-      );
-      if (!$stmt->execute()) {
-        throw new QueryException('Cannot refresh all users');
-      }
-      $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $objects[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $objects;
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot refresh all users', $e);
-    }
-    return null;
+
+    $q = Database::instance()->prepare(sprintf('
+      SELECT
+        `created_datetime`,
+        `display_name`,
+        `email`,
+        `id`,
+        `options_bitmask`,
+        `password_hash`,
+        `password_salt`,
+        `record_updated`,
+        `timezone`,
+        `username`,
+        `verified_datetime`,
+        `verifier_token`
+      FROM `users` ORDER BY %s %s;
+    ', (
+      $order ? (sprintf('`%s` %s, `id` %s', $order[0], $order[1], $order[1])) : '`id` ASC'
+    ), $limit_clause));
+    if (!$q || !$q->execute()) return null;
+
+    $r = [];
+    while ($row = $q->fetchObject()) $r[] = new self($row);
+    $q->closeCursor();
+    return $r;
   }
 
-  public function getAvatarURI($size)
+  /**
+   * Retrieves the avatar thumbnail url for this user. Requires the email address to be set.
+   *
+   * @param integer|null $size The pixel width & height size of the desired avatar thumbnail.
+   * @return string The avatar thumbnail url.
+   */
+  public function getAvatarURI(?int $size) : string
   {
     return Common::relativeUrlToAbsolute(
-      (new Gravatar($this->getEmail()))->getUrl($size, 'identicon')
+      (new \BNETDocs\Libraries\Gravatar($this->getEmail()))->getUrl($size, 'identicon')
     );
   }
 
-  public function getCreatedDateTime()
+  /**
+   * Retrieves the Date & Time this user record was created.
+   *
+   * @return DateTimeInterface|null The Date & Time interface-compatible value.
+   */
+  public function getCreatedDateTime() : ?DateTimeInterface
   {
     return $this->created_datetime;
   }
 
-  public function getCreatedEstimate() {
+  /**
+   * Retrieves the fuzzy estimate Date & Time this user record was created.
+   * Useful for printing in public spaces where the exact moment is less important than a vague when.
+   *
+   * @return string|null The relative Date & Time string.
+   */
+  public function getCreatedEstimate() : string
+  {
     $c = $this->getCreatedDateTime();
-    if (!$c) return $c;
-
-    $now = new DateTime('now');
+    $now = new DateTimeImmutable('now');
     $d = $c->diff($now);
     $i = 0;
     $r = '';
@@ -454,131 +424,207 @@ class User implements IDatabaseObject, JsonSerializable
     return $r;
   }
 
-  public function getDisplayName()
+  /**
+   * Retrieves the display name of this user.
+   *
+   * @return string|null The display name, or null if not set.
+   */
+  public function getDisplayName() : ?string
   {
     return $this->display_name;
   }
 
-  public function getEmail()
+  /**
+   * Retrieves the email address for this user.
+   *
+   * @return string The email address.
+   */
+  public function getEmail() : string
   {
     return $this->email;
   }
 
-  public function getId()
+  /**
+   * Retrieves the id for this user, or null if not yet committed to the database.
+   *
+   * @return integer|null The id.
+   */
+  public function getId() : ?int
   {
     return $this->id;
   }
 
-  public function getName()
+  /**
+   * Retrieves the printable name for this user, taking into consideration username and display name.
+   *
+   * @return string The display name, or if null, then the username.
+   */
+  public function getName() : string
   {
     return $this->display_name ?? $this->username;
   }
 
-  public function getOption(int $option)
+  /**
+   * Retrieves an option in the options bitmask for this user.
+   *
+   * @param integer $option One of the OPTION_* constants.
+   * @return boolean Whether the option is set (true) or unset (false).
+   * @throws OutOfBoundsException if option must be between 0-MAX_OPTIONS.
+   */
+  public function getOption(int $option) : bool
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
-    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_OPTIONS
       ));
-    }
 
     return ($this->options & $option) === $option;
   }
 
-  public function getOptions()
+  /**
+   * Retrieves the options bitmask for this user.
+   *
+   * @return integer The options bitmask, that are set (1) or unset (0).
+   */
+  public function getOptions() : int
   {
     return $this->options;
   }
 
-  public function getPasswordHash()
+  /**
+   * Retrieves the password hash for this user, or null for no password hash set.
+   *
+   * @return string|null The password hash.
+   */
+  public function getPasswordHash() : ?string
   {
     return $this->password_hash;
   }
 
-  public function getPasswordSalt()
+  /**
+   * Retrieves the password salt for this user, or null for no password salt set.
+   * Note: Salt is deprecated, this is now always set null for new passwords.
+   *
+   * @return string|null The password salt.
+   */
+  public function getPasswordSalt() : ?string
   {
     return $this->password_salt;
   }
 
-  public function getRecordUpdated()
+  /**
+   * Retrieves the Date & Time this user record was last updated.
+   *
+   * @return DateTimeInterface The Date & Time interface-compatible value.
+   */
+  public function getRecordUpdated() : DateTimeInterface
   {
     return $this->record_updated;
   }
 
-  public function getURI()
+  /**
+   * Retrieves the unique URL for this user.
+   *
+   * @return string The URL.
+   * @throws UnexpectedValueException when this user's id property is null.
+   */
+  public function getURI() : string
   {
     $id = $this->getId();
-
-    if (is_null($id))
-    {
-      throw new UnexpectedValueException('user id is null');
-    }
+    if (is_null($id)) throw new UnexpectedValueException('user id is null');
 
     return Common::relativeUrlToAbsolute(sprintf(
       '/user/%s/%s', $id, Common::sanitizeForUrl($this->getName(), true)
     ));
   }
 
-  public static function getUserCount()
+  /**
+   * Retrieves the total number of registered users.
+   *
+   * @return integer|false The count, or false on error.
+   */
+  public static function getUserCount() : int|false
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare('SELECT COUNT(*) FROM `users`;');
-    $r = $q->execute();
-
-    if (!$r || $q->rowCount() !== 1)
-    {
-      return false;
-    }
-
-    $r = $q->fetch(PDO::FETCH_NUM);
+    $q = Database::instance()->prepare('SELECT COUNT(*) AS `count` FROM `users`;');
+    if (!$q || !$q->execute() || $q->rowCount() != 1) return false;
+    $r = (int) $q->fetchObject()->count;
     $q->closeCursor();
-
-    return (int) $r[0];
+    return $r;
   }
 
-  public function getTimezone()
+  /**
+   * Retrieves the preferred timezone for this user, or null for no timezone preference/automatic.
+   *
+   * @return string|null The timezone.
+   */
+  public function getTimezone() : ?string
   {
     return $this->timezone;
   }
 
-  public function getUsername()
+  /**
+   * Retrieves the username for this user.
+   *
+   * @return string The username.
+   */
+  public function getUsername() : string
   {
     return $this->username;
   }
 
-  public function getUserProfile()
+  /**
+   * Retrieves the UserProfile record for this user, or null if no profile record.
+   *
+   * @return UserProfile|null
+   */
+  public function getUserProfile() : ?UserProfile
   {
     try
     {
       return new UserProfile($this->id);
     }
-    catch (UserProfileNotFoundException $e)
+    catch (UnexpectedValueException $e)
     {
       return null;
     }
   }
 
-  public function getVerifiedDateTime()
+  /**
+   * Retrieves the Date & Time this user record was verified.
+   *
+   * @return string The Date & Time interface-compatible value.
+   */
+  public function getVerifiedDateTime() : ?DateTimeInterface
   {
     return $this->verified_datetime;
   }
 
-  public function getVerifierToken()
+  /**
+   * Retrieves this user's verifier token value.
+   *
+   * @return string The verifier token.
+   */
+  public function getVerifierToken() : ?string
   {
     return $this->verifier_token;
   }
 
-  public function isDisabled()
+  /**
+   * Retrieves whether this user is disabled administratively a.k.a. banned.
+   *
+   * @return boolean Whether OPTION_DISABLED is set or unset in this user's options bitmask.
+   */
+  public function isDisabled() : bool
   {
     return $this->getOption(self::OPTION_DISABLED);
   }
 
-  public function isStaff()
+  /**
+   * Retrieves whether this user is considered a staff member or not.
+   *
+   * @return boolean Whether a select few OPTION_ACL_* are set in this user's options bitmask.
+   */
+  public function isStaff() : bool
   {
     return ($this->options & (
       self::OPTION_ACL_DOCUMENT_CREATE  |
@@ -604,12 +650,22 @@ class User implements IDatabaseObject, JsonSerializable
     ));
   }
 
-  public function isVerified()
+  /**
+   * Retrieves whether this user has the verified status or not.
+   *
+   * @return boolean Whether OPTION_VERIFIED is set or unset in this user's options bitmask.
+   */
+  public function isVerified() : bool
   {
     return $this->getOption(self::OPTION_VERIFIED);
   }
 
-  public function jsonSerialize()
+  /**
+   * Serializes this object's properties. Part of JsonSerializable interface.
+   *
+   * @return mixed The serialized value.
+   */
+  public function jsonSerialize() : mixed
   {
     return [
       'avatar_url' => $this->getAvatarURI(null),
@@ -621,90 +677,131 @@ class User implements IDatabaseObject, JsonSerializable
     ];
   }
 
-  public function setCreatedDateTime(DateTime $value)
+  /**
+   * Sets the Date & Time this user record was created.
+   *
+   * @param DateTimeInterface|string $value The Date & Time interface-compatible value.
+   * @return void
+   */
+  public function setCreatedDateTime(DateTimeInterface|string $value) : void
   {
-    $this->created_datetime = $value;
+    $this->created_datetime = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
   }
 
-  public function setDisplayName(?string $value)
+  /**
+   * Sets the display name for this user, displayed instead of the username.
+   *
+   * @param string|null $value The display name, or null to display the username instead.
+   * @return void
+   * @throws OutOfBoundsException if value must be null or between 1-MAX_DISPLAY_NAME characters.
+   */
+  public function setDisplayName(?string $value) : void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_DISPLAY_NAME))
-    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or between 1-%d characters', self::MAX_DISPLAY_NAME
       ));
-    }
 
     $this->display_name = $value;
   }
 
-  public function setEmail(string $value)
+  /**
+   * Sets the email address for this user.
+   *
+   * @param string $value The email address.
+   * @param boolean $ignore_empty Whether an empty value should be accepted, defaults false.
+   * @return void
+   * @throws OutOfBoundsException if value must be between 1-MAX_EMAIL characters.
+   * @throws UnexpectedValueException if value is not formatted as a valid email address.
+   */
+  public function setEmail(string $value, bool $ignore_empty = false) : void
   {
-    if (empty($value) || strlen($value) > self::MAX_EMAIL)
-    {
+    if ((!$ignore_empty && empty($value)) || strlen($value) > self::MAX_EMAIL)
       throw new OutOfBoundsException(sprintf(
         'value must be between 1-%d characters', self::MAX_EMAIL
       ));
-    }
 
-    if (!filter_var($value, FILTER_VALIDATE_EMAIL))
-    {
-      throw new UnexpectedValueException('value is not a valid email address');
-    }
+    if (!empty($value) && !filter_var($value, FILTER_VALIDATE_EMAIL))
+      throw new UnexpectedValueException('value is not formatted as a valid email address');
 
     $this->email = $value;
   }
 
-  public function setId(?int $value)
+  /**
+   * Sets the id for this user, or null for a new user not yet committed to the database.
+   *
+   * @param integer|null $value The id.
+   * @return void
+   * @throws OutOfBoundsException if value must be null or between 0-MAX_ID.
+   */
+  public function setId(?int $value) : void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
-    {
-      throw new InvalidArgumentException(sprintf(
-        'value must be between 0-%d', self::MAX_ID
+      throw new OutOfBoundsException(sprintf(
+        'value must be null or an integer between 0-%d', self::MAX_ID
       ));
-    }
 
     $this->id = $value;
   }
 
-  public function setOption(int $option, bool $value)
+  /**
+   * Toggles an option in the options bitmask for this user.
+   *
+   * @param integer $option One of the OPTION_* constants.
+   * @param boolean $value Whether it should be set (true) or unset (false).
+   * @return void
+   * @throws OutOfBoundsException if option must be between 0-MAX_OPTIONS.
+   */
+  public function setOption(int $option, bool $value) : void
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
-    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_OPTIONS
       ));
-    }
 
-    if ($value)
-    {
-      $this->options |= $option; // bitwise or
-    }
-    else
-    {
-      $this->options &= ~$option; // bitwise and ones complement
-    }
+    if ($value) $this->options |= $option; // bitwise or
+    else $this->options &= ~$option; // bitwise and ones complement
   }
 
-  public function setOptions(int $value)
+  /**
+   * Sets the options bitmask for this user.
+   *
+   * @param integer $value The options bitmask, that are set (1) or unset (0).
+   * @return void
+   * @throws OutOfBoundsException if option must be between 0-MAX_OPTIONS.
+   */
+  public function setOptions(int $value) : void
   {
     if ($value < 0 || $value > self::MAX_OPTIONS)
-    {
       throw new OutOfBoundsException(sprintf(
-        'value must be between 0-%d', self::MAX_OPTIONS
+        'value must be an integer between 0-%d', self::MAX_OPTIONS
       ));
-    }
 
     $this->options = $value;
   }
 
-  public function setPassword(string $value)
+  /**
+   * Sets the password hash and salt for this user from cleartext user input.
+   *
+   * @param string $value The cleartext password.
+   * @return void
+   */
+  public function setPassword(string $value) : void
   {
     $this->setPasswordHash(self::createPassword($value));
-    $this->setPasswordSalt(null);
+    $this->setPasswordSalt(null); // Deprecated
   }
 
-  public function setPasswordHash(?string $value)
+  /**
+   * Sets the password hash for this user.
+   *
+   * @param string|null $value The password hash.
+   * @return void
+   * @throws OutOfBoundsException if value must be null or between 1-MAX_PASSWORD_HASH characters.
+   */
+  public function setPasswordHash(?string $value) : void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_PASSWORD_HASH))
     {
@@ -716,61 +813,95 @@ class User implements IDatabaseObject, JsonSerializable
     $this->password_hash = $value;
   }
 
-  public function setPasswordSalt(?string $value)
+  /**
+   * Sets the password salt for this user.
+   * Note: Salt is deprecated, this is now always set null for new passwords.
+   *
+   * @param string|null $value The password salt.
+   * @return void
+   * @throws OutOfBoundsException if value must be null or between 1-MAX_PASSWORD_SALT characters.
+   */
+  public function setPasswordSalt(?string $value) : void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_PASSWORD_SALT))
-    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or between 1-%d characters', self::MAX_PASSWORD_SALT
       ));
-    }
 
     $this->password_salt = $value;
   }
 
-  public function setRecordUpdated(DateTime $value)
+  /**
+   * Sets the Date & Time this user record was last updated.
+   * This is implicitly called by allocate() & commit() and is thus unnecessary to call elsewhere.
+   *
+   * @param DateTimeInterface|string $value The Date & Time interface-compatible value.
+   * @return void
+   */
+  public function setRecordUpdated(DateTimeInterface|string $value) : void
   {
-    $this->record_updated = $value;
+    $this->record_updated = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
   }
 
-  public function setTimezone(?string $value)
+  /**
+   * Sets the preferred timezone for this user, or null for no preference/automatic.
+   *
+   * @param string|null $value The timezone.
+   * @return void
+   * @throws OutOfBoundsException if value must be null or between 1-MAX_TIMEZONE characters.
+   * @throws UnexpectedValueException if value must be a valid timezone.
+   */
+  public function setTimezone(?string $value) : void
   {
-    if (!is_null($value) && strlen($value) > self::MAX_TIMEZONE)
-    {
+    if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_TIMEZONE))
       throw new OutOfBoundsException(sprintf(
-        'value must be null or between 0-%d characters', self::MAX_TIMEZONE
+        'value must be null or between 1-%d characters', self::MAX_TIMEZONE
       ));
-    }
 
-    if (!empty($value))
+    // Create anonymous DateTimeZone object with $value to test for unknown or bad timezone.
+    // PHP throws Exception(sprintf("Unknown or bad timezone (%s)", $value)) if so.
+    // This Exception is wrapped into a new UnexpectedValueException.
+    try
     {
-      try
-      {
-        $tz = new DateTimeZone($value);
-        if (!$tz) throw new RuntimeException();
-      }
-      catch (Exception $e)
-      {
-        throw new UnexpectedValueException('value must be a valid timezone', $e);
-      }
+      if (!empty($value)) new DateTimeZone($value);
+    }
+    catch (\Exception $e)
+    {
+      throw new UnexpectedValueException('value must be a valid timezone', 0, $e);
     }
 
     $this->timezone = $value;
   }
 
-  public function setUsername(string $value)
+  /**
+   * Sets the username for this user.
+   *
+   * @param string $value The username.
+   * @param boolean $ignore_empty Whether an empty value should be accepted, defaults false.
+   * @return void
+   * @throws OutOfBoundsException if value must be between 1-MAX_USERNAME characters.
+   */
+  public function setUsername(string $value, bool $ignore_empty = false) : void
   {
-    if (empty($value) || strlen($value) > self::MAX_USERNAME)
-    {
+    if ((!$ignore_empty && empty($value)) || strlen($value) > self::MAX_USERNAME)
       throw new OutOfBoundsException(sprintf(
-        'value must be between 1-%d characters', self::MAX_USERNAME
+        'value must be a string between 1-%d characters', self::MAX_USERNAME
       ));
-    }
 
     $this->username = $value;
   }
 
-  public function setVerified(bool $value, bool $reset = false)
+  /**
+   * Sets the verified status for this user.
+   * If the verification changes, the Date & Time and verifier token also will be updated.
+   *
+   * @param boolean $value Whether this user is verified.
+   * @param boolean $reset Whether the Date & Time and verifier token should be reset if value is unchanged.
+   * @return void
+   */
+  public function setVerified(bool $value, bool $reset = false) : void
   {
     $old_value = $this->getOption(self::OPTION_VERIFIED);
     if (!$reset && $old_value === $value) return; // avoid resetting values every call
@@ -780,7 +911,7 @@ class User implements IDatabaseObject, JsonSerializable
     if ($value)
     {
       // verified
-      $this->setVerifiedDateTime(new DateTime('now'));
+      $this->setVerifiedDateTime(new DateTimeImmutable('now'));
       $this->setVerifierToken(null);
     }
     else
@@ -791,19 +922,32 @@ class User implements IDatabaseObject, JsonSerializable
     }
   }
 
-  public function setVerifiedDateTime(?DateTime $value)
+  /**
+   * Sets the Date & Time this user record was verified via email address, or null for not verified.
+   *
+   * @param DateTimeInterface|string|null $value The Date & Time interface-compatible value.
+   * @return void
+   */
+  public function setVerifiedDateTime(DateTimeInterface|string|null $value) : void
   {
-    $this->verified_datetime = $value;
+    $this->verified_datetime = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
   }
 
-  public function setVerifierToken(?string $value)
+  /**
+   * Sets the verifier token for this user, to be used with email address verification.
+   *
+   * @param string|null $value The verifier token.
+   * @return void
+   * @throws OutOfBoundsException if value must be null or between 1-MAX_VERIFIER_TOKEN characters.
+   */
+  public function setVerifierToken(?string $value) : void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_VERIFIER_TOKEN))
-    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or between 1-%d characters', self::MAX_VERIFIER_TOKEN
       ));
-    }
 
     $this->verifier_token = $value;
   }

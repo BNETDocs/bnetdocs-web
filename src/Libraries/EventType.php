@@ -3,22 +3,20 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\EventTypes;
-use \InvalidArgumentException;
-use \UnexpectedValueException;
 
-class EventType {
+class EventType
+{
+  protected int $id;
 
-  protected $id;
-
-  public function __construct( $id ) {
-    if ( !is_numeric( $id ) ) {
-      throw InvalidArgumentException;
-    }
-    $this->id = $id;
+  public function __construct(int $value)
+  {
+    $this->id = $value;
   }
 
-  public function __toString() {
-    switch ( $this->id ) {
+  public function __toString()
+  {
+    switch ($this->id)
+    {
       case EventTypes::LOG_NOTE:
         return 'Log Note';
       case EventTypes::SITE_DEPLOY:
@@ -108,8 +106,7 @@ class EventType {
       case EventTypes::SLACK_UNFURL:
         return 'Slack Unfurl';
       default:
-        throw UnexpectedValueException();
+        throw new \UnexpectedValueException();
     }
   }
-
 }

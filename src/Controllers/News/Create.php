@@ -2,116 +2,102 @@
 
 namespace BNETDocs\Controllers\News;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\UnspecifiedViewException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\NewsPost;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\News\Create as NewsCreateModel;
+use \BNETDocs\Libraries\Router;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
+class Create extends \BNETDocs\Controllers\Base
+{
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\News\Create();
+  }
 
-class Create extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $model                  = new NewsCreateModel();
-    $model->error           = null;
-    $model->news_categories = null;
-    $model->user            = Authentication::$user;
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $this->model->acl_allowed = $this->model->active_user
+      && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_NEWS_CREATE);
 
-    $model->acl_allowed = ($model->user && $model->user->getOption(
-      User::OPTION_ACL_NEWS_CREATE
-    ));
+    if (!$this->model->acl_allowed)
+    {
+      $this->model->_responseCode = 403;
+      $this->model->error = 'ACL_NOT_SET';
+      return true;
+    }
 
-    $model->news_categories = NewsCategory::getAll();
-    usort($model->news_categories, function($a, $b){
+    $this->model->news_categories = NewsCategory::getAll();
+    usort($this->model->news_categories, function($a, $b){
       $oA = $a->getSortId();
       $oB = $b->getSortId();
       if ($oA == $oB) return 0;
       return ($oA < $oB) ? -1 : 1;
     });
 
-    if ($router->getRequestMethod() == 'POST') {
-      $this->handlePost($router, $model);
-    } else if ($router->getRequestMethod() == 'GET') {
-      $model->markdown   = true;
-      $model->rss_exempt = false;
+    if (Router::requestMethod() == Router::METHOD_POST)
+    {
+      $this->handlePost();
+    }
+    else if (Router::requestMethod() == Router::METHOD_GET)
+    {
+      $this->model->error = '';
+      $this->model->markdown = true;
+      $this->model->rss_exempt = false;
     }
 
-    $view->render($model);
-    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    return $model;
+    $this->model->_responseCode = 200;
+    return true;
   }
 
-  protected function handlePost(Router &$router, NewsCreateModel &$model) {
-    if (!$model->acl_allowed) {
-      $model->error = 'ACL_NOT_SET';
-      return;
+  protected function handlePost() : void
+  {
+    $q = Router::query();
+    $publish = $q['publish'] ?? null;
+
+    $this->model->category = (int) ($q['category'] ?? null);
+    $this->model->content = $q['content'] ?? '';
+    $this->model->markdown = (bool) ($q['markdown'] ?? null);
+    $this->model->rss_exempt = (bool) ($q['rss_exempt'] ?? null);
+    $this->model->title = $q['title'] ?? '';
+
+    if (empty($title))
+    {
+      $this->model->error = 'EMPTY_TITLE';
     }
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+    else if (empty($content))
+    {
+      $this->model->error = 'EMPTY_CONTENT';
     }
-    $data       = $router->getRequestBodyArray();
-    $category   = (isset($data['category'  ]) ? $data['category'  ] : null);
-    $title      = (isset($data['title'     ]) ? $data['title'     ] : null);
-    $markdown   = (isset($data['markdown'  ]) ? $data['markdown'  ] : null);
-    $content    = (isset($data['content'   ]) ? $data['content'   ] : null);
-    $rss_exempt = (isset($data['rss_exempt']) ? $data['rss_exempt'] : null);
-    $publish    = (isset($data['publish'   ]) ? $data['publish'   ] : null);
-    $save       = (isset($data['save'      ]) ? $data['save'      ] : null);
+    else
+    {
+      $this->model->news_post = new NewsPost(null);
 
-    $model->category   = $category;
-    $model->title      = $title;
-    $model->markdown   = $markdown;
-    $model->content    = $content;
-    $model->rss_exempt = $rss_exempt;
+      $this->model->news_post->setCategoryId($this->model->category);
+      $this->model->news_post->setContent($this->model->content);
+      $this->model->news_post->setMarkdown($this->model->markdown);
+      $this->model->news_post->setPublished($publish);
+      $this->model->news_post->setRSSExempt($this->model->rss_exempt);
+      $this->model->news_post->setTitle($this->model->title);
 
-    if (empty($title)) {
-      $model->error = 'EMPTY_TITLE';
-    } else if (empty($content)) {
-      $model->error = 'EMPTY_CONTENT';
-    }
-
-    $options_bitmask = 0;
-    if ($markdown  ) $options_bitmask |= NewsPost::OPTION_MARKDOWN;
-    if ($rss_exempt) $options_bitmask |= NewsPost::OPTION_RSS_EXEMPT;
-    if ($publish   ) $options_bitmask |= NewsPost::OPTION_PUBLISHED;
-
-    try {
-
-      $success = NewsPost::create(
-        $model->user->getId(), $category, $options_bitmask, $title, $content
-      );
-
-    } catch (QueryException $e) {
-
-      // SQL error occurred. We can show a friendly message to the user while
-      // also notifying this problem to staff.
-      Logger::logException($e);
-
-    }
-
-    if (!$success) {
-      $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
+      $this->model->error = $this->model->news_post->commit() ? false : 'INTERNAL_ERROR';
     }
 
     Logger::logEvent(
-      EventTypes::NEWS_CREATED,
-      $model->user->getId(),
+      \BNETDocs\Libraries\EventTypes::NEWS_CREATED,
+      $this->model->active_user->getId(),
       getenv('REMOTE_ADDR'),
       json_encode([
-        'error'           => $model->error,
-        'category_id'     => $category,
-        'options_bitmask' => $options_bitmask,
-        'title'           => $title,
-        'content'         => $content,
+        'error'           => $this->model->error,
+        'category_id'     => $this->model->category,
+        'options_bitmask' => $this->model->options_bitmask,
+        'title'           => $this->model->title,
+        'content'         => $this->model->content,
       ])
     );
   }

@@ -8,8 +8,16 @@ $active_user = $this->getContext()->active_user;
 $comments = $this->getContext()->comments;
 $object = $this->getContext()->document;
 $object_id = $this->getContext()->document_id;
-$title = 'Document Not Found';
-$description = 'The requested document does not exist or could not be found.';
+if ($this->getContext()->_responseCode == 403)
+{
+  $title = 'Access Denied';
+  $description = 'You do not have the required privileges to view this document.';
+}
+else
+{
+  $title = 'Document Not Found';
+  $description = 'The requested document does not exist or could not be found.';
+}
 $this->opengraph->attach(new Pair('type', 'article'));
 $url = Common::relativeUrlToAbsolute('/document/' . rawurlencode($object_id));
 if ($object)
@@ -26,7 +34,7 @@ if ($object)
   $description = filter_var($brief, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   if (empty($description))
   {
-    $description = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($content, FILTER_SANITIZE_STRING)), "\n", 300), '. ', 300), '.');
+    $description = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS)), "\n", 300), '. ', 300), '.');
   }
 }
 $this->opengraph->attach(new Pair('url', $url));

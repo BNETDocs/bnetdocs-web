@@ -1,6 +1,8 @@
-<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+<?php
+
 namespace BNETDocs\Models\Email\User;
-class ResetPassword extends Base
+
+class ResetPassword extends \BNETDocs\Models\Email\Base
 {
   public $email;
   public $token;

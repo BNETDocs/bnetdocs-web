@@ -2,13 +2,10 @@
 
 namespace BNETDocs\Models\Comment;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Create extends Model {
-
+class Create extends \BNETDocs\Models\ActiveUser
+{
   public $acl_allowed;
   public $origin;
   public $response;
   public $user;
-
 }

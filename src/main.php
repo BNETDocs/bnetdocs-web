@@ -20,255 +20,122 @@
 
 namespace BNETDocs;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\BlizzardCheck;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\SlackCheck;
-use \BNETDocs\Libraries\VersionInfo;
+use \BNETDocs\Libraries\Router;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Router;
 
-function main() {
-
-  if (!file_exists(__DIR__ . "/../lib/autoload.php")) {
-    http_response_code(500);
-    exit("Server misconfigured. Please run `composer install`.");
+function main() : void
+{
+  if (!file_exists(__DIR__ . '/../lib/autoload.php'))
+  {
+    \http_response_code(500);
+    die('Server misconfigured. Please run `composer install`.');
   }
-  require(__DIR__ . "/../lib/autoload.php");
+  require(__DIR__ . '/../lib/autoload.php');
 
   date_default_timezone_set('Etc/UTC');
 
   Common::$config = json_decode(file_get_contents(
-    __DIR__ . "/../etc/config.phoenix.json"
+    __DIR__ . '/../etc/config.phoenix.json'
   ));
 
-  VersionInfo::$version = VersionInfo::get();
+  \BNETDocs\Libraries\ExceptionHandler::register();
 
   // This must come after other registered error handlers so that Logger
   // has a chance to create its own error handlers for Application Performance
   // Monitoring (APM) purposes. This must also come after assignment of
   // Common::$config because we may need access tokens from the config.
-  Logger::initialize();
+  \BNETDocs\Libraries\Logger::initialize();
 
-  Common::$database = null;
-
-  DatabaseDriver::$character_set = Common::$config->mysql->character_set;
-  DatabaseDriver::$database_name = Common::$config->mysql->database;
-  DatabaseDriver::$password      = Common::$config->mysql->password;
-  DatabaseDriver::$servers       = Common::$config->mysql->servers;
-  DatabaseDriver::$timeout       = Common::$config->mysql->timeout;
-  DatabaseDriver::$timezone      = Common::$config->mysql->timezone;
-  DatabaseDriver::$username      = Common::$config->mysql->username;
-
-  Authentication::verify();
-
-  BlizzardCheck::log_blizzard_request();
-  SlackCheck::log_slack_request();
-
-  $router = new Router(
-    "BNETDocs\\Controllers\\",
-    "BNETDocs\\Views\\"
-  );
+  \BNETDocs\Libraries\Authentication::verify();
+  \BNETDocs\Libraries\BlizzardCheck::log_blizzard_request();
+  \BNETDocs\Libraries\SlackCheck::log_slack_request();
 
   if (Common::$config->bnetdocs->maintenance[0]) {
-    $router->addRoute( // URL: *
-      "#.*#", "Maintenance", "MaintenanceHtml",
-      Common::$config->bnetdocs->maintenance[1]
-    );
+    Router::$routes = [
+      ['#.*#', 'Maintenance', ['MaintenanceHtml'], Common::$config->bnetdocs->maintenance[1]],
+    ];
   } else {
-    $router->addRoute( // URL: /
-      "#^/$#", "Legacy", "LegacyHtml"
-    );
-    $router->addRoute( // URL: /comment/create
-      "#^/comment/create/?$#", "Comment\\Create", "Comment\\CreateJSON"
-    );
-    $router->addRoute( // URL: /comment/delete
-      "#^/comment/delete/?$#", "Comment\\Delete", "Comment\\DeleteHtml"
-    );
-    $router->addRoute( // URL: /comment/edit
-      "#^/comment/edit/?$#", "Comment\\Edit", "Comment\\EditHtml"
-    );
-    $router->addRoute( // URL: /credits
-      "#^/credits/?$#", "Credits", "CreditsHtml"
-    );
-    $router->addRoute( // URL: /discord
-      "#^/discord/?$#", "Discord", "DiscordHtml"
-    );
-    $router->addRoute( // URL: /document/:id.txt
-      "#^/document/(\d+)\.txt#", "Document\\View", "Document\\ViewPlain"
-    );
-    $router->addRoute( // URL: /document/:id
-      "#^/document/(\d+)/?#", "Document\\View", "Document\\ViewHtml"
-    );
-    $router->addRoute( // URL: /document/create
-      "#^/document/create/?$#", "Document\\Create", "Document\\CreateHtml"
-    );
-    $router->addRoute( // URL: /document/delete
-      "#^/document/delete/?$#", "Document\\Delete", "Document\\DeleteHtml"
-    );
-    $router->addRoute( // URL: /document/edit
-      "#^/document/edit/?$#", "Document\\Edit", "Document\\EditHtml"
-    );
-    $router->addRoute( // URL: /document/index
-      "#^/document/index/?$#", "Document\\Index", "Document\\IndexHtml"
-    );
-    $router->addRoute( // URL: /document/index.json
-      "#^/document/index\.json/?$#", "Document\\Index", "Document\\IndexJSON"
-    );
-    $router->addRoute( // URL: /donate
-      "#^/donate/?$#", "Donate", "DonateHtml"
-    );
-    $router->addRoute( // URL: /eventlog/index
-      "#^/eventlog/index/?$#", "EventLog\\Index", "EventLog\\IndexHtml"
-    );
-    $router->addRoute( // URL: /eventlog/view
-      "#^/eventlog/view/?$#", "EventLog\\View", "EventLog\\ViewHtml"
-    );
-    $router->addRoute( // URL: /legal
-      "#^/legal/?$#", "Legal", "LegalHtml"
-    );
-    $router->addRoute( // URL: /legal.txt
-      "#^/legal.txt$#", "Legal", "LegalPlain"
-    );
-    $router->addRoute( // URL: /news
-      "#^/news/?$#", "News", "NewsHtml"
-    );
-    $router->addRoute( // URL: /news/:id.txt
-      "#^/news/(\d+)\.txt#", "News\\View", "News\\ViewPlain"
-    );
-    $router->addRoute( // URL: /news/:id
-      "#^/news/(\d+)/?#", "News\\View", "News\\ViewHtml"
-    );
-    $router->addRoute( // URL: /news.rss
-      "#^/news\.rss$#", "News", "NewsRSS"
-    );
-    $router->addRoute( // URL: /news/create
-      "#^/news/create/?$#", "News\\Create", "News\\CreateHtml"
-    );
-    $router->addRoute( // URL: /news/edit
-      "#^/news/edit/?$#", "News\\Edit", "News\\EditHtml"
-    );
-    $router->addRoute( // URL: /news/delete
-      "#^/news/delete/?$#", "News\\Delete", "News\\DeleteHtml"
-    );
-    $router->addRoute( // URL: /packet/:id.json
-      "#^/packet/(\d+)/?.*\.json$#", "Packet\\View", "Packet\\ViewJSON"
-    );
-    $router->addRoute( // URL: /packet/:id.txt
-      "#^/packet/(\d+)\.txt#", "Packet\\View", "Packet\\ViewPlain"
-    );
-    $router->addRoute( // URL: /packet/:id
-      "#^/packet/(\d+)/?#", "Packet\\View", "Packet\\ViewHtml"
-    );
-    $router->addRoute( // URL: /packet/create
-      "#^/packet/create/?$#", "Packet\\Create", "Packet\\CreateHtml"
-    );
-    $router->addRoute( // URL: /packet/delete
-      "#^/packet/delete/?$#", "Packet\\Delete", "Packet\\DeleteHtml"
-    );
-    $router->addRoute( // URL: /packet/edit
-      "#^/packet/edit/?$#", "Packet\\Edit", "Packet\\EditHtml"
-    );
-    $router->addRoute( // URL: /packet/index.cpp
-      "#^/packet/index\.cpp/?$#", "Packet\\Index", "Packet\\IndexCpp"
-    );
-    $router->addRoute( // URL: /packet/index.json
-      "#^/packet/index\.json/?$#", "Packet\\Index", "Packet\\IndexJSON"
-    );
-    $router->addRoute( // URL: /packet/index.java
-      "#^/packet/index\.java/?$#", "Packet\\Index", "Packet\\IndexJava"
-    );
-    $router->addRoute( // URL: /packet/index.php
-      "#^/packet/index\.php/?$#", "Packet\\Index", "Packet\\IndexPHP"
-    );
-    $router->addRoute( // URL: /packet/index.vb
-      "#^/packet/index\.vb/?$#", "Packet\\Index", "Packet\\IndexVB"
-    );
-    $router->addRoute( // URL: /packet/index
-      "#^/packet/index/?$#", "Packet\\Index", "Packet\\IndexHtml"
-    );
-    $router->addRoute( // URL: /phpinfo
-      '#^/phpinfo/?$#', 'PhpInfo', 'PhpInfoHtml'
-    );
-    $router->addRoute( // URL: /privacy
-      '#^/privacy/?$#', 'PrivacyNotice', 'PrivacyNoticeHtml'
-    );
-    $router->addRoute( // URL: /robots.txt
-      "#^/robots.txt/?$#", "Robotstxt", "Robotstxt"
-    );
-    $router->addRoute( // URL: /server/:id.json
-      "#^/server/(\d+)/?.*\.json$#", "Server\\View", "Server\\ViewJSON"
-    );
-    $router->addRoute( // URL: /server/:id.txt
-      "#^/server/(\d+)/?.*\.txt$#", "Server\\View", "Server\\ViewPlain"
-    );
-    $router->addRoute( // URL: /server/:id
-      "#^/server/(\d+)/?#", "Server\\View", "Server\\ViewHtml"
-    );
-    //$router->addRoute( // URL: /server/create
-    //  "#^/server/create/?$#", "Server\\Create", "Server\\CreateHtml"
-    //);
-    $router->addRoute( // URL: /server/updatejob.json
-      "#^/server/updatejob.json$#", "Server\\UpdateJob", "Server\\UpdateJobJSON"
-    );
-    $router->addRoute( // URL: /servers
-      "#^/servers/?$#", "Servers", "ServersHtml"
-    );
-    $router->addRoute( // URL: /servers.json
-      "#^/servers\.json$#", "Servers", "ServersJSON"
-    );
-    $router->addRoute( // URL: /status
-      "#^/status/?$#", "RedirectSoft", "RedirectSoftHtml", "/status.json"
-    );
-    $router->addRoute( // URL: /status.json
-      "#^/status\.json/?$#", "Status", "StatusJSON"
-    );
-    $router->addRoute( // URL: /status.txt
-      "#^/status\.txt/?$#", "Status", "StatusPlain"
-    );
-    $router->addRoute( // URL: /user/:id
-      "#^/user/(\d+)/?#", "User\\View", "User\\ViewHtml"
-    );
-    $router->addRoute( // URL: /user/changepassword
-      "#^/user/changepassword/?$#",
-      "User\\ChangePassword", "User\\ChangePasswordHtml"
-    );
-    $router->addRoute( // URL: /user/createpassword
-      "#^/user/createpassword/?$#",
-      "User\\CreatePassword", "User\\CreatePasswordHtml"
-    );
-    $router->addRoute( // URL: /user/index
-      "#^/user/index/?$#", "User\\Index", "User\\IndexHtml"
-    );
-    $router->addRoute( // URL: /user/login
-      "#^/user/login/?$#", "User\\Login", "User\\LoginHtml"
-    );
-    $router->addRoute( // URL: /user/logout
-      "#^/user/logout/?$#", "User\\Logout", "User\\LogoutHtml"
-    );
-    $router->addRoute( // URL: /user/register
-      "#^/user/register/?$#", "User\\Register", "User\\RegisterHtml"
-    );
-    $router->addRoute( // URL: /user/resetpassword
-      "#^/user/resetpassword/?$#",
-      "User\\ResetPassword", "User\\ResetPasswordHtml"
-    );
-    $router->addRoute( // URL: /user/update
-      "#^/user/update/?$#", "User\\Update", "User\\UpdateHtml"
-    );
-    $router->addRoute( // URL: /user/verify
-      "#^/user/verify/?$#", "User\\Verify", "User\\VerifyHtml"
-    );
-    $router->addRoute( // URL: /welcome
-      "#^/welcome/?$#", "Welcome", "WelcomeHtml"
-    );
-    $router->addRoute("#.*#", "PageNotFound", "PageNotFoundHtml"); // URL: *
+    Router::$routes = [
+      ['#^/$#', 'Legacy', ['LegacyHtml']],
+      ['#^/\.well-known/change-password$#', 'RedirectSoft', ['RedirectSoftHtml', 'RedirectSoftJson', 'RedirectSoftPlain'], '/user/changepassword'],
+      ['#^/comment/create/?$#', 'Comment\\Create', ['Comment\\CreateJson']],
+      ['#^/comment/delete/?$#', 'Comment\\Delete', ['Comment\\DeleteHtml']],
+      ['#^/comment/edit/?$#', 'Comment\\Edit', ['Comment\\EditHtml']],
+      ['#^/credits/?$#', 'Credits', ['CreditsHtml']],
+      ['#^/discord/?$#', 'Discord', ['DiscordHtml']],
+      ['#^/document/(\d+)/?.*\.html?$#', 'Document\\View', ['Document\\ViewHtml']],
+      ['#^/document/(\d+)/?.*\.json$#', 'Document\\View', ['Document\\ViewJson']],
+      ['#^/document/(\d+)/?.*\.txt$#', 'Document\\View', ['Document\\ViewPlain']],
+      ['#^/document/(\d+)/?#', 'Document\\View', ['Document\\ViewHtml', 'Document\\ViewPlain']],
+      ['#^/document/create/?$#', 'Document\\Create', ['Document\\CreateHtml']],
+      ['#^/document/delete/?$#', 'Document\\Delete', ['Document\\DeleteHtml']],
+      ['#^/document/edit/?$#', 'Document\\Edit', ['Document\\EditHtml']],
+      ['#^/document/index\.html?$#', 'Document\\Index', ['Document\\IndexHtml']],
+      ['#^/document/index\.json$#', 'Document\\Index', ['Document\\IndexJson']],
+      ['#^/document/index/?$#', 'Document\\Index', ['Document\\IndexHtml', 'Document\\IndexJson']],
+      ['#^/donate/?$#', 'Donate', ['DonateHtml']],
+      ['#^/eventlog/index/?$#', 'EventLog\\Index', ['EventLog\\IndexHtml']],
+      ['#^/eventlog/view/?$#', 'EventLog\\View', ['EventLog\\ViewHtml']],
+      ['#^/legal\.html?$#', 'Legal', ['LegalHtml']],
+      ['#^/legal\.txt$#', 'Legal', ['LegalPlain']],
+      ['#^/legal/?$#', 'Legal', ['LegalHtml', 'LegalPlain']],
+      ['#^/news/?$#', 'News', ['NewsHtml'], false],
+      ['#^/news/(\d+)/?.*\.html?$#', 'News\\View', ['News\\ViewHtml']],
+      ['#^/news/(\d+)/?.*\.json$#', 'News\\View', ['News\\ViewJson']],
+      ['#^/news/(\d+)/?.*\.txt$#', 'News\\View', ['News\\ViewPlain']],
+      ['#^/news/(\d+)/?#', 'News\\View', ['News\\ViewHtml', 'News\\ViewJson', 'News\\ViewPlain']],
+      ['#^/news\.rss$#', 'News', ['NewsRSS'], true],
+      ['#^/news/create/?$#', 'News\\Create', ['News\\CreateHtml']],
+      ['#^/news/edit/?$#', 'News\\Edit', ['News\\EditHtml']],
+      ['#^/news/delete/?$#', 'News\\Delete', ['News\\DeleteHtml']],
+      ['#^/packet/(\d+)/?.*\.html?$#', 'Packet\\View', ['Packet\\ViewHtml']],
+      ['#^/packet/(\d+)/?.*\.json$#', 'Packet\\View', ['Packet\\ViewJson']],
+      ['#^/packet/(\d+)/?.*\.txt$#', 'Packet\\View', ['Packet\\ViewPlain']],
+      ['#^/packet/(\d+)/?#', 'Packet\\View', ['Packet\\ViewHtml', 'Packet\\ViewJson', 'Packet\\ViewPlain']],
+      ['#^/packet/create/?$#', 'Packet\\Create', ['Packet\\CreateHtml']],
+      ['#^/packet/delete/?$#', 'Packet\\Delete', ['Packet\\DeleteHtml']],
+      ['#^/packet/edit/?$#', 'Packet\\Edit', ['Packet\\EditHtml']],
+      ['#^/packet/index\.c(?:pp)?$#', 'Packet\\Index', ['Packet\\IndexCpp'], true],
+      ['#^/packet/index\.html?$#', 'Packet\\Index', ['Packet\\IndexHtml'], false],
+      ['#^/packet/index\.json$#', 'Packet\\Index', ['Packet\\IndexJson'], false],
+      ['#^/packet/index\.java$#', 'Packet\\Index', ['Packet\\IndexJava'], true],
+      ['#^/packet/index\.php$#', 'Packet\\Index', ['Packet\\IndexPhp'], true],
+      ['#^/packet/index\.vb$#', 'Packet\\Index', ['Packet\\IndexVb'], true],
+      ['#^/packet/index/?$#', 'Packet\\Index', ['Packet\\IndexHtml', 'Packet\\IndexJson'], false],
+      ['#^/phpinfo/?$#', 'PhpInfo', ['PhpInfoHtml']],
+      ['#^/privacy(?:/|\.html?)?$#', 'PrivacyNotice', ['PrivacyNoticeHtml']],
+      ['#^/robots\.txt$#', 'Robotstxt', ['Robotstxt']],
+      ['#^/server/(\d+)/?.*\.html?$#', 'Server\\View', ['Server\\ViewHtml']],
+      ['#^/server/(\d+)/?.*\.json$#', 'Server\\View', ['Server\\ViewJson']],
+      ['#^/server/(\d+)/?.*\.txt$#', 'Server\\View', ['Server\\ViewPlain']],
+      ['#^/server/(\d+)/?#', 'Server\\View', ['Server\\ViewHtml', 'Server\\ViewJson', 'Server\\ViewPlain']],
+    //['#^/server/create/?$#', 'Server\\Create', ['Server\\CreateHtml']],
+      ['#^/server/updatejob\.json$#', 'Server\\UpdateJob', ['Server\\UpdateJobJson']],
+      ['#^/servers\.html?$#', 'Servers', ['ServersHtml']],
+      ['#^/servers\.json$#', 'Servers', ['ServersJson']],
+      ['#^/servers/?$#', 'Servers', ['ServersHtml', 'ServersJson']],
+      ['#^/status\.json$#', 'Status', ['StatusJson']],
+      ['#^/status\.txt$#', 'Status', ['StatusPlain']],
+      ['#^/status/?$#', 'Status', ['StatusJson', 'StatusPlain']],
+      ['#^/user/(\d+)/?.*\.html?$#', 'User\\View', ['User\\ViewHtml']],
+      ['#^/user/(\d+)/?.*\.json$#', 'User\\View', ['User\\ViewJson']],
+      ['#^/user/(\d+)/?#', 'User\\View', ['User\\ViewHtml', 'User\\ViewJson']],
+      ['#^/user/changepassword/?$#', 'User\\ChangePassword', ['User\\ChangePasswordHtml']],
+      ['#^/user/createpassword/?$#', 'User\\CreatePassword', ['User\\CreatePasswordHtml']],
+      ['#^/user/index/?$#', 'User\\Index', ['User\\IndexHtml']],
+      ['#^/user/login/?$#', 'User\\Login', ['User\\LoginHtml']],
+      ['#^/user/logout/?$#', 'User\\Logout', ['User\\LogoutHtml']],
+      ['#^/user/register/?$#', 'User\\Register', ['User\\RegisterHtml']],
+      ['#^/user/resetpassword/?$#', 'User\\ResetPassword', ['User\\ResetPasswordHtml']],
+      ['#^/user/update/?$#', 'User\\Update', ['User\\UpdateHtml']],
+      ['#^/user/verify/?$#', 'User\\Verify', ['User\\VerifyHtml']],
+      ['#^/welcome/?$#', 'Welcome', ['WelcomeHtml']],
+    ];
+
+    Router::$route_not_found = ['PageNotFound', ['PageNotFoundHtml', 'PageNotFoundJson', 'PageNotFoundPlain']];
   }
 
-  $router->route();
-  $router->send();
-
+  Router::invoke();
 }
 
 main();

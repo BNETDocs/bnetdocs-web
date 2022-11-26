@@ -2,22 +2,14 @@
 
 namespace BNETDocs\Views\Comment;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\Comment\Delete as CommentDeleteModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
+class DeleteHtml extends \BNETDocs\Views\Base\Html
+{
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  {
+    if (!$model instanceof \BNETDocs\Models\Comment\Delete)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-class DeleteHtml extends View {
-  public function getMimeType() {
-    return 'text/html;charset=utf-8';
-  }
-
-  public function render(Model &$model) {
-    if (!$model instanceof CommentDeleteModel) {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'Comment/Delete'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
+    (new \BNETDocs\Libraries\Template($model, 'Comment/Delete'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
 }

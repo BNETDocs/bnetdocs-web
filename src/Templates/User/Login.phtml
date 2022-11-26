@@ -1,5 +1,6 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
+use \BNETDocs\Models\User\Login as LoginModel;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Account Login';
@@ -9,26 +10,28 @@ $email = filter_var($this->getContext()->email, FILTER_SANITIZE_FULL_SPECIAL_CHA
 $error = $this->getContext()->error;
 switch ($error)
 {
-  case 'ALREADY_LOGGED_IN': $message = 'You are already logged in, you must log out first.'; break;
-  case 'EMPTY_EMAIL': $message = 'The email address was left blank.'; break;
-  case 'USER_NOT_FOUND':
-  case 'PASSWORD_INCORRECT': $message = 'Incorrect email address or password.'; break;
-  case 'USER_DISABLED': $message = 'The account has been administratively disabled.'; break;
-  case 'USER_NOT_VERIFIED': $message = 'The account\'s identity has not been verified yet. No email yet? Use the Recover Password button.'; break;
-  case 'LOGIN_DISABLED': $message = 'Logging in has been administratively disabled indefinitely.'; break;
+  case LoginModel::ERROR_ALREADY_LOGGED_IN: $message = 'You are already logged in, you must log out first.'; break;
+  case LoginModel::ERROR_EMPTY_EMAIL: $message = 'The email address was left blank.'; break;
+  case LoginModel::ERROR_EMPTY_PASSWORD: $message = 'The password was left blank.'; break;
+  case LoginModel::ERROR_USER_NOT_FOUND:
+  case LoginModel::ERROR_INCORRECT_PASSWORD: $message = 'Incorrect email address or password.'; break;
+  case LoginModel::ERROR_INTERNAL: $message = 'Internal error.'; break;
+  case LoginModel::ERROR_NONE: $message = ''; break;
+  case LoginModel::ERROR_SUCCESS: $message = 'You have successfully logged in!'; break;
+  case LoginModel::ERROR_SYSTEM_DISABLED: $message = 'Logging in has been administratively disabled indefinitely.'; break;
+  case LoginModel::ERROR_USER_DISABLED: $message = 'The account has been administratively disabled.'; break;
+  case LoginModel::ERROR_USER_NOT_VERIFIED: $message = 'The account\'s identity has not been verified yet. No email yet? Use the Recover Password button.'; break;
   default: $message = $error;
 }
 require('./header.inc.phtml'); ?>
 <div class="container">
-<? if ($error !== false) { ?>
-  <form method="POST" action="?">
+<? if ($error !== LoginModel::ERROR_SUCCESS) { ?>
+  <form method="POST">
     <div class="row"><div class="card mx-auto justify-content-center">
       <h3 class="card-header text-center"><?=$title?></h3>
       <div class="card-body">
 <? if (!empty($message)) { ?>
-      <div class="alert alert-danger">
-        <p class="mb-0"><?=$message?></p>
-      </div>
+      <div class="alert alert-danger"><p class="mb-0"><?=$message?></p></div>
 <? } ?>
       <div class="form-group">
         <label class="font-weight-bold" for="email">Email address:</label>
@@ -45,9 +48,7 @@ require('./header.inc.phtml'); ?>
   </form>
 <? } else { ?>
   <h1 class="text-success">Logged In</h1>
-  <div class="alert alert-success">
-    <p class="mb-0">You have successfully logged in!</p>
-  </div>
+  <div class="alert alert-success"><p class="mb-0"><?=$message?></p></div>
 <? } ?>
 </div>
 <? require('./footer.inc.phtml'); ?>

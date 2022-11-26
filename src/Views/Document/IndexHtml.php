@@ -2,22 +2,14 @@
 
 namespace BNETDocs\Views\Document;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\Document\Index as DocumentIndexModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
+class IndexHtml extends \BNETDocs\Views\Base\Html
+{
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  {
+    if (!$model instanceof \BNETDocs\Models\Document\Index)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-class IndexHtml extends View {
-  public function getMimeType() {
-    return 'text/html;charset=utf-8';
-  }
-
-  public function render(Model &$model) {
-    if (!$model instanceof DocumentIndexModel) {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'Document/Index'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
+    (new \BNETDocs\Libraries\Template($model, 'Document/Index'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
 }

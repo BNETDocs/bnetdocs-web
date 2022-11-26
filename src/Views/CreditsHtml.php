@@ -2,24 +2,14 @@
 
 namespace BNETDocs\Views;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\Credits as CreditsModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
+class CreditsHtml extends \BNETDocs\Views\Base\Html
+{
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  {
+    if (!$model instanceof \BNETDocs\Models\Credits)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-class CreditsHtml extends View {
-
-  public function getMimeType() {
-    return 'text/html;charset=utf-8';
+    (new \BNETDocs\Libraries\Template($model, 'Credits'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
-
-  public function render(Model &$model) {
-    if (!$model instanceof CreditsModel) {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'Credits'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
-  }
-
 }

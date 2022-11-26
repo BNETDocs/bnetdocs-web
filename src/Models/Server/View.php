@@ -2,12 +2,7 @@
 
 namespace BNETDocs\Models\Server;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class View extends Model {
-
-  public $server;
-  public $server_id;
-  public $server_type;
-
+class View extends \BNETDocs\Models\ActiveUser
+{
+  public ?\BNETDocs\Libraries\Server $server = null;
 }

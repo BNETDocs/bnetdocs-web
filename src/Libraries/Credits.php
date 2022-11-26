@@ -2,257 +2,104 @@
 
 namespace BNETDocs\Libraries;
 
+use \BNETDocs\Libraries\Database;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \PDO;
-use \PDOException;
 
-class Credits {
+class Credits
+{
+  public const DEFAULT_LIMIT = 5;
+  public const DEFAULT_ANONYMOUS = 'Anonymous';
 
-  public static function getTotalUsers() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT COUNT(*) AS `sum` FROM `users`;
-    ");
-    $stmt->execute();
-    $obj = $stmt->fetch(PDO::FETCH_OBJ);
-    $stmt->closeCursor();
-    return (int) $obj->sum;
+  private function __construct()
+  {
+    throw new \LogicException('This static class cannot be constructed');
   }
 
-  public function getTopContributorsByComments()
+  public static function getTotalUsers() : int|false
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $q = Common::$database->prepare('
+    $q = Database::instance()->prepare('SELECT COUNT(*) AS `sum` FROM `users`;');
+    if (!$q || !$q->execute()) return false;
+    $r = $q->fetchObject();
+    $q->closeCursor();
+    return (int) $r->sum;
+  }
+
+  protected static function getTopContributors(string $table, string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  {
+    $q = Database::instance()->prepare(sprintf('
       SELECT
         `u`.`id` AS `user_id`,
-        IFNULL(
-          IFNULL(`u`.`display_name`, `u`.`username`), \'Anonymous\'
-        ) AS `name`,
-        COUNT(`c`.`id`) AS `comments_made`
-      FROM
-        `users` AS `u`
-      RIGHT JOIN
-        `comments` AS `c` ON `c`.`user_id` = `u`.`id`
-      GROUP BY
-        `u`.`id`
-      ORDER BY
-        `comments_made` DESC,
-        `c`.`created_datetime` ASC
-      LIMIT 5;
-    ');
-    $r = $q->execute();
-    if (!$r) return $r;
+        IFNULL(IFNULL(`u`.`display_name`, `u`.`username`), \'%s\') AS `name`,
+        COUNT(`s`.`id`) AS `count`
+      FROM `users` AS `u`
+      RIGHT JOIN `%s` AS `s` ON `s`.`user_id` = `u`.`id`
+      GROUP BY `u`.`id`
+      ORDER BY `count` DESC, `s`.`created_datetime` ASC
+      LIMIT %d;
+    ', $anonymous, $table, $limit));
+    if (!$q || !$q->execute()) return false;
     $r = [];
-    while ($o = $q->fetch(PDO::FETCH_OBJ))
-    {
-      $r[] = $o;
-    }
+    while ($o = $q->fetchObject()) $r[] = $o;
+    $q->closeCursor();
     return $r;
   }
 
-  public function getTopContributorsByDocuments() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT
-        `u`.`id` AS `user_id`,
-        IFNULL(
-          IFNULL(`u`.`display_name`, `u`.`username`),
-          'Anonymous'
-        ) AS `name`,
-        COUNT(`d`.`id`) AS `documents_authored`
-      FROM
-        `users` AS `u`
-      RIGHT JOIN
-        `documents` AS `d` ON `d`.`user_id` = `u`.`id`
-      GROUP BY
-        `u`.`id`
-      ORDER BY
-        `documents_authored` DESC,
-        `d`.`created_datetime` ASC
-      LIMIT 5;
-    ");
-    $stmt->execute();
-    $result = new \SplObjectStorage();
-    while ($obj = $stmt->fetch(PDO::FETCH_OBJ)) {
-      $result->attach($obj);
-    }
-    $stmt->closeCursor();
-    return $result;
+  public static function getTopContributorsByComments(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  {
+    return self::getTopContributors('comments', $anonymous, $limit);
   }
 
-  public function getTopContributorsByNewsPosts() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT
-        `u`.`id` AS `user_id`,
-        IFNULL(
-          IFNULL(`u`.`display_name`, `u`.`username`),
-          'Anonymous'
-        ) AS `name`,
-        COUNT(`n`.`id`) AS `news_posts_created`
-      FROM
-        `users` AS `u`
-      RIGHT JOIN
-        `news_posts` AS `n` ON `n`.`user_id` = `u`.`id`
-      GROUP BY
-        `u`.`id`
-      ORDER BY
-        `news_posts_created` DESC,
-        `n`.`created_datetime` ASC
-      LIMIT 5;
-    ");
-    $stmt->execute();
-    $result = new \SplObjectStorage();
-    while ($obj = $stmt->fetch(PDO::FETCH_OBJ)) {
-      $result->attach($obj);
-    }
-    $stmt->closeCursor();
-    return $result;
+  public static function getTopContributorsByDocuments(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  {
+    return self::getTopContributors('documents', $anonymous, $limit);
   }
 
-  public function getTopContributorsByPackets() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT
-        `u`.`id` AS `user_id`,
-        IFNULL(
-          IFNULL(`u`.`display_name`, `u`.`username`),
-          'Anonymous'
-        ) AS `name`,
-        COUNT(`p`.`id`) AS `packets_authored`
-      FROM
-        `users` AS `u`
-      RIGHT JOIN
-        `packets` AS `p` ON `p`.`user_id` = `u`.`id`
-      GROUP BY
-        `u`.`id`
-      ORDER BY
-        `packets_authored` DESC,
-        `p`.`created_datetime` ASC
-      LIMIT 5;
-    ");
-    $stmt->execute();
-    $result = new \SplObjectStorage();
-    while ($obj = $stmt->fetch(PDO::FETCH_OBJ)) {
-      $result->attach($obj);
-    }
-    $stmt->closeCursor();
-    return $result;
+  public static function getTopContributorsByNewsPosts(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  {
+    return self::getTopContributors('news_posts', $anonymous, $limit);
   }
 
-  public function getTopContributorsByServers() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT
-        `u`.`id` AS `user_id`,
-        IFNULL(
-          IFNULL(`u`.`display_name`, `u`.`username`),
-          'Anonymous'
-        ) AS `name`,
-        COUNT(`s`.`id`) AS `servers_owned`
-      FROM
-        `users` AS `u`
-      RIGHT JOIN
-        `servers` AS `s` ON `s`.`user_id` = `u`.`id`
-      GROUP BY
-        `u`.`id`
-      ORDER BY
-        `servers_owned` DESC,
-        `s`.`created_datetime` ASC
-      LIMIT 5;
-    ");
-    $stmt->execute();
-    $result = new \SplObjectStorage();
-    while ($obj = $stmt->fetch(PDO::FETCH_OBJ)) {
-      $result->attach($obj);
-    }
-    $stmt->closeCursor();
-    return $result;
+  public static function getTopContributorsByPackets(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  {
+    return self::getTopContributors('packets', $anonymous, $limit);
   }
 
-  public static function getTotalCommentsByUserId($user_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT COUNT(*) AS `sum` FROM `comments` WHERE `user_id` = :id;
-    ");
-    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $obj = $stmt->fetch(PDO::FETCH_OBJ);
-    $stmt->closeCursor();
-    return (int) $obj->sum;
+  public static function getTopContributorsByServers(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  {
+    return self::getTopContributors('servers', $anonymous, $limit);
   }
 
-  public static function getTotalDocumentsByUserId($user_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT COUNT(*) AS `sum` FROM `documents` WHERE `user_id` = :id;
-    ");
-    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $obj = $stmt->fetch(PDO::FETCH_OBJ);
-    $stmt->closeCursor();
-    return (int) $obj->sum;
+  public static function getTotalCommentsByUserId(int $user_id) : int|false
+  {
+    return self::getTotalByUserId('comments', $user_id);
   }
 
-  public static function getTotalNewsPostsByUserId($user_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT COUNT(*) AS `sum` FROM `news_posts` WHERE `user_id` = :id;
-    ");
-    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $obj = $stmt->fetch(PDO::FETCH_OBJ);
-    $stmt->closeCursor();
-    return (int) $obj->sum;
+  protected static function getTotalByUserId(string $table, int $user_id) : int|false
+  {
+    $q = Database::instance()->prepare(sprintf('SELECT COUNT(*) AS `sum` FROM `%s` WHERE `user_id` = :id;', $table));
+    if (!$q || !$q->execute([':id' => $user_id])) return false;
+    $o = $q->fetchObject();
+    $q->closeCursor();
+    return (int) $o->sum;
   }
 
-  public static function getTotalPacketsByUserId($user_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT COUNT(*) AS `sum` FROM `packets` WHERE `user_id` = :id;
-    ");
-    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $obj = $stmt->fetch(PDO::FETCH_OBJ);
-    $stmt->closeCursor();
-    return (int) $obj->sum;
+  public static function getTotalDocumentsByUserId(int $user_id) : int|false
+  {
+    return self::getTotalByUserId('documents', $user_id);
   }
 
-  public static function getTotalServersByUserId($user_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $stmt = Common::$database->prepare("
-      SELECT COUNT(*) AS `sum` FROM `servers` WHERE `user_id` = :id;
-    ");
-    $stmt->bindParam(":id", $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $obj = $stmt->fetch(PDO::FETCH_OBJ);
-    $stmt->closeCursor();
-    return (int) $obj->sum;
+  public static function getTotalNewsPostsByUserId(int $user_id) : int|false
+  {
+    return self::getTotalByUserId('news_posts', $user_id);
   }
 
+  public static function getTotalPacketsByUserId(int $user_id) : int|false
+  {
+    return self::getTotalByUserId('packets', $user_id);
+  }
+
+  public static function getTotalServersByUserId(int $user_id) : int|false
+  {
+    return self::getTotalByUserId('servers', $user_id);
+  }
 }

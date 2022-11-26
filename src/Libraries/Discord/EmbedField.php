@@ -2,66 +2,60 @@
 
 namespace BNETDocs\Libraries\Discord;
 
-use \JsonSerializable;
 use \LengthException;
 use \UnexpectedValueException;
 
 // <https://discordapp.com/developers/docs/resources/channel#embed-object-embed-field-structure>
 
-class EmbedField implements JsonSerializable {
-
-  const MAX_NAME  = 256;
-  const MAX_VALUE = 1024;
+class EmbedField implements \JsonSerializable
+{
+  public const MAX_NAME = 256;
+  public const MAX_VALUE = 1024;
 
   protected $inline;
   protected $name;
   protected $value;
 
-  public function __construct(string $name, $value, bool $inline) {
+  public function __construct(string $name, $value, bool $inline)
+  {
     $this->setInline($inline);
     $this->setName($name);
     $this->setValue($value);
   }
 
-  public function jsonSerialize() {
-    // part of JsonSerializable interface
-    $r = array(
+  public function jsonSerialize() : mixed
+  {
+    $r = [
       'name' => $this->name,
       'value' => $this->value,
       'inline' => $this->inline,
-    );
-
+    ];
+    foreach ($r as $k => $v) if (empty($v)) unset($r[$k]);
     return $r;
   }
 
-  public function setInline(bool $inline) {
+  public function setInline(bool $inline) : void
+  {
     $this->inline = $inline;
   }
 
-  public function setName(string $name) {
-    if (strlen($name) > self::MAX_NAME) {
+  public function setName(string $name) : void
+  {
+    if (strlen($name) > self::MAX_NAME)
       throw new LengthException(sprintf(
         'Discord forbids name longer than %d characters', self::MAX_NAME
       ));
-    }
 
     $this->name = $name;
   }
 
-  public function setValue($value) {
-    if (!is_scalar($value)) {
-      throw new UnexpectedValueException(
-        'Expected integer, float, string, or boolean (scalar type) for value'
-      );
-    }
-
-    if (strlen($value) > self::MAX_VALUE) {
+  public function setValue(int|float|string|bool $value) : void
+  {
+    if (is_string($value) && strlen($value) > self::MAX_VALUE)
       throw new LengthException(sprintf(
         'Discord forbids value longer than %d characters', self::MAX_VALUE
       ));
-    }
 
     $this->value = $value;
   }
-
 }

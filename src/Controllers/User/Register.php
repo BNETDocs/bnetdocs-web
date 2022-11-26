@@ -2,64 +2,66 @@
 
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Exceptions\RecaptchaException;
+use \BNETDocs\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Exceptions\RecaptchaException;
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\GeoIP;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Recaptcha;
+use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\User\Register as UserRegisterModel;
-
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-use \PHPMailer\PHPMailer\Exception;
 use \PHPMailer\PHPMailer\PHPMailer;
 
-use \StdClass;
+class Register extends \BNETDocs\Controllers\Base
+{
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\User\Register();
+  }
 
-class Register extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
     $conf = &Common::$config; // local variable for accessing config.
 
-    $model               = new UserRegisterModel();
-    $model->error        = null;
-    $model->recaptcha    = new Recaptcha(
+    $this->model->error = null;
+    $this->model->recaptcha = new Recaptcha(
       $conf->recaptcha->secret,
       $conf->recaptcha->sitekey,
       $conf->recaptcha->url
     );
+    $this->model->username_max_len = $conf->bnetdocs->user_register_requirements->username_length_max;
 
-    $model->username_max_len =
-      $conf->bnetdocs->user_register_requirements->username_length_max;
+    if ($conf->bnetdocs->user_register_disabled)
+      $this->model->error = 'REGISTER_DISABLED';
+    else if (Router::requestMethod() == 'POST')
+      $this->tryRegister();
 
-    if (Common::$config->bnetdocs->user_register_disabled) {
-      $model->error = 'REGISTER_DISABLED';
-    } else if ($router->getRequestMethod() == 'POST') {
-      $this->tryRegister($router, $model);
-    }
-
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
+    $this->model->_responseCode = 200;
+    return true;
   }
 
-  protected function tryRegister(Router &$router, UserRegisterModel &$model) {
-    $data = $router->getRequestBodyArray();
-    $model->email    = (isset($data['email'   ]) ? $data['email'   ] : null);
-    $model->username = (isset($data['username']) ? $data['username'] : null);
-    if ( isset( Authentication::$user )) {
-      $model->error = 'ALREADY_LOGGED_IN';
+  protected function tryRegister() : void
+  {
+    $data = Router::query();
+    $this->model->email    = (isset($data['email'   ]) ? $data['email'   ] : null);
+    $this->model->username = (isset($data['username']) ? $data['username'] : null);
+    if (!is_null($this->model->active_user)) {
+      $this->model->error = 'ALREADY_LOGGED_IN';
       return;
     }
-    $email    = $model->email;
-    $username = $model->username;
+    $email    = $this->model->email;
+    $username = $this->model->username;
     $pw1      = (isset($data['pw1']) ? $data['pw1'] : null);
     $pw2      = (isset($data['pw2']) ? $data['pw2'] : null);
     $captcha  = (
@@ -68,16 +70,16 @@ class Register extends Controller {
       null
     );
     try {
-      if (!$model->recaptcha->verify($captcha, getenv('REMOTE_ADDR'))) {
-        $model->error = 'INVALID_CAPTCHA';
+      if (!$this->model->recaptcha->verify($captcha, getenv('REMOTE_ADDR'))) {
+        $this->model->error = 'INVALID_CAPTCHA';
         return;
       }
     } catch (RecaptchaException $e) {
-      $model->error = 'INVALID_CAPTCHA';
+      $this->model->error = 'INVALID_CAPTCHA';
       return;
     }
     if ($pw1 !== $pw2) {
-      $model->error = 'NONMATCHING_PASSWORD';
+      $this->model->error = 'NONMATCHING_PASSWORD';
       return;
     }
     $pwlen       = strlen($pw1);
@@ -87,43 +89,43 @@ class Register extends Controller {
     $countrycode_denylist = &$req->geoip_countrycode_denylist;
     if ($req->email_validate_quick
       && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $model->error = 'INVALID_EMAIL';
+      $this->model->error = 'INVALID_EMAIL';
       return;
     }
     if ($req->email_enable_denylist) {
       foreach ($email_denylist as $_bad_email) {
         if (preg_match($_bad_email, $email)) {
-          $model->error = 'EMAIL_NOT_ALLOWED';
+          $this->model->error = 'EMAIL_NOT_ALLOWED';
           return;
         }
       }
     }
     if (!$req->password_allow_email && stripos($pw1, $email)) {
-      $model->error = 'PASSWORD_CONTAINS_EMAIL';
+      $this->model->error = 'PASSWORD_CONTAINS_EMAIL';
       return;
     }
     if (!$req->password_allow_username && stripos($pw1, $username)) {
-      $model->error = 'PASSWORD_CONTAINS_USERNAME';
+      $this->model->error = 'PASSWORD_CONTAINS_USERNAME';
       return;
     }
     if (is_numeric($req->username_length_max)
       && $usernamelen > $req->username_length_max) {
-      $model->error = 'USERNAME_TOO_LONG';
+      $this->model->error = 'USERNAME_TOO_LONG';
       return;
     }
     if (is_numeric($req->username_length_min)
       && $usernamelen < $req->username_length_min) {
-      $model->error = 'USERNAME_TOO_SHORT';
+      $this->model->error = 'USERNAME_TOO_SHORT';
       return;
     }
     if (is_numeric($req->password_length_max)
       && $pwlen > $req->password_length_max) {
-      $model->error = 'PASSWORD_TOO_LONG';
+      $this->model->error = 'PASSWORD_TOO_LONG';
       return;
     }
     if (is_numeric($req->password_length_min)
       && $pwlen < $req->password_length_min) {
-      $model->error = 'PASSWORD_TOO_SHORT';
+      $this->model->error = 'PASSWORD_TOO_SHORT';
       return;
     }
     $denylist = Common::$config->bnetdocs->user_password_denylist_map;
@@ -131,8 +133,8 @@ class Register extends Controller {
     if ($denylist) {
       foreach ($denylist as $denylist_pw) {
         if (strtolower($denylist_pw->password) == strtolower($pw1)) {
-          $model->error = 'PASSWORD_BLACKLIST';
-          $model->error_extra = $denylist_pw->reason;
+          $this->model->error = 'PASSWORD_BLACKLIST';
+          $this->model->error_extra = $denylist_pw->reason;
           return;
         }
       }
@@ -142,33 +144,33 @@ class Register extends Controller {
       $their_country = $geoip_record->country->isoCode;
       foreach ($countrycode_denylist as $bad_country => $reason) {
         if (strtoupper($their_country) == strtoupper($bad_country)) {
-          $model->error = 'COUNTRY_DENIED';
-          $model->error_extra = $reason;
+          $this->model->error = 'COUNTRY_DENIED';
+          $this->model->error_extra = $reason;
           return;
         }
       }
     }
     if (Common::$config->bnetdocs->user_register_disabled) {
-      $model->error = 'REGISTER_DISABLED';
+      $this->model->error = 'REGISTER_DISABLED';
       return;
     }
 
     try {
       if (User::findIdByEmail($email)) {
-        $model->error = 'EMAIL_ALREADY_USED';
+        $this->model->error = 'EMAIL_ALREADY_USED';
         return;
       }
     } catch (UserNotFoundException $e) {}
 
     try {
       if (User::findIdByUsername($username)) {
-        $model->error = 'USERNAME_TAKEN';
+        $this->model->error = 'USERNAME_TAKEN';
         return;
       }
     } catch (UserNotFoundException $e) {}
 
-    try {
-
+    try
+    {
       $user = new User(null);
       $user->setEmail($email);
       $user->setPassword($pw1);
@@ -176,17 +178,16 @@ class Register extends Controller {
       $user->setVerified(false, true);
       $user->commit();
       $user_id = $user->getId();
-      $model->error = false;
-
-    } catch (QueryException $e) {
-
+      $this->model->error = false;
+    }
+    catch (\PDOException $e)
+    {
       // SQL error occurred. We can show a friendly message to the user while
       // also notifying this problem to staff.
       Logger::logException($e);
-      $model->error = 'INTERNAL_ERROR';
+      $this->model->error = 'INTERNAL_ERROR';
       $user = null;
       $user_id = null;
-
     }
 
     if ($user) {
@@ -195,8 +196,8 @@ class Register extends Controller {
         $user_id,
         getenv('REMOTE_ADDR'),
         json_encode([
-          'error'           => $model->error,
-          'error_extra'     => $model->error_extra,
+          'error'           => $this->model->error,
+          'error_extra'     => $this->model->error_extra,
           'requirements'    => $req,
           'email'           => $email,
           'username'        => $username,
@@ -205,11 +206,10 @@ class Register extends Controller {
         ])
       );
 
-      $state = new StdClass();
+      $mail = new PHPMailer(true); // true enables exceptions
+      $mail_config = &Common::$config->email;
 
-      $mail = new PHPMailer( true ); // true enables exceptions
-      $mail_config = Common::$config->email;
-
+      $state = new \StdClass();
       $state->mail = &$mail;
       $state->name = $user->getName();
       $state->token = $user->getVerifierToken();
@@ -274,8 +274,8 @@ class Register extends Controller {
           ])
         );
 
-      } catch (\Exception $e) {
-        $model->error = 'EMAIL_FAILURE';
+      } catch (\Throwable $e) {
+        $this->model->error = 'EMAIL_FAILURE';
       }
     }
   }

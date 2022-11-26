@@ -2,18 +2,25 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Models\Welcome as WelcomeModel;
+class Welcome extends \BNETDocs\Controllers\Base
+{
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Welcome();
+  }
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-class Welcome extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $model = new WelcomeModel();
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $this->model->_responseCode = 200;
+    return true;
   }
 }

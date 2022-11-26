@@ -2,15 +2,11 @@
 
 namespace BNETDocs\Models\News;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Delete extends Model {
-
+class Delete extends \BNETDocs\Models\ActiveUser
+{
   public $acl_allowed;
-  public $error;
   public $id;
   public $news_post;
   public $title;
   public $user;
-
 }

@@ -2,123 +2,77 @@
 
 namespace BNETDocs\Controllers\Comment;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\Comment as CommentLib;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\Comment\Create as CreateModel;
+use \BNETDocs\Libraries\Comment;
+use \BNETDocs\Libraries\Router;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-use \UnexpectedValueException;
-
-class Create extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $model = new CreateModel();
-
-    $model->user = Authentication::$user;
-
-    $model->acl_allowed = ($model->user && $model->user->getOption(
-      User::OPTION_ACL_COMMENT_CREATE
-    ));
-
-    $code = 500;
-    if (!$model->user) {
-      $model->response = ['error' => 'Unauthorized'];
-      $code = 403;
-    } else if ($router->getRequestMethod() !== 'POST') {
-      $router->setResponseHeader('Allow', 'POST');
-      $model->response = ['error' => 'Method Not Allowed','allow' => ['POST']];
-      $code = 405;
-    } else {
-      $code = $this->createComment($router, $model);
-    }
-
-    $view->render($model);
-    $model->_responseCode = $code;
-
-    if (!empty($model->origin) && $code >= 300 && $code <= 399) {
-      $model->_responseHeaders['Location'] = $model->origin;
-    }
-
-    return $model;
+class Create extends \BNETDocs\Controllers\Base
+{
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Comment\Create();
   }
 
-  protected function createComment(Router &$router, CreateModel &$model) {
-    $query   = $router->getRequestBodyArray();
-    $p_id    = (isset($query['parent_id'  ]) ? $query['parent_id'  ] : null);
-    $p_type  = (isset($query['parent_type']) ? $query['parent_type'] : null);
-    $content = (isset($query['content'    ]) ? $query['content'    ] : null);
+  public function invoke(?array $args): bool
+  {
+    $this->model->acl_allowed = $this->model->active_user
+      && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_COMMENT_CREATE);
 
-    if (!$model->acl_allowed) {
-      $success = false;
-    } else {
-
-      if ($p_id   !== null) $p_id   = (int) $p_id;
-      if ($p_type !== null) $p_type = (int) $p_type;
-
-      switch ($p_type) {
-        case CommentLib::PARENT_TYPE_DOCUMENT: {
-          $log_event_type = EventTypes::COMMENT_CREATED_DOCUMENT;
-          $origin = '/document/';
-          break;
-        }
-        case CommentLib::PARENT_TYPE_COMMENT: {
-          $log_event_type = EventTypes::COMMENT_CREATED_COMMENT;
-          $origin = '/comment/';
-          break;
-        }
-        case CommentLib::PARENT_TYPE_NEWS_POST: {
-          $log_event_type = EventTypes::COMMENT_CREATED_NEWS;
-          $origin = '/news/';
-          break;
-        }
-        case CommentLib::PARENT_TYPE_PACKET: {
-          $log_event_type = EventTypes::COMMENT_CREATED_PACKET;
-          $origin = '/packet/';
-          break;
-        }
-        case CommentLib::PARENT_TYPE_SERVER: {
-          $log_event_type = EventTypes::COMMENT_CREATED_SERVER;
-          $origin = '/server/';
-          break;
-        }
-        case CommentLib::PARENT_TYPE_USER: {
-          $log_event_type = EventTypes::COMMENT_CREATED_USER;
-          $origin = '/user/';
-          break;
-        }
-        default: throw new UnexpectedValueException('Parent type: ' . $p_type);
-      }
-      $origin = Common::relativeUrlToAbsolute($origin . $p_id . '#comments');
-      $model->origin = $origin;
-
-      if (empty($content)) {
-        $success = false;
-      } else {
-        $success = CommentLib::create(
-          $p_type, $p_id, $model->user->getId(), $content
-        );
-      }
-
+    if (!$this->model->acl_allowed)
+    {
+      $this->model->_responseCode = 403;
+      $this->model->response = ['error' => 'Unauthorized'];
+    }
+    else if (Router::requestMethod() !== Router::METHOD_POST)
+    {
+      $this->model->_responseCode = 405;
+      $this->model->_responseHeaders['Allow'] = Router::METHOD_POST;
+      $this->model->response = ['error' => 'Method Not Allowed', 'allow' => [Router::METHOD_POST]];
+    }
+    else
+    {
+      $this->model->_responseCode = $this->createComment();
     }
 
-    $model->response = [
-      'content'     => $content,
-      'error'       => ($success ? false : true),
-      'origin'      => $origin,
-      'parent_id'   => $p_id,
-      'parent_type' => $p_type
+    if (!empty($this->model->origin) && $this->model->_responseCode >= 300 && $this->model->_responseCode <= 399)
+      $this->model->_responseHeaders['Location'] = $this->model->origin;
+
+    return true;
+  }
+
+  protected function createComment() : int
+  {
+    $q = Router::query();
+    $pid = (isset($q['parent_id']) ? (int) $q['parent_id'] : null);
+    $pt = (isset($q['parent_type']) ? (int) $q['parent_type'] : null);
+    $content = $q['content'] ?? null;
+
+    if (empty($content))
+    {
+      $this->model->error = 'EMPTY_CONTENT';
+      return 400;
+    }
+
+    $this->model->comment = new Comment(null);
+    $this->model->comment->setContent($content);
+
+    $this->model->comment->setParentId($pid);
+    $this->model->comment->setParentType($pt);
+    $this->model->origin = $this->model->comment->getParentUrl();
+
+    $this->model->comment->setUserId($this->model->active_user);
+
+    $this->model->error = $this->model->comment->commit() ? false : 'INTERNAL_ERROR';
+    $this->model->response = [
+      'content' => $content,
+      'error' => $this->model->error,
+      'origin' => $this->model->origin,
+      'parent_id' => $pid,
+      'parent_type' => $pt
     ];
 
-    Logger::logEvent(
-      $log_event_type, $model->user->getId(),
-      getenv('REMOTE_ADDR'), json_encode($model->response)
+    \BNETDocs\Libraries\Logger::logEvent(
+      $this->model->comment->getParentTypeCreatedEventId(), $this->model->active_user->getId(),
+      getenv('REMOTE_ADDR'), json_encode($this->model->response)
     );
 
     return 303;

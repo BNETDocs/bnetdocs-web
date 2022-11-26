@@ -21,12 +21,19 @@ $form_rss_exempt = $this->getContext()->rss_exempt;
 $form_title = filter_var($this->getContext()->title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $news_post_id = null;
 $news_post_url = null;
-require('./header.inc.phtml'); ?>
+require('./header.inc.phtml');
+if (!$this->getContext()->acl_allowed) {
+  echo '<div class="container">';
+  require('./LoginRequired.inc.phtml');
+  echo '</div>';
+  require('./footer.inc.phtml');
+  return;
+} ?>
 <div class="container">
   <h1><?=$title?></h1>
   <p><?=$description?></p>
 <?  if ($error !== false) {
-      if (!empty($message)) { ?>
+     if (!empty($message)) { ?>
   <div class="alert alert-danger">
     <p class="mb-0"><?=$message?></p>
   </div>

@@ -35,7 +35,7 @@
         }
     },
     "require": {
-        "carlbennett/php-mvc": "~2",
+        "carlbennett/php-mvc": "dev-main",
         "erusev/parsedown": "^1.7",
         "ext-curl": "*",
         "ext-gmp": "*",
@@ -45,7 +45,7 @@
         "ext-mcrypt": "*",
         "ext-pdo": "*",
         "geoip2/geoip2": "~2.0",
-        "php-64bit": "^7.3",
+        "php-64bit": "^8.1",
         "phpmailer/phpmailer": "^6.0"
     }
 }

@@ -2,8 +2,6 @@
 namespace BNETDocs\Templates\EventLog;
 
 use \BNETDocs\Libraries\Event;
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
@@ -13,7 +11,6 @@ $this->opengraph->attach( new Pair( 'url', '/eventlog/view' ));
 
 $object_id = $this->getContext()->id;
 $object = $this->getContext()->event;
-$user = $this->getContext()->user;
 
 $object_ip_address = ($object instanceof Event ? $object->getIPAddress() : null);
 $object_metadata = ($object instanceof Event ? $object->getMetadata() : null);
@@ -37,14 +34,13 @@ $tpl_user = (
   )
 );
 
-$tpl_metadata_j = @json_decode($object_metadata);
 $tpl_metadata = (
   is_null($object_metadata) ? '<em>(null)</em>' :
   (
     '<pre><code style="white-space:pre-wrap;" class="language-' . (
       json_last_error() === JSON_ERROR_NONE ? 'json' : 'plaintext'
     ) . '">' . str_replace("\n", "<br/>\n", filter_var(
-      json_encode($tpl_metadata_j, JSON_PRETTY_PRINT), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+      json_encode($object_metadata, JSON_PRETTY_PRINT), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
     ) . '</code></pre>'
   )
 );

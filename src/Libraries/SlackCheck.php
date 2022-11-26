@@ -1,9 +1,8 @@
-<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+<?php
+
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Logger;
 use \CarlBennett\MVC\Libraries\Common;
 
 /**
@@ -122,11 +121,9 @@ class SlackCheck
   {
     if (!self::is_slack()) return; // do not log non-Slack requests
 
-    $user_id = (isset(Authentication::$user) ? Authentication::$user->getId() : null);
-
-    Logger::logEvent(
-      EventTypes::SLACK_UNFURL,
-      $user_id,
+    \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\EventTypes::SLACK_UNFURL,
+      isset(Authentication::$user) ? Authentication::$user->getId() : null,
       getenv('REMOTE_ADDR'),
       json_encode([
         'method'     => getenv('REQUEST_METHOD'),

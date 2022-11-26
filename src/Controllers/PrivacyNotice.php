@@ -1,24 +1,31 @@
-<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+<?php
+
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Models\PrivacyNotice as PrivacyNoticeModel;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-class PrivacyNotice extends Controller
+class PrivacyNotice extends Base
 {
-  public function &run(Router &$router, View &$view, array &$args)
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
   {
-    $model = new PrivacyNoticeModel();
-    $model->data_location = Common::$config->bnetdocs->privacy->data_location;
-    $model->email_domain = common::$config->bnetdocs->privacy->contact->email_domain;
-    $model->email_mailbox = common::$config->bnetdocs->privacy->contact->email_mailbox;
-    $model->organization = Common::$config->bnetdocs->privacy->organization;
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
+    $this->model = new \BNETDocs\Models\PrivacyNotice();
+  }
+
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $privacy = &\CarlBennett\MVC\Libraries\Common::$config->bnetdocs->privacy;
+    $this->model->data_location = $privacy->data_location;
+    $this->model->email_domain = $privacy->contact->email_domain;
+    $this->model->email_mailbox = $privacy->contact->email_mailbox;
+    $this->model->organization = $privacy->organization;
+    $this->model->_responseCode = 200;
+    return true;
   }
 }

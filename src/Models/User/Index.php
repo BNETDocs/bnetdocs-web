@@ -1,5 +1,7 @@
 <?php
+
 namespace BNETDocs\Models\User;
+
 class Index extends \BNETDocs\Models\ActiveUser
 {
   public $limit;

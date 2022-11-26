@@ -2,8 +2,7 @@
 
 namespace BNETDocs\Models\User;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Logout extends Model {
-
+class Logout extends \BNETDocs\Models\ActiveUser
+{
+  public mixed $error = true;
 }

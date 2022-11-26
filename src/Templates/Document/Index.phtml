@@ -45,7 +45,7 @@ require('./header.inc.phtml'); ?>
       $doc_user = $document->getUser();
       $doc_user_string = ($doc_user ?
         sprintf('<a href="%s"><img class="mr-2 rounded" src="%s"/>%s</a>',
-          $doc_user->getURI(), $doc_user->getAvatarURI(40), filter_var($doc_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+          $doc_user->getURI(), $doc_user->getAvatarURI(28), filter_var($doc_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
         ) : 'Anonymous'
       );
       if (!empty($doc_brief))
@@ -54,10 +54,14 @@ require('./header.inc.phtml'); ?>
       }
       else
       {
-        $doc_brief = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($doc_content, FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.');
+        $doc_brief = rtrim(Common::stripUpTo(Common::stripUpTo(trim(strip_tags($doc_content)), "\n", 128), '. ', 128), '.');
       }
-      printf('<tr><td><strong><a href="%s">%s</a></strong><br/><span class="text-muted">%s</span></td><td>%s</td></tr>',
-        $document->getURI(), $doc_title, $doc_brief, $doc_user_string
+      ob_start();
+      if (!$document->isPublished()) require('./Draft.inc.phtml');
+      $doc_draft = ob_get_clean();
+      if (!empty($doc_draft)) $doc_draft = ' ' . $doc_draft;
+      printf('<tr><td><strong><a href="%s">%s</a></strong>%s<br/><span class="text-muted">%s</span></td><td>%s</td></tr>',
+        $document->getURI(), $doc_title, $doc_draft, $doc_brief, $doc_user_string
       );
     } ?>
   </tbody></table>

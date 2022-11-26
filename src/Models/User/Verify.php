@@ -2,13 +2,19 @@
 
 namespace BNETDocs\Models\User;
 
-use \CarlBennett\MVC\Libraries\Model;
+class Verify extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
+{
+  public mixed $error = 'INTERNAL_ERROR';
+  public ?string $token = null;
+  public ?\BNETDocs\Libraries\User $user = null;
+  public int|string|null $user_id = null;
 
-class Verify extends Model {
-
-  public $error;
-  public $token;
-  public $user;
-  public $user_id;
-
+  public function jsonSerialize(): mixed
+  {
+    return \array_merge(parent::jsonSerialize(), [
+      'token' => $this->token,
+      'user' => $this->user,
+      'user_id' => $this->user_id,
+    ]);
+  }
 }

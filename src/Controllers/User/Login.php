@@ -2,89 +2,84 @@
 
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\Logger;
+use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\User\Login as UserLoginModel;
-
+use \BNETDocs\Models\User\Login as LoginModel;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
 
-class Login extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $model = new UserLoginModel();
-    $model->error = null;
-
-    if ($router->getRequestMethod() == 'POST') {
-      $this->tryLogin($router, $model);
-    }
-
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
+class Login extends \BNETDocs\Controllers\Base
+{
+  public function __construct()
+  {
+    $this->model = new LoginModel();
   }
 
-  protected function tryLogin(Router &$router, UserLoginModel &$model) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+  public function invoke(?array $args): bool
+  {
+    if ($this->model->active_user)
+    {
+      $this->model->_responseCode = 400;
+      $this->model->error = LoginModel::ERROR_ALREADY_LOGGED_IN;
+      return true;
     }
 
-    $data = $router->getRequestBodyArray();
-    $email = (isset($data['email'     ]) ? $data['email'     ] : null);
-    $password = (isset($data['password'  ]) ? $data['password'  ] : null);
+    $this->model->_responseCode = 200;
+    $this->model->error = LoginModel::ERROR_NONE;
 
-    $model->email = $email;
+    $q = Router::query();
+    $this->model->email = $q['email'] ?? null;
+    $this->model->password = $q['password'] ?? null;
 
-    if ( isset( Authentication::$user )) {
-      $model->error = 'ALREADY_LOGGED_IN';
-    } else if (empty($email)) {
-      $model->error = 'EMPTY_EMAIL';
-    } else if (Common::$config->bnetdocs->user_login_disabled) {
-      $model->error = 'LOGIN_DISABLED';
-    }
+    if (Router::requestMethod() != Router::METHOD_POST) return true;
 
-    if ($model->error) return;
+    if (empty($this->model->email))
+      $this->model->error = LoginModel::ERROR_EMPTY_EMAIL;
+    else if (empty($this->model->password))
+      $this->model->error = LoginModel::ERROR_EMPTY_PASSWORD;
+    else if (Common::$config->bnetdocs->user_login_disabled)
+      $this->model->error = LoginModel::ERROR_SYSTEM_DISABLED;
 
-    try {
-      $user = new User(User::findIdByEmail($email));
-    } catch (UserNotFoundException $e) {
-      $user = null;
-    }
+    if ($this->model->error !== LoginModel::ERROR_NONE) return true;
 
-    if (!$user) {
-      $model->error = 'USER_NOT_FOUND';
-    } else if ($user->isDisabled()) {
-      $model->error = 'USER_DISABLED';
-    } else if (!$user->checkPassword($password)) {
-      $model->error = 'PASSWORD_INCORRECT';
-    } else if (!$user->isVerified()) {
-      $model->error = 'USER_NOT_VERIFIED';
-    }
+    try { $this->model->user = new User(User::findIdByEmail($this->model->email)); }
+    catch (\UnexpectedValueException) { $this->model->user = null; }
 
-    if ($model->error) return;
-    $model->error = false;
+    if (!$this->model->user)
+      $this->model->error = LoginModel::ERROR_USER_NOT_FOUND;
+    else if ($this->model->user->isDisabled())
+      $this->model->error = LoginModel::ERROR_USER_DISABLED;
+    else if (!$this->model->user->checkPassword($this->model->password))
+      $this->model->error = LoginModel::ERROR_INCORRECT_PASSWORD;
+    else if (!$this->model->user->isVerified())
+      $this->model->error = LoginModel::ERROR_USER_NOT_VERIFIED;
+
+    if ($this->model->error !== LoginModel::ERROR_NONE) return true;
 
     // Upgrade old password (we checked it matches earlier above)
-    if (substr($user->getPasswordHash(), 0, 1) !== '$') {
-      $user->setPassword($password);
-      $user->commit();
+    if (substr($this->model->user->getPasswordHash(), 0, 1) !== '$')
+    {
+      $this->model->user->setPassword($this->model->password);
+      if (!$this->model->user->commit())
+      {
+        $this->model->_responseCode = 500;
+        $this->model->error = LoginModel::ERROR_INTERNAL;
+        return true;
+      }
     }
 
-    Authentication::login($user);
+    \BNETDocs\Libraries\Authentication::login($this->model->user);
+    $this->model->error = LoginModel::ERROR_SUCCESS;
 
-    Logger::logEvent(
-      EventTypes::USER_LOGIN,
-      ($user ? $user->getId() : null),
+    \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\EventTypes::USER_LOGIN,
+      ($this->model->user ? $this->model->user->getId() : null),
       getenv('REMOTE_ADDR'),
       json_encode([
-        'error' => $model->error,
-        'email' => $model->email,
+        'error' => $this->model->error,
+        'email' => $this->model->email,
       ])
     );
+
+    return true;
   }
 }

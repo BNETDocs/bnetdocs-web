@@ -2,97 +2,61 @@
 
 namespace BNETDocs\Controllers\News;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\NewsPostNotFoundException;
 use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsPost;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\News\Delete as NewsDeleteModel;
+use \BNETDocs\Libraries\Router;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-use \InvalidArgumentException;
-
-class Delete extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $data                = $router->getRequestQueryArray();
-    $model               = new NewsDeleteModel();
-    $model->error        = null;
-    $model->id           = (isset($data['id']) ? $data['id'] : null);
-    $model->news_post    = null;
-    $model->title        = null;
-    $model->user         = Authentication::$user;
-
-    $model->acl_allowed = ($model->user && $model->user->getOption(
-      User::OPTION_ACL_NEWS_DELETE
-    ));
-
-    try { $model->news_post = new NewsPost($model->id); }
-    catch (NewsPostNotFoundException $e) { $model->news_post = null; }
-    catch (InvalidArgumentException $e) { $model->news_post = null; }
-
-    if ($model->news_post === null) {
-      $model->error = 'NOT_FOUND';
-    } else {
-      $model->title = $model->news_post->getTitle();
-
-      if ($router->getRequestMethod() == 'POST') {
-        $this->tryDelete($router, $model);
-      }
-    }
-
-    $view->render($model);
-    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    return $model;
+class Delete extends \BNETDocs\Controllers\Base
+{
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\News\Delete();
   }
 
-  protected function tryDelete(Router &$router, NewsDeleteModel &$model) {
-    if (!isset($model->user)) {
-      $model->error = 'NOT_LOGGED_IN';
-      return;
+  public function invoke(?array $args): bool
+  {
+    $this->model->acl_allowed = $this->model->active_user
+      && $this->model->user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_NEWS_DELETE);
+
+    if (!$this->model->acl_allowed)
+    {
+      $this->model->_responseCode = 401;
+      $this->model->error = 'ACL_NOT_SET';
+      return true;
     }
 
-    if (!$model->acl_allowed) {
-      $model->error = 'ACL_NOT_SET';
-      return;
+    $q = Router::query();
+    $this->model->id = isset($q['id']) ? (int) $q['id'] : null;
+
+    try { if (!is_null($this->model->id)) $this->model->news_post = new NewsPost($this->model->id); }
+    catch (\UnexpectedValueException) { $this->model->news_post = null; }
+
+    if (!$this->model->news_post)
+    {
+      $this->model->_responseCode = 404;
+      $this->model->error = 'NOT_FOUND';
+      return true;
     }
 
-    $model->error = false;
+    $this->model->title = $this->model->news_post->getTitle();
 
-    $id      = (int) $model->id;
-    $user_id = $model->user->getId();
+    if (Router::requestMethod() == Router::METHOD_POST) $this->tryDelete();
+    $this->model->_responseCode = $this->model->error ? 500 : 200;
+    return true;
+  }
 
-    try {
-
-      $success = NewsPost::delete($id);
-
-    } catch (QueryException $e) {
-
-      // SQL error occurred. We can show a friendly message to the user while
-      // also notifying this problem to staff.
-      Logger::logException($e);
-
-      $success = false;
-
-    }
-
-    if (!$success) {
-      $model->error = 'INTERNAL_ERROR';
-    } else {
-      $model->error = false;
-    }
+  protected function tryDelete() : void
+  {
+    $this->model->error = $this->model->news_post->deallocate() ? false : 'INTERNAL_ERROR';
 
     Logger::logEvent(
-      EventTypes::NEWS_DELETED,
-      $user_id,
+      \BNETDocs\Libraries\EventTypes::NEWS_DELETED,
+      $this->model->active_user->getId(),
       getenv('REMOTE_ADDR'),
       json_encode([
-        'error'        => $model->error,
-        'news_post_id' => $id,
+        'error' => $this->model->error,
+        'news_post_id' => $this->model->id,
+        'news_post' => $this->model->news_post,
       ])
     );
   }

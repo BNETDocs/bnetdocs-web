@@ -1,6 +1,8 @@
 <?php
+
 namespace BNETDocs\Models;
-class PhpInfo extends \BNETDocs\Models\ActiveUser
+
+class PhpInfo extends ActiveUser
 {
   public $phpinfo;
 }

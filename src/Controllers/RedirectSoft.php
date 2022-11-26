@@ -2,21 +2,27 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Models\RedirectSoft as RedirectSoftModel;
+class RedirectSoft extends Base
+{
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\RedirectSoft();
+  }
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-class RedirectSoft extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $model           = new RedirectSoftModel();
-    $model->location = Common::relativeUrlToAbsolute(array_shift($args));
-
-    $view->render($model);
-    $model->_responseCode = 302;
-    $model->_responseHeaders['Location'] = $model->location;
-    return $model;
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $this->model->location = \CarlBennett\MVC\Libraries\Common::relativeUrlToAbsolute(\array_shift($args));
+    $this->model->_responseCode = 302;
+    $this->model->_responseHeaders['Location'] = $this->model->location;
+    return true;
   }
 }

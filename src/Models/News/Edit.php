@@ -1,16 +1,18 @@
-<?php namespace BNETDocs\Models\News;
+<?php
+
+namespace BNETDocs\Models\News;
+
 class Edit extends \BNETDocs\Models\ActiveUser
 {
-  public $acl_allowed;
-  public $category;
-  public $comments;
-  public $content;
-  public $error;
-  public $markdown;
-  public $news_categories;
-  public $news_post;
-  public $news_post_id;
-  public $published;
-  public $rss_exempt;
-  public $title;
+  public bool $acl_allowed = false;
+  public ?int $category = null;
+  public ?array $comments = null;
+  public ?string $content = null;
+  public bool $markdown = false;
+  public ?array $news_categories = null;
+  public ?\BNETDocs\Libraries\NewsPost $news_post;
+  public ?int $news_post_id = null;
+  public bool $published = false;
+  public bool $rss_exempt = true;
+  public ?string $title = null;
 }
