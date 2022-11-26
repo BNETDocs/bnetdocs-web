@@ -10,7 +10,7 @@ $object = $this->getContext()->news_post;
 $object_id = $this->getContext()->news_post_id;
 $active_user = $this->getContext()->active_user;
 $title = ($object ? $object->getTitle() : 'News Post Not Found');
-$description = filter_var(($object ? $object->getContent(true) : 'The requested news post does not exist or could not be found.'), FILTER_SANITIZE_STRING);
+$description = filter_var(($object ? $object->getContent(true) : 'The requested news post does not exist or could not be found.'), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $this->opengraph->attach(new Pair('type', 'article'));
 $url = Common::relativeUrlToAbsolute('/news/' . urlencode($object_id));
 

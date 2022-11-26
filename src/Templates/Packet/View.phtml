@@ -30,7 +30,7 @@ if ($object)
   $description = filter_var($brief, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   if (empty($description))
   {
-    $description = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($remarks, FILTER_SANITIZE_STRING)), "\n", 300), '. ', 300), '.');
+    $description = rtrim(Common::stripUpTo(Common::stripUpTo(trim(strip_tags($remarks)), "\n", 300), '. ', 300), '.');
   }
 
   if ($user)
@@ -79,15 +79,15 @@ require('./header.inc.phtml'); ?>
       if (count($products) == 0) {
         echo '<em>(nothing or unknown)</em>';
       } else if (count($products) == 1) {
-        echo filter_var($products[0]->getLabel(), FILTER_SANITIZE_STRING);
+        echo filter_var($products[0]->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
       } else {
         $j = count($this->getContext()->used_by);
         for ($i = 0; $i < $j; ++$i) {
-          echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_STRING);
+          echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
           if ($i + 1 < $j) {
             ++$i;
             echo ', ';
-            echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_STRING) . "<br/>";
+            echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS) . "<br/>";
           } else {
             echo "<br/>";
           }
