@@ -20,8 +20,7 @@ class PhpInfo extends Base
    */
   public function invoke(?array $args) : bool
   {
-    if (!($this->model instanceof ActiveUser && !is_null($this->model->active_user)
-      && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_PHPINFO)))
+    if (!($this->model->active_user && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_PHPINFO)))
     {
       $this->model->phpinfo = null;
       $this->model->_responseCode = 401;
