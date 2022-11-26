@@ -31,8 +31,8 @@ switch ($error)
   default: $af = null; $message = $error;
 }
 $register_disabled = ($error == 'REGISTER_DISABLED');
-$email = htmlentities($this->getContext()->email, ENT_HTML5, 'UTF-8');
-$username = htmlentities($this->getContext()->username, ENT_HTML5, 'UTF-8');
+$email = filter_var($this->getContext()->email, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$username = filter_var($this->getContext()->username, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 require('./header.inc.phtml'); ?>
 <div class="container">
   <script async defer="defer" src="https://www.google.com/recaptcha/api.js"><![CDATA[]]></script>
