@@ -54,8 +54,6 @@ require_once('./MarkdownBootstrapFix.inc.php');
 require('./header.inc.phtml'); ?>
 <div class="container">
 <? if ($object) { ?>
-  <a class="btn btn-sm btn-primary float-right mr-1" href="https://twitter.com/share?text=<?=urlencode($object->getLabel())?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
-  <a class="btn btn-sm btn-primary float-right mr-1" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
 <? if ($delete_visible) { ?>
   <a class="btn btn-sm btn-danger float-right mr-1" href="<?=$delete_url?>" title="Delete">❌</a>
 <? } if ($edit_visible) { ?>

@@ -74,8 +74,6 @@ require('./header.inc.phtml'); ?>
 <?  if ($active_user && $user && $active_user->getOption(User::OPTION_ACL_USER_MODIFY)) { ?>
     <a class="btn btn-sm btn-secondary" href="<?=Common::relativeUrlToAbsolute('/user/update?id=' . rawurlencode($user->getId()))?>" title="Edit User">📝</a>
 <?  } ?>
-    <a class="btn btn-sm btn-primary" href="https://facebook.com/sharer/sharer.php?u=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-facebook-24px.png')?>"/></a>
-    <a class="btn btn-sm btn-primary" href="https://twitter.com/share?text=<?=urlencode($title)?>&amp;url=<?=urlencode($url)?>" rel="external" data-popup="1"><img class="img-fluid" src="<?=Common::relativeUrlToAbsolute('/a/social-twitter-24px.png')?>"/></a>
   </span>
 <? if ($user) { ?>
   <h1>User Profile</h1>
