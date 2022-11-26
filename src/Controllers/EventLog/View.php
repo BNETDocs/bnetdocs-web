@@ -2,52 +2,31 @@
 
 namespace BNETDocs\Controllers\EventLog;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\Event;
-use \BNETDocs\Libraries\Exceptions\EventNotFoundException;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\EventLog\View as EventLogViewModel;
+class View extends \BNETDocs\Controllers\Base
+{
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\EventLog\View();
+  }
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View as ViewMVC;
+  public function invoke(?array $args): bool
+  {
+    $this->model->acl_allowed = $this->model->active_user
+    && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_EVENT_LOG_VIEW);
 
-class View extends Controller {
-  public function &run( Router &$router, ViewMVC &$view, array &$args ) {
-    $model = new EventLogViewModel();
-
-    $model->user = Authentication::$user;
-
-    $model->acl_allowed = ( $model->user && $model->user->getOption(
-      User::OPTION_ACL_EVENT_LOG_VIEW
-    ));
-
-    if ($model->acl_allowed) {
-
-      $query = $router->getRequestQueryArray();
-
-      $model->event = null;
-      $model->id    = ( isset($query[ 'id' ]) ? (int) $query[ 'id' ] : null );
-
-      if ( !is_null( $model->id ) ) {
-        try {
-          $model->event = new Event( $model->id );
-        } catch ( EventNotFoundException $e ) {
-          $model->event = null;
-        }
-      }
-
+    if (!$this->model->acl_allowed)
+    {
+      $this->model->_responseCode = 403;
+      return true;
     }
 
-    $view->render( $model );
+    $q = \BNETDocs\Libraries\Router::query();
+    $this->model->id = isset($q['id']) ? (int) $q['id'] : null;
 
-    $model->_responseCode = (
-      $model->acl_allowed ? (
-        $model->event ? 200 : 404
-      ) : 403
-    );
+    try { if (!is_null($this->model->id)) $this->model->event = new \BNETDocs\Libraries\Event($this->model->id); }
+    catch (\UnexpectedValueException) { $this->model->event = null; }
 
-    return $model;
+    $this->model->_responseCode = $this->model->event ? 200 : 404;
+    return true;
   }
 }

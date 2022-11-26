@@ -1,5 +1,6 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Document;
+use \BNETDocs\Models\Document\Delete as DeleteModel;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Delete Document';
 $description = 'This form allows an individual to delete a document.';
@@ -10,15 +11,17 @@ $id = $this->getContext()->id;
 $doc_title = $this->getContext()->title;
 switch ($error)
 {
-  case 'ACL_NOT_SET': $message = 'You do not have the privilege to delete documents.'; break;
-  case 'NOT_FOUND': $message = 'Cannot find document by that id.'; break;
-  case 'NOT_LOGGED_IN': $message = 'You must be logged in to delete documents.'; break;
-  case 'INTERNAL_ERROR': $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  case DeleteModel::ERROR_ACCESS_DENIED: $message = 'You do not have the privilege to delete documents.'; break;
+  case DeleteModel::ERROR_INTERNAL: $message = 'An internal error occurred while processing your request. Try again later.'; break;
+  case DeleteModel::ERROR_NOT_FOUND: $message = 'Cannot find document by that id.'; break;
+  case DeleteModel::ERROR_SUCCESS: $message = 'You have successfully deleted the document!'; break;
   default: $message = $error;
 }
 require('./header.inc.phtml'); ?>
 <div class="container">
-<? if (is_null($this->getContext()->error)) { ?>
+<? if ($error === DeleteModel::ERROR_ACCESS_DENIED) { ?>
+<? require('./LoginRequired.inc.phtml'); ?>
+<? } else if ($error === DeleteModel::ERROR_NONE) { ?>
   <h1 class="text-danger">Delete Document</h1>
   <form method="POST" action="?id=<?=filter_var($id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>">
     <div class="form-group">
@@ -30,10 +33,10 @@ require('./header.inc.phtml'); ?>
       <input class="btn btn-danger" type="submit" value="Delete Document" tabindex="2" autofocus="autofocus"/>
     </div>
   </form>
-<? } else if ($this->getContext()->error === false) { ?>
+<? } else if ($error === DeleteModel::ERROR_SUCCESS) { ?>
   <h1 class="text-success">Document Deleted</h1>
   <div class="alert alert-success">
-    <p class="mb-0">You have successfully deleted the document!</p>
+    <p class="mb-0"><?=$message?></p>
   </div>
 <? } else { ?>
   <h1 class="text-danger">Delete Document</h1>

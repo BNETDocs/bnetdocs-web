@@ -2,102 +2,56 @@
 
 namespace BNETDocs\Controllers\Packet;
 
-use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
-use \BNETDocs\Models\Packet\Index as PacketIndexModel;
-use \BNETDocs\Views\Packet\IndexHtml as PacketIndexHtmlView;
-use \BNETDocs\Views\Packet\IndexJSON as PacketIndexJSONView;
-
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Pair;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-use \DateTime;
-use \DateTimeZone;
-
-class Index extends Controller {
-  public function &run( Router &$router, View &$view, array &$args ) {
-    $model = new PacketIndexModel();
-
-    $query = $router->getRequestQueryArray();
-
-    $model->order = (
-      isset( $query['order'] ) ? $query['order'] : 'packet-id-asc'
-    );
-
-    $model->pktapplayer = (
-      isset( $query['pktapplayer'] ) ? $query['pktapplayer'] : array()
-    );
-
-    switch ( $model->order ) {
-      case 'created-datetime-asc':
-        $order = [ 'created_datetime','ASC' ]; break;
-
-      case 'created-datetime-desc':
-        $order = [ 'created_datetime','DESC' ]; break;
-
-      case 'id-asc':
-        $order = [ 'id','ASC' ]; break;
-
-      case 'id-desc':
-        $order = [ 'id','DESC' ]; break;
-
-      case 'packet-id-asc':
-        $order = [ 'packet_application_layer_id,packet_id','ASC' ]; break;
-
-      case 'packet-id-desc':
-        $order = [ 'packet_application_layer_id,packet_id','DESC' ]; break;
-
-      case 'user-id-asc':
-        $order = [ 'user_id','ASC' ]; break;
-
-      case 'user-id-desc':
-        $order = [ 'user_id','DESC' ]; break;
-
-      default:
-        $order = null;
-    }
-
-    $model->application_layers = ApplicationLayer::getAllAsObjects();
-
-    if ( empty( $model->pktapplayer )) {
-      foreach ( $model->application_layers as $layer ) {
-        $model->pktapplayer[] = $layer->getId();
-      }
-    }
-
-    $where_clause = '`packet_application_layer_id` IN ('
-      . implode( ',', $model->pktapplayer ) . ')'
-    ;
-
-    $model->packets = Packet::getAllPackets( $where_clause, $order );
-
-    if ( !( $view instanceof PacketIndexHtmlView
-      || $view instanceof PacketIndexJSONView )) {
-
-      $model->packets = self::disambiguify( $model->packets );
-
-    }
-
-    if ( !$view instanceof PacketIndexHtmlView ) {
-      $model->timestamp = new DateTime( 'now', new DateTimeZone( 'Etc/UTC' ));
-    }
-
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
+class Index extends \BNETDocs\Controllers\Base
+{
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Packet\Index();
   }
 
-  private static function &disambiguify( &$packets ) {
-    $pkts = [];
+  public function invoke(?array $args): bool
+  {
+    if (is_null($args) || count($args) != 1)
+      throw new \InvalidArgumentException('Arguments must have exactly 1 item');
 
-    foreach ( $packets as $pkt ) {
-      // This removes duplicates by overwriting keys that already exist
-      $pkts[ $pkt->getLabel() ] = $pkt;
+    $q = \BNETDocs\Libraries\Router::query();
+    $this->model->order = isset($q['order']) ? $q['order'] : 'packet-id-asc';
+    $this->model->pktapplayer = isset($q['pktapplayer']) ? $q['pktapplayer'] : [];
+
+    switch ($this->model->order)
+    {
+      case 'created-datetime-asc': $this->model->order = ['created_datetime','ASC']; break;
+      case 'created-datetime-desc': $this->model->order = ['created_datetime','DESC']; break;
+      case 'id-asc': $this->model->order = ['id','ASC']; break;
+      case 'id-desc': $this->model->order = ['id','DESC']; break;
+      case 'packet-id-asc': $this->model->order = ['packet_application_layer_id,packet_id','ASC']; break;
+      case 'packet-id-desc': $this->model->order = ['packet_application_layer_id,packet_id','DESC']; break;
+      case 'user-id-asc': $this->model->order = ['user_id','ASC']; break;
+      case 'user-id-desc': $this->model->order = ['user_id','DESC']; break;
+      default: $this->model->order = null;
     }
 
-    return $pkts;
+    $this->model->application_layers = \BNETDocs\Libraries\Packet\Application::getAllAsObjects();
+
+    if (empty($this->model->pktapplayer))
+      foreach ($this->model->application_layers as $layer)
+        $this->model->pktapplayer[] = $layer->getId();
+
+    $this->model->packets = \BNETDocs\Libraries\Packet::getAllPackets(
+      '`packet_application_layer_id` IN (' . implode( ',', $this->model->pktapplayer ) . ')',
+      $this->model->order
+    );
+
+    $deduplicate = (bool) array_shift($args);
+    if ($deduplicate)
+    {
+      $r = [];
+      foreach ($this->model->packets as $item) $r[$item->getLabel()] = $item;
+      $this->model->packets = $r;
+    }
+
+    $this->model->timestamp = new \BNETDocs\Libraries\DateTimeImmutable('now');
+    $this->model->_responseCode = 200;
+    return true;
   }
 }

@@ -2,30 +2,33 @@
 
 namespace BNETDocs\Libraries\Packet;
 
-abstract class Layer {
+abstract class Layer
+{
+  protected int $id;
+  protected string $label;
+  protected string $tag;
 
-  protected $id;
-  protected $label;
-  protected $tag;
-
-  public function __construct(int $id) {
+  public function __construct(int $id)
+  {
     $this->assign($id);
   }
 
-  protected abstract function assign(int $id);
-  public abstract static function getAllAsArray();
-  public abstract static function getAllAsObjects();
+  protected abstract function assign(int $id) : void;
+  public abstract static function getAllAsArray() : array;
+  public abstract static function getAllAsObjects() : array;
 
-  public function getId() {
+  public function getId() : int
+  {
     return $this->id;
   }
 
-  public function getLabel() {
+  public function getLabel() : string
+  {
     return $this->label;
   }
 
-  public function getTag() {
+  public function getTag() : string
+  {
     return $this->tag;
   }
-
 }

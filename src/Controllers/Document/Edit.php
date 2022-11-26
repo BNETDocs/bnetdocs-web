@@ -1,131 +1,99 @@
 <?php
 namespace BNETDocs\Controllers\Document;
 
-use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
-use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\Document\Edit as DocumentEditModel;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-use \DateTime;
-use \DateTimeZone;
-use \InvalidArgumentException;
-use \UnexpectedValueException;
+use \BNETDocs\Libraries\Router;
 
-class Edit extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $data = $router->getRequestQueryArray();
-    $model = new DocumentEditModel();
-    $model->document_id = (isset($data['id']) ? $data['id'] : null);
-    $model->user = Authentication::$user;
-
-    $model->acl_allowed = ($model->user && $model->user->getOption(
-      User::OPTION_ACL_DOCUMENT_MODIFY
-    ));
-
-    try { $model->document = new Document($model->document_id); }
-    catch (DocumentNotFoundException $e) { $model->document = null; }
-    catch (InvalidArgumentException $e) { $model->document = null; }
-    catch (UnexpectedValueException $e) { $model->document = null; }
-
-    if ($model->document === null) {
-      $model->error = 'NOT_FOUND';
-    } else {
-      $model->comments = Comment::getAll(
-        Comment::PARENT_TYPE_DOCUMENT,
-        $model->document_id
-      );
-
-      $model->brief     = $model->document->getBrief(false);
-      $model->content   = $model->document->getContent(false);
-      $model->markdown  = $model->document->isMarkdown();
-      $model->published = $model->document->isPublished();
-      $model->title     = $model->document->getTitle();
-
-      if ($router->getRequestMethod() == 'POST') {
-        $this->handlePost($router, $model);
-      }
-    }
-
-    $view->render($model);
-    $model->_responseCode = ($model->acl_allowed ? 200 : 401);
-    return $model;
+class Edit extends \BNETDocs\Controllers\Base
+{
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Document\Edit();
   }
 
-  protected function handlePost(Router &$router, DocumentEditModel &$model) {
-    if (!$model->acl_allowed) {
-      $model->error = 'ACL_NOT_SET';
-      return;
-    }
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
+  public function invoke(?array $args): bool
+  {
+    $this->model->acl_allowed = $this->model->active_user
+      && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_DOCUMENT_MODIFY);
+
+    if (!$this->model->acl_allowed)
+    {
+      $this->_responseCode = 403;
+      $this->model->error = 'ACL_NOT_SET';
+      return true;
     }
 
-    $data = $router->getRequestBodyArray();
-    $brief = $data['brief'] ?? null;
-    $category = $data['category'] ?? null;
-    $content = $data['content'] ?? null;
-    $markdown = $data['markdown'] ?? null;
-    $publish = $data['publish'] ?? null;
-    $save = $data['save'] ?? null;
-    $title = $data['title'] ?? null;
+    $this->model->document_id = Router::query()['id'] ?? null;
+
+    try { $this->model->document = new \BNETDocs\Libraries\Document($this->model->document_id); }
+    catch (\UnexpectedValueException) { $this->model->document = null; }
+
+    if (!$this->model->document)
+    {
+      $this->_responseCode = 404;
+      $this->model->error = 'NOT_FOUND';
+      return true;
+    }
+
+    $this->model->comments = Comment::getAll(Comment::PARENT_TYPE_DOCUMENT, $this->model->document_id);
+    $this->model->brief = $this->model->document->getBrief(false);
+    $this->model->content = $this->model->document->getContent(false);
+    $this->model->markdown = $this->model->document->isMarkdown();
+    $this->model->published = $this->model->document->isPublished();
+    $this->model->title = $this->model->document->getTitle();
+
+    if (Router::requestMethod() == Router::METHOD_POST) $this->handlePost();
+
+    $this->model->_responseCode = 200;
+    return true;
+  }
+
+  protected function handlePost() : void
+  {
+    $q = Router::query();
+    $brief = $q['brief'] ?? null;
+    $category = $q['category'] ?? null;
+    $content = $q['content'] ?? null;
+    $markdown = $q['markdown'] ?? null;
+    $publish = $q['publish'] ?? null;
+    $title = $q['title'] ?? null;
 
     $markdown = ($markdown ? true : false);
     $publish = ($publish ? true : false);
 
-    $model->category = $category;
-    $model->title    = $title;
-    $model->brief    = $brief;
-    $model->markdown = $markdown;
-    $model->content  = $content;
+    $this->model->category = $category;
+    $this->model->title = $title;
+    $this->model->brief = $brief;
+    $this->model->markdown = $markdown;
+    $this->model->content = $content;
 
-    if (empty($title)) {
-      $model->error = 'EMPTY_TITLE';
-    } else if (empty($content)) {
-      $model->error = 'EMPTY_CONTENT';
-    }
+    if (empty($title))
+      $this->model->error = 'EMPTY_TITLE';
+    else if (empty($content))
+      $this->model->error = 'EMPTY_CONTENT';
 
-    $user_id = $model->user->getId();
+    if ($this->model->error) return;
 
-    try {
+    $this->model->document->setTitle($this->model->title);
+    $this->model->document->setBrief($this->model->brief);
+    $this->model->document->setMarkdown($markdown);
+    $this->model->document->setContent($this->model->content);
+    $this->model->document->setPublished($publish);
+    $this->model->document->incrementEdited();
 
-      $model->document->setTitle($model->title);
-      $model->document->setBrief($model->brief);
-      $model->document->setMarkdown($markdown);
-      $model->document->setContent($model->content);
-      $model->document->setPublished($publish);
+    $this->model->error = $this->model->document->commit() ? false : 'INTERNAL_ERROR';
 
-      $model->document->incrementEdited();
-      $model->document->commit();
-      $model->error = false;
-
-    } catch (QueryException $e) {
-
-      // SQL error occurred. We can show a friendly message to the user while
-      // also notifying this problem to staff.
-      Logger::logException($e);
-      $model->error = 'INTERNAL_ERROR';
-
-    }
-
-    Logger::logEvent(
-      EventTypes::DOCUMENT_EDITED,
-      $user_id,
+    \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\EventTypes::DOCUMENT_EDITED,
+      $this->model->active_user->getId(),
       getenv('REMOTE_ADDR'),
       json_encode([
-        'brief'           => $model->document->getBrief(false),
-        'content'         => $model->document->getContent(false),
-        'document_id'     => $model->document_id,
-        'error'           => $model->error,
-        'options_bitmask' => $model->document->getOptions(),
-        'title'           => $model->document->getTitle(),
+        'brief'           => $this->model->document->getBrief(false),
+        'content'         => $this->model->document->getContent(false),
+        'document_id'     => $this->model->document_id,
+        'error'           => $this->model->error,
+        'options_bitmask' => $this->model->document->getOptions(),
+        'title'           => $this->model->document->getTitle(),
       ])
     );
   }

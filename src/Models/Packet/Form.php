@@ -1,5 +1,7 @@
-<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+<?php
+
 namespace BNETDocs\Models\Packet;
+
 class Form extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
 {
   // possible values for $error:
@@ -19,23 +21,22 @@ class Form extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
   const ERROR_OUTOFBOUNDS_USED_BY = 'OUTOFBOUNDS_USED_BY';
   const ERROR_SUCCESS = 'SUCCESS';
 
-  public $comments;
-  public $error;
-  public $form_fields;
-  public $packet;
-  public $products;
+  public ?array $comments = null;
+  public array $form_fields = [];
+  public ?\BNETDocs\Libraries\Packet $packet = null;
+  public ?array $products = null;
 
   /**
    * Implements the JSON serialization function from the JsonSerializable interface.
    */
-  public function jsonSerialize()
+  public function jsonSerialize() : mixed
   {
-    return [
+    return \array_merge(parent::jsonSerialize(), [
       'comments' => $this->comments,
       'error' => $this->error,
       'form_fields' => $this->form_fields,
       'packet' => $this->packet,
       'products' => $this->products,
-    ];
+    ]);
   }
 }

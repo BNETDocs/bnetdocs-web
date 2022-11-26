@@ -1,137 +1,107 @@
-<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+<?php
+
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
-use \BNETDocs\Libraries\Exceptions\ProductNotFoundException;
-use \BNETDocs\Libraries\IDatabaseObject;
+use \BNETDocs\Libraries\Database;
+use \BNETDocs\Libraries\DateTimeImmutable;
 use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
 use \BNETDocs\Libraries\Packet\Transport as TransportLayer;
 use \BNETDocs\Libraries\Product;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \DateTime;
+use \DateTimeInterface;
 use \DateTimeZone;
 use \InvalidArgumentException;
-use \JsonSerializable;
 use \OutOfBoundsException;
-use \PDO;
-use \PDOException;
 use \Parsedown;
 use \StdClass;
 use \UnexpectedValueException;
 
-class Packet implements IDatabaseObject, JsonSerializable
+class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
-  const DATE_SQL = 'Y-m-d H:i:s'; // DateTime::format() string for database
+  public const DEFAULT_APPLICATION_LAYER_ID = 1; // SID
+  public const DEFAULT_DIRECTION = self::DIRECTION_CLIENT_SERVER;
+  public const DEFAULT_OPTION = self::OPTION_MARKDOWN;
+  public const DEFAULT_TRANSPORT_LAYER_ID = 1; // TCP
 
-  const DEFAULT_APPLICATION_LAYER_ID = 1; // SID
-  const DEFAULT_DIRECTION = self::DIRECTION_CLIENT_SERVER;
-  const DEFAULT_OPTION = self::OPTION_MARKDOWN;
-  const DEFAULT_TRANSPORT_LAYER_ID = 1; // TCP
-
-  const DIRECTION_CLIENT_SERVER = 1; // Client to Server
-  const DIRECTION_SERVER_CLIENT = 2; // Server to Client
-  const DIRECTION_PEER_TO_PEER  = 3; // Peer to Peer
+  public const DIRECTION_CLIENT_SERVER = 1; // Client to Server
+  public const DIRECTION_SERVER_CLIENT = 2; // Server to Client
+  public const DIRECTION_PEER_TO_PEER  = 3; // Peer to Peer
 
   // Maximum SQL field lengths, alter as appropriate
-  const MAX_APPLICATION_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
-  const MAX_BRIEF = 0xFF;
-  const MAX_DIRECTION = 0x7FFFFFFFFFFFFFFF;
-  const MAX_EDITED_COUNT = 0x7FFFFFFFFFFFFFFF;
-  const MAX_FORMAT = 0xFFFF;
-  const MAX_ID = 0x7FFFFFFFFFFFFFFF;
-  const MAX_NAME = 0xFF;
-  const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
-  const MAX_PACKET_ID = 0xFF;
-  const MAX_REMARKS = 0xFFFFFF;
-  const MAX_TRANSPORT_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
-  const MAX_USER_ID = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_APPLICATION_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_BRIEF = 0xFF;
+  public const MAX_DIRECTION = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_EDITED_COUNT = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_FORMAT = 0xFFFF;
+  public const MAX_ID = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_NAME = 0xFF;
+  public const MAX_OPTIONS = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_PACKET_ID = 0xFF;
+  public const MAX_REMARKS = 0xFFFFFF;
+  public const MAX_TRANSPORT_LAYER_ID = 0x7FFFFFFFFFFFFFFF;
+  public const MAX_USER_ID = 0x7FFFFFFFFFFFFFFF;
 
-  const OPTION_MARKDOWN   = 0x00000001; // Markdown-formatted remarks
-  const OPTION_PUBLISHED  = 0x00000002; // 'Draft' badge and visiblility to non-editors
-  const OPTION_DEPRECATED = 0x00000004; // 'Deprecated' badge
-  const OPTION_RESEARCH   = 0x00000008; // 'In Research' badge
+  public const OPTION_MARKDOWN   = 0x00000001; // Markdown-formatted remarks
+  public const OPTION_PUBLISHED  = 0x00000002; // 'Draft' badge and visiblility to non-editors
+  public const OPTION_DEPRECATED = 0x00000004; // 'Deprecated' badge
+  public const OPTION_RESEARCH   = 0x00000008; // 'In Research' badge
 
-  const TZ_SQL = 'Etc/UTC'; // database values are stored in this TZ
+  protected int $application_layer_id;
+  protected string $brief;
+  protected ?DateTimeInterface $created_datetime;
+  protected int $direction;
+  protected int $edited_count;
+  protected ?DateTimeInterface $edited_datetime;
+  protected string $format;
+  protected ?int $id;
+  protected string $name;
+  protected int $options;
+  protected int $packet_id;
+  protected string $remarks;
+  protected int $transport_layer_id;
+  protected array $used_by;
+  protected ?int $user_id;
 
-  private $_id;
-
-  protected $application_layer_id;
-  protected $brief;
-  protected $created_datetime;
-  protected $direction;
-  protected $edited_count;
-  protected $edited_datetime;
-  protected $format;
-  protected $id;
-  protected $name;
-  protected $options;
-  protected $packet_id;
-  protected $remarks;
-  protected $transport_layer_id;
-  protected $used_by;
-  protected $user_id;
-
-  public function __construct($value)
+  public function __construct(StdClass|int|null $value)
   {
-    if (is_string($value) && is_numeric($value) && strpos($value, '.') === false)
-    {
-      // something is lazily providing an int value in a string type
-      $value = (int) $value;
-    }
-
-    if (is_null($value) || is_int($value))
-    {
-      $this->_id = $value;
-      $this->allocate();
-      return;
-    }
-
     if ($value instanceof StdClass)
     {
       $this->allocateObject($value);
-      return;
     }
-
-    throw new InvalidArgumentException(sprintf(
-      'value must be null, an integer, or StdClass; %s given', gettype($value)
-    ));
+    else
+    {
+      $this->setId($value);
+      if (!$this->allocate()) throw new \BNETDocs\Exceptions\PacketNotFoundException($this);
+    }
   }
 
   /**
-   * Implements the allocate function from the IDatabaseObject interface
+   * Allocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
    */
-  public function allocate()
+  public function allocate() : bool
   {
-    $id = $this->_id;
-
-    if (!(is_null($id) || is_int($id)))
-    {
-      throw new InvalidArgumentException('value must be null or an integer');
-    }
-
     $this->setApplicationLayerId(self::DEFAULT_APPLICATION_LAYER_ID);
     $this->setBrief('');
     $this->setCreatedDateTime(new DateTime('now'));
     $this->setDirection(self::DEFAULT_DIRECTION);
     $this->setEditedCount(0);
+    $this->setEditedDateTime(null);
     $this->setFormat('[blank]');
-    $this->setId($id);
+    $this->setName('', true);
     $this->setOptions(self::DEFAULT_OPTION);
     $this->setPacketId(0);
     $this->setRemarks('');
     $this->setTransportLayerId(self::DEFAULT_TRANSPORT_LAYER_ID);
     $this->setUsedBy([]);
+    $this->setUserId(null);
 
-    if (is_null($id)) return;
+    $id = $this->getId();
+    if (is_null($id)) return true;
 
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare('
+    $q = Database::instance()->prepare('
       SELECT
         `created_datetime`,
         `edited_count`,
@@ -147,41 +117,25 @@ class Packet implements IDatabaseObject, JsonSerializable
         `packet_remarks`,
         `packet_transport_layer_id`,
         `user_id`
-      FROM `packets` WHERE `id` = :id LIMIT 1;
+      FROM `packets` WHERE `id` = ? LIMIT 1;
     ');
-    $q->bindParam(':id', $id, PDO::PARAM_INT);
-
-    $r = $q->execute();
-    if (!$r)
-    {
-      throw new UnexpectedValueException(sprintf('an error occurred finding packet id: %d', $id));
-    }
-
-    if ($q->rowCount() != 1)
-    {
-      throw new UnexpectedValueException(sprintf('packet id: %d not found', $id));
-    }
-
-    $o = $q->fetchObject();
+    if (!$q || !$q->execute([$id]) || $q->rowCount() != 1) return false;
+    $r = $q->fetchObject();
     $q->closeCursor();
 
-    $q = Common::$database->prepare('
+    $q = Database::instance()->prepare('
       SELECT `u`.`bnet_product_id` AS `used_by` FROM `packet_used_by` AS `u`
       INNER JOIN `products` AS `p` ON `u`.`bnet_product_id` = `p`.`bnet_product_id`
       WHERE `u`.`id` = ? ORDER BY `p`.`sort` ASC;
     ');
-    $r = $q->execute([(int) $this->id]);
-    if (!$r) return $r;
+    if (!$q || !$q->execute([$id])) return false;
 
-    $used_by = [];
-    while ($row = $q->fetch(PDO::FETCH_NUM))
-    {
-      $used_by[] = new Product((int) $row[0]);
-    }
-    $o->used_by = $used_by;
+    $r->used_by = [];
+    while ($row = $q->fetchObject()) $r->used_by[] = new Product((int) $row->used_by);
     $q->closeCursor();
 
-    $this->allocateObject($o);
+    $this->allocateObject($r);
+    return true;
   }
 
   /**
@@ -189,16 +143,12 @@ class Packet implements IDatabaseObject, JsonSerializable
    */
   protected function allocateObject(StdClass $value)
   {
-    $tz = new DateTimeZone(self::TZ_SQL);
-
     $this->setApplicationLayerId($value->packet_application_layer_id);
     $this->setBrief($value->packet_brief);
-    $this->setCreatedDateTime(new DateTime($value->created_datetime, $tz));
+    $this->setCreatedDateTime($value->created_datetime);
     $this->setDirection($value->packet_direction_id);
     $this->setEditedCount($value->edited_count);
-    $this->setEditedDateTime(
-      $value->edited_datetime ? new DateTime($value->edited_datetime) : null
-    );
+    $this->setEditedDateTime($value->edited_datetime);
     $this->setFormat($value->packet_format);
     $this->setId($value->id);
     $this->setName($value->packet_name);
@@ -206,22 +156,17 @@ class Packet implements IDatabaseObject, JsonSerializable
     $this->setPacketId($value->packet_id);
     $this->setRemarks($value->packet_remarks);
     $this->setTransportLayerId($value->packet_transport_layer_id);
-    $this->setUserId($value->user_id);
     $this->setUsedBy($value->used_by);
+    $this->setUserId($value->user_id);
   }
 
   /**
    * Implements the commit function from the IDatabaseObject interface
    */
-  public function commit()
+  public function commit() : bool
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare(
-      'INSERT INTO `packets` (
+    $q = Database::instance()->prepare('
+      INSERT INTO `packets` (
         `created_datetime`,
         `edited_count`,
         `edited_datetime`,
@@ -237,13 +182,13 @@ class Packet implements IDatabaseObject, JsonSerializable
         `packet_transport_layer_id`,
         `user_id`
       ) VALUES (
-        :c_dt, :e_c, :e_dt, :id, :opts, :app_id, :b, :d, :f, :pid, :n, :r, :tr_id, :uid
+        :cdt, :ec, :edt, :id, :o, :app_id, :b, :d, :f, :pid, :n, :r, :tr_id, :uid
       ) ON DUPLICATE KEY UPDATE
-        `created_datetime` = :c_dt,
-        `edited_count` = :e_c,
-        `edited_datetime` = :e_dt,
+        `created_datetime` = :cdt,
+        `edited_count` = :ec,
+        `edited_datetime` = :edt,
         `id` = :id,
-        `options_bitmask` = :opts,
+        `options_bitmask` = :o,
         `packet_application_layer_id` = :app_id,
         `packet_brief` = :b,
         `packet_direction_id` = :d,
@@ -252,72 +197,67 @@ class Packet implements IDatabaseObject, JsonSerializable
         `packet_name` = :n,
         `packet_remarks` = :r,
         `packet_transport_layer_id` = :tr_id,
-        `user_id` = :uid
-    ;');
+        `user_id` = :uid;
+    ');
 
-    $created_datetime = $this->created_datetime->format(self::DATE_SQL);
+    $p = [
+      ':app_id' => $this->getApplicationLayerId(),
+      ':b' => $this->getBrief(false),
+      ':cdt' => $this->getCreatedDateTime(),
+      ':d' => $this->getDirection(),
+      ':ec' => $this->getEditedCount(),
+      ':edt' => $this->getEditedDateTime(),
+      ':f' => $this->getFormat(),
+      ':id' => $this->getId(),
+      ':n' => $this->getName(),
+      ':o' => $this->getOptions(),
+      ':pid' => $this->getPacketId(false),
+      ':r' => $this->getRemarks(false),
+      ':tr_id' => $this->getTransportLayerId(),
+      ':uid' => $this->getUserId(),
+    ];
 
-    $edited_datetime = (
-      is_null($this->edited_datetime) ? null : $this->edited_datetime->format(self::DATE_SQL)
-    );
+    foreach ($p as $k => &$v)
+      if ($v instanceof DateTimeInterface)
+        $p[$k] = $v->format(self::DATE_SQL);
 
-    $q->bindParam(':app_id', $this->application_layer_id, PDO::PARAM_INT);
-    $q->bindParam(':b', $this->brief, (is_null($this->brief) ? PDO::PARAM_NULL : PDO::PARAM_STR));
-    $q->bindParam(':c_dt', $created_datetime, PDO::PARAM_STR);
-    $q->bindParam(':d', $this->direction, PDO::PARAM_INT);
-    $q->bindParam(':e_c', $this->edited_count, PDO::PARAM_INT);
-    $q->bindParam(':e_dt', $edited_datetime, (is_null($edited_datetime) ? PDO::PARAM_NULL : PDO::PARAM_STR));
-    $q->bindParam(':f', $this->format, PDO::PARAM_STR);
-    $q->bindParam(':id', $this->id, (is_null($this->id) ? PDO::PARAM_NULL : PDO::PARAM_INT));
-    $q->bindParam(':n', $this->name, PDO::PARAM_STR);
-    $q->bindParam(':opts', $this->options, PDO::PARAM_INT);
-    $q->bindParam(':pid', $this->packet_id, PDO::PARAM_INT);
-    $q->bindParam(':r', $this->remarks, PDO::PARAM_STR);
-    $q->bindParam(':tr_id', $this->transport_layer_id, PDO::PARAM_INT);
-    $q->bindParam(':uid', $this->user_id, (is_null($this->user_id) ? PDO::PARAM_NULL : PDO::PARAM_INT));
+    if (!$q || !$q->execute($p)) return false;
+    $q->closeCursor();
+    if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
+    $id = $this->getId();
 
-    $r = $q->execute();
-    if (!$r) return $r;
+    $q = Database::instance()->prepare('DELETE FROM `packet_used_by` WHERE `id` = :id;');
+    if (!$q || !$q->execute([':id' => $id])) return false;
 
-    if (is_null($this->id))
-    {
-      $this->setId(Common::$database->lastInsertId());
-    }
-
-    $q = Common::$database->prepare('DELETE FROM `packet_used_by` WHERE `id` = :id;');
-    $q->bindParam(':id', $this->id, PDO::PARAM_INT);
-    $r = $q->execute();
-    if (!$r) return $r;
-
-    $q = Common::$database->prepare('INSERT INTO `packet_used_by` (`id`, `bnet_product_id`) VALUES (:id, :p);');
+    $q = Database::instance()->prepare('INSERT INTO `packet_used_by` (`id`, `bnet_product_id`) VALUES (:i, :p);');
     foreach ($this->used_by as $v)
     {
-      $p = $v->getBnetProductId();
-      $q->bindParam(':id', $this->id, PDO::PARAM_INT);
-      $q->bindParam(':p', $p, PDO::PARAM_INT);
-      $r = $q->execute();
-      if (!$r)
-      {
-        return $r;
-      }
+      if (!$v) continue;
+      $p = [
+        ':i' => $id,
+        ':p' => $v->getBnetProductId(),
+      ];
+      if (!$q || !$q->execute($p)) return false;
     }
 
-    return $r;
+    return true;
   }
 
-  public static function delete(int $id)
+  /**
+   * Deallocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
+   */
+  public function deallocate() : bool
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare('DELETE FROM `packets` WHERE `id` = :id LIMIT 1;');
-    $q->bindParam(':id', $id, PDO::PARAM_INT);
-    return $q->execute();
+    $id = $this->getId();
+    if (is_null($id)) return false;
+    $q = Database::instance()->prepare('DELETE FROM `packets` WHERE `id` = ? LIMIT 1;');
+    try { return $q && $q->execute([$id]); }
+    finally { $q->closeCursor(); }
   }
 
-  public static function &getAllPackets(?string $where_clause = null, ?array $order = null, ?int $limit = null, ?int $index = null)
+  public static function &getAllPackets(?string $where_clause = null, ?array $order = null, ?int $limit = null, ?int $index = null) : array|false
   {
     if (!empty($where_clause))
     {
@@ -345,81 +285,59 @@ class Packet implements IDatabaseObject, JsonSerializable
       $limit_clause
     ;
 
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare(sprintf('SELECT `id` FROM `packets` %s ORDER BY %s;', $where_clause, $order_clause));
-    $r = $q->execute();
-    if (!$r) return $r;
-
+    $q = Database::instance()->prepare(sprintf('SELECT `id` FROM `packets` %s ORDER BY %s;', $where_clause, $order_clause));
+    if (!$q || !$q->execute()) return false;
     $r = [];
-    while ($row = $q->fetch(PDO::FETCH_NUM))
-    {
-      $r[] = new self($row[0]);
-    }
-
+    while ($row = $q->fetchObject()) $r[] = new self((int) $row->id);
     $q->closeCursor();
     return $r;
   }
 
-  public static function getPacketsByLastEdited(int $count)
+  public static function getPacketsByLastEdited(int $count) : array|false
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare(sprintf(
-      'SELECT `id` FROM `packets` ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC LIMIT %d;', $count
-    ));
-    $r = $q->execute();
-    if (!$r) return $r;
+    $q = Database::instance()->prepare(sprintf('
+      SELECT `id` FROM `packets`
+      ORDER BY IFNULL(`edited_datetime`, `created_datetime`) DESC
+      LIMIT %d;
+    ', $count));
+    if (!$q || !$q->execute()) return false;
 
     $r = [];
-    while ($row = $q->fetch(PDO::FETCH_NUM))
-    {
-      $r[] = new self($row[0]);
-    }
-
+    while ($row = $q->fetchObject()) $r[] = new self((int) $row->id);
     $q->closeCursor();
     return $r;
   }
 
-  public function getApplicationLayer()
+  public function getApplicationLayer() : ApplicationLayer
   {
     return new ApplicationLayer($this->application_layer_id);
   }
 
-  public function getApplicationLayerId()
+  public function getApplicationLayerId() : int
   {
     return $this->application_layer_id;
   }
 
-  public function getBrief(bool $format)
+  public function getBrief(bool $format) : string
   {
-    if (!($format && $this->getOption(self::OPTION_MARKDOWN)))
-    {
-      return $this->brief;
-    }
+    if (!($format && $this->getOption(self::OPTION_MARKDOWN))) return $this->brief;
 
     $md = new Parsedown();
     $md->setBreaksEnabled(true);
     return $md->text($this->brief);
   }
 
-  public function getCreatedDateTime()
+  public function getCreatedDateTime() : DateTimeInterface
   {
     return $this->created_datetime;
   }
 
-  public function getDirection()
+  public function getDirection() : int
   {
     return $this->direction;
   }
 
-  public function getDirectionLabel()
+  public function getDirectionLabel() : string
   {
     switch ($this->direction)
     {
@@ -432,7 +350,7 @@ class Packet implements IDatabaseObject, JsonSerializable
     }
   }
 
-  public function getDirectionTag()
+  public function getDirectionTag() : string
   {
     switch ($this->direction)
     {
@@ -445,27 +363,27 @@ class Packet implements IDatabaseObject, JsonSerializable
     }
   }
 
-  public function getEditedCount()
+  public function getEditedCount() : int
   {
     return $this->edited_count;
   }
 
-  public function getEditedDateTime()
+  public function getEditedDateTime() : ?DateTimeInterface
   {
     return $this->edited_datetime;
   }
 
-  public function getFormat()
+  public function getFormat() : string
   {
     return $this->format;
   }
 
-  public function getId()
+  public function getId() : ?int
   {
     return $this->id;
   }
 
-  public function getLabel()
+  public function getLabel() : string
   {
     return sprintf('%s %s %s',
       $this->getDirectionTag(),
@@ -474,12 +392,12 @@ class Packet implements IDatabaseObject, JsonSerializable
     );
   }
 
-  public function getName()
+  public function getName() : string
   {
     return $this->name;
   }
 
-  public function getOption(int $option)
+  public function getOption(int $option) : bool
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
     {
@@ -491,172 +409,127 @@ class Packet implements IDatabaseObject, JsonSerializable
     return ($this->options & $option) === $option;
   }
 
-  public function getOptions()
+  public function getOptions() : int
   {
     return $this->options;
   }
 
-  public function getPacketId(bool $format = false)
+  public function getPacketId(bool $format = false) : int|string
   {
-    if (!$format)
-    {
-      return $this->packet_id;
-    }
-
-    // Prints a value like "0xFF":
-    return sprintf('0x%02X', $this->packet_id);
+    if (!$format) return $this->packet_id;
+    return sprintf('0x%02X', $this->packet_id); // Prints a value like "0xFF"
   }
 
-  public function getRemarks(bool $format)
+  public function getRemarks(bool $format) : string
   {
-    if (!($format && $this->getOption(self::OPTION_MARKDOWN)))
-    {
-      return $this->remarks;
-    }
+    if (!($format && $this->getOption(self::OPTION_MARKDOWN))) return $this->remarks;
 
     $md = new Parsedown();
     $md->setBreaksEnabled(true);
     return $md->text($this->remarks);
   }
 
-  public function getTransportLayer()
+  public function getTransportLayer() : TransportLayer
   {
-    return new TransportLayer( $this->transport_layer_id );
+    return new TransportLayer($this->transport_layer_id);
   }
 
-  public function getTransportLayerId()
+  public function getTransportLayerId() : int
   {
     return $this->transport_layer_id;
   }
 
-  public static function getPacketsByUserId(int $user_id)
+  public static function getPacketsByUserId(int $user_id) : array|false
   {
-    if (!isset( Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare('SELECT `id` FROM `packets` WHERE `user_id` = :id ORDER BY `id` ASC;');
-    $q->bindParam(':id', $user_id, PDO::PARAM_INT);
-    $r = $q->execute();
-    if (!$r) return $r;
-
+    $q = Database::instance()->prepare('SELECT `id` FROM `packets` WHERE `user_id` = ? ORDER BY `id` ASC;');
+    if (!$q || !$q->execute([$user_id])) return false;
     $r = [];
-    while ($row = $q->fetch(PDO::FETCH_NUM))
-    {
-      $r[] = new self($row[0]);
-    }
-
+    while ($row = $q->fetchObject()) $r[] = new self((int) $row->id);
     $q->closeCursor();
     return $r;
   }
 
-  public static function getPacketCount()
+  public static function getPacketCount() : int|false
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare('SELECT COUNT(*) FROM `packets`;');
-
-    $r = $q->execute();
-    if (!$r || $q->rowCount() === 0) return $r;
-
-    $r = $q->fetch(PDO::FETCH_NUM);
+    $q = Database::instance()->prepare('SELECT COUNT(*) AS `count` FROM `packets`;');
+    if (!$q || !$q->execute() || $q->rowCount() == 0) return false;
+    $r = $q->fetchObject();
     $q->closeCursor();
-    return (int) $r[0];
+    return (int) $r->count;
   }
 
-  public function getPublishedDateTime()
+  public function getPublishedDateTime() : DateTimeInterface
   {
     return $this->getEditedDateTime() ?? $this->getCreatedDateTime();
   }
 
-  public function getURI()
+  public function getURI() : ?string
   {
     $id = $this->getId();
-    if (is_null($id)) return $id;
+    if (is_null($id)) return null;
     return Common::relativeUrlToAbsolute(sprintf('/packet/%d/%s', $id, Common::sanitizeForUrl($this->getName(), true)));
   }
 
-  public function getUsedBy()
+  public function getUsedBy() : array
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $q = Common::$database->prepare('
-      SELECT `u`.`bnet_product_id` FROM `packet_used_by` AS `u`
-      INNER JOIN `products` AS `p` ON `u`.`bnet_product_id` = `p`.`bnet_product_id`
-      WHERE `u`.`id` = :id ORDER BY `p`.`sort` ASC;
-    ');
-    $q->bindParam(':id', $this->id, PDO::PARAM_INT);
-
-    $r = $q->execute();
-    if (!$r) return $r;
-
-    $r = [];
-    while ($row = $q->fetch(PDO::FETCH_NUM))
-    {
-      $r[] = (int) $row[0];
-    }
-
-    $q->closeCursor();
-    return $r;
+    return $this->used_by;
   }
 
-  public function getUser()
+  public function getUser() : ?User
   {
-    return (is_null($this->user_id) ? $this->user_id : new User($this->user_id));
+    if (is_null($this->user_id)) return null;
+    try { return new User($this->user_id); }
+    catch (\UnexpectedValueException) { return null; }
   }
 
-  public function getUserId()
+  public function getUserId() : ?int
   {
     return $this->user_id;
   }
 
-  public function incrementEdited()
+  public function incrementEdited() : void
   {
     $this->setEditedCount($this->getEditedCount() + 1);
-    $this->setEditedDateTime(new DateTime('now'));
+    $this->setEditedDateTime(new DateTimeImmutable('now'));
   }
 
-  public function isDeprecated()
+  public function isDeprecated() : bool
   {
     return $this->getOption(self::OPTION_DEPRECATED);
   }
 
-  public function isInResearch() {
+  public function isInResearch() : bool
+  {
     return $this->getOption(self::OPTION_RESEARCH);
   }
 
-  public function isMarkdown() {
+  public function isMarkdown() : bool
+  {
     return $this->getOption(self::OPTION_MARKDOWN);
   }
 
-  public function isPublished() {
+  public function isPublished() : bool
+  {
     return $this->getOption(self::OPTION_PUBLISHED);
   }
 
-  public function jsonSerialize()
+  public function jsonSerialize() : mixed
   {
     return [
-      'created_datetime'            => $this->getCreatedDateTime(),
-      'edited_count'                => $this->getEditedCount(),
-      'edited_datetime'             => $this->getEditedDateTime(),
-      'id'                          => $this->getId(),
-      'options_bitmask'             => $this->getOptions(),
+      'created_datetime' => $this->getCreatedDateTime(),
+      'edited_count' => $this->getEditedCount(),
+      'edited_datetime' => $this->getEditedDateTime(),
+      'id' => $this->getId(),
+      'options_bitmask' => $this->getOptions(),
       'packet_application_layer_id' => $this->getApplicationLayerId(),
-      'packet_brief'                => $this->getBrief(false),
-      'packet_direction_id'         => $this->getDirection(),
-      'packet_format'               => $this->getFormat(),
-      'packet_id'                   => $this->getPacketId(),
-      'packet_name'                 => $this->getName(),
-      'packet_remarks'              => $this->getRemarks(false),
-      'packet_transport_layer_id'   => $this->getTransportLayerId(),
-      'user'                        => $this->getUser(),
+      'packet_brief' => $this->getBrief(false),
+      'packet_direction_id' => $this->getDirection(),
+      'packet_format' => $this->getFormat(),
+      'packet_id' => $this->getPacketId(),
+      'packet_name' => $this->getName(),
+      'packet_remarks' => $this->getRemarks(false),
+      'packet_transport_layer_id' => $this->getTransportLayerId(),
+      'user_id' => $this->getUserId(),
     ];
   }
 
@@ -665,7 +538,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    *
    * @param int @value The application layer (id).
    */
-  public function setApplicationLayerId(int $value)
+  public function setApplicationLayerId(int $value) : void
   {
     if ($value < 0 || $value > self::MAX_APPLICATION_LAYER_ID)
     {
@@ -683,14 +556,12 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param string $value The brief description.
    * @throws OutOfBoundsException if value is not between one and MAX_BRIEF.
    */
-  public function setBrief(string $value)
+  public function setBrief(string $value) : void
   {
     if (strlen($value) > self::MAX_BRIEF)
-    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d characters', self::MAX_BRIEF
       ));
-    }
 
     $this->brief = $value;
   }
@@ -698,11 +569,13 @@ class Packet implements IDatabaseObject, JsonSerializable
   /**
    * Sets the Date and Time this Packet was created.
    *
-   * @param DateTime $value The DateTime object.
+   * @param DateTimeInterface|string $value The Date and Time value.
    */
-  public function setCreatedDateTime(DateTime $value)
+  public function setCreatedDateTime(DateTimeInterface|string $value) : void
   {
-    $this->created_datetime = $value;
+    $this->created_datetime = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
   }
 
   /**
@@ -710,7 +583,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    *
    * @param bool $value If true, the 'Deprecated' badge is visible. If false, it is not visible.
    */
-  public function setDeprecated(bool $value)
+  public function setDeprecated(bool $value) : void
   {
     $this->setOption(self::OPTION_DEPRECATED, $value);
   }
@@ -721,7 +594,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param int $value The message direction.
    * @throws UnexpectedValueException if value is invalid
    */
-  public function setDirection(int $value)
+  public function setDirection(int $value) : void
   {
     switch ($value)
     {
@@ -743,7 +616,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param int $value The total number of modifications.
    * @throws OutOfBoundsException if value is not between zero and MAX_EDITED_COUNT.
    */
-  public function setEditedCount(int $value)
+  public function setEditedCount(int $value) : void
   {
     if ($value < 0 || $value > self::MAX_EDITED_COUNT)
     {
@@ -756,13 +629,15 @@ class Packet implements IDatabaseObject, JsonSerializable
   }
 
   /**
-   * Sets the Date and Time that this Packet was last modified.
+   * Sets the Date and Time that this Packet was last modified, or null for not yet.
    *
-   * @param ?DateTime $value The last modified DateTime, or null for not modified yet.
+   * @param DateTimeInterface|string|null $value The Date and Time value.
    */
-  public function setEditedDateTime(?DateTime $value)
+  public function setEditedDateTime(DateTimeInterface|string|null $value) : void
   {
-    $this->edited_datetime = $value;
+    $this->edited_datetime = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
   }
 
   /**
@@ -773,7 +648,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param string $value The message format.
    * @throws OutOfBoundsException if value length length is not between one and MAX_FORMAT.
    */
-  public function setFormat(string $value)
+  public function setFormat(string $value) : void
   {
     if (strlen($value) < 1 || strlen($value) > self::MAX_FORMAT)
     {
@@ -792,7 +667,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    *                    get a new id, however until then the Packet will not have a valid webpage/URI.
    * @throws OutOfBoundsException if value is not between zero and MAX_ID, or null.
    */
-  public function setId(?int $value)
+  public function setId(?int $value) : void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
     {
@@ -809,7 +684,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    *
    * @param bool $value If true, the 'In Research' badge is visible. If false, it is not visible.
    */
-  public function setInResearch(bool $value)
+  public function setInResearch(bool $value) : void
   {
     $this->setOption(self::OPTION_RESEARCH, $value);
   }
@@ -820,7 +695,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param bool @value If true, value is passed into the Parsedown class before being printed.
    *                    If false, value is *not* passed into Parsedown before being printed.
    */
-  public function setMarkdown(bool $value)
+  public function setMarkdown(bool $value) : void
   {
     $this->setOption(self::OPTION_MARKDOWN, $value);
   }
@@ -832,7 +707,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param bool $value Changes option to true (1) or false (0) based on this value.
    * @throws OutOfBoundsException if option is not between zero and MAX_OPTIONS.
    */
-  public function setOption(int $option, bool $value)
+  public function setOption(int $option, bool $value) : void
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
     {
@@ -857,7 +732,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param int $value The full set of options which will replace previous options.
    * @throws OutOfBoundsException if value is not between zero and MAX_OPTIONS.
    */
-  public function setOptions(int $value)
+  public function setOptions(int $value) : void
   {
     if ($value < 0 || $value > self::MAX_OPTIONS)
     {
@@ -873,16 +748,16 @@ class Packet implements IDatabaseObject, JsonSerializable
    * Sets the Packet name, e.g. 'SID_NULL'
    *
    * @param string @value The name of the Packet.
-   * @throws OutOfBoundsException if value length is not between one and MAX_NAME.
+   * @param boolean $ignore_empty Whether an empty value should be accepted, defaults false.
+   * @return void
+   * @throws OutOfBoundsException if value must be between 1-MAX_NAME characters.
    */
-  public function setName(string $value)
+  public function setName(string $value, bool $ignore_empty = false) : void
   {
-    if (strlen($value) < 1 || strlen($value) > self::MAX_NAME)
-    {
+    if ((!$ignore_empty && empty($value)) || strlen($value) > self::MAX_NAME)
       throw new OutOfBoundsException(sprintf(
         'value must be between 1-%d characters', self::MAX_NAME
       ));
-    }
 
     $this->name = $value;
   }
@@ -894,7 +769,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @throws InvalidArgumentException if value cannot be translated into an integer.
    * @throws OutOfBoundsException if value is not between zero and MAX_PACKET_ID.
    */
-  public function setPacketId($value)
+  public function setPacketId($value) : void
   {
     if (is_string($value) && strlen($value) >= 2 && (
       substr($value, 0, 2) == '&b' || substr($value, 0, 2) == '&B'))
@@ -948,7 +823,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param bool @value If true, enables 'Draft' badge and disables visibility to non-editors.
    *                    If false, disables 'Draft' badge and enables visibility to everyone.
    */
-  public function setPublished(bool $value)
+  public function setPublished(bool $value) : void
   {
     $this->setOption(self::OPTION_PUBLISHED, $value);
   }
@@ -959,7 +834,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param string $value The remarks.
    * @throws OutOfBoundsException if value length is greater than MAX_REMARKS.
    */
-  public function setRemarks(string $value)
+  public function setRemarks(string $value) : void
   {
     if (strlen($value) > self::MAX_REMARKS)
     {
@@ -977,7 +852,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param int @value The transport layer (id).
    * @throws OutOfBoundsException if value is not between zero and MAX_TRANSPORT_LAYER_ID.
    */
-  public function setTransportLayerId(int $value)
+  public function setTransportLayerId(int $value) : void
   {
     if ($value < 0 || $value > self::MAX_TRANSPORT_LAYER_ID)
     {
@@ -994,7 +869,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    *
    * @param array $value The set of Product objects, or Product::$id integers.
    */
-  public function setUsedBy(array $value)
+  public function setUsedBy(array $value) : void
   {
     $used_by = [];
 
@@ -1012,7 +887,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param ?User $value The User (object) that created this packet, or null for no user.
    * @throws OutOfBoundsException if value (User) id is not between zero and MAX_USER_ID, or null.
    */
-  public function setUser(?User $value)
+  public function setUser(?User $value) : void
   {
     $this->setUserId($value ? $value->getId() : $value);
   }
@@ -1023,7 +898,7 @@ class Packet implements IDatabaseObject, JsonSerializable
    * @param ?int $value The User (id) that created this packet, or null for no user.
    * @throws OutOfBoundsException if value is not between zero and MAX_USER_ID, or null.
    */
-  public function setUserId(?int $value)
+  public function setUserId(?int $value) : void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_USER_ID))
     {

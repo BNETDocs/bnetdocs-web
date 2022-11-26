@@ -1,4 +1,5 @@
-<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+<?php
+
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Authentication;
@@ -56,11 +57,10 @@ class BlizzardCheck
 
     // Blizzard would likely never login to our site... would they?
     // But if they happened to be logged in already from a previously non-Blizzard identity...
-    $user_id = (isset(Authentication::$user) ? Authentication::$user->getId() : null);
 
     Logger::logEvent(
       EventTypes::BLIZZARD_VISIT,
-      $user_id,
+      isset(Authentication::$user) ? Authentication::$user->getId() : null,
       getenv('REMOTE_ADDR'),
       json_encode([
         'method'     => getenv('REQUEST_METHOD'),

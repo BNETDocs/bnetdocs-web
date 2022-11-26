@@ -2,65 +2,59 @@
 
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\User\Verify as UserVerifyModel;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-use \Exception;
-use \InvalidArgumentException;
+class Verify extends \BNETDocs\Controllers\Base
+{
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\User\Verify();
+  }
 
-class Verify extends Controller {
-  public function &run( Router &$router, View &$view, array &$args ) {
-    $data = $router->getRequestQueryArray();
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $q = \BNETDocs\Libraries\Router::query();
+    $this->model->token = $q['t'] ?? null;
+    $this->model->user_id = $q['u'] ?? null;
 
-    $model = new UserVerifyModel();
-
-    $model->error   = 'INVALID_TOKEN';
-    $model->token   = isset( $data[ 't' ]) ? $data[ 't' ] : null;
-    $model->user_id = isset( $data[ 'u' ]) ? $data[ 'u' ] : null;
-
-    if ( !is_null( $model->user_id )) {
-      $model->user_id = (int) $model->user_id;
+    if (is_numeric($this->model->user_id))
+    {
+      try { $this->model->user = new \BNETDocs\Libraries\User((int) $this->model->user_id); }
+      catch (\UnexpectedValueException) { $this->model->user = null; }
     }
 
-    try {
-      $model->user = new User( $model->user_id );
-    } catch ( UserNotFoundException $ex ) {
-      $model->user = null;
-    } catch ( InvalidArgumentException $ex ) {
-      $model->user = null;
+    $user_token = $this->model->user ? $this->model->user->getVerifierToken() : null;
+    if (!$this->model->user || $user_token !== $this->model->token)
+    {
+      $this->model->error = 'INVALID_TOKEN';
+      $this->model->_responseCode = 400;
+      return true;
     }
 
-    if ( $model->user ) {
-      $user_token = $model->user->getVerifierToken();
-
-      if ( $user_token === $model->token ) {
-        try {
-          $model->user->setVerified(true);
-          $model->user->commit();
-          $model->error = false;
-        } catch (Exception $e) {
-          $model->error = 'INTERNAL_ERROR';
-        }
-
-        if (!$model->error) {
-          Logger::logEvent(
-            EventTypes::USER_VERIFIED,
-            $model->user_id,
-            getenv( 'REMOTE_ADDR' ),
-            json_encode([ 'error' => $model->error ])
-          );
-        }
-      }
+    try
+    {
+      $this->model->user->setVerified(true, true);
+      $this->model->user->commit();
+      $this->model->error = false;
     }
+    catch (\Throwable) { $this->model->error = 'INTERNAL_ERROR'; }
 
-    $view->render( $model );
-    $model->_responseCode = 200;
-    return $model;
+    if (!$this->model->error)
+      \BNETDocs\Libraries\Logger::logEvent(
+        \BNETDocs\Libraries\EventTypes::USER_VERIFIED,
+        $this->model->user_id,
+        getenv('REMOTE_ADDR'),
+        json_encode(['error' => $this->model->error])
+      );
+
+    $this->model->_responseCode = 200;
+    return true;
   }
 }

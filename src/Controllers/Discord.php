@@ -2,28 +2,31 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Models\Discord as DiscordModel;
+class Discord extends Base
+{
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Discord();
+  }
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $config = &\CarlBennett\MVC\Libraries\Common::$config->discord;
 
-use \DateTime;
-use \DateTimeZone;
+    $this->model->discord_server_id = $config->server_id;
+    $this->model->discord_url = \sprintf('https://discord.gg/%s', $config->invite_code);
+    $this->model->enabled = $config->enabled;
 
-class Discord extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $model = new DiscordModel();
-
-    $model->discord_url = sprintf(
-      'https://discord.gg/%s', Common::$config->discord->invite_code
-    );
-    $model->discord_server_id = Common::$config->discord->server_id;
-    $model->enabled = Common::$config->discord->enabled;
-
-    $view->render($model);
-    $model->_responseCode = ($model->enabled ? 200 : 503);
-    return $model;
+    $this->model->_responseCode = ($this->model->enabled ? 200 : 503);
+    return true;
   }
 }

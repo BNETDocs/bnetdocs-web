@@ -1,4 +1,7 @@
-<?php namespace BNETDocs\Models\News;
+<?php
+
+namespace BNETDocs\Models\News;
+
 class View extends \BNETDocs\Models\ActiveUser
 {
   public $acl_allowed;

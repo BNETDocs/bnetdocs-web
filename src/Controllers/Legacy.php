@@ -2,64 +2,73 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Models\Legacy as LegacyModel;
-
+use \BNETDocs\Libraries\Router;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
 
-class Legacy extends Controller {
-  public function &run(Router &$router, View &$view, array &$args) {
-    $data        = $router->getRequestQueryArray();
-    $model       = new LegacyModel();
-    $model->did  = (isset($data['did' ]) ? $data['did' ] : null);
-    $model->lang = (isset($data['lang']) ? $data['lang'] : null);
-    $model->nid  = (isset($data['nid' ]) ? $data['nid' ] : null);
-    $model->op   = (isset($data['op'  ]) ? $data['op'  ] : null);
-    $model->pid  = (isset($data['pid' ]) ? $data['pid' ] : null);
-    $model->url  = null;
+class Legacy extends Base
+{
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Legacy();
+  }
 
-    if ($model->op == 'cpw') {
-      $model->url = '/user/changepassword';
-    } else if ($model->op == 'credits') {
-      $model->url = '/credits';
-    } else if ($model->op == 'doc' && !is_null($model->did)) {
-      $model->url = '/document/' . rawurlencode($model->did);
-    } else if ($model->op == 'generatecode' && !is_null($model->lang)) {
-      $model->url = '/packet/index.' . rawurlencode($model->lang);
-    } else if ($model->op == 'legalism') {
-      $model->url = '/legal';
-    } else if ($model->op == 'login') {
-      $model->url = '/user/login';
-    } else if ($model->op == 'news' && !is_null($model->nid)) {
-      $model->url = '/news/' . rawurlencode($model->nid);
-    } else if ($model->op == 'news') {
-      $model->url = '/news';
-    } else if ($model->op == 'packet' && !is_null($model->pid)) {
-      $model->url = '/packet/' . rawurlencode($model->pid);
-    } else if ($model->op == 'register') {
-      $model->url = '/user/register';
-    } else if ($model->op == 'resetpw') {
-      $model->url = '/user/resetpassword';
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $data              = Router::query();
+    $this->model->did  = $data['did'] ?? null;
+    $this->model->lang = $data['lang'] ?? null;
+    $this->model->nid  = $data['nid'] ?? null;
+    $this->model->op   = $data['op'] ?? null;
+    $this->model->pid  = $data['pid'] ?? null;
+    $this->model->url  = null;
+
+    if ($this->model->op == 'cpw') {
+      $this->model->url = '/user/changepassword';
+    } else if ($this->model->op == 'credits') {
+      $this->model->url = '/credits';
+    } else if ($this->model->op == 'doc' && !is_null($this->model->did)) {
+      $this->model->url = '/document/' . rawurlencode($this->model->did);
+    } else if ($this->model->op == 'generatecode' && !is_null($this->model->lang)) {
+      $this->model->url = '/packet/index.' . rawurlencode($this->model->lang);
+    } else if ($this->model->op == 'legalism') {
+      $this->model->url = '/legal';
+    } else if ($this->model->op == 'login') {
+      $this->model->url = '/user/login';
+    } else if ($this->model->op == 'news' && !is_null($this->model->nid)) {
+      $this->model->url = '/news/' . rawurlencode($this->model->nid);
+    } else if ($this->model->op == 'news') {
+      $this->model->url = '/news';
+    } else if ($this->model->op == 'packet' && !is_null($this->model->pid)) {
+      $this->model->url = '/packet/' . rawurlencode($this->model->pid);
+    } else if ($this->model->op == 'register') {
+      $this->model->url = '/user/register';
+    } else if ($this->model->op == 'resetpw') {
+      $this->model->url = '/user/resetpassword';
     }
 
-    if (is_null($model->url)) {
-      $model->url = Common::$config->bnetdocs->navigation->front_page;
-      $model->is_legacy = false;
+    if (is_null($this->model->url)) {
+      $this->model->url = Common::$config->bnetdocs->navigation->front_page;
+      $this->model->is_legacy = false;
       $code = 302;
     } else {
-      $model->is_legacy = true;
+      $this->model->is_legacy = true;
       $code = 301;
     }
 
-    $model->url = Common::relativeUrlToAbsolute($model->url);
+    $this->model->url = Common::relativeUrlToAbsolute($this->model->url);
 
-    $view->render($model);
+    $this->model->_responseCode = $code;
+    $this->model->_responseHeaders['Location'] = $this->model->url;
 
-    $model->_responseCode = $code;
-    $model->_responseHeaders['Location'] = $model->url;
-
-    return $model;
+    return true;
   }
 }

@@ -2,24 +2,14 @@
 
 namespace BNETDocs\Views;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\News as NewsModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
+class NewsRSS extends \BNETDocs\Views\Base\RSS
+{
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  {
+    if (!$model instanceof \BNETDocs\Models\News)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-class NewsRSS extends View {
-
-  public function getMimeType() {
-    return 'application/rss+xml;charset=utf-8';
+    (new \BNETDocs\Libraries\Template($model, 'News.rss'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
-
-  public function render(Model &$model) {
-    if (!$model instanceof NewsModel) {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'News.rss'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
-  }
-
 }

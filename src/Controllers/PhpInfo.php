@@ -1,35 +1,38 @@
-<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+<?php
+
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\PhpInfo as PhpInfoModel;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-class PhpInfo extends Controller
+class PhpInfo extends Base
 {
-  public function &run(Router &$router, View &$view, array &$args)
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
   {
-    $model = new PhpInfoModel();
-    $model->active_user = Authentication::$user;
+    $this->model = new \BNETDocs\Models\PhpInfo();
+  }
 
-    if (!($model->active_user && $model->active_user->getOption(User::OPTION_ACL_PHPINFO)))
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    if (!($this->model instanceof ActiveUser && !is_null($this->model->active_user)
+      && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_PHPINFO)))
     {
-      $view->render($model);
-      $model->_responseCode = 401;
-      return $model;
+      $this->model->phpinfo = null;
+      $this->model->_responseCode = 401;
     }
-
-    ob_start();
-    phpinfo(INFO_ALL);
-    $model->phpinfo = ob_get_clean();
-
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
+    else
+    {
+      \ob_start();
+      \phpinfo(INFO_ALL);
+      $this->model->phpinfo = \ob_get_clean();
+      $this->model->_responseCode = 200;
+    }
+    return true;
   }
 }

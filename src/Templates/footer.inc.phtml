@@ -1,13 +1,11 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\VersionInfo;
-use \CarlBennett\MVC\Libraries\Common;
-?>
+use \CarlBennett\MVC\Libraries\Common; ?>
 </main>
 <footer class="footer mt-auto py-3">
   <div class="container text-center">
-    <p class="small text-muted"><?=(VersionInfo::$version['bnetdocs'] ? sprintf('<a href="https://github.com/BNETDocs/bnetdocs-web/tree/%s" rel="external" title="Contribute to the BNETDocs source code!">BNETDocs %s</a>', VersionInfo::$version['bnetdocs'][1], VersionInfo::$version['bnetdocs'][0]) : '(Development)')?> &copy; 2003-2022 BNETDocs | <a href="<?=Common::relativeUrlToAbsolute('/legal')?>" title="BNETDocs Legal Page">Legal</a> | <a href="<?=Common::relativeUrlToAbsolute('/privacy')?>" title="BNETDocs Privacy Notice">Privacy Notice</a></p>
+    <p class="small text-muted"><?=(VersionInfo::get()['bnetdocs'] ? sprintf('<a href="https://github.com/BNETDocs/bnetdocs-web/tree/%s" rel="external" title="Contribute to the BNETDocs source code!">BNETDocs %s</a>', VersionInfo::get()['bnetdocs'][1], VersionInfo::get()['bnetdocs'][0]) : '(Development)')?> &copy; 2003-2022 BNETDocs | <a href="<?=Common::relativeUrlToAbsolute('/legal')?>" title="BNETDocs Legal Page">Legal</a> | <a href="<?=Common::relativeUrlToAbsolute('/privacy')?>" title="BNETDocs Privacy Notice">Privacy Notice</a></p>
     <p class="small text-muted">
 BNETDocs is a documentation and discussion website for Blizzard Entertainment's
 Battle.net&trade; and in-game protocols. You hereby acknowledge that BNETDocs
@@ -20,7 +18,7 @@ and/or other countries.
     </p>
   </div>
 </footer>
-<?=Logger::getTimingFooter()?>
+<?=\BNETDocs\Libraries\Logger::getTimingFooter()?>
 <?php if (Common::$config->analytics->cloudflare) { ?>
 <!-- Cloudflare Web Analytics --><script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":<?=json_encode(Common::$config->analytics->cloudflare)?>}'></script><!-- End Cloudflare Web Analytics -->
 <?php } ?>

@@ -2,16 +2,11 @@
 
 namespace BNETDocs\Models\Document;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Create extends Model {
-
-  public $acl_allowed;
-  public $brief;
-  public $content;
-  public $error;
-  public $markdown;
-  public $title;
-  public $user;
-
+class Create extends \BNETDocs\Models\ActiveUser
+{
+  public bool $acl_allowed = false;
+  public ?string $brief = null;
+  public ?string $content = null;
+  public bool $markdown = true;
+  public ?string $title = null;
 }

@@ -2,395 +2,436 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Exceptions\CommentNotFoundException;
-use \BNETDocs\Libraries\Exceptions\QueryException;
+use \BNETDocs\Libraries\Database;
+use \BNETDocs\Libraries\DateTimeImmutable;
+use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \DateTime;
+use \DateTimeInterface;
 use \DateTimeZone;
-use \InvalidArgumentException;
-use \JsonSerializable;
-use \PDO;
-use \PDOException;
-use \Parsedown;
 use \StdClass;
+use \UnexpectedValueException;
 
-class Comment implements JsonSerializable {
+class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
+{
+  public const MAX_CONTENT      = 0xFFFF;
+  public const MAX_EDITED_COUNT = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_ID           = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_PARENT_ID    = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_PARENT_TYPE  = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_USER_ID      = 0xFFFFFFFFFFFFFFFF;
 
-  const PARENT_TYPE_DOCUMENT  = 0;
-  const PARENT_TYPE_COMMENT   = 1;
-  const PARENT_TYPE_NEWS_POST = 2;
-  const PARENT_TYPE_PACKET    = 3;
-  const PARENT_TYPE_SERVER    = 4;
-  const PARENT_TYPE_USER      = 5;
+  public const PARENT_TYPE_DOCUMENT  = 0;
+  public const PARENT_TYPE_COMMENT   = 1;
+  public const PARENT_TYPE_NEWS_POST = 2;
+  public const PARENT_TYPE_PACKET    = 3;
+  public const PARENT_TYPE_SERVER    = 4;
+  public const PARENT_TYPE_USER      = 5;
 
-  protected $content;
-  protected $created_datetime;
-  protected $edited_count;
-  protected $edited_datetime;
-  protected $id;
-  protected $parent_id;
-  protected $parent_type;
-  protected $user_id;
+  protected string $content;
+  protected DateTimeInterface $created_datetime;
+  protected int $edited_count;
+  protected ?DateTimeInterface $edited_datetime;
+  protected ?int $id;
+  protected int $parent_id;
+  protected int $parent_type;
+  protected ?int $user_id;
 
-  public function __construct($data) {
-    if (is_numeric($data)) {
-      $this->content          = null;
-      $this->created_datetime = null;
-      $this->edited_count     = null;
-      $this->edited_datetime  = null;
-      $this->id               = (int) $data;
-      $this->parent_id        = null;
-      $this->parent_type      = null;
-      $this->user_id          = null;
-      $this->refresh();
-    } else if ($data instanceof StdClass) {
-      self::normalize($data);
-      $this->content          = $data->content;
-      $this->created_datetime = $data->created_datetime;
-      $this->edited_count     = $data->edited_count;
-      $this->edited_datetime  = $data->edited_datetime;
-      $this->id               = $data->id;
-      $this->parent_id        = $data->parent_id;
-      $this->parent_type      = $data->parent_type;
-      $this->user_id          = $data->user_id;
-    } else {
-      throw new InvalidArgumentException("Cannot use data argument");
-    }
-  }
-
-  public static function create($parent_type, $parent_id, $user_id, $content) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare("
-        INSERT INTO `comments` (
-          `id`, `parent_type`, `parent_id`, `user_id`, `created_datetime`,
-          `edited_count`, `edited_datetime`, `content`
-        ) VALUES (
-          NULL, :parent_type, :parent_id, :user_id, NOW(), 0, NULL, :content
-        );
-      ");
-      $stmt->bindParam(":parent_type", $parent_type, PDO::PARAM_INT);
-      $stmt->bindParam(":parent_id", $parent_id, PDO::PARAM_INT);
-      $stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
-      $stmt->bindParam(":content", $content, PDO::PARAM_STR);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot create comment", $e);
-    } finally {
-      return $successful;
-    }
-  }
-
-  public static function delete($id, $parent_type, $parent_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    $successful = false;
-    try {
-      $stmt = Common::$database->prepare("
-        DELETE FROM `comments` WHERE `id` = :id LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-      $successful = $stmt->execute();
-      $stmt->closeCursor();
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot delete comment", $e);
-    } finally {
-      return $successful;
-    }
-  }
-
-  public static function getAll($parent_type, $parent_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `content`,
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `parent_id`,
-          `parent_type`,
-          `user_id`
-        FROM `comments`
-        WHERE
-          `parent_type` = :parent_type AND
-          `parent_id` = :parent_id
-        ORDER BY
-          `created_datetime` ASC,
-          `id` ASC
-        ;
-      ");
-      $stmt->bindParam(":parent_type", $parent_type, PDO::PARAM_INT);
-      $stmt->bindParam(":parent_id", $parent_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh comment");
-      }
-      $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $objects[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $objects;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh comment", $e);
-    }
-    return null;
-  }
-
-  public static function getCommentsByUserId(int $user_id, bool $descending)
+  public function __construct(StdClass|int|null $value)
   {
-    $o = ($descending ? 'DESC' : 'ASC');
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try
+    if ($value instanceof StdClass)
     {
-      $stmt = Common::$database->prepare(sprintf('
-        SELECT
-          `content`,
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `parent_id`,
-          `parent_type`,
-          `user_id`
-        FROM `comments`
-        WHERE `user_id` = :id ORDER BY `created_datetime` %s, `id` %s;
-      ', $o, $o));
-      $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
-      if (!$stmt->execute())
-      {
-        throw new QueryException('Cannot get comments by user id');
-      }
-      $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ))
-      {
-        $objects[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $objects;
+      $this->allocateObject($value);
     }
-    catch (PDOException $e)
+    else
     {
-      throw new QueryException('Cannot get comments by user id', $e);
+      $this->setId($value);
+      if (!$this->allocate()) throw new \BNETDocs\Exceptions\CommentNotFoundException($this);
     }
-    return null;
   }
 
-  public function getContent($prepare) {
-    if (!$prepare) {
-      return $this->content;
-    }
-    $md = new Parsedown();
-    $md->setBreaksEnabled(true);
+  /**
+   * Allocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
+   */
+  public function allocate() : bool
+  {
+    $this->setContent('');
+    $this->setCreatedDateTime('now');
+    $this->setEditedCount(0);
+    $this->setEditedDateTime(null);
+    $this->setParentId(0);
+    $this->setParentType(self::PARENT_TYPE_COMMENT);
+    $this->setUserId(null);
+
+    $id = $this->getId();
+    if (is_null($id)) return true;
+
+    $q = Database::instance()->prepare('
+      SELECT
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `parent_id`,
+        `parent_type`,
+        `user_id`
+      FROM `comments` WHERE `id` = ? LIMIT 1;
+    ');
+    if (!$q || !$q->execute([$id])) return false;
+    $this->allocateObject($q->fetchObject());
+    $q->closeCursor();
+    return true;
+  }
+
+  protected function allocateObject(StdClass $value) : void
+  {
+    $this->setContent($value->content);
+    $this->setCreatedDateTime($value->created_datetime);
+    $this->setEditedCount($value->edited_count);
+    $this->setEditedDateTime($value->edited_datetime);
+    $this->setId($value->id);
+    $this->setParentId($value->parent_id);
+    $this->setParentType($value->parent_type);
+    $this->setUserId($value->user_id);
+  }
+
+  /**
+   * Commits the properties of this object to the database.
+   *
+   * @return boolean Whether the operation was successful.
+   */
+  public function commit() : bool
+  {
+    $q = Database::instance()->prepare('
+      INSERT INTO `comments` (
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `parent_id`,
+        `parent_type`,
+        `user_id`
+      ) VALUES (
+        :content,
+        :created_dt,
+        :edited_count,
+        :edited_dt,
+        :id,
+        :parent_id,
+        :parent_type,
+        :user_id
+      ) ON DUPLICATE KEY UPDATE
+        `content` = :content,
+        `created_datetime` = :created_dt,
+        `edited_count` = :edited_count,
+        `edited_datetime` = :edited_dt,
+        `parent_id` = :parent_id,
+        `parent_type` = :parent_type,
+        `user_id` = :user_id;
+    ');
+
+    $p = [
+      ':content' => $this->getContent(false),
+      ':created_dt' => $this->getCreatedDateTime(),
+      ':edited_count' => $this->getEditedCount(),
+      ':edited_dt' => $this->getEditedDateTime(),
+      ':id' => $this->getId(),
+      ':parent_id' => $this->getParentId(),
+      ':parent_type' => $this->getParentType(),
+      ':user_id' => $this->getUserId(),
+    ];
+
+    foreach ($p as $k => $v)
+      if ($v instanceof DateTimeInterface)
+        $p[$k] = $v->format(self::DATE_SQL);
+
+    if (!$q || !$q->execute($p)) return false;
+    if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
+    $q->closeCursor();
+    return true;
+  }
+
+  /**
+   * Deallocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
+   */
+  public function deallocate() : bool
+  {
+    $id = $this->getId();
+    if (is_null($id)) return false;
+    $q = Database::instance()->prepare('DELETE FROM `comments` WHERE `id` = ? LIMIT 1;');
+    try { return $q && $q->execute([$id]); }
+    finally { $q->closeCursor(); }
+  }
+
+  public static function getAll(int $parent_type, int $parent_id) : ?array
+  {
+    $q = Database::instance()->prepare('
+      SELECT
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `parent_id`,
+        `parent_type`,
+        `user_id`
+      FROM `comments` WHERE
+        `parent_type` = :pt AND
+        `parent_id` = :pid
+      ORDER BY
+        `created_datetime` ASC,
+        `id` ASC;
+    ');
+    if (!$q || !$q->execute([':pid' => $parent_id, ':pt' => $parent_type])) return null;
+    $r = [];
+    while ($row = $q->fetchObject()) $r[] = new self($row);
+    $q->closeCursor();
+    return $r;
+  }
+
+  public static function getCommentsByUserId(int $user_id, bool $descending) : ?array
+  {
+    $o = $descending ? 'DESC' : 'ASC';
+    $q = Database::instance()->prepare(sprintf('
+      SELECT
+        `content`,
+        `created_datetime`,
+        `edited_count`,
+        `edited_datetime`,
+        `id`,
+        `parent_id`,
+        `parent_type`,
+        `user_id`
+      FROM `comments`
+      WHERE `user_id` = ? ORDER BY `created_datetime` %s, `id` %s;
+    ', $o, $o));
+    if (!$q || !$q->execute([$user_id])) return null;
+    $r = [];
+    while ($row = $q->fetchObject()) $r[] = new self($row);
+    $q->closeCursor();
+    return $r;
+  }
+
+  public function getContent(bool $format, bool $autobreak = true) : string
+  {
+    if (!$format) return $this->content;
+
+    $md = new \Parsedown();
+    $md->setBreaksEnabled($autobreak);
     $md->setSafeMode(true); // unsafe user-input
     return $md->text($this->content);
   }
 
-  public function getCreatedDateTime() {
-    if (is_null($this->created_datetime)) {
-      return $this->created_datetime;
-    } else {
-      $tz = new DateTimeZone( 'Etc/UTC' );
-      $dt = new DateTime($this->created_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
-    }
+  public function getCreatedDateTime() : DateTimeInterface
+  {
+    return $this->created_datetime;
   }
 
-  public function getEditedCount() {
+  public function getEditedCount() : int
+  {
     return $this->edited_count;
   }
 
-  public function getEditedDateTime() {
-    if (is_null($this->edited_datetime)) {
-      return $this->edited_datetime;
-    } else {
-      $tz = new DateTimeZone( 'Etc/UTC' );
-      $dt = new DateTime($this->edited_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
-    }
+  public function getEditedDateTime() : ?DateTimeInterface
+  {
+    return $this->edited_datetime;
   }
 
-  public function getId() {
+  public function getId() : ?int
+  {
     return $this->id;
   }
 
-  public function getParentId() {
+  public function getParentId() : int
+  {
     return $this->parent_id;
   }
 
-  public function getParentType() {
+  public function getParentType() : int
+  {
     return $this->parent_type;
   }
 
-  public function getParentUrl() {
-    if (!is_int($this->parent_type)) return false;
-    switch ($this->parent_type) {
-      case self::PARENT_TYPE_DOCUMENT: $page = 'document'; break;
-      case self::PARENT_TYPE_COMMENT: $page = 'comment'; break;
-      case self::PARENT_TYPE_NEWS_POST: $page = 'news'; break;
-      case self::PARENT_TYPE_PACKET: $page = 'packet'; break;
-      case self::PARENT_TYPE_SERVER: $page = 'server'; break;
-      case self::PARENT_TYPE_USER: $page = 'user'; break;
-      default: return false;
+  public function getParentTypeCreatedEventId() : int
+  {
+    $pt = $this->getParentType();
+    switch ($pt)
+    {
+      case Comment::PARENT_TYPE_DOCUMENT: $r = EventTypes::COMMENT_CREATED_DOCUMENT; break;
+      case Comment::PARENT_TYPE_COMMENT: $r = EventTypes::COMMENT_CREATED_COMMENT; break;
+      case Comment::PARENT_TYPE_NEWS_POST: $r = EventTypes::COMMENT_CREATED_NEWS; break;
+      case Comment::PARENT_TYPE_PACKET: $r = EventTypes::COMMENT_CREATED_PACKET; break;
+      case Comment::PARENT_TYPE_SERVER: $r = EventTypes::COMMENT_CREATED_SERVER; break;
+      case Comment::PARENT_TYPE_USER: $r = EventTypes::COMMENT_CREATED_USER; break;
+      default: throw new UnexpectedValueException(sprintf('Parent type (%d) unknown', $pt));
     }
-    $page = '/' . $page . '/' . rawurlencode($this->parent_id);
-    return Common::relativeUrlToAbsolute($page);
+    return $r;
   }
 
-  public function getUser() {
-    if (is_null($this->user_id)) return null;
-    return new User($this->user_id);
+  public function getParentTypeEditedEventId() : int
+  {
+    $pt = $this->getParentType();
+    switch ($pt)
+    {
+      case Comment::PARENT_TYPE_DOCUMENT: $r = EventTypes::COMMENT_EDITED_DOCUMENT; break;
+      case Comment::PARENT_TYPE_COMMENT: $r = EventTypes::COMMENT_EDITED_COMMENT; break;
+      case Comment::PARENT_TYPE_NEWS_POST: $r = EventTypes::COMMENT_EDITED_NEWS; break;
+      case Comment::PARENT_TYPE_PACKET: $r = EventTypes::COMMENT_EDITED_PACKET; break;
+      case Comment::PARENT_TYPE_SERVER: $r = EventTypes::COMMENT_EDITED_SERVER; break;
+      case Comment::PARENT_TYPE_USER: $r = EventTypes::COMMENT_EDITED_USER; break;
+      default: throw new UnexpectedValueException(sprintf('Parent type (%d) unknown', $pt));
+    }
+    return $r;
   }
 
-  public function getUserId() {
+  public function getParentTypeDeletedEventId() : int
+  {
+    $pt = $this->getParentType();
+    switch ($pt)
+    {
+      case Comment::PARENT_TYPE_DOCUMENT: $r = EventTypes::COMMENT_DELETED_DOCUMENT; break;
+      case Comment::PARENT_TYPE_COMMENT: $r = EventTypes::COMMENT_DELETED_COMMENT; break;
+      case Comment::PARENT_TYPE_NEWS_POST: $r = EventTypes::COMMENT_DELETED_NEWS; break;
+      case Comment::PARENT_TYPE_PACKET: $r = EventTypes::COMMENT_DELETED_PACKET; break;
+      case Comment::PARENT_TYPE_SERVER: $r = EventTypes::COMMENT_DELETED_SERVER; break;
+      case Comment::PARENT_TYPE_USER: $r = EventTypes::COMMENT_DELETED_USER; break;
+      default: throw new UnexpectedValueException(sprintf('Parent type (%d) unknown', $pt));
+    }
+    return $r;
+  }
+
+  public function getParentUrl() : string|false
+  {
+    $pt = $this->getParentType();
+    switch ($pt)
+    {
+      case self::PARENT_TYPE_DOCUMENT: $pts = 'document'; break;
+      case self::PARENT_TYPE_COMMENT: $pts = 'comment'; break;
+      case self::PARENT_TYPE_NEWS_POST: $pts = 'news'; break;
+      case self::PARENT_TYPE_PACKET: $pts = 'packet'; break;
+      case self::PARENT_TYPE_SERVER: $pts = 'server'; break;
+      case self::PARENT_TYPE_USER: $pts = 'user'; break;
+      default: throw new UnexpectedValueException(sprintf('Parent type (%d) unknown', $pt));
+    }
+    return Common::relativeUrlToAbsolute(sprintf('/%s/%d', $pts, $this->getParentId()));
+  }
+
+  public function getUser() : ?User
+  {
+    return is_null($this->user_id) ? null : new User($this->user_id);
+  }
+
+  public function getUserId() : ?int
+  {
     return $this->user_id;
   }
 
-  public function jsonSerialize() {
-    $created_datetime = $this->getCreatedDateTime();
-    if (!is_null($created_datetime)) $created_datetime = [
-      "iso"  => $created_datetime->format("r"),
-      "unix" => $created_datetime->getTimestamp(),
-    ];
-
-    $edited_datetime = $this->getEditedDateTime();
-    if (!is_null($edited_datetime)) $edited_datetime = [
-      "iso"  => $edited_datetime->format("r"),
-      "unix" => $edited_datetime->getTimestamp(),
-    ];
-
+  public function jsonSerialize() : mixed
+  {
     return [
-      "content"          => $this->getContent(true),
-      "created_datetime" => $created_datetime,
-      "edited_count"     => $this->getEditedCount(),
-      "edited_datetime"  => $edited_datetime,
-      "id"               => $this->getId(),
-      "parent_id"        => $this->getParentId(),
-      "parent_type"      => $this->getParentType(),
-      "user"             => $this->getUser(),
+      'content' => $this->getContent(false),
+      'created_datetime' => $this->getCreatedDateTime(),
+      'edited_count' => $this->getEditedCount(),
+      'edited_datetime' => $this->getEditedDateTime(),
+      'id' => $this->getId(),
+      'parent_id' => $this->getParentId(),
+      'parent_type' => $this->getParentType(),
+      'user_id' => $this->getUserId(),
     ];
   }
 
-  protected static function normalize(StdClass &$data) {
-    $data->content          = (string) $data->content;
-    $data->created_datetime = (string) $data->created_datetime;
-    $data->edited_count     = (int)    $data->edited_count;
-    $data->edited_datetime  = (string) $data->edited_datetime;
-    $data->id               = (int)    $data->id;
-    $data->parent_id        = (int)    $data->parent_id;
-    $data->parent_type      = (int)    $data->parent_type;
-    $data->user_id          = (int)    $data->user_id;
-
-    return true;
+  public function incrementEdited() : void
+  {
+    $this->setEditedCount($this->getEditedCount() + 1);
+    $this->setEditedDateTime(new DateTimeImmutable('now'));
   }
 
-  public function refresh() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `content`,
-          `created_datetime`,
-          `edited_count`,
-          `edited_datetime`,
-          `id`,
-          `parent_id`,
-          `parent_type`,
-          `user_id`
-        FROM `comments`
-        WHERE `id` = :id
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh comment");
-      } else if ($stmt->rowCount() == 0) {
-        throw new CommentNotFoundException($this->id);
-      }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      self::normalize($row);
-      $this->content          = $row->content;
-      $this->created_datetime = $row->created_datetime;
-      $this->edited_count     = $row->edited_count;
-      $this->edited_datetime  = $row->edited_datetime;
-      $this->id               = $row->id;
-      $this->parent_id        = $row->parent_id;
-      $this->parent_type      = $row->parent_type;
-      $this->user_id          = $row->user_id;
-      return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh comment", $e);
-    }
-    return false;
-  }
+  public function setContent(string $value) : void
+  {
+    if (strlen($value) > self::MAX_CONTENT)
+      throw new UnexpectedValueException(sprintf('value must be between 0-%d characters', self::MAX_CONTENT));
 
-  public function save() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare('
-        UPDATE
-          `comments`
-        SET
-          `content` = :content,
-          `created_datetime` = :created_dt,
-          `edited_count` = :edited_count,
-          `edited_datetime` = :edited_dt,
-          `parent_id` = :parent_id,
-          `parent_type` = :parent_type,
-          `user_id` = :user_id
-        WHERE
-          `id` = :id
-        LIMIT 1;
-      ');
-      $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
-      $stmt->bindParam(':created_dt', $this->created_datetime, PDO::PARAM_STR);
-      $stmt->bindParam(':edited_count', $this->edited_count, PDO::PARAM_INT);
-      $stmt->bindParam(':edited_dt', $this->edited_datetime, PDO::PARAM_STR);
-      $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
-      $stmt->bindParam(':parent_id', $this->parent_id, PDO::PARAM_INT);
-      $stmt->bindParam(':parent_type', $this->parent_type, PDO::PARAM_INT);
-      $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException( 'Cannot save comment' );
-      }
-      $stmt->closeCursor();
-      return true;
-    } catch ( PDOException $e ) {
-      throw new QueryException( 'Cannot save comment', $e );
-    }
-    return false;
-  }
-
-  public function setContent( $value ) {
     $this->content = $value;
   }
 
-  public function setEditedCount( $value ) {
+  public function setCreatedDateTime(DateTimeInterface|string $value)
+  {
+    $this->created_datetime = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
+  }
+
+  public function setEditedCount(int $value) : void
+  {
+    if ($value < 0 || $value > self::MAX_EDITED_COUNT)
+      throw new UnexpectedValueException(sprintf('value must be an integer between 0-%d', self::MAX_EDITED_COUNT));
+
     $this->edited_count = $value;
   }
 
-  public function setEditedDateTime( \DateTime $value ) {
-    $this->edited_datetime = $value->format( 'Y-m-d H:i:s' );
+  public function setEditedDateTime(DateTimeInterface|string|null $value)
+  {
+    $this->edited_datetime = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
   }
 
+  public function setId(?int $value) : void
+  {
+    if ($value < 0 || $value > self::MAX_ID)
+      throw new UnexpectedValueException(sprintf('value must be null or an integer between 0-%d', self::MAX_ID));
+
+    $this->id = $value;
+  }
+
+  public function setParentId(int $value) : void
+  {
+    if ($value < 0 || $value > self::MAX_PARENT_ID)
+      throw new UnexpectedValueException(sprintf('value must be an integer between 0-%d', self::MAX_PARENT_ID));
+
+    $this->parent_id = $value;
+  }
+
+  public function setParentType(int $value) : void
+  {
+    if ($value < 0 || $value > self::MAX_PARENT_TYPE)
+      throw new UnexpectedValueException(sprintf('value must be an integer between 0-%d', self::MAX_PARENT_TYPE));
+
+    if (!self::validateParentType($value))
+      throw new UnexpectedValueException('value must be a valid Comment::PARENT_TYPE_ constant');
+
+    $this->parent_type = $value;
+  }
+
+  public function setUserId(?int $value) : void
+  {
+    if ($value < 0 || $value > self::MAX_USER_ID)
+      throw new UnexpectedValueException(sprintf('value must be null or an integer between 0-%d', self::MAX_USER_ID));
+
+    $this->user_id = $value;
+  }
+
+  public static function validateParentType(int $value) : bool
+  {
+    if ($value < 0 || $value > self::MAX_PARENT_TYPE)
+      throw new UnexpectedValueException(sprintf('value must be an integer between 0-%d', self::MAX_PARENT_TYPE));
+
+    switch ($value)
+    {
+      case self::PARENT_TYPE_COMMENT:
+      case self::PARENT_TYPE_DOCUMENT:
+      case self::PARENT_TYPE_NEWS_POST:
+      case self::PARENT_TYPE_PACKET:
+      case self::PARENT_TYPE_SERVER:
+      case self::PARENT_TYPE_USER:
+        return true;
+      default: return false;
+    }
+  }
 }

@@ -1,26 +1,15 @@
 <?php
+
 namespace BNETDocs\Views\Packet;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\Packet\Form as FormModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
-
-class CreateHtml extends View
+class CreateHtml extends \BNETDocs\Views\Base\Html
 {
-  public function getMimeType()
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
   {
-    return 'text/html;charset=utf-8';
-  }
+    if (!$model instanceof \BNETDocs\Models\Packet\Form)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-  public function render(Model &$model)
-  {
-    if (!$model instanceof FormModel)
-    {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'Packet/Create'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
+    (new \BNETDocs\Libraries\Template($model, 'Packet/Create'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
 }

@@ -2,24 +2,14 @@
 
 namespace BNETDocs\Views;
 
-use \BNETDocs\Models\Status as StatusModel;
-use \CarlBennett\MVC\Libraries\ArrayFlattener;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
+class StatusPlain extends \BNETDocs\Views\Base\Plain
+{
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  {
+    if (!$model instanceof \BNETDocs\Models\Status)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-class StatusPlain extends View {
-
-  public function getMimeType() {
-    return 'text/plain;charset=utf-8';
+    echo \BNETDocs\Libraries\ArrayFlattener::flatten($model->status);
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
-
-  public function render(Model &$model) {
-    if (!$model instanceof StatusModel) {
-      throw new IncorrectModelException();
-    }
-    echo ArrayFlattener::flatten( $model->status );
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
-  }
-
 }

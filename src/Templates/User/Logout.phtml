@@ -1,33 +1,25 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
-use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Logout';
 $description = 'Log out of the BNETDocs website';
-$this->opengraph->attach(new Pair('url', '/user/logout'));
-$error = $this->getContext()->error;
-switch ($error)
-{
-  case 'NOT_LOGGED_IN': $message = 'You were not logged in to begin with.'; break;
-  default: $message = $error;
-}
+$this->opengraph->attach(new \CarlBennett\MVC\Libraries\Pair('url', '/user/logout'));
 require('./header.inc.phtml'); ?>
 <div class="container">
-<? if (is_null($error)) { ?>
+<? if (!$this->getContext()->active_user) { ?>
+  <h1 class="text-success">Logged Out</h1>
+  <div class="alert alert-success">
+    <p class="mb-0">You have been successfully logged out!</p>
+  </div>
+<? } else if ($this->getContext()->error === false) { ?>
   <h1 class="text-danger"><?=$title?></h1>
   <p class="text-danger">If you are sure you wish to log out, press the button below.</p>
   <form method="POST" action="?">
     <input class="btn btn-danger" type="submit" value="Log Out"/>
   </form>
-<? } else if ($this->getContext()->error === false) { ?>
-  <h1 class="text-success">Logged Out</h1>
-  <div class="alert alert-success">
-    <p class="mb-0">You have been successfully logged out!</p>
-  </div>
 <? } else { ?>
   <h1 class="text-danger">Log out failure</h1>
   <div class="alert alert-danger">
-    <p>An error occurred while attempting to log out.</p>
-    <p class="mb-0"><?=$message?></p>
+    <p class="mb-0">An error occurred while attempting to log out.</p>
   </secton>
 <? } ?>
 </div>

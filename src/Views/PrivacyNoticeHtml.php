@@ -1,26 +1,15 @@
 <?php
+
 namespace BNETDocs\Views;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\PrivacyNotice as PrivacyNoticeModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
-
-class PrivacyNoticeHtml extends View
+class PrivacyNoticeHtml extends \BNETDocs\Views\Base\Html
 {
-  public function getMimeType()
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
   {
-    return 'text/html;charset=utf-8';
-  }
+    if (!$model instanceof \BNETDocs\Models\PrivacyNotice)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-  public function render(Model &$model)
-  {
-    if (!$model instanceof PrivacyNoticeModel)
-    {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'PrivacyNotice'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
+    (new \BNETDocs\Libraries\Template($model, 'PrivacyNotice'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
 }

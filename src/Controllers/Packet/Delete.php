@@ -1,93 +1,60 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+
 namespace BNETDocs\Controllers\Packet;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Exceptions\PacketNotFoundException;
-use \BNETDocs\Libraries\Logger;
-use \BNETDocs\Libraries\Packet;
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\Packet\Delete as PacketDeleteModel;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-use \InvalidArgumentException;
-use \UnexpectedValueException;
+use \BNETDocs\Libraries\Router;
 
-class Delete extends Controller
+class Delete extends \BNETDocs\Controllers\Base
 {
-  public function &run(Router &$router, View &$view, array &$args)
+  public function __construct()
   {
-    $data = $router->getRequestQueryArray();
-    $model = new PacketDeleteModel();
-    $model->error = null;
-    $model->id = $data['id'] ?? null;
-    $model->packet = null;
-    $model->title = null;
-    $model->user = Authentication::$user;
-
-    $model->acl_allowed = ($model->user && $model->user->getOption(
-      User::OPTION_ACL_PACKET_DELETE
-    ));
-
-    try { $model->packet = new Packet($model->id); }
-    catch (PacketNotFoundException $e) { $model->packet = null; }
-    catch (InvalidArgumentException $e) { $model->packet = null; }
-    catch (UnexpectedValueException $e) { $model->packet = null; }
-
-    if ($model->packet === null) {
-      $model->error = 'NOT_FOUND';
-    } else {
-      $model->title = $model->packet->getLabel();
-
-      if ($router->getRequestMethod() == 'POST') {
-        $this->tryDelete($router, $model);
-      }
-    }
-
-    $view->render($model);
-    $model->_responseCode = ($model->acl_allowed ? 200 : 403);
-    return $model;
+    $this->model = new \BNETDocs\Models\Packet\Delete();
   }
 
-  protected function tryDelete(Router &$router, PacketDeleteModel &$model)
+  public function invoke(?array $args) : bool
   {
-    if (!isset($model->user))
-    {
-      $model->error = 'NOT_LOGGED_IN';
-      return;
-    }
-    if (!$model->acl_allowed)
-    {
-      $model->error = 'ACL_NOT_SET';
-      return;
-    }
+    $this->model->acl_allowed = $this->model->active_user
+      && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_PACKET_DELETE);
 
-    $model->error = false;
-    $id = (int) $model->id;
-
-    try
+    if (!$this->model->acl_allowed)
     {
-      $success = Packet::delete($id);
-    }
-    catch (QueryException $e)
-    {
-      // SQL error occurred. We can show a friendly message to the user while
-      // also notifying this problem to staff.
-      Logger::logException($e);
-      $success = false;
+      $this->model->_responseCode = 401;
+      $this->model->error = 'ACL_NOT_SET';
+      return true;
     }
 
-    $model->error = (!$success ? 'INTERNAL_ERROR' : false);
+    $q = Router::query();
+    $this->model->id = $q['id'] ?? null;
 
-    Logger::logEvent(
-      EventTypes::PACKET_DELETED,
-      $model->user->getId(),
+    try { if (!is_null($this->model->id)) $this->model->packet = new \BNETDocs\Libraries\Packet($this->model->id); }
+    catch (\UnexpectedValueException) { $this->model->packet = null; }
+
+    if (!$this->model->packet)
+    {
+      $this->model->_responseCode = 404;
+      $this->model->error = 'NOT_FOUND';
+      return true;
+    }
+
+    $this->model->title = $this->model->packet->getLabel();
+
+    if (Router::requestMethod() == Router::METHOD_POST) $this->tryDelete();
+    $this->model->_responseCode = $this->model->error ? 500 : 200;
+    return true;
+  }
+
+  protected function tryDelete() : void
+  {
+    $this->model->error = $this->model->packet->deallocate() ? false : 'INTERNAL_ERROR';
+
+    \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\EventTypes::PACKET_DELETED,
+      $this->model->active_user->getId(),
       getenv('REMOTE_ADDR'),
       json_encode([
-        'error'     => $model->error,
-        'packet_id' => $id,
+        'error' => $this->model->error,
+        'packet_id' => $this->model->id,
+        'packet' => $this->model->packet,
       ])
     );
   }

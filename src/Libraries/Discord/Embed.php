@@ -9,36 +9,34 @@ use \BNETDocs\Libraries\Discord\EmbedImage;
 use \BNETDocs\Libraries\Discord\EmbedProvider;
 use \BNETDocs\Libraries\Discord\EmbedThumbnail;
 use \BNETDocs\Libraries\Discord\EmbedVideo;
-
-use \DateTime;
-use \JsonSerializable;
+use \DateTimeInterface;
 use \LengthException;
-use \OverflowException;
 use \SplObjectStorage;
 
 // <https://discordapp.com/developers/docs/resources/channel#embed-object>
 
-class Embed implements JsonSerializable {
+class Embed implements \JsonSerializable
+{
+  public const MAX_DESCRIPTION = 2048;
+  public const MAX_FIELDS = 25;
+  public const MAX_TITLE = 256;
 
-  const MAX_DESCRIPTION = 2048;
-  const MAX_FIELDS      = 25;
-  const MAX_TITLE       = 256;
+  protected ?EmbedAuthor $author;
+  protected int $color;
+  protected ?string $description;
+  protected ?SplObjectStorage $fields;
+  protected ?EmbedFooter $footer;
+  protected ?EmbedImage $image;
+  protected ?EmbedProvider $provider;
+  protected ?EmbedThumbnail $thumbnail;
+  protected ?DateTimeInterface $timestamp;
+  protected ?string $title;
+  protected ?string $type;
+  protected ?string $url;
+  protected ?EmbedVideo $video;
 
-  protected $author;
-  protected $color;
-  protected $description;
-  protected $fields;
-  protected $footer;
-  protected $image;
-  protected $provider;
-  protected $thumbnail;
-  protected $timestamp;
-  protected $title;
-  protected $type;
-  protected $url;
-  protected $video;
-
-  public function __construct() {
+  public function __construct()
+  {
     $this->author = null;
     $this->color = -1;
     $this->description = '';
@@ -54,121 +52,137 @@ class Embed implements JsonSerializable {
     $this->video = null;
   }
 
-  public function addField(EmbedField &$field_object) {
-    if ($this->fields->count() >= self::MAX_FIELDS) {
-      throw new OverflowException(sprintf(
-        'Discord forbids adding more than %d fields',
-        self::MAX_FIELDS
+  public function addField(EmbedField $value) : void
+  {
+    if ($this->fields->count() >= self::MAX_FIELDS)
+      throw new \OverflowException(sprintf(
+        'Discord forbids adding more than %d fields', self::MAX_FIELDS
       ));
-    }
 
-    $this->fields->attach($field_object);
+    $this->fields->attach($value);
   }
 
-  public function fieldCount() {
+  public function fieldCount() : int
+  {
     return $this->fields->count();
   }
 
-  public function hasField(EmbedField &$field_object) {
-    return $this->fields->contains($field_object);
+  public function hasField(EmbedField $value) : bool
+  {
+    return $this->fields->contains($value);
   }
 
-  public function jsonSerialize() {
-    // part of JsonSerializable interface
-    $r = array();
+  public function jsonSerialize() : mixed
+  {
+    $r = [
+      'author' => $this->author,
+      'color' => $this->color,
+      'description' => $this->description,
+      'fields' => [],
+      'footer' => $this->footer,
+      'image' => $this->image,
+      'provider' => $this->provider,
+      'thumbnail' => $this->thumbnail,
+      'title' => $this->title,
+      'timestamp' => $this->timestamp,
+      'type' => $this->type,
+      'url' => $this->url,
+      'video' => $this->video,
+    ];
 
-    if (!empty($this->description)) $r['description'] = $this->description;
-    if (!empty($this->title)) $r['title'] = $this->title;
-    if (!empty($this->type)) $r['type'] = $this->type;
-    if (!empty($this->url)) $r['url'] = $this->url;
-    if ($this->author) $r['author'] = $this->author;
-    if ($this->color > -1) $r['color'] = $this->color;
-    if ($this->fields->count() > 0) $r['fields'] = array();
-    if ($this->footer) $r['footer'] = $this->footer;
-    if ($this->image) $r['image'] = $this->image;
-    if ($this->provider) $r['provider'] = $this->provider;
-    if ($this->thumbnail) $r['thumbnail'] = $this->thumbnail;
-    if ($this->video) $r['video'] = $this->video;
+    // add each EmbedField
+    foreach ($this->fields as $v) $r['fields'][] = $v;
 
-    if ($this->timestamp) $r['timestamp'] = $this->timestamp->format(
-      DateTime::ISO8601
-    );
-
-    foreach ($this->fields as $field_object) {
-      $r['fields'][] = $field_object;
+    // remove null key-values, format DateTimeInterface objects
+    foreach ($r as $k => $v)
+    {
+      if (is_null($v))
+        unset($r[$k]);
+      else if ($v instanceof DateTimeInterface)
+        $r[$k] = $v->format(DateTimeInterface::ISO8601);
     }
 
     return $r;
   }
 
-  public function removeAllFields() {
+  public function removeAllFields() : void
+  {
     $this->fields = new SplObjectStorage();
   }
 
-  public function removeField(EmbedField &$field_object) {
-    $this->fields->detach($field_object);
+  public function removeField(EmbedField $value) : void
+  {
+    $this->fields->detach($value);
   }
 
-  public function setAuthor(EmbedAuthor &$author_object) {
-    $this->author = $author_object;
+  public function setAuthor(?EmbedAuthor $value) : void
+  {
+    $this->author = $value;
   }
 
-  public function setColor(int $color) {
+  public function setColor(?int $color) : void
+  {
     $this->color = $color;
   }
 
-  public function setDescription(string $description) {
-    if (strlen($description) > self::MAX_DESCRIPTION) {
+  public function setDescription(?string $value) : void
+  {
+    if (!empty($value) && strlen($value) > self::MAX_DESCRIPTION)
       throw new LengthException(sprintf(
-        'Discord forbids description longer than %d characters',
-        self::MAX_DESCRIPTION
+        'Discord forbids description longer than %d characters', self::MAX_DESCRIPTION
       ));
-    }
 
-    $this->title = $title;
+    $this->description = $value;
   }
 
-  public function setFooter(EmbedFooter &$footer_object) {
-    $this->footer = $footer_object;
+  public function setFooter(?EmbedFooter $value) : void
+  {
+    $this->footer = $value;
   }
 
-  public function setImage(EmbedImage &$image_object) {
-    $this->image = $image_object;
+  public function setImage(?EmbedImage $value) : void
+  {
+    $this->image = $value;
   }
 
-  public function setProvider(EmbedProvider &$provider_object) {
-    $this->provider = $provider_object;
+  public function setProvider(?EmbedProvider $value) : void
+  {
+    $this->provider = $value;
   }
 
-  public function setThumbnail(EmbedThumbnail &$thumbnail_object) {
-    $this->thumbnail = $thumbnail_object;
+  public function setThumbnail(?EmbedThumbnail $value) : void
+  {
+    $this->thumbnail = $value;
   }
 
-  public function setTimestamp(DateTime $timestamp) {
-    $this->timestamp = $timestamp;
+  public function setTimestamp(?DateTimeInterface $value) : void
+  {
+    $this->timestamp = $value;
   }
 
-  public function setTitle(string $title) {
-    if (strlen($title) > self::MAX_TITLE) {
+  public function setTitle(?string $value) : void
+  {
+    if (!empty($value) && strlen($value) > self::MAX_TITLE)
       throw new LengthException(sprintf(
-        'Discord forbids title longer than %d characters',
-        self::MAX_TITLE
+        'Discord forbids title longer than %d characters', self::MAX_TITLE
       ));
-    }
 
-    $this->title = $title;
+    $this->title = $value;
   }
 
-  public function setType(string $type) {
-    $this->type = $type;
+  public function setType(?string $value) : void
+  {
+    $this->type = $value;
   }
 
-  public function setUrl(string $url) {
-    $this->url = $url;
+  public function setUrl(?string $value) : void
+  {
+    $this->url = $value;
   }
 
-  public function setVideo(EmbedVideo &$video_object) {
-    $this->video = $video_object;
+  public function setVideo(?EmbedVideo $value) : void
+  {
+    $this->video = $value;
   }
 
 }

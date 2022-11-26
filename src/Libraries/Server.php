@@ -2,376 +2,382 @@
 
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \BNETDocs\Libraries\Exceptions\ServerNotFoundException;
+use \BNETDocs\Libraries\Database;
+use \BNETDocs\Libraries\DateTimeImmutable;
 use \BNETDocs\Libraries\ServerType;
-
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-
-use \DateTime;
+use \DateTimeInterface;
 use \DateTimeZone;
-use \InvalidArgumentException;
-use \JsonSerializable;
-use \PDO;
-use \PDOException;
 use \StdClass;
 
-class Server implements JsonSerializable {
-
+class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
+{
   const STATUS_ONLINE   = 0x00000001;
   const STATUS_DISABLED = 0x00000002;
 
-  protected $address;
-  protected $created_datetime;
-  protected $id;
-  protected $label;
-  protected $port;
-  protected $status_bitmask;
-  protected $type_id;
-  protected $updated_datetime;
-  protected $user_id;
+  protected string $address;
+  protected DateTimeInterface $created_datetime;
+  protected ?int $id;
+  protected ?string $label;
+  protected int $port;
+  protected int $status_bitmask;
+  protected ?int $type_id;
+  protected ?DateTimeInterface $updated_datetime;
+  protected ?int $user_id;
 
-  public function __construct($data) {
-    if (is_numeric($data)) {
-      $this->address          = null;
-      $this->created_datetime = null;
-      $this->id               = (int) $data;
-      $this->label            = null;
-      $this->port             = null;
-      $this->status_bitmask   = null;
-      $this->type_id          = null;
-      $this->updated_datetime = null;
-      $this->user_id          = null;
-      $this->refresh();
-    } else if ($data instanceof StdClass) {
-      self::normalize($data);
-      $this->address          = $data->address;
-      $this->created_datetime = $data->created_datetime;
-      $this->id               = $data->id;
-      $this->label            = $data->label;
-      $this->port             = $data->port;
-      $this->status_bitmask   = $data->status_bitmask;
-      $this->type_id          = $data->type_id;
-      $this->updated_datetime = $data->updated_datetime;
-      $this->user_id          = $data->user_id;
-    } else {
-      throw new InvalidArgumentException("Cannot use data argument");
+  public function __construct(StdClass|int|null $value)
+  {
+    if ($value instanceof StdClass)
+    {
+      $this->allocateObject($value);
+    }
+    else
+    {
+      $this->setId($value);
+      if (!$this->allocate()) throw new \BNETDocs\Exceptions\ServerNotFoundException($this);
     }
   }
 
-  public function getAddress() {
-    return $this->address;
-  }
+  public function allocate() : bool
+  {
+    $this->setAddress('');
+    $this->setCreatedDateTime('now');
+    $this->setLabel(null);
+    $this->setPort(0);
+    $this->setStatusBitmask(self::STATUS_DISABLED);
+    $this->setType(null);
+    $this->setUpdatedDateTime(null);
+    $this->setUser(null);
 
-  public static function getAllServers() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `address`,
-          `created_datetime`,
-          `id`,
-          `label`,
-          `port`,
-          `status_bitmask`,
-          `type_id`,
-          `updated_datetime`,
-          `user_id`
-        FROM `servers`
-        ORDER BY
-          `type_id` ASC,
-          ISNULL(`label`) ASC,
-          `label` ASC,
-          `address` ASC,
-          `id` ASC;
-      ");
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh servers");
-      }
-      $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $objects[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $objects;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh servers", $e);
-    }
-    return null;
-  }
+    $id = $this->getId();
+    if (is_null($id)) return true;
 
-  public function getCreatedDateTime() {
-    if (is_null($this->created_datetime)) {
-      return $this->created_datetime;
-    } else {
-      $tz = new DateTimeZone( 'Etc/UTC' );
-      $dt = new DateTime($this->created_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
-    }
-  }
-
-  public function getName() {
-    return (empty($this->label) ?
-      $this->address . ":" . $this->port :
-      $this->label
-    );
-  }
-
-  public function getId() {
-    return $this->id;
-  }
-
-  public function getLabel() {
-    return $this->label;
-  }
-
-  public function getPort() {
-    return $this->port;
-  }
-
-  public static function getServersByUserId($user_id) {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare('
-        SELECT
-          `address`,
-          `created_datetime`,
-          `id`,
-          `label`,
-          `port`,
-          `status_bitmask`,
-          `type_id`,
-          `updated_datetime`,
-          `user_id`
-        FROM `servers`
-        WHERE `user_id` = :user_id
-        ORDER BY `id` ASC;
-      ');
-      $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException('Cannot query servers by user id');
-      }
-      $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $objects[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $objects;
-    } catch (PDOException $e) {
-      throw new QueryException('Cannot query servers by user id', $e);
-    }
-    return null;
-  }
-
-  public function getStatusBitmask() {
-    return $this->status_bitmask;
-  }
-
-  public function getType() {
-    return new ServerType($this->type_id);
-  }
-
-  public function getTypeId() {
-    return $this->type_id;
-  }
-
-  public function getURI() {
-    $value = $this->getLabel();
-    if (empty($value)) {
-      $value = $this->getAddress() . ":" . $this->getPort();
-    }
-    return Common::relativeUrlToAbsolute(
-      "/server/" . $this->getId() . "/" . Common::sanitizeForUrl($value, true)
-    );
-  }
-
-  public function getUpdatedDateTime() {
-    if (is_null($this->updated_datetime)) {
-      return $this->updated_datetime;
-    } else {
-      $tz = new DateTimeZone( 'Etc/UTC' );
-      $dt = new DateTime($this->updated_datetime);
-      $dt->setTimezone($tz);
-      return $dt;
-    }
-  }
-
-  public function getUser() {
-    if (is_null($this->user_id)) return null;
-    return new User($this->user_id);
-  }
-
-  public function getUserId() {
-    return $this->user_id;
-  }
-
-  public function isDisabled() {
-    return ($this->status_bitmask & self::STATUS_DISABLED);
-  }
-
-  public function isOffline() {
-    return (!$this->isOnline());
-  }
-
-  public function isOnline() {
-    return ($this->status_bitmask & self::STATUS_ONLINE);
-  }
-
-  public function jsonSerialize() {
-    $created_datetime = $this->getCreatedDateTime();
-    if (!is_null($created_datetime)) $created_datetime = [
-      "iso"  => $created_datetime->format("r"),
-      "unix" => $created_datetime->getTimestamp(),
-    ];
-
-    $updated_datetime = $this->getUpdatedDateTime();
-    if (!is_null($updated_datetime)) $updated_datetime = [
-      "iso"  => $updated_datetime->format("r"),
-      "unix" => $updated_datetime->getTimestamp(),
-    ];
-
-    return [
-      "address"          => $this->getAddress(),
-      "created_datetime" => $created_datetime,
-      "id"               => $this->getId(),
-      "label"            => $this->getLabel(),
-      "port"             => $this->getPort(),
-      "status_bitmask"   => $this->getStatusBitmask(),
-      "type_id"          => $this->getTypeId(),
-      "updated_datetime" => $updated_datetime,
-      "uri"              => $this->getURI(),
-      "user"             => $this->getUser(),
-    ];
-  }
-
-  protected static function normalize(StdClass &$data) {
-    $data->address          = (string) $data->address;
-    $data->created_datetime = (string) $data->created_datetime;
-    $data->id               = (int)    $data->id;
-    $data->port             = (int)    $data->port;
-    $data->status_bitmask   = (int)    $data->status_bitmask;
-    $data->type_id          = (int)    $data->type_id;
-
-    if (!is_null($data->label))
-      $data->label = (string) $data->label;
-
-    if (!is_null($data->updated_datetime))
-      $data->updated_datetime = (string) $data->updated_datetime;
-
-    if (!is_null($data->user_id))
-      $data->user_id = (int) $data->user_id;
-
+    $q = Database::instance()->prepare('
+      SELECT
+        `address`,
+        `created_datetime`,
+        `id`,
+        `label`,
+        `port`,
+        `status_bitmask`,
+        `type_id`,
+        `updated_datetime`,
+        `user_id`
+      FROM `servers` WHERE `id` = ? LIMIT 1;
+    ');
+    if (!$q || !$q->execute([$id]) || $q->rowCount() != 1) return false;
+    $this->allocateObject($q->fetchObject());
+    $q->closeCursor();
     return true;
   }
 
-  public function refresh() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `address`,
-          `created_datetime`,
-          `id`,
-          `label`,
-          `port`,
-          `status_bitmask`,
-          `type_id`,
-          `updated_datetime`,
-          `user_id`
-        FROM `servers`
-        WHERE `id` = :id
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $this->id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh server");
-      } else if ($stmt->rowCount() == 0) {
-        throw new ServerNotFoundException($this->id);
-      }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      self::normalize($row);
-      $this->address          = $row->address;
-      $this->created_datetime = $row->created_datetime;
-      $this->label            = $row->label;
-      $this->port             = $row->port;
-      $this->status_bitmask   = $row->status_bitmask;
-      $this->type_id          = $row->type_id;
-      $this->updated_datetime = $row->updated_datetime;
-      $this->user_id          = $row->user_id;
-      return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh server", $e);
-    }
-    return false;
+  /**
+   * Internal function to process and translate StdClass objects into properties.
+   */
+  private function allocateObject(StdClass $value) : void
+  {
+    $this->setAddress($value->address);
+    $this->setCreatedDateTime($value->created_datetime);
+    $this->setId($value->id);
+    $this->setLabel($value->label);
+    $this->setPort($value->port);
+    $this->setStatusBitmask($value->status_bitmask);
+    $this->setTypeId($value->type_id);
+    $this->setUpdatedDateTime($value->updated_datetime);
+    $this->setUserId($value->user_id);
   }
 
-  public function save() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
+  public function commit() : bool
+  {
+    $q = Database::instance()->prepare('
+      UPDATE `servers` SET
+        `address` = :address,
+        `created_datetime` = :created_dt,
+        `label` = :label,
+        `port` = :port,
+        `status_bitmask` = :status,
+        `type_id` = :type_id,
+        `updated_datetime` = :updated_dt,
+        `user_id` = :user_id
+      WHERE `id` = :id LIMIT 1;
+    ');
 
-    try {
+    $p = [
+      ':address' => $this->getAddress(),
+      ':created_dt' => $this->getCreatedDateTime(),
+      ':label' => $this->getLabel(),
+      ':id' => $this->getId(),
+      ':port' => $this->getPort(),
+      ':status' => $this->getStatusBitmask(),
+      ':type_id' => $this->getTypeId(),
+      ':updated_dt' => $this->getUpdatedDateTime(),
+      ':user_id' => $this->getUserId(),
+    ];
 
-      $stmt = Common::$database->prepare('
-        UPDATE
-          `servers`
-        SET
-          `address` = :address,
-          `created_datetime` = :created_dt,
-          `label` = :label,
-          `port` = :port,
-          `status_bitmask` = :status,
-          `type_id` = :type_id,
-          `updated_datetime` = :updated_dt,
-          `user_id` = :user_id
-        WHERE
-          `id` = :id
-        LIMIT 1;
-      ');
+    foreach ($p as $k => &$v)
+      if ($v instanceof DateTimeInterface)
+        $p[$k] = $v->format(self::DATE_SQL);
 
-      $stmt->bindParam( ':address', $this->address, PDO::PARAM_STR );
-      $stmt->bindParam(
-        ':created_dt', $this->created_datetime, PDO::PARAM_STR
-      );
-      $stmt->bindParam( ':label', $this->label, PDO::PARAM_STR );
-      $stmt->bindParam( ':id', $this->id, PDO::PARAM_INT );
-      $stmt->bindParam( ':port', $this->port, PDO::PARAM_INT );
-      $stmt->bindParam( ':status', $this->status_bitmask, PDO::PARAM_INT );
-      $stmt->bindParam( ':type_id', $this->type_id, PDO::PARAM_INT );
-
-      $stmt->bindParam( ':updated_dt', $this->updated_datetime, (
-        is_null( $this->updated_datetime ) ? PDO::PARAM_NULL : PDO::PARAM_STR
-      ));
-
-      $stmt->bindParam( ':user_id', $this->user_id, (
-        is_null( $this->user_id ) ? PDO::PARAM_NULL : PDO::PARAM_INT
-      ));
-
-      if (!$stmt->execute()) {
-        throw new QueryException( 'Cannot save server' );
-      }
-      $stmt->closeCursor();
-      return true;
-
-    } catch ( PDOException $e ) {
-      throw new QueryException( 'Cannot save server', $e );
-    }
-
-    return false;
+    if (!$q || !$q->execute($p)) return false;
+    if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
+    $q->closeCursor();
+    return true;
   }
 
-  public function setStatusBitmask( $status_bitmask ) {
+  /**
+   * Deallocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
+   */
+  public function deallocate() : bool
+  {
+    $id = $this->getId();
+    if (is_null($id)) return false;
+    $q = Database::instance()->prepare('DELETE FROM `servers` WHERE `id` = ? LIMIT 1;');
+    try { return $q && $q->execute([$id]); }
+    finally { $q->closeCursor(); }
+  }
+
+  public function getAddress() : string
+  {
+    return $this->address;
+  }
+
+  public static function getAllServers() : ?array
+  {
+    $q = Database::instance()->prepare('
+      SELECT
+        `address`,
+        `created_datetime`,
+        `id`,
+        `label`,
+        `port`,
+        `status_bitmask`,
+        `type_id`,
+        `updated_datetime`,
+        `user_id`
+      FROM `servers`
+      ORDER BY
+        `type_id` ASC,
+        ISNULL(`label`) ASC,
+        `label` ASC,
+        `address` ASC,
+        `id` ASC;
+    ');
+
+    if (!$q || !$q->execute()) return null;
+
+    $r = [];
+    while ($row = $q->fetchObject()) $r[] = new self($row);
+    $q->closeCursor();
+    return $r;
+  }
+
+  public function getCreatedDateTime() : DateTimeInterface
+  {
+    return $this->created_datetime;
+  }
+
+  public function getName() : string
+  {
+    return empty($this->label) ? $this->address . ':' . $this->port : $this->label;
+  }
+
+  public function getId() : ?int
+  {
+    return $this->id;
+  }
+
+  public function getLabel() : string
+  {
+    return $this->label;
+  }
+
+  public function getPort() : int
+  {
+    return $this->port;
+  }
+
+  public static function getServersByUserId(int $user_id) : ?array
+  {
+    $q = Database::instance()->prepare('
+      SELECT
+        `address`,
+        `created_datetime`,
+        `id`,
+        `label`,
+        `port`,
+        `status_bitmask`,
+        `type_id`,
+        `updated_datetime`,
+        `user_id`
+      FROM `servers`
+      WHERE `user_id` = :user_id
+      ORDER BY `id` ASC;
+    ');
+
+    if (!$q || !$q->execute([':user_id' => $user_id])) return null;
+
+    $r = [];
+    while ($row = $q->fetchObject()) $r[] = new self($row);
+    $q->closeCursor();
+    return $r;
+  }
+
+  public function getStatusBitmask() : int
+  {
+    return $this->status_bitmask;
+  }
+
+  public function getType() : ServerType
+  {
+    return new ServerType($this->type_id);
+  }
+
+  public function getTypeId() : int
+  {
+    return $this->type_id;
+  }
+
+  public function getURI() : string
+  {
+    $value = empty($value) ? $this->getAddress() . ':' . $this->getPort() : $this->getLabel();
+    return Common::relativeUrlToAbsolute(sprintf(
+      '/server/%d/%s', $this->getId(), Common::sanitizeForUrl($value, true)
+    ));
+  }
+
+  public function getUpdatedDateTime() : ?DateTimeInterface
+  {
+    return $this->updated_datetime;
+  }
+
+  public function getUser() : ?User
+  {
+    if (is_null($this->user_id)) return null;
+    try { return new User($this->user_id); }
+    catch (\UnexpectedValueException) { return null; }
+  }
+
+  public function getUserId() : ?int
+  {
+    return $this->user_id;
+  }
+
+  public function isDisabled() : bool
+  {
+    return ($this->status_bitmask & self::STATUS_DISABLED);
+  }
+
+  public function isEnabled() : bool
+  {
+    return !$this->isDisabled();
+  }
+
+  public function isOffline() : bool
+  {
+    return !$this->isOnline();
+  }
+
+  public function isOnline() : bool
+  {
+    return ($this->status_bitmask & self::STATUS_ONLINE);
+  }
+
+  public function jsonSerialize() : mixed
+  {
+    return [
+      'address' => $this->getAddress(),
+      'created_datetime' => $this->getCreatedDateTime(),
+      'id' => $this->getId(),
+      'label' => $this->getLabel(),
+      'port' => $this->getPort(),
+      'status_bitmask' => $this->getStatusBitmask(),
+      'type_id' => $this->getTypeId(),
+      'updated_datetime' => $this->getUpdatedDateTime(),
+      'uri' => $this->getURI(),
+      'user_id' => $this->getUserId(),
+    ];
+  }
+
+  public function setAddress(string $value) : void
+  {
+    $this->address = $value;
+  }
+
+  public function setCreatedDateTime(DateTimeInterface|string $value) : void
+  {
+    $this->created_datetime = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
+  }
+
+  public function setDisabled(bool $value = true) : void
+  {
+    if ($value) $this->status_bitmask |= self::STATUS_DISABLED;
+    else $this->status_bitmask &= ~self::STATUS_DISABLED;
+  }
+
+  public function setEnabled(bool $value = true) : void
+  {
+    $this->setDisabled(!$value);
+  }
+
+  public function setId(?int $id) : void
+  {
+    $this->id = $id;
+  }
+
+  public function setLabel(?string $value) : void
+  {
+    $this->label = $value;
+  }
+
+  public function setOffline(bool $value = true) : void
+  {
+    $this->setOnline(!$value);
+  }
+
+  public function setOnline(bool $value = true) : void
+  {
+    if ($value) $this->status_bitmask |= self::STATUS_ONLINE;
+    else $this->status_bitmask &= ~self::STATUS_ONLINE;
+  }
+
+  public function setPort(int $value) : void
+  {
+    $this->port = $value;
+  }
+
+  public function setStatusBitmask(int $status_bitmask) : void
+  {
     $this->status_bitmask = $status_bitmask;
   }
 
+  public function setType(ServerType|int|null $value) : void
+  {
+    $this->type_id = $value instanceof ServerType ? $value->getId() : $value;
+  }
+
+  public function setTypeId(int $value) : void
+  {
+    $this->type_id = $value;
+  }
+
+  public function setUpdatedDateTime(DateTimeInterface|string|null $value) : void
+  {
+    $this->updated_datetime = (is_string($value) ?
+      new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
+    );
+  }
+
+  public function setUser(User|int|null $value) : void
+  {
+    $this->user_id = $value instanceof User ? $value->getId() : $value;
+  }
+
+  public function setUserId(?int $value) : void
+  {
+    $this->user_id = $value;
+  }
 }

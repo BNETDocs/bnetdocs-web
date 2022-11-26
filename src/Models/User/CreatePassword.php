@@ -2,11 +2,8 @@
 
 namespace BNETDocs\Models\User;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class CreatePassword extends Model {
-
-  public $input;
-  public $output;
-
+class CreatePassword extends \BNETDocs\Models\ActiveUser
+{
+  public ?string $input;
+  public ?string $output;
 }

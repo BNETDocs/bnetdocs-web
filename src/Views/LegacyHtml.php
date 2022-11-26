@@ -2,24 +2,14 @@
 
 namespace BNETDocs\Views;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\Legacy as LegacyModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
+class LegacyHtml extends \BNETDocs\Views\Base\Html
+{
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  {
+    if (!$model instanceof \BNETDocs\Models\Legacy)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-class LegacyHtml extends View {
-
-  public function getMimeType() {
-    return 'text/html;charset=utf-8';
+    (new \BNETDocs\Libraries\Template($model, 'Legacy'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
-
-  public function render(Model &$model) {
-    if (!$model instanceof LegacyModel) {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'Legacy'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
-  }
-
 }

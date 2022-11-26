@@ -2,16 +2,11 @@
 
 namespace BNETDocs\Models\Comment;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Delete extends Model {
-
-  public $acl_allowed;
-  public $comment;
-  public $error;
-  public $id;
-  public $parent_id;
-  public $parent_type;
-  public $user;
-
+class Delete extends \BNETDocs\Models\ActiveUser
+{
+  public bool $acl_allowed = false;
+  public ?\BNETDocs\Libraries\Comment $comment = null;
+  public ?int $id = null;
+  public ?int $parent_id = null;
+  public ?int $parent_type = null;
 }

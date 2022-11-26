@@ -1,30 +1,20 @@
 <?php
+
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\User\CreatePassword as UserCreatePasswordModel;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-
-class CreatePassword extends Controller
+class CreatePassword extends \BNETDocs\Controllers\Base
 {
-  public function &run(Router &$router, View &$view, array &$args)
+  public function __construct()
   {
-    $model = new UserCreatePasswordModel();
-    $data = $router->getRequestBodyArray();
+    $this->model = new \BNETDocs\Models\User\CreatePassword();
+  }
 
-    $model->input = (
-      isset($data['input']) ? $data['input'] : null
-    );
-
-    $model->output = (
-      !is_null($model->input) ? User::createPassword($model->input) : null
-    );
-
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
+  public function invoke(?array $args): bool
+  {
+    $q = \BNETDocs\Libraries\Router::query();
+    $this->model->_responseCode = 200;
+    $this->model->input = $q['input'] ?? null;
+    $this->model->output = empty($this->model->input) ? null : \BNETDocs\Libraries\User::createPassword($this->model->input);
+    return true;
   }
 }

@@ -29,7 +29,7 @@ require('./header.inc.phtml'); ?>
       <select class="form-control form-control-sm m-1" name="order" id="order" onchange="form.submit();" style="display:inline-block;width:200px;">
 <?    foreach ($form_order_by as $item_value => $item_label) {
         $item_selected = ($order === $item_value ? ' selected="selected"' : '');
-        echo sprintf('<option value="%s"%s>%s</option>' . PHP_EOL, $item_value, $item_selected, $item_label);
+        printf('<option value="%s"%s>%s</option>%s', $item_value, $item_selected, $item_label, PHP_EOL);
       } ?>
       </select>
     </div>
@@ -44,7 +44,7 @@ require('./header.inc.phtml'); ?>
         $id = 'pktapplayer-' . $layer->getId();
         $chk = in_array($layer->getId(), $this->getContext()->pktapplayer);
         if ( $x % 3 == 0 ) { echo '<tr>'; }
-        echo sprintf(
+        printf(
           '<td><div class="custom-control custom-switch"><input class="custom-control-input" type="checkbox" name="pktapplayer[]" id="%s" value="%s"%s><label class="custom-control-label" for="%s">%s</label></div></td>',
           $id, $layer->getId(), ($chk ? ' checked="checked"' : ''), $id, $layer->getTag()
         );
@@ -63,7 +63,7 @@ require('./header.inc.phtml'); ?>
       $user = $packet->getUser();
       if ($user)
       {
-        $avatar_url = $user->getAvatarURI(22);
+        $avatar_url = $user->getAvatarURI(28);
         $user_url = $user->getURI();
       }
       $brief = $packet->getBrief(true);
@@ -79,7 +79,7 @@ require('./header.inc.phtml'); ?>
       }
       else
       {
-        $brief = rtrim(Common::stripUpTo(Common::stripUpTo(trim(filter_var($remarks, FILTER_SANITIZE_STRING)), "\n", 128), '. ', 128), '.');
+        $brief = rtrim(Common::stripUpTo(Common::stripUpTo(trim(strip_tags($remarks)), "\n", 128), '. ', 128), '.');
       }
 
       ob_start();
@@ -98,7 +98,7 @@ require('./header.inc.phtml'); ?>
       );
       printf('<td>%s</td>', (
         $user ? sprintf('<a href="%s"><img class="mr-2 rounded" src="%s">%s</a>',
-          $user_url, $avatar_url, filter_var($user->getName(), FILTER_SANITIZE_STRING)
+          $user_url, $avatar_url, filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
         ) : 'Anonymous')
       );
       echo '</tr>';

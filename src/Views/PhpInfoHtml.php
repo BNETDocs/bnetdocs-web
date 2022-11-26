@@ -1,26 +1,15 @@
-<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+<?php
+
 namespace BNETDocs\Views;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\PhpInfo as PhpInfoModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
-
-class PhpInfoHtml extends View
+class PhpInfoHtml extends \BNETDocs\Views\Base\Html
 {
-  public function getMimeType()
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
   {
-    return 'text/html;charset=utf-8';
-  }
+    if (!$model instanceof \BNETDocs\Models\PhpInfo)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-  public function render(Model &$model)
-  {
-    if (!$model instanceof PhpInfoModel)
-    {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'PhpInfo'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
+    (new \BNETDocs\Libraries\Template($model, 'PhpInfo'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
 }

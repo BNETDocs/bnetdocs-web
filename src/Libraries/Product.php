@@ -1,114 +1,146 @@
 <?php
 namespace BNETDocs\Libraries;
 
-use \BNETDocs\Libraries\Exceptions\ProductNotFoundException;
-use \BNETDocs\Libraries\Exceptions\QueryException;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \InvalidArgumentException;
-use \JsonSerializable;
-use \PDO;
-use \PDOException;
+use \BNETDocs\Libraries\Database;
 use \StdClass;
 
-class Product implements JsonSerializable {
+class Product implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
+{
+  protected int $bnet_product_id;
+  protected string $bnet_product_raw;
+  protected int $bnls_product_id;
+  protected string $label;
+  protected int $sort;
+  protected int $version_byte;
 
-  protected $bnet_product_id;
-  protected $bnet_product_raw;
-  protected $bnls_product_id;
-  protected $label;
-  protected $sort;
-  protected $version_byte;
-
-  public function __construct($data) {
-    if (is_numeric($data)) {
-      $this->bnet_product_id  = (int) $data;
-      $this->bnet_product_raw = null;
-      $this->bnls_product_id  = null;
-      $this->label            = null;
-      $this->sort             = null;
-      $this->version_byte     = null;
-      $this->refresh();
-    } else if ($data instanceof StdClass) {
-      self::normalize($data);
-      $this->bnet_product_id  = $data->bnet_product_id;
-      $this->bnet_product_raw = $data->bnet_product_raw;
-      $this->bnls_product_id  = $data->bnls_product_id;
-      $this->label            = $data->label;
-      $this->sort             = $data->sort;
-      $this->version_byte     = $data->version_byte;
-    } else {
-      throw new InvalidArgumentException("Cannot use data argument");
+  public function __construct(StdClass|int|null $value)
+  {
+    if ($value instanceof StdClass)
+    {
+      $this->allocateObject($value);
+    }
+    else
+    {
+      $this->setBnetProductId($value);
+      if (!$this->allocate()) throw new \BNETDocs\Exceptions\ProductNotFoundException($this);
     }
   }
 
-  public static function getAllProducts() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `bnet_product_id`,
-          `bnet_product_raw`,
-          `bnls_product_id`,
-          `label`,
-          `sort`,
-          `version_byte`
-        FROM `products`
-        ORDER BY `sort` ASC;
-      ");
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh products");
-      }
-      $objects = [];
-      while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-        $objects[] = new self($row);
-      }
-      $stmt->closeCursor();
-      return $objects;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh products", $e);
-    }
-    return null;
+  public function allocate() : bool
+  {
+    $this->setBnetProductRaw('');
+    $this->setBnlsProductId(0);
+    $this->setLabel('');
+    $this->setSort(0);
+    $this->setVersionByte(0);
+
+    $id = $this->getBnetProductId();
+    if (is_null($id)) return true;
+
+    $q = Database::instance()->prepare('
+      SELECT
+        `bnet_product_id`,
+        `bnet_product_raw`,
+        `bnls_product_id`,
+        `label`,
+        `sort`,
+        `version_byte`
+      FROM `products`
+      WHERE `bnet_product_id` = ?
+      LIMIT 1;
+    ');
+    if (!$q || !$q->execute([$id]) || $q->rowCount() != 1) return false;
+    $this->allocateObject($q->fetchObject());
+    $q->closeCursor();
+    return true;
   }
 
-  public static function getProductsFromIds($product_ids) {
-    $products = [];
-    if ($product_ids !== null) {
-      foreach ($product_ids as $bnet_product_id) {
-        $products[] = new self($bnet_product_id);
-      }
-    }
-    return $products;
+  protected function allocateObject(StdClass $value) : void
+  {
+    $this->setBnetProductId($value->bnet_product_id);
+    $this->setBnetProductRaw($value->bnet_product_raw);
+    $this->setBnlsProductId($value->bnls_product_id);
+    $this->setLabel($value->label);
+    $this->setSort($value->sort);
+    $this->setVersionByte($value->version_byte);
   }
 
-  public function getBnetProductId() {
+  public function commit(): bool
+  {
+    return false;
+  }
+
+  /**
+   * Deallocates the properties of this object from the database.
+   *
+   * @return boolean Whether the operation was successful.
+   */
+  public function deallocate() : bool
+  {
+    $id = $this->getBnetProductId();
+    if (is_null($id)) return false;
+    $q = Database::instance()->prepare('DELETE FROM `products` WHERE `bnet_product_id` = ? LIMIT 1;');
+    try { return $q && $q->execute([$id]); }
+    finally { if ($q) $q->closeCursor(); }
+  }
+
+  public static function getAllProducts() : ?array
+  {
+    $q = Database::instance()->prepare('
+      SELECT
+        `bnet_product_id`,
+        `bnet_product_raw`,
+        `bnls_product_id`,
+        `label`,
+        `sort`,
+        `version_byte`
+      FROM `products` ORDER BY `sort` ASC;
+    ');
+    if (!$q || !$q->execute()) return null;
+    $r = [];
+    while ($row = $q->fetchObject()) $r[] = new self($row);
+    $q->closeCursor();
+    return $r;
+  }
+
+  public static function getProductsFromIds(array $values) : array
+  {
+    $r = [];
+    foreach ($values as $value) $r[] = new self($value->bnet_product_id);
+    return $r;
+  }
+
+  public function getBnetProductId() : ?int
+  {
     return $this->bnet_product_id;
   }
 
-  public function getBnetProductRaw() {
+  public function getBnetProductRaw() : string
+  {
     return $this->bnet_product_raw;
   }
 
-  public function getBnlsProductId() {
+  public function getBnlsProductId() : int
+  {
     return $this->bnls_product_id;
   }
 
-  public function getLabel() {
+  public function getLabel() : string
+  {
     return $this->label;
   }
 
-  public function getSort() {
+  public function getSort() : int
+  {
     return $this->sort;
   }
 
-  public function getVersionByte() {
+  public function getVersionByte() : int
+  {
     return $this->version_byte;
   }
 
-  public function jsonSerialize()
+  public function jsonSerialize() : mixed
   {
     return [
       'bnet_product_id' => $this->getBnetProductId(),
@@ -120,54 +152,33 @@ class Product implements JsonSerializable {
     ];
   }
 
-  protected static function normalize(StdClass &$data) {
-    $data->bnet_product_id  = (int)    $data->bnet_product_id;
-    $data->bnet_product_raw = (string) $data->bnet_product_raw;
-    $data->bnls_product_id  = (int)    $data->bnls_product_id;
-    $data->label            = (string) $data->label;
-    $data->sort             = (int)    $data->sort;
-    $data->version_byte     = (int)    $data->version_byte;
-
-    return true;
+  public function setBnetProductId(int $value) : void
+  {
+    $this->bnet_product_id = $value;
   }
 
-  public function refresh() {
-    if (!isset(Common::$database)) {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-    try {
-      $stmt = Common::$database->prepare("
-        SELECT
-          `bnet_product_id`,
-          `bnet_product_raw`,
-          `bnls_product_id`,
-          `label`,
-          `sort`,
-          `version_byte`
-        FROM `products`
-        WHERE `bnet_product_id` = :id
-        LIMIT 1;
-      ");
-      $stmt->bindParam(":id", $this->bnet_product_id, PDO::PARAM_INT);
-      if (!$stmt->execute()) {
-        throw new QueryException("Cannot refresh product");
-      } else if ($stmt->rowCount() == 0) {
-        throw new ProductNotFoundException($this->bnet_product_id);
-      }
-      $row = $stmt->fetch(PDO::FETCH_OBJ);
-      $stmt->closeCursor();
-      self::normalize($row);
-      $this->bnet_product_id  = $row->bnet_product_id;
-      $this->bnet_product_raw = $row->bnet_product_raw;
-      $this->bnls_product_id  = $row->bnls_product_id;
-      $this->label            = $row->label;
-      $this->sort             = $row->sort;
-      $this->version_byte     = $row->version_byte;
-      return true;
-    } catch (PDOException $e) {
-      throw new QueryException("Cannot refresh product", $e);
-    }
-    return false;
+  public function setBnetProductRaw(string $value) : void
+  {
+    $this->bnet_product_raw = $value;
   }
 
+  public function setBnlsProductId(int $value) : void
+  {
+    $this->bnls_product_id = $value;
+  }
+
+  public function setLabel(string $value) : void
+  {
+    $this->label = $value;
+  }
+
+  public function setSort(int $value) : void
+  {
+    $this->sort = $value;
+  }
+
+  public function setVersionByte(int $value) : void
+  {
+    $this->version_byte = $value;
+  }
 }

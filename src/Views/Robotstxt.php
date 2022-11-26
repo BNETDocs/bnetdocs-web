@@ -1,37 +1,22 @@
 <?php
+
 namespace BNETDocs\Views;
 
-use \BNETDocs\Models\Robotstxt as RobotstxtModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
-
-class Robotstxt extends View
+class Robotstxt extends \BNETDocs\Views\Base\Plain
 {
-  public function getMimeType()
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
   {
-    return 'text/plain;charset=utf-8';
-  }
-
-  public function render(Model &$model)
-  {
-    if (!$model instanceof RobotstxtModel)
-    {
-      throw new IncorrectModelException();
-    }
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
+    if (!$model instanceof \BNETDocs\Models\Robotstxt)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
     foreach ($model->rules as $useragent => $rules)
     {
       printf("User-agent: %s\r\n", $useragent);
-
       foreach ($rules as $rule)
-      {
         foreach ($rule as $action => $url)
-        {
           printf("%s: %s\r\n", $action, $url);
-        }
-      }
     }
+
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
 }

@@ -29,7 +29,7 @@ require('./header.inc.phtml');
   {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $item_sum = number_format($item->comments_made);
+    $item_sum = number_format($item->count);
     $item_sum_str = sprintf('%d comment%s', $item_sum, ($item_sum != 1 ? 's' : ''));
     if (is_null($item->user_id))
     {
@@ -64,7 +64,7 @@ require('./header.inc.phtml');
   {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $item_sum = number_format($item->documents_authored);
+    $item_sum = number_format($item->count);
     $item_sum_str = sprintf('%d document%s', $item_sum, ($item_sum != 1 ? 's' : ''));
     if (is_null($item->user_id))
     {
@@ -99,7 +99,7 @@ require('./header.inc.phtml');
   {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $item_sum = number_format($item->news_posts_created);
+    $item_sum = number_format($item->count);
     $item_sum_str = sprintf('%d news post%s', $item_sum, ($item_sum != 1 ? 's' : ''));
     if (is_null($item->user_id))
     {
@@ -134,7 +134,7 @@ require('./header.inc.phtml');
   {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $item_sum = number_format($item->packets_authored);
+    $item_sum = number_format($item->count);
     $item_sum_str = sprintf('%d packet%s', $item_sum, ($item_sum != 1 ? 's' : ''));
     if (is_null($item->user_id))
     {
@@ -169,7 +169,7 @@ require('./header.inc.phtml');
   {
     ++$rank;
     $item_name = filter_var($item->name, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $item_sum = number_format($item->servers_owned);
+    $item_sum = number_format($item->count);
     $item_sum_str = sprintf('%d server%s', $item_sum, ($item_sum != 1 ? 's' : ''));
     if (is_null($item->user_id))
     {

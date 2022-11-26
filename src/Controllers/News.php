@@ -2,75 +2,72 @@
 
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\NewsPost;
-use \BNETDocs\Libraries\Pagination;
 use \BNETDocs\Libraries\User;
-use \BNETDocs\Models\News as NewsModel;
-use \BNETDocs\Views\NewsRSS as NewsRSSView;
 
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
+class News extends Base
+{
+  public const NEWS_PER_PAGE = 5;
 
-use \DateTime;
-use \DateTimeZone;
-use \OutOfBoundsException;
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\News();
+  }
 
-class News extends Controller {
-
-  const NEWS_PER_PAGE = 5;
-
-  public function &run(Router &$router, View &$view, array &$args) {
-    $model = new NewsModel();
-    $model->active_user = Authentication::$user;
-
-    $model->acl_allowed = ($model->active_user && $model->active_user->getOption(
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $this->model->acl_allowed = ($this->model->active_user && $this->model->active_user->getOption(
       User::OPTION_ACL_NEWS_CREATE |
       User::OPTION_ACL_NEWS_MODIFY |
       User::OPTION_ACL_NEWS_DELETE
     ));
 
-    $query = $router->getRequestQueryArray();
-    $page  = (isset($query["page"]) ? ((int) $query["page"]) - 1 : null);
-
-    $this->getNews(
-      $model, ($view instanceof NewsRSSView),
-      (!$view instanceof NewsRSSView), $page
-    );
-
-    $view->render($model);
-    $model->_responseCode = 200;
-    return $model;
-  }
-
-  protected function getNews(NewsModel &$model, $rss, $paginate, $page) {
-    $model->news_posts = NewsPost::getAllNews(true);
+    $q = \BNETDocs\Libraries\Router::query();
+    $page = (isset($q['page']) ? ((int) $q['page']) - 1 : null);
+    $rss = \array_shift($args);
+    $this->model->news_posts = \BNETDocs\Libraries\NewsPost::getAllNews(true);
 
     // Remove news posts that are not published or are RSS exempt
-    if ($model->news_posts) {
-      $i = count($model->news_posts) - 1;
-      while ($i >= 0) {
-        if ((!$model->acl_allowed && !$model->news_posts[$i]->getPublished())
-          || ($rss && $model->news_posts[$i]->getRSSExempt())) {
-          unset($model->news_posts[$i]);
-        }
+    if ($this->model->news_posts)
+    {
+      $i = count($this->model->news_posts) - 1;
+      while ($i >= 0)
+      {
+        if ((!$this->model->acl_allowed && !$this->model->news_posts[$i]->isPublished())
+          || ($rss && $this->model->news_posts[$i]->isRSSExempt()))
+          unset($this->model->news_posts[$i]);
         --$i;
       }
     }
 
-    if ($paginate) {
-      try {
-        $model->pagination = new Pagination(
-          $model->news_posts, $page, self::NEWS_PER_PAGE
+    if (!$rss)
+    {
+      try
+      {
+        $this->model->pagination = new \BNETDocs\Libraries\Pagination(
+          $this->model->news_posts, $page ?? 0, self::NEWS_PER_PAGE
         );
-        $model->news_posts = $model->pagination->getPage();
-      } catch (OutOfBoundsException $e) {
-        $model->news_posts = null;
+        $this->model->news_posts = $this->model->pagination->getPage();
       }
-    } else {
-      $model->pagination = null;
+      catch (\OutOfBoundsException $e)
+      {
+        $this->model->news_posts = null;
+      }
     }
+    else
+    {
+      $this->model->pagination = null;
+    }
+
+    $this->model->_responseCode = 200;
+    return true;
   }
 }

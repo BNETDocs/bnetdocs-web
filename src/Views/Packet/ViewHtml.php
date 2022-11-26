@@ -2,22 +2,14 @@
 
 namespace BNETDocs\Views\Packet;
 
-use \BNETDocs\Libraries\Template;
-use \BNETDocs\Models\Packet\View as PacketViewModel;
-use \CarlBennett\MVC\Libraries\Exceptions\IncorrectModelException;
-use \CarlBennett\MVC\Libraries\Model;
-use \CarlBennett\MVC\Libraries\View;
+class ViewHtml extends \BNETDocs\Views\Base\Html
+{
+  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  {
+    if (!$model instanceof \BNETDocs\Models\Packet\View)
+      throw new \BNETDocs\Exceptions\InvalidModelException($model);
 
-class ViewHtml extends View {
-  public function getMimeType() {
-    return 'text/html;charset=utf-8';
-  }
-
-  public function render(Model &$model) {
-    if (!$model instanceof PacketViewModel) {
-      throw new IncorrectModelException();
-    }
-    (new Template($model, 'Packet/View'))->render();
-    $model->_responseHeaders['Content-Type'] = $this->getMimeType();
+    (new \BNETDocs\Libraries\Template($model, 'Packet/View'))->invoke();
+    $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
 }

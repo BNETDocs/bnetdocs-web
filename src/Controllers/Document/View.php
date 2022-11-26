@@ -1,40 +1,44 @@
 <?php
+
 namespace BNETDocs\Controllers\Document;
 
-use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\Comment;
-use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\Exceptions\DocumentNotFoundException;
-use \BNETDocs\Models\Document\View as DocumentViewModel;
-use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View as ViewLib;
-use \DateTime;
-use \DateTimeZone;
-use \InvalidArgumentException;
-use \UnexpectedValueException;
 
-class View extends Controller {
-  public function &run(Router &$router, ViewLib &$view, array &$args) {
-    $model              = new DocumentViewModel();
-    $model->active_user = Authentication::$user;
-    $model->document_id = array_shift($args);
+class View extends \BNETDocs\Controllers\Base
+{
+  /**
+   * Constructs a Controller, typically to initialize properties.
+   */
+  public function __construct()
+  {
+    $this->model = new \BNETDocs\Models\Document\View();
+  }
 
-    try { $model->document = new Document($model->document_id); }
-    catch (DocumentNotFoundException $e) { $model->document = null; }
-    catch (InvalidArgumentException $e) { $model->document = null; }
-    catch (UnexpectedValueException $e) { $model->document = null; }
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $this->model->document_id = array_shift($args);
 
-    if ($model->document) {
-      $model->comments = Comment::getAll(
-        Comment::PARENT_TYPE_DOCUMENT,
-        $model->document_id
-      );
+    try { $this->model->document = new \BNETDocs\Libraries\Document($this->model->document_id); }
+    catch (\UnexpectedValueException) { $this->model->document = null; }
+
+    if ($this->model->document && !$this->model->document->isPublished()
+      && !($this->model->active_user && $this->model->active_user->isStaff()))
+    {
+      $this->model->_responseCode = 403;
+      $this->model->document = null;
+      return true;
     }
 
-    $view->render($model);
-    $model->_responseCode = ($model->document ? 200 : 404);
-    return $model;
+    if ($this->model->document)
+      $this->model->comments = Comment::getAll(Comment::PARENT_TYPE_DOCUMENT, $this->model->document_id);
+
+    $this->model->_responseCode = $this->model->document ? 200 : 404;
+    return true;
   }
 }

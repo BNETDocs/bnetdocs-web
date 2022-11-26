@@ -1,7 +1,9 @@
 <?php
+
 namespace BNETDocs\Models\Email;
-abstract class Base
+
+abstract class Base implements \BNETDocs\Interfaces\Model
 {
-  public $active_user;
+  public ?\BNETDocs\Libraries\User $active_user;
   public $mail;
 }

@@ -4,9 +4,8 @@ namespace BNETDocs\Templates\News; ?>
     <div class="form-group">
       <label class="font-weight-bold" for="category">Category:</label><br/>
       <select class="border border-primary custom-select bg-dark text-light" name="category" id="category" tabindex="1" required autofocus="autofocus" size="1">
-<? $category = $this->getContext()->category; foreach ($this->getContext()->news_categories as $item) { ?>
-        <option value="<?=filter_var($item->getId(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"<?=($category === $item->getId() ? ' selected="selected"' : '')?>><?=filter_var($item->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></option>
-<? } ?>
+<? $category = $this->getContext()->category ?? null; foreach ($this->getContext()->news_categories ?? [] as $item)
+printf('        <option value="%d"%s>%s</option>', $item->getId(), ($category === $item->getId() ? ' selected="selected"' : ''), $item->getLabel()); ?>
       </select>
     </div>
     <div class="form-group">

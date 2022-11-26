@@ -2,10 +2,7 @@
 
 namespace BNETDocs\Models;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Status extends Model {
-
-  public $status;
-
+class Status extends ActiveUser
+{
+  public array $status = [];
 }

@@ -2,10 +2,7 @@
 
 namespace BNETDocs\Models;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class RedirectSoft extends Model {
-
-  public $location;
-
+class RedirectSoft extends ActiveUser
+{
+  public ?string $location;
 }

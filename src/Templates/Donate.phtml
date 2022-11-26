@@ -2,7 +2,6 @@
 namespace BNETDocs\Templates;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
-use \BNETDocs\Libraries\User;
 $title = 'Donate';
 $description = 'Donate to BNETDocs to show your support for this project!';
 $this->opengraph->attach(new Pair('url', '/donate'));
@@ -11,10 +10,7 @@ $btc_address = $this->getContext()->donations->btc_address;
 $email_address = $this->getContext()->donations->email_address;
 $paypal_url = $this->getContext()->donations->paypal_url;
 $user_id = $this->getContext()->donations->user_id;
-if (!empty($user_id))
-{
-  $user = new User($user_id);
-}
+$user = (!empty($user_id) ? new \BNETDocs\Libraries\User($user_id) : null);
 require('./header.inc.phtml'); ?>
 <div class="container">
   <h1>Support Us</h1>

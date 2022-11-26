@@ -2,10 +2,8 @@
 
 namespace BNETDocs\Models\EventLog;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Index extends Model {
-
+class Index extends \BNETDocs\Models\ActiveUser
+{
   public $acl_allowed;
   public $events;
   public $limit;
@@ -14,5 +12,4 @@ class Index extends Model {
   public $pages;
   public $sum_events;
   public $user;
-
 }

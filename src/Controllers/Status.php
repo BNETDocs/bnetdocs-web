@@ -1,37 +1,33 @@
 <?php
+
 namespace BNETDocs\Controllers;
 
-use \BNETDocs\Libraries\BlizzardCheck;
-use \BNETDocs\Libraries\GeoIP;
-use \BNETDocs\Libraries\SlackCheck;
-use \BNETDocs\Libraries\VersionInfo;
 use \BNETDocs\Models\Status as StatusModel;
 use \CarlBennett\MVC\Libraries\Common;
-use \CarlBennett\MVC\Libraries\Controller;
-use \CarlBennett\MVC\Libraries\Database;
-use \CarlBennett\MVC\Libraries\DatabaseDriver;
-use \CarlBennett\MVC\Libraries\DateTime;
-use \CarlBennett\MVC\Libraries\Router;
-use \CarlBennett\MVC\Libraries\View;
-use \DateTimeZone;
-use \StdClass;
 
-class Status extends Controller
+class Status extends Base
 {
-  const MAX_USER_AGENT = 0xFF;
+  public const MAX_USER_AGENT = 255; // database varchar(255)
 
   /**
-   * run()
-   *
-   * @return Model The model with data that can be rendered by a view.
+   * Constructs a Controller, typically to initialize properties.
    */
-  public function &run(Router &$router, View &$view, array &$args)
+  public function __construct()
   {
-    $model = new StatusModel();
-    $code = (self::getStatus($model) ? 200 : 500);
-    $view->render($model);
-    $model->_responseCode = $code;
-    return $model;
+    $this->model = new StatusModel();
+  }
+
+  /**
+   * Invoked by the Router class to handle the request.
+   *
+   * @param array|null $args The optional route arguments and any captured URI arguments.
+   * @return boolean Whether the Router should invoke the configured View.
+   */
+  public function invoke(?array $args) : bool
+  {
+    $code = (self::getStatus($this->model) ? 200 : 500);
+    $this->model->_responseCode = $code;
+    return true;
   }
 
   /**
@@ -39,33 +35,31 @@ class Status extends Controller
    *
    * @return bool Indicates summary health status, where true is healthy.
    */
-  protected static function getStatus(StatusModel &$model)
+  protected static function getStatus(StatusModel $model) : bool
   {
-    if (!isset(Common::$database))
-    {
-      Common::$database = DatabaseDriver::getDatabaseObject();
-    }
-
-    $remote_address = getenv('REMOTE_ADDR');
-    $ua = substr(getenv('HTTP_USER_AGENT'), 0, self::MAX_USER_AGENT);
-    $utc = new DateTimeZone('Etc/UTC');
+    $remote_address = getenv('REMOTE_ADDR') ?? '127.0.0.1';
+    $ua = substr(getenv('HTTP_USER_AGENT') ?? '', 0, self::MAX_USER_AGENT);
+    $utc = new \DateTimeZone('Etc/UTC');
 
     $model->status = [
       'healthcheck' => [
-        'database' => (Common::$database instanceof Database),
+        'database' => (!is_null(\BNETDocs\Libraries\Database::instance())),
+        'geoip' => Common::$config->geoip->enabled && file_exists(Common::$config->geoip->database_file),
       ],
-      'is_blizzard' => BlizzardCheck::is_blizzard(),
-      'is_slack' => SlackCheck::is_slack(),
       'remote_address' => $remote_address,
-      'remote_geoinfo' => GeoIP::getRecord($remote_address),
+      'remote_geoinfo' => Common::$config->geoip->enabled ? \BNETDocs\Libraries\GeoIP::getRecord($remote_address) : null,
+      'remote_is_blizzard' => \BNETDocs\Libraries\BlizzardCheck::is_blizzard(),
       'remote_is_browser' => Common::isBrowser($ua),
+      'remote_is_slack' => \BNETDocs\Libraries\SlackCheck::is_slack(),
       'remote_user_agent' => $ua,
-      'timestamp' => new DateTime('now', $utc),
-      'version_info' => VersionInfo::$version,
+      'timestamp' => new \BNETDocs\Libraries\DateTimeImmutable('now', $utc),
+      'version_info' => \BNETDocs\Libraries\VersionInfo::get(),
     ];
 
-    foreach ( $model->status['healthcheck'] as $key => $val ) {
-      if ( is_bool( $val ) && !$val ) {
+    foreach ($model->status['healthcheck'] as $key => $val)
+    {
+      if (is_bool($val) && !$val)
+      {
         // let the controller know that we're unhealthy.
         return false;
       }

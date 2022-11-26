@@ -2,10 +2,7 @@
 
 namespace BNETDocs\Models;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Donate extends Model {
-
+class Donate extends ActiveUser
+{
   public $donations;
-
 }

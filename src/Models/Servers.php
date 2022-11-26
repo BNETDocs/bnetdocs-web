@@ -2,12 +2,9 @@
 
 namespace BNETDocs\Models;
 
-use \CarlBennett\MVC\Libraries\Model;
-
-class Servers extends Model {
-
+class Servers extends ActiveUser
+{
   public $server_types;
   public $servers;
   public $status_bitmasks;
-
 }

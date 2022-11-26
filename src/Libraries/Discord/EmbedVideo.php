@@ -2,43 +2,44 @@
 
 namespace BNETDocs\Libraries\Discord;
 
-use \JsonSerializable;
-
 // <https://discordapp.com/developers/docs/resources/channel#embed-object-embed-video-structure>
 
-class EmbedVideo implements JsonSerializable {
+class EmbedVideo implements \JsonSerializable
+{
+  protected int $height;
+  protected string $url;
+  protected int $width;
 
-  protected $height;
-  protected $url;
-  protected $width;
-
-  public function __construct(string $url, int $width = 0, int $height = 0) {
+  public function __construct(string $url, int $width = 0, int $height = 0)
+  {
     $this->setHeight($height);
     $this->setUrl($url);
     $this->setWidth($width);
   }
 
-  public function jsonSerialize() {
-    // part of JsonSerializable interface
-    $r = array();
-
-    if (!empty($this->url)) $r['url'] = $this->url;
-    if ($this->height != 0) $r['height'] = $this->height;
-    if ($this->width != 0) $r['width'] = $this->width;
-
+  public function jsonSerialize() : mixed
+  {
+    $r = [
+      'height' => $this->height,
+      'url' => $this->url,
+      'width' => $this->width,
+    ];
+    foreach ($r as $k => $v) if (empty($v)) unset($r[$k]);
     return $r;
   }
 
-  public function setHeight(int $height) {
+  public function setHeight(int $height) : void
+  {
     $this->height = $height;
   }
 
-  public function setUrl(string $url) {
+  public function setUrl(string $url) : void
+  {
     $this->url = $url;
   }
 
-  public function setWidth(int $width) {
+  public function setWidth(int $width) : void
+  {
     $this->width = $width;
   }
-
 }

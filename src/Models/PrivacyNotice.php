@@ -1,7 +1,8 @@
 <?php
+
 namespace BNETDocs\Models;
-use \CarlBennett\MVC\Libraries\Model;
-class PrivacyNotice extends Model
+
+class PrivacyNotice extends ActiveUser
 {
   public $data_location;
   public $email_domain;

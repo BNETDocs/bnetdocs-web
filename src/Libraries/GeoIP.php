@@ -2,10 +2,6 @@
 namespace BNETDocs\Libraries;
 
 use \CarlBennett\MVC\Libraries\Common;
-use \GeoIp2\Database\Reader;
-use \GeoIp2\Exception\AddressNotFoundException;
-use \MaxMind\Db\InvalidDatabaseException;
-use \UnexpectedValueException;
 
 class GeoIP
 {
@@ -19,9 +15,9 @@ class GeoIP
 
     try
     {
-      self::$reader = new Reader(Common::$config->geoip->database_file);
+      self::$reader = new \GeoIp2\Database\Reader(Common::$config->geoip->database_file);
     }
-    catch (InvalidDatabaseException $e)
+    catch (\MaxMind\Db\Reader\InvalidDatabaseException $e)
     {
       // database is invalid or corrupt
       self::$reader = null;
@@ -30,12 +26,13 @@ class GeoIP
     return self::$reader;
   }
 
-  public static function getRecord(string $address)
+  public static function getRecord(string $address) : mixed
   {
     if (!filter_var($address, FILTER_VALIDATE_IP))
-    {
-      throw new UnexpectedValueException('not a valid IP address');
-    }
+      throw new \UnexpectedValueException('not a valid IP address');
+
+    if (!Common::$config->geoip->enabled
+      || !file_exists(Common::$config->geoip->database_file)) return null;
 
     $mmdb = self::getReader();
     $type = Common::$config->geoip->database_type;
@@ -44,7 +41,7 @@ class GeoIP
     {
       $record = $mmdb->$type($address);
     }
-    catch (AddressNotFoundException $e)
+    catch (\GeoIp2\Exception\AddressNotFoundException)
     {
       $record = null;
     }
