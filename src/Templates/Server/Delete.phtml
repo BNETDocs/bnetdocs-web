@@ -42,7 +42,7 @@ else
     echo '<div class="alert alert-danger"><p class="mb-0">Are you sure you wish to delete this server?</p></div>';
     if (!empty($json)) printf('<pre><code class="language-objectivec">%s</code></pre>', filter_var($json, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
     echo '<a class="btn btn-primary" tabindex="1" href="javascript:history.go(-1);">Back</a> ';
-    printf('<a class="btn btn-success" tabindex="2" href="%s">Server List</a> ', \CarlBennett\MVC\Libraries\Common::relativeUrlToAbsolute('/servers'));
+    printf('<a class="btn btn-secondary" tabindex="2" href="%s">Server List</a> ', \CarlBennett\MVC\Libraries\Common::relativeUrlToAbsolute('/servers'));
     echo '<input class="btn btn-danger" type="submit" value="Delete Server" tabindex="3" autofocus/>';
     echo '</form>';
   }

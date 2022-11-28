@@ -5,7 +5,7 @@ use \CarlBennett\MVC\Libraries\Pair;
 $model = $this->getContext() ?? null;
 $title = sprintf('%s Server', $model->server_edit ? 'Edit' : 'Create');
 $description = sprintf('This page enables a user to %s servers on the site.', $model->server_edit ? 'edit' : 'create');
-$this->opengraph->attach(new Pair('url', sprintf('/server/%s%s', $model->server_edit ? 'edit' : 'create', $model->server_edit ? sprintf('?id=%d', $model->server->getId()) : '')));
+$this->opengraph->attach(new Pair('url', sprintf('/server/%s%s', $model->server_edit ? 'edit' : 'create', $model->server && !is_null($model->server->getId()) ? sprintf('?id=%d', $model->server->getId()) : '')));
 $this->opengraph->attach(new Pair('type', 'article'));
 switch ($model->error)
 {
