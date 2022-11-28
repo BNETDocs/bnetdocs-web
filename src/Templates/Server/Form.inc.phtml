@@ -1,40 +1,46 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Server;
 use \BNETDocs\Libraries\Server; ?>
-  <form method="POST" action="<?=($model->server && !is_null($model->server->getId()) ? sprintf('?id=%d', $model->server->getId()) : '')?>">
+  <form method="POST" action="<?=(is_null($model->server->getId()) ? '' : sprintf('?id=%d', $model->server->getId()))?>">
     <div class="form-group">
       <div class="custom-control custom-control-inline custom-switch">
-        <input type="checkbox" class="custom-control-input" id="online" name="online" value="1" tabindex="1" autofocus<?=($model->server && $model->server->isOnline() ? ' checked' : '')?>>
+        <input type="checkbox" class="custom-control-input" id="online" name="online" value="1" tabindex="1" autofocus<?=($model->server->isOnline() ? ' checked' : '')?>>
         <label class="custom-control-label font-weight-bold text-success" for="online">Online</label>
       </div>
       <div class="custom-control custom-control-inline custom-switch">
-        <input type="checkbox" class="custom-control-input" id="disabled" name="disabled" value="1" tabindex="2"<?=($model->server && $model->server->isDisabled() ? ' checked' : '')?>>
+        <input type="checkbox" class="custom-control-input" id="disabled" name="disabled" value="1" tabindex="2"<?=($model->server->isDisabled() ? ' checked' : '')?>>
         <label class="custom-control-label font-weight-bold text-danger" for="disabled">Disable <span class="small text-muted">(automatic background checks pause if <span class="text-danger">disabled</span>)</span></label>
       </div>
     </div>
     <div class="form-group">
       <label class="font-weight-bold" for="type">Type:</label>
       <select class="border border-primary custom-select bg-dark text-light" name="type" id="type" tabindex="3" required size="1">
-<? $type = $model->form['type'] ?? null; foreach ($model->server_types ?? [] as $item) printf('<option value="%d"%s>%s</option>', $item->getId(), ($type === $item->getId() ? ' selected="selected"' : ''), $item->getLabel()); ?>
+<?      $type = $model->server ? $model->server->getTypeId() : null;
+        foreach ($model->server_types ?? [] as $item)
+          printf('<option value="%d"%s>%s</option>', $item->getId(), $type === $item->getId() ? ' selected' : '', $item->getLabel()); ?>
       </select>
     </div>
     <div class="form-group row">
       <div class="col-md-8 my-1">
         <label class="font-weight-bold" for="address">Address: <span class="small text-muted">(must be between 1-<?=Server::MAX_ADDRESS?> characters)</span></label>
-        <input class="bg-dark border border-primary form-control text-light" type="text" name="address" id="address" placeholder="Enter the address here" tabindex="4" required value="<?=filter_var($model->form['address'] ?? ($model->server ? $model->server->getAddress() : ''), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+        <input class="bg-dark border border-primary form-control text-light" type="text" name="address" id="address" placeholder="Enter the address here" tabindex="4" required
+          value="<?=filter_var($model->form['address'] ?? $model->server->getAddress(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
       </div>
       <div class="col-md-4 my-1">
         <label class="font-weight-bold" for="port">Port: <span class="small text-muted">(must be between 0-<?=Server::MAX_PORT?>)</span></label>
-        <input class="bg-dark border border-primary form-control text-light" type="text" name="port" id="port" placeholder="Enter the port here" tabindex="5" required value="<?=(($model->form['port'] ?? null) ? (int) $model->form['port'] : ($model->server ? $model->server->getPort() : ''))?>"/>
+        <input class="bg-dark border border-primary form-control text-light" type="text" name="port" id="port" placeholder="Enter the port here" tabindex="5" required
+          value="<?=(($model->form['port'] ?? null) ? (int) $model->form['port'] : ($model->server ? $model->server->getPort() : ''))?>"/>
       </div>
     </div>
     <div class="form-group">
       <label class="font-weight-bold" class="form-label" for="label">Label: <span class="small text-muted">(must be between 0-<?=Server::MAX_LABEL?> characters)</span></label><br/>
-      <input class="border border-primary form-control bg-dark text-light" type="text" name="label" id="label" tabindex="6" placeholder="Enter the optional server label here" value="<?=filter_var($model->form['label'] ?? ($model->server ? $model->server->getLabel() : ''), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
+      <input class="border border-primary form-control bg-dark text-light" type="text" name="label" id="label" tabindex="6" placeholder="Enter the optional server label here"
+        value="<?=filter_var($model->form['label'] ?? ($model->server ? $model->server->getLabel() : ''), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
     </div>
     <div class="form-group text-center">
-      <a class="btn btn-primary" href="javascript:history.go(-1);" tabindex="7">Back</a>
-      <a class="btn btn-secondary" tabindex="8" href="<?=$model->server->getURI()?>">Go to Server</a>
-      <input class="btn btn-success" type="submit" value="Save" tabindex="9"/>
+      <a class="btn btn-primary mr-3" tabindex="7" href="javascript:history.go(-1);">Back</a>
+      <a class="btn btn-danger" tabindex="8" href="<?=\CarlBennett\MVC\Libraries\Common::relativeUrlToAbsolute(sprintf('/server/delete?id=%d', $model->server->getId()))?>">Delete</a>
+      <a class="btn btn-secondary" tabindex="9" href="<?=$model->server->getURI()?>">Go to Server</a>
+      <input class="btn btn-success" tabindex="10" type="submit" value="Save"/>
     </div>
   </form>

@@ -11,7 +11,7 @@ abstract class Json implements \BNETDocs\Interfaces\View
    *
    * @return integer The flags to pass to json_encode().
    */
-  protected static function jsonFlags() : int
+  public static function jsonFlags() : int
   {
     return \JSON_PRESERVE_ZERO_FRACTION
       | \JSON_THROW_ON_ERROR
