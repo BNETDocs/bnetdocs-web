@@ -70,9 +70,8 @@ class Create extends \BNETDocs\Controllers\Base
       'parent_type' => $pt
     ];
 
-    \BNETDocs\Libraries\Logger::logEvent(
-      $this->model->comment->getParentTypeCreatedEventId(), $this->model->active_user->getId(),
-      getenv('REMOTE_ADDR'), json_encode($this->model->response)
+    \BNETDocs\Libraries\Event::log(
+      $this->model->comment->getParentTypeCreatedEventId(), $this->model->active_user, getenv('REMOTE_ADDR'), $this->model->response
     );
 
     return 303;

@@ -56,16 +56,16 @@ class Edit extends \BNETDocs\Controllers\Base
 
     $this->model->error = $this->model->comment->commit() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       $this->model->comment->getParentTypeEditedEventId(),
-      $this->model->active_user->getId(),
+      $this->model->active_user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'comment'     => $this->model->comment,
         'error'       => $this->model->error,
         'parent_type' => $this->model->parent_type,
         'parent_id'   => $this->model->parent_id
-      ])
+      ]
     );
   }
 }

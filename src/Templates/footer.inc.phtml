@@ -18,7 +18,6 @@ and/or other countries.
     </p>
   </div>
 </footer>
-<?=\BNETDocs\Libraries\Logger::getTimingFooter()?>
 <?php if (Common::$config->analytics->cloudflare) { ?>
 <!-- Cloudflare Web Analytics --><script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":<?=json_encode(Common::$config->analytics->cloudflare)?>}'></script><!-- End Cloudflare Web Analytics -->
 <?php } ?>

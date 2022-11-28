@@ -12,9 +12,9 @@ class EmbedField implements \JsonSerializable
   public const MAX_NAME = 256;
   public const MAX_VALUE = 1024;
 
-  protected $inline;
-  protected $name;
-  protected $value;
+  protected bool $inline;
+  protected string $name;
+  protected string $value;
 
   public function __construct(string $name, $value, bool $inline)
   {

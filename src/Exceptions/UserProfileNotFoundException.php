@@ -8,6 +8,5 @@ class UserProfileNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getUserId();
     parent::__construct(\sprintf('User Profile not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('user_profile_user_id', $v);
   }
 }

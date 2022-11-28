@@ -3,7 +3,6 @@ namespace BNETDocs\Templates;
 use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\BlizzardCheck;
 use \BNETDocs\Libraries\Document;
-use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\User;
@@ -215,7 +214,6 @@ $_campaign_vultr = (
 <?  if (isset($url) && !empty($url)) { ?>
     <link rel="canonical" href="<?=($url ?? '')?>"/>
 <?  } ?>
-<?=Logger::getTimingHeader()?>
     <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/bootstrap-4.4.1-slate.min.css' . $_unique_asset ?? '')?>" integrity="sha384-tfnMnZ6k273p3mDqSKikc9aXSvumltGq76Tbo+VMydpXeD5EDZwbQWo7nbZz+wc9" crossorigin="anonymous"/>
     <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/datatables.min.css' . $_unique_asset ?? '')?>" type="text/css" media="all"/>
     <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/highlight/styles/vs2015.min.css' . $_unique_asset ?? '')?>" type="text/css" media="all"/>

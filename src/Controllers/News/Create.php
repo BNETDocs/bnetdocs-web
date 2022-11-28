@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers\News;
 
-use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsCategory;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
@@ -88,17 +87,17 @@ class Create extends \BNETDocs\Controllers\Base
       $this->model->error = $this->model->news_post->commit() ? false : 'INTERNAL_ERROR';
     }
 
-    Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       \BNETDocs\Libraries\EventTypes::NEWS_CREATED,
-      $this->model->active_user->getId(),
+      $this->model->active_user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'error'           => $this->model->error,
         'category_id'     => $this->model->category,
         'options_bitmask' => $this->model->options_bitmask,
         'title'           => $this->model->title,
         'content'         => $this->model->content,
-      ])
+      ]
     );
   }
 }

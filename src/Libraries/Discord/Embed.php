@@ -90,16 +90,18 @@ class Embed implements \JsonSerializable
       'video' => $this->video,
     ];
 
+    if ($r['color'] === -1) unset($r['color']);
+
     // add each EmbedField
     foreach ($this->fields as $v) $r['fields'][] = $v;
 
-    // remove null key-values, format DateTimeInterface objects
-    foreach ($r as $k => $v)
+    // remove null or empty-string key-values, format DateTimeInterface objects
+    foreach ($r as $k => &$v)
     {
-      if (is_null($v))
+      if (is_null($v) || (is_string($v) && empty($v)))
         unset($r[$k]);
       else if ($v instanceof DateTimeInterface)
-        $r[$k] = $v->format(DateTimeInterface::ISO8601);
+        $v = $v->format(DateTimeInterface::ISO8601);
     }
 
     return $r;

@@ -8,6 +8,5 @@ class UserNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getId();
     parent::__construct(\sprintf('User not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('user_id', $v);
   }
 }

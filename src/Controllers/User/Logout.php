@@ -28,13 +28,10 @@ class Logout extends \BNETDocs\Controllers\Base
 
   protected function tryLogout() : void
   {
-    $user_id = $this->model->active_user->getId();
+    $user = $this->model->active_user;
     if (Authentication::logout()) $this->model->active_user = &Authentication::$user;
-    \BNETDocs\Libraries\Logger::logEvent(
-      \BNETDocs\Libraries\EventTypes::USER_LOGOUT,
-      $user_id,
-      getenv('REMOTE_ADDR'),
-      json_encode(['error' => $this->model->error])
+    \BNETDocs\Libraries\Event::log(
+      \BNETDocs\Libraries\EventTypes::USER_LOGOUT, $user, getenv('REMOTE_ADDR'), ['error' => $this->model->error]
     );
   }
 }

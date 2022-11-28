@@ -8,6 +8,5 @@ class EventNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getId();
     parent::__construct(\sprintf('Event not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('event_id', $v);
   }
 }

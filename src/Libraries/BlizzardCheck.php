@@ -4,7 +4,6 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Authentication;
 use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Logger;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\IP;
 
@@ -58,17 +57,17 @@ class BlizzardCheck
     // Blizzard would likely never login to our site... would they?
     // But if they happened to be logged in already from a previously non-Blizzard identity...
 
-    Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       EventTypes::BLIZZARD_VISIT,
-      isset(Authentication::$user) ? Authentication::$user->getId() : null,
+      Authentication::$user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'method'     => getenv('REQUEST_METHOD'),
         'referer'    => getenv('HTTP_REFERER'),
         'uri'        => Common::relativeUrlToAbsolute(getenv('REQUEST_URI')),
         'user_agent' => getenv('HTTP_USER_AGENT'),
-        'version'    => VersionInfo::$version,
-      ])
+        'version'    => VersionInfo::get(),
+      ]
     );
   }
 }

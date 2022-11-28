@@ -8,6 +8,5 @@ class NewsPostNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getId();
     parent::__construct(\sprintf('News Post not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('news_post_id', $v);
   }
 }

@@ -8,6 +8,5 @@ class NewsCategoryNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getId();
     parent::__construct(\sprintf('News Category not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('news_category_id', $v);
   }
 }

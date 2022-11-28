@@ -59,11 +59,11 @@ class Edit extends \BNETDocs\Controllers\Base
 
     if ($this->model->error === FormModel::ERROR_SUCCESS)
     {
-      \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\Event::log(
         \BNETDocs\Libraries\EventTypes::PACKET_EDITED,
-        $this->model->active_user->getId(),
+        $this->model->active_user,
         getenv('REMOTE_ADDR'),
-        json_encode([
+        [
           'application_layer' => $this->model->packet->getApplicationLayer()->getLabel(),
           'brief' => $this->model->packet->getBrief(false),
           'created_dt' => $this->model->packet->getCreatedDateTime(),
@@ -81,7 +81,7 @@ class Edit extends \BNETDocs\Controllers\Base
           'research' => $this->model->packet->isInResearch(),
           'transport_layer' => $this->model->packet->getTransportLayer()->getLabel(),
           'used_by' => $this->model->packet->getUsedBy(),
-        ])
+        ]
       );
     }
 

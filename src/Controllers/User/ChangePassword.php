@@ -90,17 +90,17 @@ class ChangePassword extends \BNETDocs\Controllers\Base
     $this->model->active_user->setPassword($pw2);
     $this->model->error = $this->model->active_user->commit() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       \BNETDocs\Libraries\EventTypes::USER_PASSWORD_CHANGE,
-      $this->model->active_user->getId(),
+      $this->model->active_user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'error' => $this->model->error,
         'old_password_hash' => $old_password_hash,
         'old_password_salt' => $old_password_salt,
         'new_password_hash' => $this->model->active_user->getPasswordHash(),
         'new_password_salt' => $this->model->active_user->getPasswordSalt()
-      ])
+      ]
     );
   }
 }

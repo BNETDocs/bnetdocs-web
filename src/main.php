@@ -39,13 +39,6 @@ function main() : void
   ));
 
   \BNETDocs\Libraries\ExceptionHandler::register();
-
-  // This must come after other registered error handlers so that Logger
-  // has a chance to create its own error handlers for Application Performance
-  // Monitoring (APM) purposes. This must also come after assignment of
-  // Common::$config because we may need access tokens from the config.
-  \BNETDocs\Libraries\Logger::initialize();
-
   \BNETDocs\Libraries\Authentication::verify();
   \BNETDocs\Libraries\BlizzardCheck::log_blizzard_request();
   \BNETDocs\Libraries\SlackCheck::log_slack_request();

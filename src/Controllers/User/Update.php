@@ -417,11 +417,11 @@ class Update extends \BNETDocs\Controllers\Base
 
       if ($profile_changed) $this->model->profile->commit();
 
-      \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\Event::log(
         \BNETDocs\Libraries\EventTypes::USER_EDITED,
-        $this->model->active_user->getId(),
+        $this->model->active_user,
         getenv('REMOTE_ADDR'),
-        json_encode([
+        [
           'username_error'           => $this->model->username_error,
           'email_error'              => $this->model->email_error,
           'display_name_error'       => $this->model->display_name_error,
@@ -453,7 +453,7 @@ class Update extends \BNETDocs\Controllers\Base
           'steam_id'                 => $this->model->steam_id,
           'twitter_username'         => $this->model->twitter_username,
           'website'                  => $this->model->website,
-        ])
+        ]
       );
     }
 

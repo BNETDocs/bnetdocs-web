@@ -2,7 +2,6 @@
 
 namespace BNETDocs\Controllers\News;
 
-use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\NewsPost;
 use \BNETDocs\Libraries\Router;
 
@@ -49,15 +48,15 @@ class Delete extends \BNETDocs\Controllers\Base
   {
     $this->model->error = $this->model->news_post->deallocate() ? false : 'INTERNAL_ERROR';
 
-    Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       \BNETDocs\Libraries\EventTypes::NEWS_DELETED,
-      $this->model->active_user->getId(),
+      $this->model->active_user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'error' => $this->model->error,
         'news_post_id' => $this->model->id,
         'news_post' => $this->model->news_post,
-      ])
+      ]
     );
   }
 }

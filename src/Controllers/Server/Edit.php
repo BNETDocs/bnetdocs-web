@@ -71,11 +71,11 @@ class Edit extends \BNETDocs\Controllers\Base
     $this->model->error = $this->model->server->commit() ? FormModel::ERROR_SUCCESS : FormModel::ERROR_INTERNAL;
 
     if ($this->model->error === FormModel::ERROR_SUCCESS)
-      \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\Event::log(
         \BNETDocs\Libraries\EventTypes::SERVER_EDITED,
-        $this->model->active_user->getId(),
+        $this->model->active_user,
         getenv('REMOTE_ADDR'),
-        json_encode($this->model)
+        $this->model->server
       );
   }
 }

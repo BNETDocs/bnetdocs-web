@@ -87,18 +87,18 @@ class Edit extends \BNETDocs\Controllers\Base
 
     $this->model->error = $this->model->news_post->commit() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       \BNETDocs\Libraries\EventTypes::NEWS_EDITED,
-      $this->model->active_user ? $this->model->active_user->getId() : null,
+      $this->model->active_user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'error' => $this->model->error,
         'news_post_id' => $this->model->news_post_id,
         'category_id' => $this->model->news_post->getCategoryId(),
         'options_bitmask' => $this->model->news_post->getOptionsBitmask(),
         'title' => $this->model->news_post->getTitle(),
         'content' => $this->model->news_post->getContent(false),
-      ])
+      ]
     );
   }
 }

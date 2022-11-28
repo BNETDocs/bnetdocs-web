@@ -121,17 +121,17 @@ class SlackCheck
   {
     if (!self::is_slack()) return; // do not log non-Slack requests
 
-    \BNETDocs\Libraries\Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       \BNETDocs\Libraries\EventTypes::SLACK_UNFURL,
-      isset(Authentication::$user) ? Authentication::$user->getId() : null,
+      Authentication::$user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'method'     => getenv('REQUEST_METHOD'),
         'referer'    => getenv('HTTP_REFERER'),
         'uri'        => Common::relativeUrlToAbsolute(getenv('REQUEST_URI')),
         'user_agent' => getenv('HTTP_USER_AGENT'),
-        'version'    => VersionInfo::$version,
-      ])
+        'version'    => VersionInfo::get(),
+      ]
     );
   }
 }

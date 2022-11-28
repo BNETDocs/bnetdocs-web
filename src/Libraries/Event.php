@@ -3,7 +3,12 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Database;
+use \BNETDocs\Libraries\Discord\Embed as DiscordEmbed;
+use \BNETDocs\Libraries\Discord\EmbedAuthor as DiscordEmbedAuthor;
+use \BNETDocs\Libraries\Discord\EmbedField as DiscordEmbedField;
+use \BNETDocs\Libraries\Discord\Webhook as DiscordWebhook;
 use \BNETDocs\Libraries\User;
+use \CarlBennett\MVC\Libraries\Common;
 use \DateTimeInterface;
 use \StdClass;
 
@@ -25,7 +30,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     else
     {
       $this->setId($value);
-      if (!$this->allocate()) throw new \UnexpectedValueException();
+      if (!$this->allocate()) throw new \BNETDocs\Exceptions\EventNotFoundException($this);
     }
   }
 
@@ -224,6 +229,119 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
       'event_type_id' => $this->getEventTypeId(),
       'event_user' => $this->getUser(),
     ];
+  }
+
+  public static function log(int $type_id, User|int|null $user = null, ?string $ip_address = null, mixed $meta_data = null, bool $dispatch_discord = true) : bool
+  {
+    $event = new Event(null);
+    $event->setEventTypeId($type_id);
+    $event->setIPAddress($ip_address);
+    $event->setMetadata($meta_data);
+    $event->setUserId($user instanceof User ? $user->getId() : $user);
+
+    if (!$event->commit()) return false;
+    if ($dispatch_discord) self::logToDiscord($event);
+    return true;
+  }
+
+  protected static function logToDiscord(Event $event) : void
+  {
+    $c = &Common::$config->discord->forward_event_log;
+    if (!$c->enabled) return;
+    if (in_array($event->getEventTypeId(), $c->ignore_event_types)) return;
+
+    $webhook = new DiscordWebhook($c->webhook);
+    $embed = new DiscordEmbed();
+
+    $embed->setColor(\BNETDocs\Libraries\EventType::color($event->getEventTypeId()));
+    $embed->setTimestamp($event->getEventDateTime());
+    $embed->setTitle($event->getEventTypeName());
+    $embed->setUrl(Common::relativeUrlToAbsolute(sprintf('/eventlog/view?id=%d', $event->getId())));
+
+    $user = $event->getUser();
+    if (!is_null($user))
+    {
+      $author = new DiscordEmbedAuthor(
+        $user->getName(), $user->getURI(), $user->getAvatarURI(null)
+      );
+      $embed->setAuthor($author);
+    }
+
+    if (!$c->exclude_meta_data)
+    {
+      $data = $event->getMetadata();
+      foreach (\explode(\PHP_EOL, ArrayFlattener::flatten($data)) as $line)
+      {
+        $key = \substr($line, 0, \strpos($line, ' '));
+        $field = new DiscordEmbedField($key, \substr($line, \strlen($key) + 2), true);
+        $embed->addField($field);
+      }
+      /*$parse_fx = function($value, $key, $embed)
+      {
+        $field = null;
+
+        if (!$field && is_string($value))
+        {
+          $v = substr($value, 0, DiscordEmbedField::MAX_VALUE - 3);
+          if (strlen($value) > DiscordEmbedField::MAX_VALUE - 3)
+          {
+            $v .= '...';
+          }
+          if (strlen($value) == 0)
+          {
+            $v = '*(empty)*';
+          }
+          $field = new DiscordEmbedField(
+            $key, $v, (strlen($v) < DiscordEmbedField::MAX_VALUE / 4)
+          );
+        }
+
+        if (!$field && is_numeric($value))
+        {
+          $field = new DiscordEmbedField($key, $value, true);
+        }
+
+        if (!$field && is_bool($value))
+        {
+          $field = new DiscordEmbedField(
+            $key, ($value ? 'true' : 'false'), true
+          );
+        }
+
+        if (!$field)
+        {
+          $field = new DiscordEmbedField($key, gettype($value), true);
+        }
+
+        $embed->addField($field);
+      };
+
+      $flatten_fx = function(&$tree, &$flatten_fx, &$parse_fx, &$depth, &$embed)
+      {
+        if (!is_array($tree))
+        {
+          $parse_fx($tree, implode('_', $depth), $embed);
+          return;
+        }
+
+        array_push($depth, '');
+        if (count($depth) > 2) return;
+
+        foreach ($tree as $key => $value)
+        {
+          $depth[count($depth)-1] = $key;
+          $flatten_fx($value, $flatten_fx, $parse_fx, $depth, $embed);
+        }
+
+        array_pop($depth);
+      };
+
+      $depth = [];
+      $flatten_fx($data, $flatten_fx, $parse_fx, $depth, $embed);*/
+    }
+
+    $webhook->addEmbed($embed);
+    $r = $webhook->send();
   }
 
   public function setEventDateTime(DateTimeInterface|string $value) : void

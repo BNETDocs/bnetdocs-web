@@ -55,30 +55,28 @@ class Create extends \BNETDocs\Controllers\Base
       $this->model->error = 'EMPTY_CONTENT';
     }
 
-    $user_id = $this->model->active_user->getId();
-
     $document = new \BNETDocs\Libraries\Document(null);
     $document->setBrief($brief);
     $document->setContent($content);
     $document->setMarkdown($markdown);
     $document->setPublished($publish);
     $document->setTitle($title);
-    $document->setUserId($user_id);
+    $document->setUser($this->model->active_user);
     $this->model->error = $document->commit() ? false : 'INTERNAL_ERROR';
 
     if ($this->model->error === false)
-      \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\Event::log(
         \BNETDocs\Libraries\EventTypes::DOCUMENT_CREATED,
-        $user_id,
+        $this->model->active_user,
         getenv('REMOTE_ADDR'),
-        json_encode([
+        [
           'brief'     => $brief,
           'content'   => $content,
           'error'     => $this->model->error,
           'markdown'  => $markdown,
           'published' => $publish,
           'title'     => $title,
-        ])
+        ]
       );
   }
 }

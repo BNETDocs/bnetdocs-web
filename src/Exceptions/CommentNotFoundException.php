@@ -8,6 +8,5 @@ class CommentNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getId();
     parent::__construct(\sprintf('Comment not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('comment_id', $v);
   }
 }

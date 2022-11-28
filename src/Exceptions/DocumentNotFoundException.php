@@ -8,6 +8,5 @@ class DocumentNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getId();
     parent::__construct(\sprintf('Document not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('document_id', $v);
   }
 }

@@ -70,14 +70,14 @@ class Login extends \BNETDocs\Controllers\Base
     \BNETDocs\Libraries\Authentication::login($this->model->user);
     $this->model->error = LoginModel::ERROR_SUCCESS;
 
-    \BNETDocs\Libraries\Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       \BNETDocs\Libraries\EventTypes::USER_LOGIN,
-      ($this->model->user ? $this->model->user->getId() : null),
+      $this->model->user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'error' => $this->model->error,
         'email' => $this->model->email,
-      ])
+      ]
     );
 
     return true;

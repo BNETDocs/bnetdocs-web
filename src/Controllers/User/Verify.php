@@ -47,11 +47,11 @@ class Verify extends \BNETDocs\Controllers\Base
     catch (\Throwable) { $this->model->error = 'INTERNAL_ERROR'; }
 
     if (!$this->model->error)
-      \BNETDocs\Libraries\Logger::logEvent(
+      \BNETDocs\Libraries\Event::log(
         \BNETDocs\Libraries\EventTypes::USER_VERIFIED,
         $this->model->user_id,
         getenv('REMOTE_ADDR'),
-        json_encode(['error' => $this->model->error])
+        ['error' => $this->model->error]
       );
 
     $this->model->_responseCode = 200;

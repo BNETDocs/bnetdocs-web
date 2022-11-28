@@ -6,7 +6,6 @@ use \BNETDocs\Exceptions\RecaptchaException;
 use \BNETDocs\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\EventTypes;
 use \BNETDocs\Libraries\GeoIP;
-use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Recaptcha;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\Template;
@@ -169,33 +168,21 @@ class Register extends \BNETDocs\Controllers\Base
       }
     } catch (UserNotFoundException $e) {}
 
-    try
-    {
-      $user = new User(null);
-      $user->setEmail($email);
-      $user->setPassword($pw1);
-      $user->setUsername($username);
-      $user->setVerified(false, true);
-      $user->commit();
-      $user_id = $user->getId();
-      $this->model->error = false;
-    }
-    catch (\PDOException $e)
-    {
-      // SQL error occurred. We can show a friendly message to the user while
-      // also notifying this problem to staff.
-      Logger::logException($e);
-      $this->model->error = 'INTERNAL_ERROR';
-      $user = null;
-      $user_id = null;
-    }
+    $user = new User(null);
+    $user->setEmail($email);
+    $user->setPassword($pw1);
+    $user->setUsername($username);
+    $user->setVerified(false, true);
+    $this->model->error = $user->commit() ? false : 'INTERNAL_ERROR';
+    $user_id = $user->getId();
 
-    if ($user) {
-      Logger::logEvent(
+    if (!is_null($user_id))
+    {
+      \BNETDocs\Libraries\Event::log(
         EventTypes::USER_CREATED,
         $user_id,
         getenv('REMOTE_ADDR'),
-        json_encode([
+        [
           'error'           => $this->model->error,
           'error_extra'     => $this->model->error_extra,
           'requirements'    => $req,
@@ -203,7 +190,7 @@ class Register extends \BNETDocs\Controllers\Base
           'username'        => $username,
           'display_name'    => null,
           'options_bitmask' => 0,
-        ])
+        ]
       );
 
       $mail = new PHPMailer(true); // true enables exceptions
@@ -259,11 +246,11 @@ class Register extends \BNETDocs\Controllers\Base
 
         $mail->send();
 
-        Logger::logEvent(
+        \BNETDocs\Libraries\Event::log(
           EventTypes::EMAIL_SENT,
           $user_id,
           getenv('REMOTE_ADDR'),
-          json_encode([
+          [
             'from' => $mail->From,
             'to' => $mail->getToAddresses(),
             'reply_to' => $mail->getReplyToAddresses(),
@@ -271,7 +258,7 @@ class Register extends \BNETDocs\Controllers\Base
             'content_type' => $mail->ContentType,
             'body' => $mail->Body,
             'alt_body' => $mail->AltBody,
-          ])
+          ]
         );
 
       } catch (\Throwable $e) {

@@ -87,7 +87,5 @@ class Template
             \str_replace('/', \DIRECTORY_SEPARATOR, $template_file),
             $this->template_extension
         );
-        \BNETDocs\Libraries\Logger::logMetric('template', $this->template_file);
     }
 }
-

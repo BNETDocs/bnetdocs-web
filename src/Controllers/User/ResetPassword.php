@@ -2,7 +2,6 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\EventTypes;
-use \BNETDocs\Libraries\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\User;
@@ -30,16 +29,16 @@ class ResetPassword extends \BNETDocs\Controllers\Base
     if (Router::requestMethod() == Router::METHOD_POST)
     {
       $this->model->error = $this->doPasswordReset();
-      Logger::logEvent(
+      \BNETDocs\Libraries\Event::log(
         EventTypes::USER_PASSWORD_RESET,
-        $this->model->active_user ? $this->model->active_user->getId() : null,
+        $this->model->active_user,
         getenv('REMOTE_ADDR'),
-        json_encode([
+        [
           'active_user' => $this->model->active_user,
           'email' => $this->model->email,
           'error' => $this->model->error,
           'user' => $this->model->user,
-        ])
+        ]
       );
     }
 
@@ -155,11 +154,11 @@ class ResetPassword extends \BNETDocs\Controllers\Base
 
       $mail->send();
 
-      Logger::logEvent(
+      \BNETDocs\Libraries\Event::log(
         EventTypes::EMAIL_SENT,
-        $this->model->user->getId(),
+        $this->model->user,
         getenv('REMOTE_ADDR'),
-        json_encode([
+        [
           'from' => $mail->From,
           'to' => $mail->getToAddresses(),
           'reply_to' => $mail->getReplyToAddresses(),
@@ -167,7 +166,7 @@ class ResetPassword extends \BNETDocs\Controllers\Base
           'content_type' => $mail->ContentType,
           'body' => $mail->Body,
           'alt_body' => $mail->AltBody,
-        ])
+        ]
       );
     }
     catch (\PHPMailer\PHPMailer\Exception) { return ResetPasswordModel::E_INTERNAL_ERROR; }

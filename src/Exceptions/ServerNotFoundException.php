@@ -8,6 +8,5 @@ class ServerNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getId();
     parent::__construct(\sprintf('SErver not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('server_id', $v);
   }
 }

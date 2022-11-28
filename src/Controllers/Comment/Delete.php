@@ -50,16 +50,16 @@ class Delete extends \BNETDocs\Controllers\Base
   protected function tryDelete() : void
   {
     $this->model->error = $this->model->comment->deallocate() ? false : 'INTERNAL_ERROR';
-    \BNETDocs\Libraries\Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       $this->model->comment->getParentTypeDeletedEventId(),
-      $this->model->active_user->getId(),
+      $this->model->active_user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'error' => $this->model->error,
         'comment' => $this->model->comment,
         'parent_type' => $this->model->parent_type,
         'parent_id' => $this->model->parent_id
-      ])
+      ]
     );
   }
 }

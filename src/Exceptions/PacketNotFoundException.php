@@ -8,6 +8,5 @@ class PacketNotFoundException extends DatabaseObjectNotFoundException
   {
     $v = is_int($value) ? $value : $value->getId();
     parent::__construct(\sprintf('Packet not found: %d', $v), 0, $previous);
-    \BNETDocs\Libraries\Logger::logMetric('packet_id', $v);
   }
 }

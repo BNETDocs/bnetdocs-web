@@ -83,18 +83,18 @@ class Edit extends \BNETDocs\Controllers\Base
 
     $this->model->error = $this->model->document->commit() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\Logger::logEvent(
+    \BNETDocs\Libraries\Event::log(
       \BNETDocs\Libraries\EventTypes::DOCUMENT_EDITED,
-      $this->model->active_user->getId(),
+      $this->model->active_user,
       getenv('REMOTE_ADDR'),
-      json_encode([
+      [
         'brief'           => $this->model->document->getBrief(false),
         'content'         => $this->model->document->getContent(false),
         'document_id'     => $this->model->document_id,
         'error'           => $this->model->error,
         'options_bitmask' => $this->model->document->getOptions(),
         'title'           => $this->model->document->getTitle(),
-      ])
+      ]
     );
   }
 }

@@ -3,7 +3,6 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Exceptions\RecaptchaException;
-use \BNETDocs\Libraries\Logger;
 
 class Recaptcha
 {
@@ -28,10 +27,6 @@ class Recaptcha
 
     $r = \CarlBennett\MVC\Libraries\Common::curlRequest($this->url, $data);
 
-    Logger::logMetric('recaptcha_r_code', $r->code);
-    Logger::logMetric('recaptcha_r_type', $r->type);
-    Logger::logMetric('recaptcha_r_data', $r->data);
-
     if ($r->code != 200) {
       throw new RecaptchaException('Received bad HTTP status');
     } else if (stripos($r->type, 'json') === false) {
@@ -42,8 +37,6 @@ class Recaptcha
 
     $j = json_decode($r->data);
     $e = json_last_error();
-
-    Logger::logMetric('recaptcha_json_error', $e);
 
     if (!$j || $e !== JSON_ERROR_NONE || !property_exists($j, 'success'))
       throw new RecaptchaException('Received invalid response');
