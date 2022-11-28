@@ -38,9 +38,11 @@ use \BNETDocs\Libraries\Server; ?>
         value="<?=filter_var($model->form['label'] ?? ($model->server ? $model->server->getLabel() : ''), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
     </div>
     <div class="form-group text-center">
-      <a class="btn btn-primary mr-3" tabindex="7" href="javascript:history.go(-1);">Back</a>
-      <a class="btn btn-danger" tabindex="8" href="<?=\CarlBennett\MVC\Libraries\Common::relativeUrlToAbsolute(sprintf('/server/delete?id=%d', $model->server->getId()))?>">Delete</a>
+      <a class="btn btn-primary" tabindex="7" href="javascript:history.go(-1);">Back</a>
+<? if (!is_null($model->server->getId())) { ?>
+      <a class="btn btn-danger ml-3" tabindex="8" href="<?=\CarlBennett\MVC\Libraries\Common::relativeUrlToAbsolute(sprintf('/server/delete?id=%d', $model->server->getId()))?>">Delete</a>
       <a class="btn btn-secondary" tabindex="9" href="<?=$model->server->getURI()?>">Go to Server</a>
+<? } ?>
       <input class="btn btn-success" tabindex="10" type="submit" value="Save"/>
     </div>
   </form>
