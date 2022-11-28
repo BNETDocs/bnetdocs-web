@@ -1,0 +1,44 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates\Server;
+use \BNETDocs\Models\Server\Form as FormModel;
+use \CarlBennett\MVC\Libraries\Pair;
+$model = $this->getContext() ?? null;
+$title = sprintf('%s Server', $model->server_edit ? 'Edit' : 'Create');
+$description = sprintf('This page enables a user to %s servers on the site.', $model->server_edit ? 'edit' : 'create');
+$this->opengraph->attach(new Pair('url', sprintf('/server/%s%s', $model->server_edit ? 'edit' : 'create', $model->server_edit ? sprintf('?id=%d', $model->server->getId()) : '')));
+$this->opengraph->attach(new Pair('type', 'article'));
+switch ($model->error)
+{
+  case FormModel::ERROR_ACCESS_DENIED: $message = sprintf('You do not have the privilege to %s servers.', $model->server_edit ? 'edit' : 'create'); break;
+  case FormModel::ERROR_INTERNAL: $message = 'An internal error occurred while processing your request. Try again later.'; break;
+  case FormModel::ERROR_INVALID_ADDRESS: $message = 'The address of the server is invalid or contains too many characters.'; break;
+  case FormModel::ERROR_INVALID_ID: $message = 'The id of the server is invalid.'; break;
+  case FormModel::ERROR_INVALID_LABEL: $message = 'The label of the server is invalid or contains too many characters.'; break;
+  case FormModel::ERROR_INVALID_PORT: $message = 'The port of the server is invalid.'; break;
+  case FormModel::ERROR_INVALID_TYPE: $message = 'The type of the server is invalid.'; break;
+  case FormModel::ERROR_SUCCESS: $message = sprintf('The server has been %s!', $model->server_edit ? 'edited' : 'created'); break;
+  default: $message = $model->error;
+}
+require('./header.inc.phtml');
+echo '<div class="container">';
+printf('<h1>%s</h1><p>%s</p>', $title, $description);
+if ($model->error === FormModel::ERROR_ACCESS_DENIED)
+{
+  require('./LoginRequired.inc.phtml');
+}
+else if ($model->error === FormModel::ERROR_SUCCESS)
+{
+  printf('<div class="alert alert-success"><p class="mb-0">%s</p></div>', $message);
+  echo '<div class="form-group text-center">';
+  echo '<a class="btn btn-primary" tabindex="1" href="javascript:history.go(-1);">Back</a> ';
+  printf('<a class="btn btn-secondary" tabindex="2" href="%s">Server List</a> ', \CarlBennett\MVC\Libraries\Common::relativeUrlToAbsolute('/servers'));
+  if ($model->server) printf('<a class="btn btn-success" tabindex="3" href="%s">Go to Server</a>', $model->server->getURI());
+  echo '</div>';
+}
+else
+{
+  if (!empty($message)) printf('<div class="alert alert-danger"><p class="mb-0">%s</p></div>', $message);
+  if ($model->server) require('./Server/Form.inc.phtml');
+}
+echo '</div>';
+require('./footer.inc.phtml');

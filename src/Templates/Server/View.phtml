@@ -1,5 +1,6 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Server;
+use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Server Not Found';
@@ -17,6 +18,7 @@ else
   $server_address = filter_var(sprintf('%s:%s', $server->getAddress(), $server->getPort()), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   $server_id = $server->getId();
   $server_name = filter_var($server->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $server_label = !empty($server->getLabel()) ? filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '<em>(empty)</em>';
   $server_type = $server->getType();
 
   $title = $server_name;
@@ -63,12 +65,13 @@ require('./header.inc.phtml'); ?>
   <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></div></div>
 <? } else { ?>
   <span class="float-right">
+<?=($this->getContext()->active_user && $this->getContext()->active_user->getOption(User::OPTION_ACL_SERVER_MODIFY) ? sprintf('<a class="btn btn-sm btn-secondary" href="%s" title="Edit">📝</a>', Common::relativeUrlToAbsolute(sprintf('/server/edit?id=%d', $server_id))) : '')?>
     <a class="btn btn-sm btn-primary" href="<?=$url_json?>">JSON</a>
     <a class="btn btn-sm btn-primary" href="<?=$url_txt?>">TXT</a>
   </span>
   <h1><?=$title?></h1>
   <table class="table table-hover table-sm table-striped"><thead></thead><tbody>
-    <tr><th class="text-right">Label</th><td><?=$server_name?></td></tr>
+    <tr><th class="text-right">Label</th><td><?=$server_label?></td></tr>
     <tr><th class="text-right">Address</th><td onclick="bnetdocs.fSelectText(this);"><code><?=$server_address?></td></tr>
     <tr><th class="text-right">Owner</th><td><?=$server_user_string?></td></tr>
     <tr><th class="text-right">Type</th><td><?=$server_type_label?></td></tr>

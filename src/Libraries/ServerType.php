@@ -3,11 +3,14 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Database;
-use \CarlBennett\MVC\Libraries\Common;
+use \OutOfBoundsException;
 use \StdClass;
 
 class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
+  public const MAX_ID = 0xFFFFFFFFFFFFFFFF; // bigint(20) unsigned
+  public const MAX_LABEL = 0xFF; // varchar(255)
+
   protected ?int $id;
   protected string $label;
 
@@ -94,11 +97,21 @@ class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializab
 
   public function setId(?int $value) : void
   {
+    if ($value < 0 || $value > self::MAX_ID)
+      throw new OutOfBoundsException(sprintf(
+        'value must be null or an integer between 0-%d', self::MAX_ID
+      ));
+
     $this->id = $value;
   }
 
   public function setLabel(string $value) : void
   {
+    if (strlen($value) > self::MAX_LABEL)
+      throw new OutOfBoundsException(sprintf(
+        'value must be a string between 0-%d characters', self::MAX_LABEL
+      ));
+
     $this->label = $value;
   }
 }

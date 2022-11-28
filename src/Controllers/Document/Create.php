@@ -28,7 +28,7 @@ class Create extends \BNETDocs\Controllers\Base
     else if (Router::requestMethod() == Router::METHOD_GET)
       $this->model->markdown = true;
 
-    $this->model->_responseCode = $this->model->acl_allowed ? 200 : 403;
+    $this->model->_responseCode = 200;
     return true;
   }
 

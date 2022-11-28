@@ -1,11 +1,11 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates;
-use \BNETDocs\Libraries\Server;
 use \BNETDocs\Libraries\ServerType;
+use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 $title = 'Server List';
-$description = 'The list of servers that are well-known and monitored for port status.';
+$description = 'This is a list of servers that are well-known and monitored for port status.';
 $this->opengraph->attach(new Pair('url', '/servers'));
 
 $servers_by_type = [];
@@ -14,8 +14,12 @@ foreach ($this->context->servers as $server) {
 }
 ksort($servers_by_type);
 
+$can_server_create = $this->getContext()->active_user && $this->getContext()->active_user->getOption(User::OPTION_ACL_SERVER_CREATE);
+$can_server_modify = $this->getContext()->active_user && $this->getContext()->active_user->getOption(User::OPTION_ACL_SERVER_MODIFY);
+
 require('./header.inc.phtml'); ?>
 <div class="container">
+<?=($can_server_create ? sprintf('<a class="btn btn-success text-white float-right" href="%s">Create Server</a>', Common::relativeUrlToAbsolute('/server/create')) : '')?>
   <h1><?=$title?></h1>
   <div class="row"><div class="col">
     <p><?=$description?></p>
@@ -37,6 +41,7 @@ require('./header.inc.phtml'); ?>
         printf('<tr><th scope="row" colspan="4">%s</th></tr>', $server_type_label);
         foreach ($servers as $server)
         {
+          $server_id = $server->getId();
           $server_label = filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
           $server_online = $server->isOnline();
           if ($server->isDisabled())
@@ -54,7 +59,9 @@ require('./header.inc.phtml'); ?>
           <td class="font-weight-bold text-center"><?=$server_status?></td>
           <td><?=($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server_label : '&nbsp;')?></td>
           <td><code><?=$server->getAddress()?>:<?=$server->getPort()?></code></td>
-          <td><a class="btn btn-sm btn-primary" href="<?=$server->getURI()?>" title="View Server Details for <?=$server_label?>">🔎</a></td>
+          <td>
+<?=($can_server_modify ? sprintf('<a class="btn btn-sm btn-secondary" href="%s" title="Edit Server for %s">📝</a>', Common::relativeUrlToAbsolute(sprintf('/server/edit?id=%d', $server_id)), $server_label) : '')?>
+            <a class="btn btn-sm btn-primary" href="<?=$server->getURI()?>" title="View Server Details for <?=$server_label?>">🔎</a></td>
         </tr>
 <?    }} ?>
       </tbody>
