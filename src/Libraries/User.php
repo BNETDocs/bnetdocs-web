@@ -221,42 +221,28 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $password The cleartext input.
    * @return boolean Whether this user's password matches.
    */
-  public function checkPassword(string $password) : bool
+  public function checkPassword(string $password) : bool // This function was refactored by OpenAI
   {
-    if (is_null($this->password_hash))
-    {
-      // no hash set
-      return false;
-    }
+    if (is_null($this->password_hash)) return false;
 
-    if (substr($this->password_hash, 0, 1) == '$')
-    {
+    if (substr($this->password_hash, 0, 1) == '$') {
       // new style bcrypt password
-      // salt and pepper are deprecated and unused here
-
       $cost = Common::$config->bnetdocs->user_password_bcrypt_cost;
       $match = password_verify($password, $this->password_hash);
       $rehash = password_needs_rehash(
         $this->password_hash, PASSWORD_BCRYPT, array('cost' => $cost)
       );
 
-      return ($match && !$rehash); // will deny if not match or needs rehash
-    }
-    else
-    {
+      return $match && !$rehash;
+    } else {
       // old style peppered and salted sha256 password
-
       $pepper = Common::$config->bnetdocs->user_password_pepper;
       $salt = $this->password_salt;
 
-      if (is_null($salt))
-      {
-        // no salt set
-        return false;
-      }
+      if (is_null($salt)) return false;
 
       $hash = strtoupper(hash('sha256', $password.$salt.$pepper));
-      return ($hash === strtoupper($this->password_hash));
+      return strtoupper($this->password_hash) === $hash;
     }
   }
 
