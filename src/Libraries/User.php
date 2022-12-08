@@ -53,6 +53,29 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public const OPTION_ACL_USER_DELETE      = 0x00400000;
   public const OPTION_ACL_PHPINFO          = 0x00800000;
 
+  public const OPTION_STAFF = self::DEFAULT_OPTION
+    | self::OPTION_ACL_COMMENT_DELETE
+    | self::OPTION_ACL_COMMENT_MODIFY
+    | self::OPTION_ACL_DOCUMENT_CREATE
+    | self::OPTION_ACL_DOCUMENT_DELETE
+    | self::OPTION_ACL_DOCUMENT_MODIFY
+    | self::OPTION_ACL_EVENT_LOG_DELETE
+    | self::OPTION_ACL_EVENT_LOG_MODIFY
+    | self::OPTION_ACL_EVENT_LOG_VIEW
+    | self::OPTION_ACL_NEWS_CREATE
+    | self::OPTION_ACL_NEWS_DELETE
+    | self::OPTION_ACL_NEWS_MODIFY
+    | self::OPTION_ACL_PACKET_CREATE
+    | self::OPTION_ACL_PACKET_DELETE
+    | self::OPTION_ACL_PACKET_MODIFY
+    | self::OPTION_ACL_PHPINFO
+    | self::OPTION_ACL_SERVER_CREATE
+    | self::OPTION_ACL_SERVER_DELETE
+    | self::OPTION_ACL_SERVER_MODIFY
+    | self::OPTION_ACL_USER_CREATE
+    | self::OPTION_ACL_USER_DELETE
+    | self::OPTION_ACL_USER_MODIFY;
+
   protected DateTimeInterface $created_datetime;
   protected ?string $display_name;
   protected string $email;
@@ -612,28 +635,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    */
   public function isStaff() : bool
   {
-    return ($this->options & (
-      self::OPTION_ACL_DOCUMENT_CREATE  |
-      self::OPTION_ACL_DOCUMENT_MODIFY  |
-      self::OPTION_ACL_DOCUMENT_DELETE  |
-      self::OPTION_ACL_COMMENT_MODIFY   |
-      self::OPTION_ACL_COMMENT_DELETE   |
-      self::OPTION_ACL_EVENT_LOG_VIEW   |
-      self::OPTION_ACL_EVENT_LOG_MODIFY |
-      self::OPTION_ACL_EVENT_LOG_DELETE |
-      self::OPTION_ACL_NEWS_CREATE      |
-      self::OPTION_ACL_NEWS_MODIFY      |
-      self::OPTION_ACL_NEWS_DELETE      |
-      self::OPTION_ACL_PACKET_CREATE    |
-      self::OPTION_ACL_PACKET_MODIFY    |
-      self::OPTION_ACL_PACKET_DELETE    |
-      self::OPTION_ACL_SERVER_CREATE    |
-      self::OPTION_ACL_SERVER_MODIFY    |
-      self::OPTION_ACL_SERVER_DELETE    |
-      self::OPTION_ACL_USER_CREATE      |
-      self::OPTION_ACL_USER_MODIFY      |
-      self::OPTION_ACL_USER_DELETE
-    ));
+    return $this->getOption(self::OPTION_STAFF);
   }
 
   /**
@@ -851,7 +853,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     // This Exception is wrapped into a new UnexpectedValueException.
     try
     {
-      if (!empty($value)) new DateTimeZone($value);
+      if (!is_null($value) && !empty($value)) new DateTimeZone($value);
     }
     catch (\Exception $e)
     {
