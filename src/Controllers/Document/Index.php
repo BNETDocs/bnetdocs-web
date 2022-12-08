@@ -14,20 +14,20 @@ class Index extends \BNETDocs\Controllers\Base
     $q = \BNETDocs\Libraries\Router::query();
     $this->model->order = $q['order'] ?? 'title-asc';
 
-    switch ($this->model->order)
-    {
-      case 'created-asc': $order = ['created_datetime', 'ASC']; break;
-      case 'created-desc': $order = ['created_datetime', 'DESC']; break;
-      case 'id-asc': $order = ['id', 'ASC']; break;
-      case 'id-desc': $order = ['id', 'DESC']; break;
-      case 'title-asc': $order = ['title', 'ASC']; break;
-      case 'title-desc': $order = ['title', 'DESC']; break;
-      case 'updated-asc': $order = ['edited_datetime', 'ASC']; break;
-      case 'updated-desc': $order = ['edited_datetime', 'DESC']; break;
-      case 'user-id-asc': $order = ['user_id', 'ASC']; break;
-      case 'user-id-desc': $order = ['user_id', 'DESC']; break;
-      default: $order = null;
-    }
+    $orderMap = [ // This code was refactored by OpenAI
+      'created-asc' => ['created_datetime', 'ASC'],
+      'created-desc' => ['created_datetime', 'DESC'],
+      'id-asc' => ['id', 'ASC'],
+      'id-desc' => ['id', 'DESC'],
+      'title-asc' => ['title', 'ASC'],
+      'title-desc' => ['title', 'DESC'],
+      'updated-asc' => ['edited_datetime', 'ASC'],
+      'updated-desc' => ['edited_datetime', 'DESC'],
+      'user-id-asc' => ['user_id', 'ASC'],
+      'user-id-desc' => ['user_id', 'DESC'],
+    ];
+
+    $order = $orderMap[$this->model->order] ?? null;
 
     $acl = $this->model->active_user && $this->model->active_user->isStaff();
     $this->model->documents = \BNETDocs\Libraries\Document::getAllDocuments($order, !$acl);
