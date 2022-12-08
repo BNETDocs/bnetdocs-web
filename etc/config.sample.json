@@ -115,5 +115,21 @@
     "secret": "google-provided-value",
     "sitekey": "google-provided-value",
     "url": "https://www.google.com/recaptcha/api/siteverify"
+  },
+  "slack":
+  {
+    "ignored_headers": [
+      "ACCEPT_ENCODING",
+      "CDN_LOOP",
+      "CF_CONNECTING_IP",
+      "CF_IPCOUNTRY",
+      "CF_RAY",
+      "CF_VISITOR",
+      "HOST",
+      "X_FORWARDED_FOR",
+      "X_FORWARDED_PROTO",
+      "X_REAL_IP"
+    ],
+    "user_agent": "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)"
   }
 }
