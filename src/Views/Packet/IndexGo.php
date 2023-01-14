@@ -35,7 +35,7 @@ class IndexGo extends \BNETDocs\Views\Base\Go
     echo " */\n\n";
 
     echo "type MessageId byte\n\n";
-    echo "struct (\n";
+    echo "const (\n";
     foreach ($model->packets as $pkt)
       printf("  %s MessageId = %s\n", $pkt->getName(), $pkt->getPacketId(true));
     echo ")\n";
