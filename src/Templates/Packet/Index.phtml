@@ -107,6 +107,7 @@ require('./header.inc.phtml'); ?>
   <p>These packets are also available as constants in
 <? $q = getenv('QUERY_STRING'); if (!empty($q)) { $q = '?' . $q; } ?>
     <a href="<?=Common::relativeUrlToAbsolute('/packet/index.cpp' . $q)?>">C++</a>,
+    <a href="<?=Common::relativeUrlToAbsolute('/packet/index.go' . $q)?>">Go</a>,
     <a href="<?=Common::relativeUrlToAbsolute('/packet/index.java' . $q)?>">Java</a>,
     <a href="<?=Common::relativeUrlToAbsolute('/packet/index.json' . $q)?>">JSON</a>,
     <a href="<?=Common::relativeUrlToAbsolute('/packet/index.php' . $q)?>">PHP</a>, and
