@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Views\Packet;
 
-class IndexVb extends \BNETDocs\Views\Base\VB
+class IndexVb extends \BNETDocs\Views\Base\Vb
 {
   public static function invoke(\BNETDocs\Interfaces\Model $model) : void
   {
