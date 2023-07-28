@@ -11,7 +11,7 @@ class IndexJson extends \BNETDocs\Views\Base\Json
       throw new \BNETDocs\Exceptions\InvalidModelException($model);
     }
 
-    echo \json_encode(['event_log' => $model->event_log], self::jsonFlags());
+    echo \json_encode(['event_log' => $model->events], self::jsonFlags());
     $model->_responseHeaders['Content-Type'] = self::mimeType();
   }
 }

@@ -16,7 +16,7 @@ class Logout extends \BNETDocs\Controllers\Base
   {
     if (!$this->model->active_user)
     {
-      $this->_responseCode = 400;
+      $this->model->_responseCode = 400;
       return true;
     }
 

@@ -6,7 +6,7 @@ class CreateJson extends \BNETDocs\Views\Base\Json
 {
   public static function invoke(\BNETDocs\Interfaces\Model $model): void
   {
-    if (!$model instanceof \BNETDocs\Models\Document\Create)
+    if (!$model instanceof \BNETDocs\Models\Comment\Create)
     {
       throw new \BNETDocs\Exceptions\InvalidModelException($model);
     }

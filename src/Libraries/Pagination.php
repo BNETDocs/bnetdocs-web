@@ -6,11 +6,11 @@ use \OutOfBoundsException;
 
 class Pagination
 {
-  private iterable $dataset;
+  private array $dataset;
   private int $limit;
   private int $page;
 
-  public function __construct(iterable $dataset, int $page, int $limit)
+  public function __construct(array $dataset, int $page, int $limit)
   {
     $this->dataset = $dataset;
     $this->limit = $limit;
@@ -36,7 +36,9 @@ class Pagination
     if ($ubound > $size) $ubound = $size;
 
     for ($i = $lbound; $i < $ubound; ++$i)
+    {
       $set[] = $this->dataset[$keys[$i]];
+    }
 
     return $set;
   }
@@ -44,7 +46,10 @@ class Pagination
   public function nextPage(): int
   {
     if ($this->page >= $this->pageCount())
+    {
       throw new OutOfBoundsException('Current page reached upper bound');
+    }
+
     $this->page += 1;
     return $this->page;
   }
@@ -57,7 +62,10 @@ class Pagination
   public function previousPage(): int
   {
     if ($this->page <= 0)
+    {
       throw new OutOfBoundsException('Current page reached lower bound');
+    }
+
     $this->page -= 1;
     return $this->page;
   }
@@ -65,7 +73,10 @@ class Pagination
   public function setPage(int $page): int
   {
     if ($page < 0 || $page > $this->pageCount())
+    {
       throw new OutOfBoundsException('Page is out of bounds');
+    }
+
     $this->page = $page;
     return $this->page;
   }

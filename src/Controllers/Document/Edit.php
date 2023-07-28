@@ -18,7 +18,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
     if (!$this->model->acl_allowed)
     {
-      $this->_responseCode = 403;
+      $this->model->_responseCode = 403;
       $this->model->error = 'ACL_NOT_SET';
       return true;
     }
@@ -30,7 +30,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
     if (!$this->model->document)
     {
-      $this->_responseCode = 404;
+      $this->model->_responseCode = 404;
       $this->model->error = 'NOT_FOUND';
       return true;
     }

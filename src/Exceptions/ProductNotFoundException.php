@@ -4,8 +4,9 @@ namespace BNETDocs\Exceptions;
 
 class ProductNotFoundException extends DatabaseObjectNotFoundException
 {
-  public function __construct(\BNETDocs\Libraries\Product $value, \Throwable $previous = null)
+  public function __construct(\BNETDocs\Libraries\Product|int $value, \Throwable $previous = null)
   {
-    parent::__construct('Product not found', 0, $previous);
+    $v = is_int($value) ? $value : $value->getBnetProductId();
+    parent::__construct(\sprintf('Product not found: %d', $v), 0, $previous);
   }
 }
