@@ -4,10 +4,12 @@ namespace BNETDocs\Views\Packet;
 
 class IndexVb extends \BNETDocs\Views\Base\Vb
 {
-  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  public static function invoke(\BNETDocs\Interfaces\Model $model): void
   {
     if (!$model instanceof \BNETDocs\Models\Packet\Index)
+    {
       throw new \BNETDocs\Exceptions\InvalidModelException($model);
+    }
 
     $model->_responseHeaders['Content-Type'] = self::mimeType();
 
@@ -35,6 +37,8 @@ class IndexVb extends \BNETDocs\Views\Base\Vb
     echo "'\n\n";
 
     foreach ($model->packets as $pkt)
+    {
       printf("CONST %s& = %s\n", $pkt->getName(), \str_replace('0x', '&H', $pkt->getPacketId(true)));
+    }
   }
 }

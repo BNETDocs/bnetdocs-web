@@ -19,7 +19,7 @@ class Create extends \BNETDocs\Controllers\Base
    * @param array|null $args The optional route arguments and any captured URI arguments.
    * @return boolean Whether the Router should invoke the configured View.
    */
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     $this->model->acl_allowed = $this->model->active_user
       && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_NEWS_CREATE);
@@ -54,7 +54,7 @@ class Create extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $q = Router::query();
     $publish = $q['publish'] ?? null;

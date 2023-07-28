@@ -11,7 +11,7 @@ abstract class Json implements \BNETDocs\Interfaces\View
    *
    * @return integer The flags to pass to json_encode().
    */
-  public static function jsonFlags() : int
+  public static function jsonFlags(): int
   {
     return \JSON_PRESERVE_ZERO_FRACTION
       | \JSON_THROW_ON_ERROR
@@ -23,7 +23,7 @@ abstract class Json implements \BNETDocs\Interfaces\View
    *
    * @return string The MIME-type for this View class.
    */
-  public static function mimeType() : string
+  public static function mimeType(): string
   {
     return \sprintf('%s;charset=utf-8', self::MIMETYPE_JSON);
   }

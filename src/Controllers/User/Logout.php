@@ -26,7 +26,7 @@ class Logout extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function tryLogout() : void
+  protected function tryLogout(): void
   {
     $user = $this->model->active_user;
     if (Authentication::logout()) $this->model->active_user = &Authentication::$user;

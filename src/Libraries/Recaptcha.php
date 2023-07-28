@@ -17,7 +17,7 @@ class Recaptcha
     $this->url = $url;
   }
 
-  public function verify(string $response, ?string $remoteip = null) : bool
+  public function verify(string $response, ?string $remoteip = null): bool
   {
     $data = [
       'secret'   => $this->secret,
@@ -27,11 +27,16 @@ class Recaptcha
 
     $r = \CarlBennett\MVC\Libraries\Common::curlRequest($this->url, $data);
 
-    if ($r->code != 200) {
+    if ($r->code != 200)
+    {
       throw new RecaptchaException('Received bad HTTP status');
-    } else if (stripos($r->type, 'json') === false) {
+    }
+    else if (stripos($r->type, 'json') === false)
+    {
       throw new RecaptchaException('Received unknown content type');
-    } else if (empty($data)) {
+    }
+    else if (empty($data))
+    {
       throw new RecaptchaException('Received empty response');
     }
 
@@ -39,7 +44,9 @@ class Recaptcha
     $e = json_last_error();
 
     if (!$j || $e !== JSON_ERROR_NONE || !property_exists($j, 'success'))
+    {
       throw new RecaptchaException('Received invalid response');
+    }
 
     return ($j->success);
   }

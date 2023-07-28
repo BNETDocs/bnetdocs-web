@@ -24,7 +24,7 @@ class ChangePassword extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function tryChangePassword() : void
+  protected function tryChangePassword(): void
   {
     $q = Router::query();
     $pw1 = isset($q['pw1']) ? $q['pw1'] : null;

@@ -17,7 +17,7 @@ class EmbedVideo implements \JsonSerializable
     $this->setWidth($width);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     $r = [
       'height' => $this->height,
@@ -28,17 +28,17 @@ class EmbedVideo implements \JsonSerializable
     return $r;
   }
 
-  public function setHeight(int $height) : void
+  public function setHeight(int $height): void
   {
     $this->height = $height;
   }
 
-  public function setUrl(string $url) : void
+  public function setUrl(string $url): void
   {
     $this->url = $url;
   }
 
-  public function setWidth(int $width) : void
+  public function setWidth(int $width): void
   {
     $this->width = $width;
   }

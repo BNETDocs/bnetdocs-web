@@ -23,7 +23,7 @@ class ActiveUser extends Errorable implements \JsonSerializable
   /**
    * Implements the JSON serialization function from the JsonSerializable interface.
    */
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return \array_merge(['active_user' => $this->active_user], parent::jsonSerialize());
   }

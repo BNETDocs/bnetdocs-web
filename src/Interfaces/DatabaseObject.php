@@ -15,19 +15,19 @@ interface DatabaseObject
      *
      * @return boolean Whether the operation was successful.
      */
-    public function allocate() : bool;
+    public function allocate(): bool;
 
     /**
      * Commits the properties of this object to the database. Used to create a new or update an existing record.
      *
      * @return boolean Whether the operation was successful.
      */
-    public function commit() : bool;
+    public function commit(): bool;
 
     /**
      * Deallocates the properties of this object from the database. Used to delete a record.
      *
      * @return boolean Whether the operation was successful.
      */
-    public function deallocate() : bool;
+    public function deallocate(): bool;
 }

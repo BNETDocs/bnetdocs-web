@@ -34,8 +34,12 @@ class Index extends \BNETDocs\Controllers\Base
     $this->model->application_layers = \BNETDocs\Libraries\Packet\Application::getAllAsObjects();
 
     if (empty($this->model->pktapplayer))
+    {
       foreach ($this->model->application_layers as $layer)
+      {
         $this->model->pktapplayer[] = $layer->getId();
+      }
+    }
 
     $this->model->packets = \BNETDocs\Libraries\Packet::getAllPackets(
       '`packet_application_layer_id` IN (' . implode( ',', $this->model->pktapplayer ) . ')',

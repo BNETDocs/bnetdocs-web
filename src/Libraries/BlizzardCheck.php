@@ -23,7 +23,7 @@ class BlizzardCheck
    */
   private function __construct() {}
 
-  private static function check_blizzard_cidrs()
+  private static function check_blizzard_cidrs(): int
   {
     $IP    = getenv('REMOTE_ADDR');
     $CIDRs = file_get_contents(getcwd() . '/Static/a/Blizzard-CIDRs.txt');
@@ -35,12 +35,12 @@ class BlizzardCheck
     );
   }
 
-  private static function check_for_blizzard()
+  private static function check_for_blizzard(): void
   {
     self::$status = self::check_blizzard_cidrs();
   }
 
-  public static function is_blizzard()
+  public static function is_blizzard(): bool
   {
     if (self::$status === self::STATUS_NOT_CHECKED)
     {
@@ -50,7 +50,7 @@ class BlizzardCheck
     return (self::$status === self::STATUS_BLIZZARD);
   }
 
-  public static function log_blizzard_request()
+  public static function log_blizzard_request(): void
   {
     if (!self::is_blizzard()) return; // do not log non-Blizzard requests
 

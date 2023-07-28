@@ -45,15 +45,17 @@ class Delete extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $this->model->error = $this->model->server->deallocate() ? DeleteModel::ERROR_SUCCESS : DeleteModel::ERROR_INTERNAL;
     if ($this->model->error === DeleteModel::ERROR_SUCCESS)
+    {
       \BNETDocs\Libraries\Event::log(
         \BNETDocs\Libraries\EventTypes::SERVER_DELETED,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
         $this->model->server
       );
+    }
   }
 }

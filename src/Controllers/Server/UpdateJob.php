@@ -21,7 +21,7 @@ class UpdateJob extends \BNETDocs\Controllers\Base
     $this->model = new \BNETDocs\Models\Server\UpdateJob();
   }
 
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     if (Router::requestMethod() !== Router::METHOD_POST)
     {
@@ -63,15 +63,17 @@ class UpdateJob extends \BNETDocs\Controllers\Base
 
     $discord = $c->discord->forward_server_updates ?? null;
     if ($discord && $discord->enabled && !in_array($server_id, $discord->ignore_server_ids))
+    {
       self::dispatchDiscord(
         $this->model->server, $discord->webhook, $this->model->old_status_bitmask, $status
       );
+    }
 
     $this->model->_responseCode = 200;
     return true;
   }
 
-  protected static function dispatchDiscord(Server $server, string $webhook, int $old, int $new) : void
+  protected static function dispatchDiscord(Server $server, string $webhook, int $old, int $new): void
   {
     if ($old === $new) return;
 
@@ -117,7 +119,10 @@ class UpdateJob extends \BNETDocs\Controllers\Base
     $data['Server'] = $server->getAddress() . ':' . $server->getPort();
     $data['Status'] = $old_status . ' → ' . $new_status;
 
-    foreach ($data as $key => $value) $embed->addField(new DiscordEmbedField($key, $value, true));
+    foreach ($data as $key => $value)
+    {
+      $embed->addField(new DiscordEmbedField($key, $value, true));
+    }
 
     $webhook->addEmbed($embed);
     $webhook->send();

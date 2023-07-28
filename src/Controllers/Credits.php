@@ -20,7 +20,7 @@ class Credits extends Base
    * @param array|null $args The optional route arguments and any captured URI arguments.
    * @return boolean Whether the Router should invoke the configured View.
    */
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     $this->model->_responseCode = 200;
     $this->model->top_contributors_by_comments = CreditsLib::getTopContributorsByComments();

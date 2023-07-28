@@ -52,27 +52,29 @@ class Embed implements \JsonSerializable
     $this->video = null;
   }
 
-  public function addField(EmbedField $value) : void
+  public function addField(EmbedField $value): void
   {
     if ($this->fields->count() >= self::MAX_FIELDS)
+    {
       throw new \OverflowException(sprintf(
         'Discord forbids adding more than %d fields', self::MAX_FIELDS
       ));
+    }
 
     $this->fields->attach($value);
   }
 
-  public function fieldCount() : int
+  public function fieldCount(): int
   {
     return $this->fields->count();
   }
 
-  public function hasField(EmbedField $value) : bool
+  public function hasField(EmbedField $value): bool
   {
     return $this->fields->contains($value);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     $r = [
       'author' => $this->author,
@@ -107,84 +109,87 @@ class Embed implements \JsonSerializable
     return $r;
   }
 
-  public function removeAllFields() : void
+  public function removeAllFields(): void
   {
     $this->fields = new SplObjectStorage();
   }
 
-  public function removeField(EmbedField $value) : void
+  public function removeField(EmbedField $value): void
   {
     $this->fields->detach($value);
   }
 
-  public function setAuthor(?EmbedAuthor $value) : void
+  public function setAuthor(?EmbedAuthor $value): void
   {
     $this->author = $value;
   }
 
-  public function setColor(?int $color) : void
+  public function setColor(?int $color): void
   {
     $this->color = $color;
   }
 
-  public function setDescription(?string $value) : void
+  public function setDescription(?string $value): void
   {
     if (!empty($value) && strlen($value) > self::MAX_DESCRIPTION)
+    {
       throw new LengthException(sprintf(
         'Discord forbids description longer than %d characters', self::MAX_DESCRIPTION
       ));
+    }
 
     $this->description = $value;
   }
 
-  public function setFooter(?EmbedFooter $value) : void
+  public function setFooter(?EmbedFooter $value): void
   {
     $this->footer = $value;
   }
 
-  public function setImage(?EmbedImage $value) : void
+  public function setImage(?EmbedImage $value): void
   {
     $this->image = $value;
   }
 
-  public function setProvider(?EmbedProvider $value) : void
+  public function setProvider(?EmbedProvider $value): void
   {
     $this->provider = $value;
   }
 
-  public function setThumbnail(?EmbedThumbnail $value) : void
+  public function setThumbnail(?EmbedThumbnail $value): void
   {
     $this->thumbnail = $value;
   }
 
-  public function setTimestamp(?DateTimeInterface $value) : void
+  public function setTimestamp(?DateTimeInterface $value): void
   {
     $this->timestamp = $value;
   }
 
-  public function setTitle(?string $value) : void
+  public function setTitle(?string $value): void
   {
     if (!empty($value) && strlen($value) > self::MAX_TITLE)
+    {
       throw new LengthException(sprintf(
         'Discord forbids title longer than %d characters', self::MAX_TITLE
       ));
+    }
 
     $this->title = $value;
   }
 
-  public function setType(?string $value) : void
+  public function setType(?string $value): void
   {
     $this->type = $value;
   }
 
-  public function setUrl(?string $value) : void
+  public function setUrl(?string $value): void
   {
     $this->url = $value;
   }
 
-  public function setVideo(?EmbedVideo $value) : void
+  public function setVideo(?EmbedVideo $value): void
   {
     $this->video = $value;
   }
-
 }

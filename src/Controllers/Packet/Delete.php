@@ -11,7 +11,7 @@ class Delete extends \BNETDocs\Controllers\Base
     $this->model = new \BNETDocs\Models\Packet\Delete();
   }
 
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     $this->model->acl_allowed = $this->model->active_user
       && $this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_PACKET_DELETE);
@@ -43,7 +43,7 @@ class Delete extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function tryDelete() : void
+  protected function tryDelete(): void
   {
     $this->model->error = $this->model->packet->deallocate() ? false : 'INTERNAL_ERROR';
 

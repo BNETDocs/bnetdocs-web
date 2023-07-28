@@ -20,12 +20,12 @@ class Pagination
     if ($this->page < 0 || $this->page > $this->pageCount()) throw new OutOfBoundsException();
   }
 
-  public function currentPage() : int
+  public function currentPage(): int
   {
     return $this->page;
   }
 
-  public function getPage() : array
+  public function getPage(): array
   {
     $lbound = $this->page * $this->limit;
     $ubound = $lbound + $this->limit;
@@ -41,7 +41,7 @@ class Pagination
     return $set;
   }
 
-  public function nextPage() : int
+  public function nextPage(): int
   {
     if ($this->page >= $this->pageCount())
       throw new OutOfBoundsException('Current page reached upper bound');
@@ -49,12 +49,12 @@ class Pagination
     return $this->page;
   }
 
-  public function pageCount() : int
+  public function pageCount(): int
   {
     return ceil(count(array_keys($this->dataset)) / $this->limit);
   }
 
-  public function previousPage() : int
+  public function previousPage(): int
   {
     if ($this->page <= 0)
       throw new OutOfBoundsException('Current page reached lower bound');
@@ -62,7 +62,7 @@ class Pagination
     return $this->page;
   }
 
-  public function setPage(int $page) : int
+  public function setPage(int $page): int
   {
     if ($page < 0 || $page > $this->pageCount())
       throw new OutOfBoundsException('Page is out of bounds');

@@ -48,7 +48,7 @@ class Edit extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $q = Router::query();
     $brief = $q['brief'] ?? null;
@@ -68,9 +68,13 @@ class Edit extends \BNETDocs\Controllers\Base
     $this->model->content = $content;
 
     if (empty($title))
+    {
       $this->model->error = 'EMPTY_TITLE';
+    }
     else if (empty($content))
+    {
       $this->model->error = 'EMPTY_CONTENT';
+    }
 
     if ($this->model->error) return;
 

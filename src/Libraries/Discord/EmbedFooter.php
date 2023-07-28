@@ -30,22 +30,24 @@ class EmbedFooter implements \JsonSerializable
     return $r;
   }
 
-  public function setIconUrl(string $value) : void
+  public function setIconUrl(string $value): void
   {
     $this->icon_url = $value;
   }
 
-  public function setProxyIconUrl(string $value) : void
+  public function setProxyIconUrl(string $value): void
   {
     $this->proxy_icon_url = $value;
   }
 
-  public function setText(string $value) : void
+  public function setText(string $value): void
   {
     if (strlen($value) > self::MAX_TEXT)
+    {
       throw new \LengthException(sprintf(
         'Discord forbids text longer than %d characters', self::MAX_TEXT
       ));
+    }
 
     $this->text = $value;
   }

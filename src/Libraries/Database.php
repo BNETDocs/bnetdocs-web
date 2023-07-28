@@ -30,7 +30,7 @@ class Database extends PDO
     ]);
   }
 
-  public static function instance() : self
+  public static function instance(): self
   {
     if (!self::$instance) self::$instance = new self();
     return self::$instance;

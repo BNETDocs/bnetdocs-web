@@ -22,7 +22,7 @@ class ExceptionHandler
     string $errfile = '',
     int $errline = 0,
     $errcontext = null
-  ) : bool
+  ): bool
   {
     // Don't handle this error if it's turned off administratively:
     if (!(\error_reporting() & $errno)) return false;
@@ -74,7 +74,7 @@ class ExceptionHandler
     exit();
   }
 
-  public static function exceptionHandler(\Throwable $e) : void
+  public static function exceptionHandler(\Throwable $e): void
   {
     // Back out of any output buffers:
     while (\ob_get_level()) \ob_end_clean();
@@ -118,7 +118,7 @@ class ExceptionHandler
     exit();
   }
 
-  private static function gracefulExit(StdClass &$context) : void
+  private static function gracefulExit(StdClass &$context): void
   {
     // Return with a 500 Internal Server Error:
     if (\function_exists('http_response_code'))
@@ -148,7 +148,7 @@ class ExceptionHandler
     }
   }
 
-  public static function phpErrorName(int $errno) : string
+  public static function phpErrorName(int $errno): string
   {
     switch ($errno)
     {
@@ -172,7 +172,7 @@ class ExceptionHandler
     }
   }
 
-  public static function register() : void
+  public static function register(): void
   {
     self::$overridden_error_handler = \set_error_handler(
       '\\BNETDocs\\Libraries\\ExceptionHandler::errorHandler'

@@ -20,7 +20,7 @@ class View extends \BNETDocs\Controllers\Base
    * @param array|null $args The optional route arguments and any captured URI arguments.
    * @return boolean Whether the Router should invoke the configured View.
    */
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     $this->model->document_id = array_shift($args);
 
@@ -36,7 +36,9 @@ class View extends \BNETDocs\Controllers\Base
     }
 
     if ($this->model->document)
+    {
       $this->model->comments = Comment::getAll(Comment::PARENT_TYPE_DOCUMENT, $this->model->document_id);
+    }
 
     $this->model->_responseCode = $this->model->document ? 200 : 404;
     return true;

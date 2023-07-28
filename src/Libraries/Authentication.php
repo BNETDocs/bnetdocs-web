@@ -49,7 +49,7 @@ class Authentication
    * @return bool Indicates if the operation succeeded.
    * @throws PDOException if a PDO error occurs.
    */
-  protected static function discard(string $key) : bool
+  protected static function discard(string $key): bool
   {
     $q = Database::instance()->prepare('DELETE FROM `user_sessions` WHERE `id` = ? LIMIT 1;');
     try { return $q && $q->execute([$key]); }
@@ -63,7 +63,7 @@ class Authentication
    * @param User $user The User object to be used for fingerprinting.
    * @return array The fingerprint dictionary containing key-value pairs.
    */
-  protected static function getFingerprint(User $user) : array
+  protected static function getFingerprint(User $user): array
   {
     return [
       'ip_address' => getenv('REMOTE_ADDR'),
@@ -79,7 +79,7 @@ class Authentication
    * @return string|false The partial IP address.
    * @throws InvalidArgumentException when value is not a valid IP address.
    */
-  protected static function getPartialIP(string $value) : string|false
+  protected static function getPartialIP(string $value): string|false
   {
     if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4))
     {
@@ -102,7 +102,7 @@ class Authentication
    * @param User $user The User object to be used for user data.
    * @return string The generated unique data, hexadecimal-formatted (64 bytes).
    */
-  protected static function getUniqueToken(User $user) : string
+  protected static function getUniqueToken(User $user): string
   {
     return hash('sha256', sprintf('%d%s%d%s%s%s%s%s',
       mt_rand(), getenv('REMOTE_ADDR'), $user->getId(), $user->getEmail(),
@@ -119,7 +119,7 @@ class Authentication
    * @param User $user The User object being logged into.
    * @return bool Indicates if the browser cookie was sent.
    */
-  public static function login(User $user) : bool
+  public static function login(User $user): bool
   {
     self::$key = self::getUniqueToken($user);
     self::$user = $user;
@@ -148,7 +148,7 @@ class Authentication
    *
    * @return bool Indicates if the browser cookie was sent.
    */
-  public static function logout() : bool
+  public static function logout(): bool
   {
     self::discard(self::$key);
     self::$key = '';
@@ -179,7 +179,7 @@ class Authentication
    * @return array|null The fingerprint details, or false if not found.
    * @throws UnexpectedValueException if key is not 64 characters in length and/or not a hexadecimal-formatted string.
    */
-  protected static function lookup(string $key, bool $throw = true) : ?array
+  protected static function lookup(string $key, bool $throw = true): ?array
   {
     if (strlen($key) !== 64 || !preg_match('/^(?:(0x|0X)?[a-fA-F0-9]+)$/', $key))
     {
@@ -210,10 +210,12 @@ class Authentication
    * @return bool Indicates if the operation succeeded.
    * @throws UnexpectedValueException if key is not 64 characters in length and/or not a hexadecimal-formatted string.
    */
-  protected static function store(string $key, array &$fingerprint) : bool
+  protected static function store(string $key, array &$fingerprint): bool
   {
     if (strlen($key) !== 64 || !preg_match('/^(?:(0x|0X)?[a-fA-F0-9]+)$/', $key))
+    {
       throw new UnexpectedValueException('key must be exactly 64 characters in length formatted as a hexadecimal string');
+    }
 
     $q = Database::instance()->prepare('
       INSERT INTO `user_sessions` (
@@ -246,8 +248,12 @@ class Authentication
     ];
 
     foreach ($p as $k => $v)
+    {
       if ($v instanceof \DateTimeInterface)
+      {
         $p[$k] = $v->format(DatabaseObject::DATE_SQL);
+      }
+    }
 
     try { return $q && $q->execute($p); }
     finally { if ($q) $q->closeCursor(); }
@@ -259,7 +265,7 @@ class Authentication
    *
    * @return bool Indicates if verification succeeded.
    */
-  public static function verify() : bool
+  public static function verify(): bool
   {
     // get client's lookup key
     self::$key = $_COOKIE[self::COOKIE_NAME] ?? '';

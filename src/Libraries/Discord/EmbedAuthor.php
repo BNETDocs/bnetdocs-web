@@ -21,7 +21,7 @@ class EmbedAuthor implements \JsonSerializable
     $this->setUrl($url);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     $r = [
       'icon_url' => $this->icon_url,
@@ -33,27 +33,29 @@ class EmbedAuthor implements \JsonSerializable
     return $r;
   }
 
-  public function setIconUrl(string $value) : void
+  public function setIconUrl(string $value): void
   {
     $this->icon_url = $value;
   }
 
-  public function setName(string $value) : void
+  public function setName(string $value): void
   {
     if (empty($value) || strlen($value) > self::MAX_NAME)
+    {
       throw new \LengthException(sprintf(
         'Discord forbids name shorter than 1 or longer than %d characters', self::MAX_NAME
       ));
+    }
 
     $this->name = $value;
   }
 
-  public function setProxyIconUrl(string $value) : void
+  public function setProxyIconUrl(string $value): void
   {
     $this->proxy_icon_url = $value;
   }
 
-  public function setUrl(string $value) : void
+  public function setUrl(string $value): void
   {
     $this->url = $value;
   }

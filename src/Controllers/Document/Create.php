@@ -32,7 +32,7 @@ class Create extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $data = Router::query();
     $title = $data['title'] ?? null;

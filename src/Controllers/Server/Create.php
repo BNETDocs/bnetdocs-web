@@ -32,7 +32,7 @@ class Create extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $q = &$this->model->form;
     $this->model->server->setUser($this->model->active_user);

@@ -23,7 +23,7 @@ class Legal extends Base
    * @param array|null $args The optional route arguments and any captured URI arguments.
    * @return boolean Whether the Router should invoke the configured View.
    */
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     $privacy_contact = &\CarlBennett\MVC\Libraries\Common::$config->bnetdocs->privacy->contact;
     $this->model->email_domain = $privacy_contact->email_domain;

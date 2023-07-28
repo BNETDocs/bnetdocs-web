@@ -28,7 +28,7 @@ class NewsCategory implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializ
     }
   }
 
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setFilename('');
     $this->setLabel('');
@@ -51,7 +51,7 @@ class NewsCategory implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializ
     return true;
   }
 
-  protected function allocateObject(StdClass $value) : void
+  protected function allocateObject(StdClass $value): void
   {
     $this->setFilename($value->filename);
     $this->setId($value->id);
@@ -59,7 +59,7 @@ class NewsCategory implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializ
     $this->setSortId($value->sort_id);
   }
 
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `news_categories` (
@@ -94,7 +94,7 @@ class NewsCategory implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializ
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -103,7 +103,7 @@ class NewsCategory implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializ
     finally { $q->closeCursor(); }
   }
 
-  public static function getAll() : ?array
+  public static function getAll(): ?array
   {
     $q = Database::instance()->prepare('
       SELECT
@@ -120,27 +120,27 @@ class NewsCategory implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializ
     return $r;
   }
 
-  public function getFilename() : string
+  public function getFilename(): string
   {
     return $this->filename;
   }
 
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
 
-  public function getLabel() : string
+  public function getLabel(): string
   {
     return $this->label;
   }
 
-  public function getSortId() : int
+  public function getSortId(): int
   {
     return $this->sort_id;
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'filename' => $this->getFilename(),
@@ -150,22 +150,22 @@ class NewsCategory implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializ
     ];
   }
 
-  public function setFilename(string $value) : void
+  public function setFilename(string $value): void
   {
     $this->filename = $value;
   }
 
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     $this->id = $value;
   }
 
-  public function setLabel(string $value) : void
+  public function setLabel(string $value): void
   {
     $this->label = $value;
   }
 
-  public function setSortId(int $value) : void
+  public function setSortId(int $value): void
   {
     $this->sort_id = $value;
   }

@@ -39,7 +39,7 @@ class Create extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function createComment() : int
+  protected function createComment(): int
   {
     $q = Router::query();
     $pid = (isset($q['parent_id']) ? (int) $q['parent_id'] : null);

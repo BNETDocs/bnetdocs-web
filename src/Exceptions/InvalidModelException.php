@@ -21,7 +21,7 @@ class InvalidModelException extends \InvalidArgumentException
         );
     }
 
-    public function getModelName() : string
+    public function getModelName(): string
     {
         return $this->model_name;
     }

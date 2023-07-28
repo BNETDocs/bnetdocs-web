@@ -34,7 +34,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
   }
 
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setEventDateTime('now');
     $this->setEventTypeId(\BNETDocs\Libraries\EventTypes::LOG_NOTE);
@@ -61,7 +61,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return true;
   }
 
-  protected function allocateObject(StdClass $value) : void
+  protected function allocateObject(StdClass $value): void
   {
     $this->setEventDateTime($value->event_datetime);
     $this->setEventTypeId($value->event_type_id);
@@ -71,7 +71,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $this->setUserId($value->user_id);
   }
 
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `event_log` (
@@ -102,8 +102,12 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
 
     foreach ($p as $k => $v)
+    {
       if ($v instanceof DateTimeInterface)
+      {
         $p[$k] = $v->format(self::DATE_SQL);
+      }
+    }
 
     if (!$q || !$q->execute($p)) return false;
     if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
@@ -116,7 +120,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -125,7 +129,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     finally { $q->closeCursor(); }
   }
 
-  public static function &getAllEvents($filter_types = null, ?array $order = null, ?int $limit = null, ?int $index = null) : ?array
+  public static function &getAllEvents($filter_types = null, ?array $order = null, ?int $limit = null, ?int $index = null): ?array
   {
     if (empty($filter_types)) {
       $where_clause = '';
@@ -163,7 +167,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public static function getEventCount(?array $filter_types = null) : ?int
+  public static function getEventCount(?array $filter_types = null): ?int
   {
     $where_clause = empty($filter_types) ? '' : sprintf(
       ' WHERE `event_type_id` IN (%s)', implode(',', $filter_types)
@@ -177,44 +181,44 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getEventDateTime() : DateTimeInterface
+  public function getEventDateTime(): DateTimeInterface
   {
     return $this->event_datetime;
   }
 
-  public function getEventTypeId() : int
+  public function getEventTypeId(): int
   {
     return $this->event_type_id;
   }
 
-  public function getEventTypeName() : string
+  public function getEventTypeName(): string
   {
     return new \BNETDocs\Libraries\EventType($this->getEventTypeId());
   }
 
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
 
-  public function getIPAddress() : ?string
+  public function getIPAddress(): ?string
   {
     return $this->ip_address;
   }
 
-  public function getMetadata() : mixed
+  public function getMetadata(): mixed
   {
     return $this->meta_data;
   }
 
-  public function getUser() : ?User
+  public function getUser(): ?User
   {
     if (is_null($this->user_id)) return null;
     try { return new User($this->user_id); }
     catch (\UnexpectedValueException) { return null; }
   }
 
-  public function getUserId() : ?int
+  public function getUserId(): ?int
   {
     return $this->user_id;
   }
@@ -231,7 +235,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
   }
 
-  public static function log(int $type_id, User|int|null $user = null, ?string $ip_address = null, mixed $meta_data = null, bool $dispatch_discord = true) : bool
+  public static function log(int $type_id, User|int|null $user = null, ?string $ip_address = null, mixed $meta_data = null, bool $dispatch_discord = true): bool
   {
     $event = new Event(null);
     $event->setEventTypeId($type_id);
@@ -244,7 +248,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return true;
   }
 
-  protected static function logToDiscord(Event $event) : void
+  protected static function logToDiscord(Event $event): void
   {
     $c = &Common::$config->discord->forward_event_log;
     if (!$c->enabled) return;
@@ -344,39 +348,39 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $r = $webhook->send();
   }
 
-  public function setEventDateTime(DateTimeInterface|string $value) : void
+  public function setEventDateTime(DateTimeInterface|string $value): void
   {
     $this->event_datetime = (is_string($value) ?
       new \BNETDocs\Libraries\DateTimeImmutable($value, new \DateTimeZone(self::DATE_TZ)) : $value
     );
   }
 
-  public function setEventTypeId(int $value) : void
+  public function setEventTypeId(int $value): void
   {
     $this->event_type_id = $value;
   }
 
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     $this->id = $value;
   }
 
-  public function setIPAddress(?string $value) : void
+  public function setIPAddress(?string $value): void
   {
     $this->ip_address = $value;
   }
 
-  public function setMetadata(mixed $value) : void
+  public function setMetadata(mixed $value): void
   {
     $this->meta_data = $value;
   }
 
-  public function setUser(User $value) : void
+  public function setUser(User $value): void
   {
     $this->user_id = $value->getId();
   }
 
-  public function setUserId(?int $value) : void
+  public function setUserId(?int $value): void
   {
     $this->user_id = $value;
   }

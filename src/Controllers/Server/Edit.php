@@ -49,7 +49,7 @@ class Edit extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $q = &$this->model->form;
 

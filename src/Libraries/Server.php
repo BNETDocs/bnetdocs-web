@@ -11,7 +11,6 @@ use \DateTimeInterface;
 use \DateTimeZone;
 use \OutOfBoundsException;
 use \StdClass;
-use \UnexpectedValueException;
 
 class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
@@ -49,7 +48,7 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
   }
 
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setAddress('', true);
     $this->setCreatedDateTime('now');
@@ -85,7 +84,7 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Internal function to process and translate StdClass objects into properties.
    */
-  private function allocateObject(StdClass $value) : void
+  private function allocateObject(StdClass $value): void
   {
     $this->setAddress($value->address);
     $this->setCreatedDateTime($value->created_datetime);
@@ -98,7 +97,7 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $this->setUserId($value->user_id);
   }
 
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `servers` (
@@ -137,8 +136,12 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
 
     foreach ($p as $k => &$v)
+    {
       if ($v instanceof DateTimeInterface)
+      {
         $p[$k] = $v->format(self::DATE_SQL);
+      }
+    }
 
     if (!$q || !$q->execute($p)) return false;
     if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
@@ -151,7 +154,7 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -160,12 +163,12 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     finally { $q->closeCursor(); }
   }
 
-  public function getAddress() : string
+  public function getAddress(): string
   {
     return $this->address;
   }
 
-  public static function getAllServers() : ?array
+  public static function getAllServers(): ?array
   {
     $q = Database::instance()->prepare('
       SELECT
@@ -195,32 +198,32 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getCreatedDateTime() : DateTimeInterface
+  public function getCreatedDateTime(): DateTimeInterface
   {
     return $this->created_datetime;
   }
 
-  public function getName() : string
+  public function getName(): string
   {
     return empty($this->label) ? $this->address . ':' . $this->port : $this->label;
   }
 
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
 
-  public function getLabel() : ?string
+  public function getLabel(): ?string
   {
     return $this->label;
   }
 
-  public function getPort() : int
+  public function getPort(): int
   {
     return $this->port;
   }
 
-  public static function getServersByUserId(int $user_id) : ?array
+  public static function getServersByUserId(int $user_id): ?array
   {
     $q = Database::instance()->prepare('
       SELECT
@@ -246,22 +249,22 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getStatusBitmask() : int
+  public function getStatusBitmask(): int
   {
     return $this->status_bitmask;
   }
 
-  public function getType() : ServerType
+  public function getType(): ServerType
   {
     return new ServerType($this->type_id);
   }
 
-  public function getTypeId() : int
+  public function getTypeId(): int
   {
     return $this->type_id;
   }
 
-  public function getURI() : string
+  public function getURI(): string
   {
     $value = empty($value) ? $this->getAddress() . ':' . $this->getPort() : $this->getLabel();
     return Common::relativeUrlToAbsolute(sprintf(
@@ -269,44 +272,43 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ));
   }
 
-  public function getUpdatedDateTime() : ?DateTimeInterface
+  public function getUpdatedDateTime(): ?DateTimeInterface
   {
     return $this->updated_datetime;
   }
 
-  public function getUser() : ?User
+  public function getUser(): ?User
   {
     if (is_null($this->user_id)) return null;
-    try { return new User($this->user_id); }
-    catch (\UnexpectedValueException) { return null; }
+    return new User($this->user_id);
   }
 
-  public function getUserId() : ?int
+  public function getUserId(): ?int
   {
     return $this->user_id;
   }
 
-  public function isDisabled() : bool
+  public function isDisabled(): bool
   {
     return ($this->status_bitmask & self::STATUS_DISABLED);
   }
 
-  public function isEnabled() : bool
+  public function isEnabled(): bool
   {
     return !$this->isDisabled();
   }
 
-  public function isOffline() : bool
+  public function isOffline(): bool
   {
     return !$this->isOnline();
   }
 
-  public function isOnline() : bool
+  public function isOnline(): bool
   {
     return ($this->status_bitmask & self::STATUS_ONLINE);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'address' => $this->getAddress(),
@@ -322,60 +324,66 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
   }
 
-  public function setAddress(string $value, bool $allow_empty = false) : void
+  public function setAddress(string $value, bool $allow_empty = false): void
   {
     if ((!$allow_empty && empty($value)) || strlen($value) > self::MAX_ADDRESS)
-        throw new OutOfBoundsException(sprintf(
-          'value must be a string between 1-%d', self::MAX_ADDRESS
-        ));
+    {
+      throw new OutOfBoundsException(sprintf(
+        'value must be a string between 1-%d', self::MAX_ADDRESS
+      ));
+    }
 
     $this->address = $value;
   }
 
-  public function setCreatedDateTime(DateTimeInterface|string $value) : void
+  public function setCreatedDateTime(DateTimeInterface|string $value): void
   {
     $this->created_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
     );
   }
 
-  public function setDisabled(bool $value = true) : void
+  public function setDisabled(bool $value = true): void
   {
     if ($value) $this->status_bitmask |= self::STATUS_DISABLED;
     else $this->status_bitmask &= ~self::STATUS_DISABLED;
   }
 
-  public function setEnabled(bool $value = true) : void
+  public function setEnabled(bool $value = true): void
   {
     $this->setDisabled(!$value);
   }
 
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     if ($value < 0 || $value > self::MAX_ID)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or an integer between 0-%d', self::MAX_ID
       ));
+    }
 
     $this->id = $value;
   }
 
-  public function setLabel(?string $value, bool $auto_null = true) : void
+  public function setLabel(?string $value, bool $auto_null = true): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LABEL)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be a string between 0-%d characters', self::MAX_LABEL
       ));
+    }
 
     $this->label = empty($value) && $auto_null ? null : $value;
   }
 
-  public function setOffline(bool $value = true) : void
+  public function setOffline(bool $value = true): void
   {
     $this->setOnline(!$value);
   }
 
-  public function setOnline(bool $value = true) : void
+  public function setOnline(bool $value = true): void
   {
     if ($value) $this->status_bitmask |= self::STATUS_ONLINE;
     else $this->status_bitmask &= ~self::STATUS_ONLINE;
@@ -384,56 +392,64 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public function setPort(int $value) : void
   {
     if ($value < 0 || $value > self::MAX_PORT)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or an integer between 0-%d', self::MAX_PORT
       ));
+    }
 
     $this->port = $value;
   }
 
-  public function setStatusBitmask(int $value) : void
+  public function setStatusBitmask(int $value): void
   {
     if ($value < 0 || $value > self::MAX_STATUS_BITMASK)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or an integer between 0-%d', self::MAX_STATUS_BITMASK
       ));
+    }
 
     $this->status_bitmask = $value;
   }
 
-  public function setType(ServerType $value) : void
+  public function setType(ServerType $value): void
   {
     $this->setTypeId($value instanceof ServerType ? $value->getId() : $value);
   }
 
-  public function setTypeId(int $value) : void
+  public function setTypeId(int $value): void
   {
     if ($value < 0 || $value > self::MAX_TYPE_ID)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or an integer between 0-%d', self::MAX_TYPE_ID
       ));
+    }
 
     $this->type_id = $value;
   }
 
-  public function setUpdatedDateTime(DateTimeInterface|string|null $value) : void
+  public function setUpdatedDateTime(DateTimeInterface|string|null $value): void
   {
     $this->updated_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
     );
   }
 
-  public function setUser(?User $value) : void
+  public function setUser(?User $value): void
   {
     $this->setUserId($value instanceof User ? $value->getId() : $value);
   }
 
-  public function setUserId(?int $value) : void
+  public function setUserId(?int $value): void
   {
     if ($value < 0 || $value > self::MAX_USER_ID)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or an integer between 0-%d', self::MAX_USER_ID
       ));
+    }
 
     $this->user_id = $value;
   }

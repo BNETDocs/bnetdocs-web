@@ -21,12 +21,12 @@ class SlackCheck
    */
   private function __construct() {}
 
-  private static function check_for_slack()
+  private static function check_for_slack(): void
   {
     self::$status = self::check_headers();
   }
 
-  private static function check_headers()
+  private static function check_headers(): int
   {
     $slack_fingerprint = [
       'ACCEPT' => '*/*',
@@ -36,37 +36,51 @@ class SlackCheck
 
     $request_fingerprint = self::get_header_list();
     foreach (Common::$config->slack->ignored_headers as $name)
+    {
       if (isset($request_fingerprint[$name]))
+      {
         unset($request_fingerprint[$name]);
+      }
+    }
 
     if (count($request_fingerprint) !== count($slack_fingerprint))
+    {
       return self::STATUS_NOT_SLACK;
+    }
 
     // verify the request's fingerprints against slack's fingerprints
     foreach ($request_fingerprint as $name => $value)
     {
       if (!isset($slack_fingerprint[$name]))
+      {
         return self::STATUS_NOT_SLACK;
+      }
 
       if ($slack_fingerprint[$name] !== $value)
+      {
         return self::STATUS_NOT_SLACK;
+      }
     }
 
     // cross-verify slack fingerprints against the request's fingerprints
     foreach ($slack_fingerprint as $name => $value)
     {
       if (!isset($request_fingerprint[$name]))
+      {
         return self::STATUS_NOT_SLACK;
+      }
 
       if ($request_fingerprint[$name] !== $value)
+      {
         return self::STATUS_NOT_SLACK;
+      }
     }
 
     // Slack was verified (fingerprints are identical, no other headers found, values match)
     return self::STATUS_SLACK;
   }
 
-  private static function get_header_list()
+  private static function get_header_list(): array
   {
     $headers = [];
 
@@ -77,7 +91,7 @@ class SlackCheck
     return $headers;
   }
 
-  public static function is_slack()
+  public static function is_slack(): bool
   {
     if (self::$status === self::STATUS_NOT_CHECKED)
       self::check_for_slack();
@@ -85,7 +99,7 @@ class SlackCheck
     return (self::$status === self::STATUS_SLACK);
   }
 
-  public static function log_slack_request()
+  public static function log_slack_request(): void
   {
     if (!self::is_slack()) return; // do not log non-Slack requests
 

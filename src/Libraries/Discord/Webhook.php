@@ -34,7 +34,7 @@ class Webhook implements \JsonSerializable
     $this->webhook_url = $webhook_url;
   }
 
-  public function addEmbed(Embed $value) : void
+  public function addEmbed(Embed $value): void
   {
     if (!empty($this->content) || !empty($this->file))
       throw new LogicException(
@@ -49,17 +49,17 @@ class Webhook implements \JsonSerializable
     $this->embeds->attach($value);
   }
 
-  public function embedCount() : int
+  public function embedCount(): int
   {
     return $this->embeds->count();
   }
 
-  public function hasEmbed(Embed $value) : bool
+  public function hasEmbed(Embed $value): bool
   {
     return $this->embeds->contains($value);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     $r = [
       'avatar_url' => $this->avatar_url,
@@ -75,12 +75,12 @@ class Webhook implements \JsonSerializable
     return $r;
   }
 
-  public function removeAllEmbeds() : void
+  public function removeAllEmbeds(): void
   {
     $this->embeds = new SplObjectStorage();
   }
 
-  public function send(int $connect_timeout = 5, int $max_redirects = 10) : \StdClass
+  public function send(int $connect_timeout = 5, int $max_redirects = 10): \StdClass
   {
     return \CarlBennett\MVC\Libraries\Common::curlRequest(
       $this->webhook_url,
@@ -91,19 +91,20 @@ class Webhook implements \JsonSerializable
     );
   }
 
-  public function removeEmbed(Embed $embed_object) : void
+  public function removeEmbed(Embed $embed_object): void
   {
     $this->embeds->detach($embed_object);
   }
 
-  public function setAvatarUrl(string $value) : void
+  public function setAvatarUrl(string $value): void
   {
     $this->avatar_url = $value;
   }
 
-  public function setContent(string $value) : void
+  public function setContent(string $value): void
   {
-    if (!empty($this->file) || $this->embeds->count() > 0) {
+    if (!empty($this->file) || $this->embeds->count() > 0)
+    {
       throw new LogicException(
         'Discord forbids adding content with embeds or file contents'
       );
@@ -112,32 +113,34 @@ class Webhook implements \JsonSerializable
     $this->content = $value;
   }
 
-  public function setFileContents(string $value) : void
+  public function setFileContents(string $value): void
   {
     if (!empty($this->content) || $this->embeds->count() > 0)
+    {
       throw new LogicException(
         'Discord forbids adding file contents with content or embeds'
       );
+    }
 
     $this->file = $value;
   }
 
-  public function setTTS(bool $value) : void
+  public function setTTS(bool $value): void
   {
     $this->tts = $value;
   }
 
-  public function setUsername(string $value) : void
+  public function setUsername(string $value): void
   {
     $this->username = $value;
   }
 
-  public function setWait(bool $value) : void
+  public function setWait(bool $value): void
   {
     $this->wait = $value;
   }
 
-  public function setWebhookUrl(string $value) : void
+  public function setWebhookUrl(string $value): void
   {
     if (empty($webhook_url)) throw new \LengthException('Webhook url must not be empty');
     $this->webhook_url = $value;

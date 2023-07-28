@@ -15,7 +15,7 @@ class View extends \BNETDocs\Controllers\Base
    * @param array|null $args The optional route arguments and any captured URI arguments.
    * @return boolean Whether the Router should invoke the configured View.
    */
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     try { $this->model->server = new \BNETDocs\Libraries\Server((int) \array_shift($args)); }
     catch (\UnexpectedValueException) { $this->model->server = null; }

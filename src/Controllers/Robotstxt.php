@@ -18,7 +18,7 @@ class Robotstxt extends Base
    * @param array|null $args The optional route arguments and any captured URI arguments.
    * @return boolean Whether the Router should invoke the configured View.
    */
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     $this->model->rules = \CarlBennett\MVC\Libraries\Common::$config->bnetdocs->robotstxt;
     $this->model->_responseCode = 200;

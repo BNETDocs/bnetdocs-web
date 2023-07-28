@@ -11,7 +11,7 @@ abstract class Php implements \BNETDocs\Interfaces\View
    *
    * @return string The MIME-type for this View class.
    */
-  public static function mimeType() : string
+  public static function mimeType(): string
   {
     // There isn't an assigned MIME-type from IANA.
     // <https://cweiske.de/tagebuch/php-mimetype.htm>

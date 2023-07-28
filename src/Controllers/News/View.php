@@ -19,7 +19,7 @@ class View extends \BNETDocs\Controllers\Base
    * @param array|null $args The optional route arguments and any captured URI arguments.
    * @return boolean Whether the Router should invoke the configured View.
    */
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     $this->model->acl_allowed = ($this->model->active_user && $this->model->active_user->getOption(
       User::OPTION_ACL_NEWS_CREATE |

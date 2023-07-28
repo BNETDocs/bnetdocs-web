@@ -52,7 +52,7 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
   }
 
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setCategoryId(0);
     $this->setContent('');
@@ -85,7 +85,7 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return true;
   }
 
-  protected function allocateObject(StdClass $value) : void
+  protected function allocateObject(StdClass $value): void
   {
     $this->setCategoryId($value->category_id);
     $this->setContent($value->content);
@@ -98,7 +98,7 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $this->setUserId($value->user_id);
   }
 
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `news_posts` (
@@ -138,8 +138,12 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
 
     foreach ($p as $k => $v)
+    {
       if ($v instanceof DateTimeInterface)
+      {
         $p[$k] = $v->format(self::DATE_SQL);
+      }
+    }
 
     if (!$q || !$q->execute($p)) return false;
     if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
@@ -152,7 +156,7 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -161,7 +165,7 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     finally { $q->closeCursor(); }
   }
 
-  public static function getAllNews(bool $reverse) : ?array
+  public static function getAllNews(bool $reverse): ?array
   {
     $o = $reverse ? 'DESC' : 'ASC';
     $q = Database::instance()->prepare(sprintf('
@@ -184,7 +188,7 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public static function getNewsPostsByLastEdited(int $limit) : ?array
+  public static function getNewsPostsByLastEdited(int $limit): ?array
   {
     $q = Database::instance()->prepare(sprintf('
       SELECT
@@ -206,7 +210,7 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public static function getNewsPostsByUserId(int $user_id) : ?array
+  public static function getNewsPostsByUserId(int $user_id): ?array
   {
     $q = Database::instance()->prepare('
       SELECT
@@ -228,17 +232,17 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getCategory() : NewsCategory
+  public function getCategory(): NewsCategory
   {
     return new NewsCategory($this->category_id);
   }
 
-  public function getCategoryId() : int
+  public function getCategoryId(): int
   {
     return $this->category_id;
   }
 
-  public function getContent(bool $format) : string
+  public function getContent(bool $format): string
   {
     if (!$format) return $this->content;
     if (!$this->isMarkdown()) return filter_var($this->content, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -248,87 +252,89 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $md->text($this->content);
   }
 
-  public function getCreatedDateTime() : DateTimeInterface
+  public function getCreatedDateTime(): DateTimeInterface
   {
     return $this->created_datetime;
   }
 
-  public function getEditedCount() : int
+  public function getEditedCount(): int
   {
     return $this->edited_count;
   }
 
-  public function getEditedDateTime() : ?DateTimeInterface
+  public function getEditedDateTime(): ?DateTimeInterface
   {
     return $this->edited_datetime;
   }
 
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
 
-  public function getOption(int $option) : bool
+  public function getOption(int $option): bool
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_OPTIONS
       ));
+    }
 
     return ($this->options_bitmask & $option) === $option;
   }
 
-  public function getOptionsBitmask() : int
+  public function getOptionsBitmask(): int
   {
     return $this->options_bitmask;
   }
 
-  public function getPublishedDateTime() : DateTimeInterface
+  public function getPublishedDateTime(): DateTimeInterface
   {
     return $this->getEditedDateTime() ?? $this->getCreatedDateTime();
   }
 
-  public function getTitle() : string
+  public function getTitle(): string
   {
     return $this->title;
   }
 
-  public function getURI() : string
+  public function getURI(): string
   {
     return Common::relativeUrlToAbsolute(sprintf(
       '/news/%d/%s', $this->getId(), Common::sanitizeForUrl($this->getTitle(), true)
     ));
   }
 
-  public function getUser() : ?User
+  public function getUser(): ?User
   {
     if (is_null($this->user_id)) return null;
     try { return new User($this->user_id); }
     catch (\UnexpectedValueException) { return null; }
   }
 
-  public function getUserId() : ?int
+  public function getUserId(): ?int
   {
     return $this->user_id;
   }
 
-  public function incrementEdited() : void
+  public function incrementEdited(): void
   {
     $this->setEditedCount($this->getEditedCount() + 1);
     $this->setEditedDateTime(new DateTimeImmutable('now'));
   }
 
-  public function isMarkdown() : bool
+  public function isMarkdown(): bool
   {
     return $this->getOption(self::OPTION_MARKDOWN);
   }
 
-  public function isPublished() : bool
+  public function isPublished(): bool
   {
     return $this->getOption(self::OPTION_PUBLISHED);
   }
 
-  public function isRSSExempt() : bool
+  public function isRSSExempt(): bool
   {
     return $this->getOption(self::OPTION_RSS_EXEMPT);
   }
@@ -348,112 +354,128 @@ class NewsPost implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
   }
 
-  public function setCategoryId($value) : void
+  public function setCategoryId($value): void
   {
     if ($value < 0 || $value > self::MAX_CATEGORY_ID)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_CATEGORY_ID
       ));
+    }
 
     $this->category_id = $value;
   }
 
-  public function setCreatedDateTime(DateTimeInterface|string $value) : void
+  public function setCreatedDateTime(DateTimeInterface|string $value): void
   {
     $this->created_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
     );
   }
 
-  public function setContent($value) : void
+  public function setContent($value): void
   {
     if (strlen($value) > self::MAX_CONTENT)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d characters', self::MAX_CONTENT
       ));
+    }
 
     $this->content = $value;
   }
 
-  public function setEditedCount($value) : void
+  public function setEditedCount($value): void
   {
     if ($value < 0 || $value > self::MAX_EDITED_COUNT)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_EDITED_COUNT
       ));
+    }
 
     $this->edited_count = $value;
   }
 
-  public function setEditedDateTime(DateTimeInterface|string|null $value) : void
+  public function setEditedDateTime(DateTimeInterface|string|null $value): void
   {
     $this->edited_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
     );
   }
 
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or between 0-%d', self::MAX_ID
       ));
+    }
 
     $this->id = $value;
   }
 
-  public function setOption(int $option, bool $value) : void
+  public function setOption(int $option, bool $value): void
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_OPTIONS
       ));
+    }
 
     if ($value) $this->options_bitmask |= $option; // bitwise or
     else $this->options_bitmask &= ~$option; // bitwise and ones complement
   }
 
-  public function setOptionsBitmask(int $value) : void
+  public function setOptionsBitmask(int $value): void
   {
     if ($value < 0 || $value > self::MAX_OPTIONS)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_OPTIONS
       ));
+    }
 
     $this->options_bitmask = $value;
   }
 
-  public function setMarkdown(bool $value) : void
+  public function setMarkdown(bool $value): void
   {
     $this->setOption(self::OPTION_MARKDOWN, $value);
   }
 
-  public function setPublished(bool $value) : void
+  public function setPublished(bool $value): void
   {
     $this->setOption(self::OPTION_PUBLISHED, $value);
   }
 
-  public function setRSSExempt(bool $value) : void
+  public function setRSSExempt(bool $value): void
   {
     $this->setOption(self::OPTION_RSS_EXEMPT, $value);
   }
 
-  public function setTitle(string $value) : void
+  public function setTitle(string $value): void
   {
     if (strlen($value) > self::MAX_TITLE)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d characters', self::MAX_TITLE
       ));
+    }
 
     $this->title = $value;
   }
 
-  public function setUserId(?int $value) : void
+  public function setUserId(?int $value): void
   {
     if ($value < 0 || $value > self::MAX_USER_ID)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_USER_ID
       ));
+    }
 
     $this->user_id = $value;
   }

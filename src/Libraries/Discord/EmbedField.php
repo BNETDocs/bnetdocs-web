@@ -23,7 +23,7 @@ class EmbedField implements \JsonSerializable
     $this->setValue($value);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     $r = [
       'name' => $this->name,
@@ -34,27 +34,31 @@ class EmbedField implements \JsonSerializable
     return $r;
   }
 
-  public function setInline(bool $inline) : void
+  public function setInline(bool $inline): void
   {
     $this->inline = $inline;
   }
 
-  public function setName(string $name) : void
+  public function setName(string $name): void
   {
     if (strlen($name) > self::MAX_NAME)
+    {
       throw new LengthException(sprintf(
         'Discord forbids name longer than %d characters', self::MAX_NAME
       ));
+    }
 
     $this->name = $name;
   }
 
-  public function setValue(int|float|string|bool $value) : void
+  public function setValue(int|float|string|bool $value): void
   {
     if (is_string($value) && strlen($value) > self::MAX_VALUE)
+    {
       throw new LengthException(sprintf(
         'Discord forbids value longer than %d characters', self::MAX_VALUE
       ));
+    }
 
     $this->value = $value;
   }

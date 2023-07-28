@@ -112,7 +112,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function allocate() : bool
+  public function allocate(): bool
   {
     // Set initial property values, but skip the id property.
     $this->setCreatedDateTime(new DateTimeImmutable('now'));
@@ -156,7 +156,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Internal function to process and translate StdClass objects into properties.
    */
-  protected function allocateObject(StdClass $value) : void
+  protected function allocateObject(StdClass $value): void
   {
     $this->setCreatedDateTime($value->created_datetime);
     $this->setDisplayName($value->display_name);
@@ -177,7 +177,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `users` (
@@ -228,8 +228,12 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
 
     foreach ($p as $k => $v)
+    {
       if ($v instanceof DateTimeInterface)
+      {
         $p[$k] = $v->format(self::DATE_SQL);
+      }
+    }
 
     if (!$q || !$q->execute($p)) return false;
     if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
@@ -244,11 +248,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $password The cleartext input.
    * @return boolean Whether this user's password matches.
    */
-  public function checkPassword(string $password) : bool // This function was refactored by OpenAI
+  public function checkPassword(string $password): bool // This function was refactored by OpenAI
   {
-    if (is_null($this->password_hash)) return false;
-
-    if (substr($this->password_hash, 0, 1) == '$') {
+    if (is_null($this->password_hash))
+    {
+      return false;
+    }
+    else if (substr($this->password_hash, 0, 1) == '$')
+    {
       // new style bcrypt password
       $cost = Common::$config->bnetdocs->user_password_bcrypt_cost;
       $match = password_verify($password, $this->password_hash);
@@ -257,7 +264,9 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
       );
 
       return $match && !$rehash;
-    } else {
+    }
+    else
+    {
       // old style peppered and salted sha256 password
       $pepper = Common::$config->bnetdocs->user_password_pepper;
       $salt = $this->password_salt;
@@ -275,7 +284,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $password The cleartext password.
    * @return string The hashed password.
    */
-  public static function createPassword(string $password) : string
+  public static function createPassword(string $password): string
   {
     $cost = Common::$config->bnetdocs->user_password_bcrypt_cost;
     return password_hash($password, PASSWORD_BCRYPT, array('cost' => $cost));
@@ -286,7 +295,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -301,7 +310,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The email address.
    * @return integer|null The user id of the user, or null if not found.
    */
-  public static function findIdByEmail(string $value) : ?int
+  public static function findIdByEmail(string $value): ?int
   {
     if (!filter_var($value, FILTER_VALIDATE_EMAIL))
       throw new UnexpectedValueException('email is not formatted as a valid email address');
@@ -319,7 +328,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The username.
    * @return integer|null The user id of the user, or null if not found.
    */
-  public static function findIdByUsername(string $value) : ?int
+  public static function findIdByUsername(string $value): ?int
   {
     $q = Database::instance()->prepare('SELECT `id` FROM `users` WHERE `username` = ? LIMIT 1;');
     if (!$q || !$q->execute([$value]) || $q->rowCount() == 0) return null;
@@ -335,7 +344,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $email The email address, for entropy.
    * @return string The verifier token.
    */
-  public static function generateVerifierToken(string $username, string $email) : string
+  public static function generateVerifierToken(string $username, string $email): string
   {
     return hash('sha256', sprintf('%s%s%s', mt_rand(), $username, $email));
   }
@@ -348,14 +357,20 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param integer|null $index The starting index of records to return, as limited by $limit.
    * @return array|null The User object records, or null on error.
    */
-  public static function &getAllUsers(?array $order = null, ?int $limit = null, ?int $index = null) : ?array
+  public static function &getAllUsers(?array $order = null, ?int $limit = null, ?int $index = null): ?array
   {
     if (!is_null($limit) && !is_null($index))
+    {
       $limit_clause = sprintf('LIMIT %d,%d', $index, $limit);
+    }
     else if (!is_null($limit))
+    {
       $limit_clause = sprintf('LIMIT %d', $limit);
+    }
     else
+    {
       $limit_clause = '';
+    }
 
     $q = Database::instance()->prepare(sprintf('
       SELECT
@@ -389,7 +404,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param integer|null $size The pixel width & height size of the desired avatar thumbnail.
    * @return string The avatar thumbnail url.
    */
-  public function getAvatarURI(?int $size) : string
+  public function getAvatarURI(?int $size): string
   {
     return Common::relativeUrlToAbsolute(
       (new \BNETDocs\Libraries\Gravatar($this->getEmail()))->getUrl($size, 'identicon')
@@ -401,7 +416,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return DateTimeInterface|null The Date & Time interface-compatible value.
    */
-  public function getCreatedDateTime() : ?DateTimeInterface
+  public function getCreatedDateTime(): ?DateTimeInterface
   {
     return $this->created_datetime;
   }
@@ -412,7 +427,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string|null The relative Date & Time string.
    */
-  public function getCreatedEstimate() : string
+  public function getCreatedEstimate(): string
   {
     $c = $this->getCreatedDateTime();
     $now = new DateTimeImmutable('now');
@@ -438,7 +453,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string|null The display name, or null if not set.
    */
-  public function getDisplayName() : ?string
+  public function getDisplayName(): ?string
   {
     return $this->display_name;
   }
@@ -448,7 +463,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string The email address.
    */
-  public function getEmail() : string
+  public function getEmail(): string
   {
     return $this->email;
   }
@@ -458,7 +473,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return integer|null The id.
    */
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
@@ -468,7 +483,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string The display name, or if null, then the username.
    */
-  public function getName() : string
+  public function getName(): string
   {
     return $this->display_name ?? $this->username;
   }
@@ -480,12 +495,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return boolean Whether the option is set (true) or unset (false).
    * @throws OutOfBoundsException if option must be between 0-MAX_OPTIONS.
    */
-  public function getOption(int $option) : bool
+  public function getOption(int $option): bool
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_OPTIONS
       ));
+    }
 
     return ($this->options & $option) === $option;
   }
@@ -495,7 +512,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return integer The options bitmask, that are set (1) or unset (0).
    */
-  public function getOptions() : int
+  public function getOptions(): int
   {
     return $this->options;
   }
@@ -505,7 +522,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string|null The password hash.
    */
-  public function getPasswordHash() : ?string
+  public function getPasswordHash(): ?string
   {
     return $this->password_hash;
   }
@@ -516,7 +533,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string|null The password salt.
    */
-  public function getPasswordSalt() : ?string
+  public function getPasswordSalt(): ?string
   {
     return $this->password_salt;
   }
@@ -526,7 +543,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return DateTimeInterface The Date & Time interface-compatible value.
    */
-  public function getRecordUpdated() : DateTimeInterface
+  public function getRecordUpdated(): DateTimeInterface
   {
     return $this->record_updated;
   }
@@ -537,7 +554,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return string The URL.
    * @throws UnexpectedValueException when this user's id property is null.
    */
-  public function getURI() : string
+  public function getURI(): string
   {
     $id = $this->getId();
     if (is_null($id)) throw new UnexpectedValueException('user id is null');
@@ -552,7 +569,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return integer|false The count, or false on error.
    */
-  public static function getUserCount() : int|false
+  public static function getUserCount(): int|false
   {
     $q = Database::instance()->prepare('SELECT COUNT(*) AS `count` FROM `users`;');
     if (!$q || !$q->execute() || $q->rowCount() != 1) return false;
@@ -566,7 +583,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string|null The timezone.
    */
-  public function getTimezone() : ?string
+  public function getTimezone(): ?string
   {
     return $this->timezone;
   }
@@ -576,7 +593,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string The username.
    */
-  public function getUsername() : string
+  public function getUsername(): string
   {
     return $this->username;
   }
@@ -586,16 +603,9 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return UserProfile|null
    */
-  public function getUserProfile() : ?UserProfile
+  public function getUserProfile(): ?UserProfile
   {
-    try
-    {
-      return new UserProfile($this->id);
-    }
-    catch (UnexpectedValueException $e)
-    {
-      return null;
-    }
+    return is_null($this->id) ? null : new UserProfile($this->id);
   }
 
   /**
@@ -603,7 +613,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string The Date & Time interface-compatible value.
    */
-  public function getVerifiedDateTime() : ?DateTimeInterface
+  public function getVerifiedDateTime(): ?DateTimeInterface
   {
     return $this->verified_datetime;
   }
@@ -613,7 +623,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return string The verifier token.
    */
-  public function getVerifierToken() : ?string
+  public function getVerifierToken(): ?string
   {
     return $this->verifier_token;
   }
@@ -623,7 +633,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether OPTION_DISABLED is set or unset in this user's options bitmask.
    */
-  public function isDisabled() : bool
+  public function isDisabled(): bool
   {
     return $this->getOption(self::OPTION_DISABLED);
   }
@@ -633,7 +643,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether a select few OPTION_ACL_* are set in this user's options bitmask.
    */
-  public function isStaff() : bool
+  public function isStaff(): bool
   {
     return $this->getOption(self::OPTION_STAFF);
   }
@@ -643,7 +653,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether OPTION_VERIFIED is set or unset in this user's options bitmask.
    */
-  public function isVerified() : bool
+  public function isVerified(): bool
   {
     return $this->getOption(self::OPTION_VERIFIED);
   }
@@ -653,7 +663,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return mixed The serialized value.
    */
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'avatar_url' => $this->getAvatarURI(null),
@@ -671,7 +681,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param DateTimeInterface|string $value The Date & Time interface-compatible value.
    * @return void
    */
-  public function setCreatedDateTime(DateTimeInterface|string $value) : void
+  public function setCreatedDateTime(DateTimeInterface|string $value): void
   {
     $this->created_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
@@ -685,12 +695,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if value must be null or between 1-MAX_DISPLAY_NAME characters.
    */
-  public function setDisplayName(?string $value) : void
+  public function setDisplayName(?string $value): void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_DISPLAY_NAME))
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or between 1-%d characters', self::MAX_DISPLAY_NAME
       ));
+    }
 
     $this->display_name = $value;
   }
@@ -704,15 +716,19 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @throws OutOfBoundsException if value must be between 1-MAX_EMAIL characters.
    * @throws UnexpectedValueException if value is not formatted as a valid email address.
    */
-  public function setEmail(string $value, bool $ignore_empty = false) : void
+  public function setEmail(string $value, bool $ignore_empty = false): void
   {
     if ((!$ignore_empty && empty($value)) || strlen($value) > self::MAX_EMAIL)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 1-%d characters', self::MAX_EMAIL
       ));
+    }
 
     if (!empty($value) && !filter_var($value, FILTER_VALIDATE_EMAIL))
+    {
       throw new UnexpectedValueException('value is not formatted as a valid email address');
+    }
 
     $this->email = $value;
   }
@@ -724,12 +740,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if value must be null or between 0-MAX_ID.
    */
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or an integer between 0-%d', self::MAX_ID
       ));
+    }
 
     $this->id = $value;
   }
@@ -742,12 +760,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if option must be between 0-MAX_OPTIONS.
    */
-  public function setOption(int $option, bool $value) : void
+  public function setOption(int $option, bool $value): void
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 0-%d', self::MAX_OPTIONS
       ));
+    }
 
     if ($value) $this->options |= $option; // bitwise or
     else $this->options &= ~$option; // bitwise and ones complement
@@ -760,12 +780,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if option must be between 0-MAX_OPTIONS.
    */
-  public function setOptions(int $value) : void
+  public function setOptions(int $value): void
   {
     if ($value < 0 || $value > self::MAX_OPTIONS)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be an integer between 0-%d', self::MAX_OPTIONS
       ));
+    }
 
     $this->options = $value;
   }
@@ -776,7 +798,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The cleartext password.
    * @return void
    */
-  public function setPassword(string $value) : void
+  public function setPassword(string $value): void
   {
     $this->setPasswordHash(self::createPassword($value));
     $this->setPasswordSalt(null); // Deprecated
@@ -789,7 +811,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if value must be null or between 1-MAX_PASSWORD_HASH characters.
    */
-  public function setPasswordHash(?string $value) : void
+  public function setPasswordHash(?string $value): void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_PASSWORD_HASH))
     {
@@ -809,12 +831,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if value must be null or between 1-MAX_PASSWORD_SALT characters.
    */
-  public function setPasswordSalt(?string $value) : void
+  public function setPasswordSalt(?string $value): void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_PASSWORD_SALT))
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or between 1-%d characters', self::MAX_PASSWORD_SALT
       ));
+    }
 
     $this->password_salt = $value;
   }
@@ -826,7 +850,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param DateTimeInterface|string $value The Date & Time interface-compatible value.
    * @return void
    */
-  public function setRecordUpdated(DateTimeInterface|string $value) : void
+  public function setRecordUpdated(DateTimeInterface|string $value): void
   {
     $this->record_updated = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
@@ -841,12 +865,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @throws OutOfBoundsException if value must be null or between 1-MAX_TIMEZONE characters.
    * @throws UnexpectedValueException if value must be a valid timezone.
    */
-  public function setTimezone(?string $value) : void
+  public function setTimezone(?string $value): void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_TIMEZONE))
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or between 1-%d characters', self::MAX_TIMEZONE
       ));
+    }
 
     // Create anonymous DateTimeZone object with $value to test for unknown or bad timezone.
     // PHP throws Exception(sprintf("Unknown or bad timezone (%s)", $value)) if so.
@@ -871,12 +897,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if value must be between 1-MAX_USERNAME characters.
    */
-  public function setUsername(string $value, bool $ignore_empty = false) : void
+  public function setUsername(string $value, bool $ignore_empty = false): void
   {
     if ((!$ignore_empty && empty($value)) || strlen($value) > self::MAX_USERNAME)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be a string between 1-%d characters', self::MAX_USERNAME
       ));
+    }
 
     $this->username = $value;
   }
@@ -889,7 +917,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param boolean $reset Whether the Date & Time and verifier token should be reset if value is unchanged.
    * @return void
    */
-  public function setVerified(bool $value, bool $reset = false) : void
+  public function setVerified(bool $value, bool $reset = false): void
   {
     $old_value = $this->getOption(self::OPTION_VERIFIED);
     if (!$reset && $old_value === $value) return; // avoid resetting values every call
@@ -916,7 +944,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param DateTimeInterface|string|null $value The Date & Time interface-compatible value.
    * @return void
    */
-  public function setVerifiedDateTime(DateTimeInterface|string|null $value) : void
+  public function setVerifiedDateTime(DateTimeInterface|string|null $value): void
   {
     $this->verified_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
@@ -930,12 +958,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if value must be null or between 1-MAX_VERIFIER_TOKEN characters.
    */
-  public function setVerifierToken(?string $value) : void
+  public function setVerifierToken(?string $value): void
   {
     if (!is_null($value) && (empty($value) || strlen($value) > self::MAX_VERIFIER_TOKEN))
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or between 1-%d characters', self::MAX_VERIFIER_TOKEN
       ));
+    }
 
     $this->verifier_token = $value;
   }

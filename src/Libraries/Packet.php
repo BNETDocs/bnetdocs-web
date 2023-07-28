@@ -81,7 +81,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setApplicationLayerId(self::DEFAULT_APPLICATION_LAYER_ID);
     $this->setBrief('');
@@ -141,7 +141,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Internal function to process and translate StdClass objects into properties.
    */
-  protected function allocateObject(StdClass $value)
+  protected function allocateObject(StdClass $value): void
   {
     $this->setApplicationLayerId($value->packet_application_layer_id);
     $this->setBrief($value->packet_brief);
@@ -163,7 +163,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Implements the commit function from the IDatabaseObject interface
    */
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `packets` (
@@ -218,8 +218,12 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
 
     foreach ($p as $k => &$v)
+    {
       if ($v instanceof DateTimeInterface)
+      {
         $p[$k] = $v->format(self::DATE_SQL);
+      }
+    }
 
     if (!$q || !$q->execute($p)) return false;
     $q->closeCursor();
@@ -248,7 +252,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -257,7 +261,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     finally { $q->closeCursor(); }
   }
 
-  public static function &getAllPackets(?string $where_clause = null, ?array $order = null, ?int $limit = null, ?int $index = null) : array|false
+  public static function &getAllPackets(?string $where_clause = null, ?array $order = null, ?int $limit = null, ?int $index = null): array|false
   {
     if (!empty($where_clause))
     {
@@ -293,7 +297,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public static function getPacketsByLastEdited(int $count) : array|false
+  public static function getPacketsByLastEdited(int $count): array|false
   {
     $q = Database::instance()->prepare(sprintf('
       SELECT `id` FROM `packets`
@@ -308,17 +312,17 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getApplicationLayer() : ApplicationLayer
+  public function getApplicationLayer(): ApplicationLayer
   {
     return new ApplicationLayer($this->application_layer_id);
   }
 
-  public function getApplicationLayerId() : int
+  public function getApplicationLayerId(): int
   {
     return $this->application_layer_id;
   }
 
-  public function getBrief(bool $format) : string
+  public function getBrief(bool $format): string
   {
     if (!($format && $this->getOption(self::OPTION_MARKDOWN))) return $this->brief;
 
@@ -327,17 +331,17 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $md->text($this->brief);
   }
 
-  public function getCreatedDateTime() : DateTimeInterface
+  public function getCreatedDateTime(): DateTimeInterface
   {
     return $this->created_datetime;
   }
 
-  public function getDirection() : int
+  public function getDirection(): int
   {
     return $this->direction;
   }
 
-  public function getDirectionLabel() : string
+  public function getDirectionLabel(): string
   {
     switch ($this->direction)
     {
@@ -350,7 +354,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
   }
 
-  public function getDirectionTag() : string
+  public function getDirectionTag(): string
   {
     switch ($this->direction)
     {
@@ -363,27 +367,27 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
   }
 
-  public function getEditedCount() : int
+  public function getEditedCount(): int
   {
     return $this->edited_count;
   }
 
-  public function getEditedDateTime() : ?DateTimeInterface
+  public function getEditedDateTime(): ?DateTimeInterface
   {
     return $this->edited_datetime;
   }
 
-  public function getFormat() : string
+  public function getFormat(): string
   {
     return $this->format;
   }
 
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
 
-  public function getLabel() : string
+  public function getLabel(): string
   {
     return sprintf('%s %s %s',
       $this->getDirectionTag(),
@@ -392,12 +396,12 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     );
   }
 
-  public function getName() : string
+  public function getName(): string
   {
     return $this->name;
   }
 
-  public function getOption(int $option) : bool
+  public function getOption(int $option): bool
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
     {
@@ -409,18 +413,18 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return ($this->options & $option) === $option;
   }
 
-  public function getOptions() : int
+  public function getOptions(): int
   {
     return $this->options;
   }
 
-  public function getPacketId(bool $format = false) : int|string
+  public function getPacketId(bool $format = false): int|string
   {
     if (!$format) return $this->packet_id;
     return sprintf('0x%02X', $this->packet_id); // Prints a value like "0xFF"
   }
 
-  public function getRemarks(bool $format) : string
+  public function getRemarks(bool $format): string
   {
     if (!($format && $this->getOption(self::OPTION_MARKDOWN))) return $this->remarks;
 
@@ -429,17 +433,17 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $md->text($this->remarks);
   }
 
-  public function getTransportLayer() : TransportLayer
+  public function getTransportLayer(): TransportLayer
   {
     return new TransportLayer($this->transport_layer_id);
   }
 
-  public function getTransportLayerId() : int
+  public function getTransportLayerId(): int
   {
     return $this->transport_layer_id;
   }
 
-  public static function getPacketsByUserId(int $user_id) : array|false
+  public static function getPacketsByUserId(int $user_id): array|false
   {
     $q = Database::instance()->prepare('SELECT `id` FROM `packets` WHERE `user_id` = ? ORDER BY `id` ASC;');
     if (!$q || !$q->execute([$user_id])) return false;
@@ -449,7 +453,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public static function getPacketCount() : int|false
+  public static function getPacketCount(): int|false
   {
     $q = Database::instance()->prepare('SELECT COUNT(*) AS `count` FROM `packets`;');
     if (!$q || !$q->execute() || $q->rowCount() == 0) return false;
@@ -458,62 +462,62 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return (int) $r->count;
   }
 
-  public function getPublishedDateTime() : DateTimeInterface
+  public function getPublishedDateTime(): DateTimeInterface
   {
     return $this->getEditedDateTime() ?? $this->getCreatedDateTime();
   }
 
-  public function getURI() : ?string
+  public function getURI(): ?string
   {
     $id = $this->getId();
     if (is_null($id)) return null;
     return Common::relativeUrlToAbsolute(sprintf('/packet/%d/%s', $id, Common::sanitizeForUrl($this->getName(), true)));
   }
 
-  public function getUsedBy() : array
+  public function getUsedBy(): array
   {
     return $this->used_by;
   }
 
-  public function getUser() : ?User
+  public function getUser(): ?User
   {
     if (is_null($this->user_id)) return null;
     try { return new User($this->user_id); }
     catch (\UnexpectedValueException) { return null; }
   }
 
-  public function getUserId() : ?int
+  public function getUserId(): ?int
   {
     return $this->user_id;
   }
 
-  public function incrementEdited() : void
+  public function incrementEdited(): void
   {
     $this->setEditedCount($this->getEditedCount() + 1);
     $this->setEditedDateTime(new DateTimeImmutable('now'));
   }
 
-  public function isDeprecated() : bool
+  public function isDeprecated(): bool
   {
     return $this->getOption(self::OPTION_DEPRECATED);
   }
 
-  public function isInResearch() : bool
+  public function isInResearch(): bool
   {
     return $this->getOption(self::OPTION_RESEARCH);
   }
 
-  public function isMarkdown() : bool
+  public function isMarkdown(): bool
   {
     return $this->getOption(self::OPTION_MARKDOWN);
   }
 
-  public function isPublished() : bool
+  public function isPublished(): bool
   {
     return $this->getOption(self::OPTION_PUBLISHED);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'created_datetime' => $this->getCreatedDateTime(),
@@ -538,7 +542,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @param int @value The application layer (id).
    */
-  public function setApplicationLayerId(int $value) : void
+  public function setApplicationLayerId(int $value): void
   {
     if ($value < 0 || $value > self::MAX_APPLICATION_LAYER_ID)
     {
@@ -556,7 +560,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The brief description.
    * @throws OutOfBoundsException if value is not between one and MAX_BRIEF.
    */
-  public function setBrief(string $value) : void
+  public function setBrief(string $value): void
   {
     if (strlen($value) > self::MAX_BRIEF)
       throw new OutOfBoundsException(sprintf(
@@ -571,7 +575,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @param DateTimeInterface|string $value The Date and Time value.
    */
-  public function setCreatedDateTime(DateTimeInterface|string $value) : void
+  public function setCreatedDateTime(DateTimeInterface|string $value): void
   {
     $this->created_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
@@ -583,7 +587,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @param bool $value If true, the 'Deprecated' badge is visible. If false, it is not visible.
    */
-  public function setDeprecated(bool $value) : void
+  public function setDeprecated(bool $value): void
   {
     $this->setOption(self::OPTION_DEPRECATED, $value);
   }
@@ -594,7 +598,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param int $value The message direction.
    * @throws UnexpectedValueException if value is invalid
    */
-  public function setDirection(int $value) : void
+  public function setDirection(int $value): void
   {
     switch ($value)
     {
@@ -616,7 +620,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param int $value The total number of modifications.
    * @throws OutOfBoundsException if value is not between zero and MAX_EDITED_COUNT.
    */
-  public function setEditedCount(int $value) : void
+  public function setEditedCount(int $value): void
   {
     if ($value < 0 || $value > self::MAX_EDITED_COUNT)
     {
@@ -633,7 +637,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @param DateTimeInterface|string|null $value The Date and Time value.
    */
-  public function setEditedDateTime(DateTimeInterface|string|null $value) : void
+  public function setEditedDateTime(DateTimeInterface|string|null $value): void
   {
     $this->edited_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
@@ -648,7 +652,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The message format.
    * @throws OutOfBoundsException if value length length is not between one and MAX_FORMAT.
    */
-  public function setFormat(string $value) : void
+  public function setFormat(string $value): void
   {
     if (strlen($value) < 1 || strlen($value) > self::MAX_FORMAT)
     {
@@ -667,7 +671,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *                    get a new id, however until then the Packet will not have a valid webpage/URI.
    * @throws OutOfBoundsException if value is not between zero and MAX_ID, or null.
    */
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
     {
@@ -684,7 +688,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @param bool $value If true, the 'In Research' badge is visible. If false, it is not visible.
    */
-  public function setInResearch(bool $value) : void
+  public function setInResearch(bool $value): void
   {
     $this->setOption(self::OPTION_RESEARCH, $value);
   }
@@ -695,7 +699,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param bool @value If true, value is passed into the Parsedown class before being printed.
    *                    If false, value is *not* passed into Parsedown before being printed.
    */
-  public function setMarkdown(bool $value) : void
+  public function setMarkdown(bool $value): void
   {
     $this->setOption(self::OPTION_MARKDOWN, $value);
   }
@@ -707,7 +711,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param bool $value Changes option to true (1) or false (0) based on this value.
    * @throws OutOfBoundsException if option is not between zero and MAX_OPTIONS.
    */
-  public function setOption(int $option, bool $value) : void
+  public function setOption(int $option, bool $value): void
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
     {
@@ -732,7 +736,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param int $value The full set of options which will replace previous options.
    * @throws OutOfBoundsException if value is not between zero and MAX_OPTIONS.
    */
-  public function setOptions(int $value) : void
+  public function setOptions(int $value): void
   {
     if ($value < 0 || $value > self::MAX_OPTIONS)
     {
@@ -752,12 +756,14 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @return void
    * @throws OutOfBoundsException if value must be between 1-MAX_NAME characters.
    */
-  public function setName(string $value, bool $ignore_empty = false) : void
+  public function setName(string $value, bool $ignore_empty = false): void
   {
     if ((!$ignore_empty && empty($value)) || strlen($value) > self::MAX_NAME)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be between 1-%d characters', self::MAX_NAME
       ));
+    }
 
     $this->name = $value;
   }
@@ -769,7 +775,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @throws InvalidArgumentException if value cannot be translated into an integer.
    * @throws OutOfBoundsException if value is not between zero and MAX_PACKET_ID.
    */
-  public function setPacketId($value) : void
+  public function setPacketId($value): void
   {
     if (is_string($value) && strlen($value) >= 2 && (
       substr($value, 0, 2) == '&b' || substr($value, 0, 2) == '&B'))
@@ -823,7 +829,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param bool @value If true, enables 'Draft' badge and disables visibility to non-editors.
    *                    If false, disables 'Draft' badge and enables visibility to everyone.
    */
-  public function setPublished(bool $value) : void
+  public function setPublished(bool $value): void
   {
     $this->setOption(self::OPTION_PUBLISHED, $value);
   }
@@ -834,7 +840,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The remarks.
    * @throws OutOfBoundsException if value length is greater than MAX_REMARKS.
    */
-  public function setRemarks(string $value) : void
+  public function setRemarks(string $value): void
   {
     if (strlen($value) > self::MAX_REMARKS)
     {
@@ -852,7 +858,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param int @value The transport layer (id).
    * @throws OutOfBoundsException if value is not between zero and MAX_TRANSPORT_LAYER_ID.
    */
-  public function setTransportLayerId(int $value) : void
+  public function setTransportLayerId(int $value): void
   {
     if ($value < 0 || $value > self::MAX_TRANSPORT_LAYER_ID)
     {
@@ -869,7 +875,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @param array $value The set of Product objects, or Product::$id integers.
    */
-  public function setUsedBy(array $value) : void
+  public function setUsedBy(array $value): void
   {
     $used_by = [];
 
@@ -887,7 +893,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param ?User $value The User (object) that created this packet, or null for no user.
    * @throws OutOfBoundsException if value (User) id is not between zero and MAX_USER_ID, or null.
    */
-  public function setUser(?User $value) : void
+  public function setUser(?User $value): void
   {
     $this->setUserId($value ? $value->getId() : $value);
   }
@@ -898,7 +904,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param ?int $value The User (id) that created this packet, or null for no user.
    * @throws OutOfBoundsException if value is not between zero and MAX_USER_ID, or null.
    */
-  public function setUserId(?int $value) : void
+  public function setUserId(?int $value): void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_USER_ID))
     {

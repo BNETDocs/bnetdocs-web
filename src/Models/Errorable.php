@@ -14,7 +14,7 @@ class Errorable extends Base implements \JsonSerializable
   /**
    * Implements the JSON serialization function from the JsonSerializable interface.
    */
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return ['error' => $this->error];
   }

@@ -23,7 +23,7 @@ namespace BNETDocs;
 use \BNETDocs\Libraries\Router;
 use \CarlBennett\MVC\Libraries\Common;
 
-function main() : void
+function main(): void
 {
   if (!file_exists(__DIR__ . '/../lib/autoload.php'))
   {

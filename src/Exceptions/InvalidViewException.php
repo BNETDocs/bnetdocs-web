@@ -21,7 +21,7 @@ class InvalidViewException extends \InvalidArgumentException
         );
     }
 
-    public function getViewName() : string
+    public function getViewName(): string
     {
         return $this->view_name;
     }

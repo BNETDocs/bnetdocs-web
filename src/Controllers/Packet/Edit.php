@@ -89,13 +89,13 @@ class Edit extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected static function assignDefault(array &$form_fields, string $key, mixed $value) : void
+  protected static function assignDefault(array &$form_fields, string $key, mixed $value): void
   {
     if (isset($form_fields[$key])) return;
     $form_fields[$key] = $value;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $application_layer = $this->model->form_fields['application_layer'] ?? null;
     $brief = $this->model->form_fields['brief'] ?? null;

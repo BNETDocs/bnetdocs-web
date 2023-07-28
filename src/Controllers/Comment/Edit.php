@@ -49,7 +49,7 @@ class Edit extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function tryModify() : void
+  protected function tryModify(): void
   {
     $this->model->comment->setContent($this->model->content);
     $this->model->comment->incrementEdited();

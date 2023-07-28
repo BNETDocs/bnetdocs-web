@@ -13,21 +13,21 @@ abstract class Layer
     $this->assign($id);
   }
 
-  protected abstract function assign(int $id) : void;
-  public abstract static function getAllAsArray() : array;
-  public abstract static function getAllAsObjects() : array;
+  protected abstract function assign(int $id): void;
+  public abstract static function getAllAsArray(): array;
+  public abstract static function getAllAsObjects(): array;
 
-  public function getId() : int
+  public function getId(): int
   {
     return $this->id;
   }
 
-  public function getLabel() : string
+  public function getLabel(): string
   {
     return $this->label;
   }
 
-  public function getTag() : string
+  public function getTag(): string
   {
     return $this->tag;
   }

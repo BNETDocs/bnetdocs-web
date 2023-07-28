@@ -9,7 +9,7 @@ use \DateTimeInterface;
  */
 class DateTime extends \DateTime implements \JsonSerializable
 {
-    public function jsonSerialize() : mixed
+    public function jsonSerialize(): mixed
     {
         return [
             'iso' => $this->format(DateTimeInterface::RFC2822),
@@ -18,7 +18,7 @@ class DateTime extends \DateTime implements \JsonSerializable
         ];
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return \sprintf('%d %s', $this->format('U'), $this->format(DateTimeInterface::RFC2822));
     }

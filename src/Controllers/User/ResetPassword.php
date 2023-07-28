@@ -46,7 +46,7 @@ class ResetPassword extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function doPasswordReset() : mixed
+  protected function doPasswordReset(): mixed
   {
     if (empty($this->model->email)) return ResetPasswordModel::E_EMPTY_EMAIL;
 
@@ -102,7 +102,7 @@ class ResetPassword extends \BNETDocs\Controllers\Base
     return $this->model->user->commit() ? ResetPasswordModel::E_SUCCESS : ResetPasswordModel::E_INTERNAL_ERROR;
   }
 
-  protected function sendEmail() : mixed
+  protected function sendEmail(): mixed
   {
     $mail = new PHPMailer(true); // true enables exceptions
     $mail_config = Common::$config->email;

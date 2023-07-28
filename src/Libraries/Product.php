@@ -26,7 +26,7 @@ class Product implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
   }
 
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setBnetProductRaw('');
     $this->setBnlsProductId(0);
@@ -55,7 +55,7 @@ class Product implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return true;
   }
 
-  protected function allocateObject(StdClass $value) : void
+  protected function allocateObject(StdClass $value): void
   {
     $this->setBnetProductId($value->bnet_product_id);
     $this->setBnetProductRaw($value->bnet_product_raw);
@@ -75,7 +75,7 @@ class Product implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getBnetProductId();
     if (is_null($id)) return false;
@@ -84,7 +84,7 @@ class Product implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     finally { if ($q) $q->closeCursor(); }
   }
 
-  public static function getAllProducts() : ?array
+  public static function getAllProducts(): ?array
   {
     $q = Database::instance()->prepare('
       SELECT
@@ -103,44 +103,44 @@ class Product implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public static function getProductsFromIds(array $values) : array
+  public static function getProductsFromIds(array $values): array
   {
     $r = [];
     foreach ($values as $value) $r[] = new self($value->bnet_product_id);
     return $r;
   }
 
-  public function getBnetProductId() : ?int
+  public function getBnetProductId(): ?int
   {
     return $this->bnet_product_id;
   }
 
-  public function getBnetProductRaw() : string
+  public function getBnetProductRaw(): string
   {
     return $this->bnet_product_raw;
   }
 
-  public function getBnlsProductId() : int
+  public function getBnlsProductId(): int
   {
     return $this->bnls_product_id;
   }
 
-  public function getLabel() : string
+  public function getLabel(): string
   {
     return $this->label;
   }
 
-  public function getSort() : int
+  public function getSort(): int
   {
     return $this->sort;
   }
 
-  public function getVersionByte() : int
+  public function getVersionByte(): int
   {
     return $this->version_byte;
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'bnet_product_id' => $this->getBnetProductId(),
@@ -152,32 +152,32 @@ class Product implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
   }
 
-  public function setBnetProductId(int $value) : void
+  public function setBnetProductId(int $value): void
   {
     $this->bnet_product_id = $value;
   }
 
-  public function setBnetProductRaw(string $value) : void
+  public function setBnetProductRaw(string $value): void
   {
     $this->bnet_product_raw = $value;
   }
 
-  public function setBnlsProductId(int $value) : void
+  public function setBnlsProductId(int $value): void
   {
     $this->bnls_product_id = $value;
   }
 
-  public function setLabel(string $value) : void
+  public function setLabel(string $value): void
   {
     $this->label = $value;
   }
 
-  public function setSort(int $value) : void
+  public function setSort(int $value): void
   {
     $this->sort = $value;
   }
 
-  public function setVersionByte(int $value) : void
+  public function setVersionByte(int $value): void
   {
     $this->version_byte = $value;
   }

@@ -13,19 +13,19 @@ class Gravatar implements \JsonSerializable
     $this->setEmail($email);
   }
 
-  public function getEmail() : string
+  public function getEmail(): string
   {
     return $this->email;
   }
 
-  public function getHash() : string
+  public function getHash(): string
   {
     return \hash('md5', \strtolower(\trim($this->email)));
   }
 
   public function getUrl(
     ?int $size = null, ?string $default = null, ?string $forcedefault = null, ?string $rating = null
-  ) : string
+  ): string
   {
     $url = self::GRAVATAR_BASE_URL . $this->getHash();
     $args = [];
@@ -38,7 +38,7 @@ class Gravatar implements \JsonSerializable
     return $url;
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'email' => $this->getEmail(),
@@ -47,7 +47,7 @@ class Gravatar implements \JsonSerializable
     ];
   }
 
-  public function setEmail(string $value) : void
+  public function setEmail(string $value): void
   {
     if (!\filter_var($value, \FILTER_VALIDATE_EMAIL)) throw new \UnexpectedValueException();
 

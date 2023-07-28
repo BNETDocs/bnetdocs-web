@@ -20,27 +20,27 @@ class Template
         $this->setTemplateFile($template_file);
     }
 
-    public function getContext() : mixed
+    public function getContext(): mixed
     {
         return $this->context;
     }
 
-    public function getTemplateDirectory() : string
+    public function getTemplateDirectory(): string
     {
         return $this->template_directory;
     }
 
-    public function getTemplateExtension() : string
+    public function getTemplateExtension(): string
     {
         return $this->template_extension;
     }
 
-    public function getTemplateFile() : string
+    public function getTemplateFile(): string
     {
         return $this->template_file;
     }
 
-    public function invoke() : void
+    public function invoke(): void
     {
         try
         {
@@ -59,28 +59,28 @@ class Template
         }
     }
 
-    public function render() : void
+    public function render(): void
     {
         \trigger_error('render() is deprecated, use invoke() instead', \E_USER_DEPRECATED);
         $this->invoke();
     }
 
-    public function setContext(mixed &$context) : void
+    public function setContext(mixed &$context): void
     {
         $this->context = $context;
     }
 
-    public function setTemplateDirectory(string $template_directory) : void
+    public function setTemplateDirectory(string $template_directory): void
     {
         $this->template_directory = $template_directory;
     }
 
-    public function setTemplateExtension(string $template_extension) : void
+    public function setTemplateExtension(string $template_extension): void
     {
         $this->template_extension = $template_extension;
     }
 
-    public function setTemplateFile(string $template_file) : void
+    public function setTemplateFile(string $template_file): void
     {
         $this->template_file = \sprintf('.%s%s%s',
             \DIRECTORY_SEPARATOR,

@@ -23,7 +23,7 @@ class Status extends Base
    * @param array|null $args The optional route arguments and any captured URI arguments.
    * @return boolean Whether the Router should invoke the configured View.
    */
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     $code = (self::getStatus($this->model) ? 200 : 500);
     $this->model->_responseCode = $code;

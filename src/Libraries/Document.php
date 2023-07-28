@@ -55,7 +55,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setBrief('');
     $this->setContent('');
@@ -91,7 +91,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Internal function to process and translate StdClass objects into properties.
    */
-  private function allocateObject(StdClass $value) : void
+  private function allocateObject(StdClass $value): void
   {
     $this->setBrief($value->brief);
     $this->setContent($value->content);
@@ -109,7 +109,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `documents` (
@@ -149,8 +149,12 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
 
     foreach ($p as $k => $v)
+    {
       if ($v instanceof DateTimeInterface)
+      {
         $p[$k] = $v->format(self::DATE_SQL);
+      }
+    }
 
     if (!$q || !$q->execute($p)) return false;
     if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
@@ -163,7 +167,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -172,7 +176,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     finally { if ($q) $q->closeCursor(); }
   }
 
-  public static function getAllDocuments(?array $order = null, bool $published_only = false) : array|false
+  public static function getAllDocuments(?array $order = null, bool $published_only = false): array|false
   {
     $q = Database::instance()->prepare(sprintf('
       SELECT
@@ -197,7 +201,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getBrief(bool $format) : string
+  public function getBrief(bool $format): string
   {
     if (!($format && $this->isMarkdown())) return $this->brief;
 
@@ -206,7 +210,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $md->text($this->brief);
   }
 
-  public function getContent(bool $format) : string
+  public function getContent(bool $format): string
   {
     if (!($format && $this->isMarkdown())) return $this->content;
 
@@ -215,12 +219,12 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $md->text($this->content);
   }
 
-  public function getCreatedDateTime() : ?DateTimeInterface
+  public function getCreatedDateTime(): ?DateTimeInterface
   {
     return $this->created_datetime;
   }
 
-  public static function getDocumentsByLastEdited(int $count) : array|false
+  public static function getDocumentsByLastEdited(int $count): array|false
   {
     $q = Database::instance()->prepare(sprintf('
       SELECT
@@ -244,7 +248,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public static function getDocumentsByUserId(int $user_id) : array|false
+  public static function getDocumentsByUserId(int $user_id): array|false
   {
     $q = Database::instance()->prepare('
       SELECT
@@ -266,22 +270,22 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getEditedCount() : int
+  public function getEditedCount(): int
   {
     return $this->edited_count;
   }
 
-  public function getEditedDateTime() : ?DateTimeInterface
+  public function getEditedDateTime(): ?DateTimeInterface
   {
     return $this->edited_datetime;
   }
 
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
 
-  public function getOption(int $option) : bool
+  public function getOption(int $option): bool
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
     {
@@ -293,59 +297,59 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return ($this->options & $option) === $option;
   }
 
-  public function getOptions() : int
+  public function getOptions(): int
   {
     return $this->options;
   }
 
-  public function getPublishedDateTime() : ?DateTimeInterface
+  public function getPublishedDateTime(): ?DateTimeInterface
   {
     return (!is_null($this->edited_datetime) ?
       $this->getEditedDateTime() : $this->getCreatedDateTime()
     );
   }
 
-  public function getTitle() : string
+  public function getTitle(): string
   {
     return $this->title;
   }
 
-  public function getURI() : ?string
+  public function getURI(): ?string
   {
     $id = $this->getId();
     if (is_null($id)) return $id;
     return Common::relativeUrlToAbsolute(sprintf('/document/%d/%s', $id, Common::sanitizeForUrl($this->getTitle(), true)));
   }
 
-  public function getUser() : ?User
+  public function getUser(): ?User
   {
     if (is_null($this->user_id)) return null;
     try { return new User($this->user_id); }
     catch (\UnexpectedValueException) { return null; }
   }
 
-  public function getUserId() : ?int
+  public function getUserId(): ?int
   {
     return $this->user_id;
   }
 
-  public function incrementEdited() : void
+  public function incrementEdited(): void
   {
     $this->setEditedCount($this->getEditedCount() + 1);
     $this->setEditedDateTime(new DateTimeImmutable('now'));
   }
 
-  public function isMarkdown() : bool
+  public function isMarkdown(): bool
   {
     return $this->getOption(self::OPTION_MARKDOWN);
   }
 
-  public function isPublished() : bool
+  public function isPublished(): bool
   {
     return $this->getOption(self::OPTION_PUBLISHED);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'brief' => $this->getBrief(false),
@@ -366,7 +370,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The brief description.
    * @throws OutOfBoundsException if value length is not between zero and MAX_BRIEF.
    */
-  public function setBrief(string $value) : void
+  public function setBrief(string $value): void
   {
     if (strlen($value) > self::MAX_BRIEF)
     {
@@ -384,7 +388,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The content.
    * @throws OutOfBoundsException if value length is not between zero and MAX_CONTENT.
    */
-  public function setContent(string $value) : void
+  public function setContent(string $value): void
   {
     if (strlen($value) > self::MAX_CONTENT)
     {
@@ -401,7 +405,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @param DateTimeInterface|string $value The Date and Time value.
    */
-  public function setCreatedDateTime(DateTimeInterface|string $value) : void
+  public function setCreatedDateTime(DateTimeInterface|string $value): void
   {
     $this->created_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
@@ -414,7 +418,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param int $value The total number of modifications.
    * @throws OutOfBoundsException if value is not between zero and MAX_EDITED_COUNT.
    */
-  public function setEditedCount(int $value) : void
+  public function setEditedCount(int $value): void
   {
     if ($value < 0 || $value > self::MAX_EDITED_COUNT)
     {
@@ -431,7 +435,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @param DateTimeInterface|string|null $value The Date and Time value.
    */
-  public function setEditedDateTime(DateTimeInterface|string|null $value) : void
+  public function setEditedDateTime(DateTimeInterface|string|null $value): void
   {
     $this->edited_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
@@ -445,7 +449,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *                    get a new id, however until then the Document will not have a valid webpage/URI.
    * @throws OutOfBoundsException if value is not between zero and MAX_ID, or null.
    */
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_ID))
     {
@@ -463,7 +467,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param bool @value If true, value is passed into the Parsedown class before being printed.
    *                    If false, value is *not* passed into Parsedown before being printed.
    */
-  public function setMarkdown(bool $value) : void
+  public function setMarkdown(bool $value): void
   {
     $this->setOption(self::OPTION_MARKDOWN, $value);
   }
@@ -475,7 +479,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param bool $value Changes option to true (1) or false (0) based on this value.
    * @throws OutOfBoundsException if option is not between zero and MAX_OPTIONS.
    */
-  public function setOption(int $option, bool $value) : void
+  public function setOption(int $option, bool $value): void
   {
     if ($option < 0 || $option > self::MAX_OPTIONS)
     {
@@ -500,7 +504,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param int $value The full set of options which will replace previous options.
    * @throws OutOfBoundsException if value is not between zero and MAX_OPTIONS.
    */
-  public function setOptions(int $value) : void
+  public function setOptions(int $value): void
   {
     if ($value < 0 || $value > self::MAX_OPTIONS)
     {
@@ -518,7 +522,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param bool @value If true, enables 'Draft' badge and disables visibility to non-editors.
    *                    If false, disables 'Draft' badge and enables visibility to everyone.
    */
-  public function setPublished(bool $value) : void
+  public function setPublished(bool $value): void
   {
     $this->setOption(self::OPTION_PUBLISHED, $value);
   }
@@ -529,7 +533,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param string $value The title.
    * @throws OutOfBoundsException if value length is not between zero and MAX_TITLE.
    */
-  public function setTitle(string $value) : void
+  public function setTitle(string $value): void
   {
     if (strlen($value) > self::MAX_TITLE)
     {
@@ -547,7 +551,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param ?User $value The User (object) that created this Document (object), or null for no user.
    * @throws OutOfBoundsException if value (User) id is not between zero and MAX_USER_ID, or null.
    */
-  public function setUser(?User $value) : void
+  public function setUser(?User $value): void
   {
     $this->setUserId($value ? $value->getId() : $value);
   }
@@ -558,7 +562,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    * @param ?int $value The User (id) that created this Document (object), or null for no user.
    * @throws OutOfBoundsException if value is not between zero and MAX_USER_ID, or null.
    */
-  public function setUserId(?int $value) : void
+  public function setUserId(?int $value): void
   {
     if (!is_null($value) && ($value < 0 || $value > self::MAX_USER_ID))
     {

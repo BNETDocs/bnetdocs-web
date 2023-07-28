@@ -14,7 +14,7 @@ class Create extends \BNETDocs\Controllers\Base
     $this->model = new FormModel();
   }
 
-  public function invoke(?array $args) : bool
+  public function invoke(?array $args): bool
   {
     if (!$this->model->active_user || !$this->model->active_user->getOption(\BNETDocs\Libraries\User::OPTION_ACL_PACKET_CREATE))
     {
@@ -76,13 +76,13 @@ class Create extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected static function assignDefault(array &$form_fields, string $key, mixed $value) : void
+  protected static function assignDefault(array &$form_fields, string $key, mixed $value): void
   {
     if (isset($form_fields[$key])) return;
     $form_fields[$key] = $value;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $application_layer = $this->model->form_fields['application_layer'] ?? null;
     $brief = $this->model->form_fields['brief'] ?? null;

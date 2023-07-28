@@ -22,7 +22,7 @@ class VersionInfo
    *
    * @return array The version information.
    */
-  public static function get() : array
+  public static function get(): array
   {
     if (!is_null(self::$version)) return self::$version;
     $r = [];
@@ -43,7 +43,7 @@ class VersionInfo
    * @param array $version The bnetdocs version array.
    * @return string The asset tag value.
    */
-  private static function assetVersion(array $version) : string
+  private static function assetVersion(array $version): string
   {
     return (
       !\CarlBennett\MVC\Libraries\Common::$config->bnetdocs->asset_versioning ? '' :
@@ -60,7 +60,7 @@ class VersionInfo
    *
    * @return array|null The information array, or null if not available.
    */
-  private static function deploymentVersion() : ?array
+  private static function deploymentVersion(): ?array
   {
     if (!file_exists(self::VERSION_INFO_FILE))
     {
@@ -86,7 +86,7 @@ class VersionInfo
    *
    * @return array|null The information array, or null if not available.
    */
-  private static function reflectVersion() : ?array
+  private static function reflectVersion(): ?array
   {
     $values = [null, null, null, null];
 
@@ -100,9 +100,10 @@ class VersionInfo
     if (!empty($timestamp)) $values[2] = trim($timestamp);
     if (!empty($license)) $values[3] = trim($license);
 
-    if (is_null($values[0]) && is_null($values[1])
-      && is_null($values[2]) && is_null($values[3]))
+    if (is_null($values[0]) && is_null($values[1]) && is_null($values[2]) && is_null($values[3]))
+    {
       $values = null;
+    }
 
     return $values;
   }

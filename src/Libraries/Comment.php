@@ -55,7 +55,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setContent('');
     $this->setCreatedDateTime('now');
@@ -86,7 +86,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return true;
   }
 
-  protected function allocateObject(StdClass $value) : void
+  protected function allocateObject(StdClass $value): void
   {
     $this->setContent($value->content);
     $this->setCreatedDateTime($value->created_datetime);
@@ -103,7 +103,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `comments` (
@@ -146,8 +146,12 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
 
     foreach ($p as $k => $v)
+    {
       if ($v instanceof DateTimeInterface)
+      {
         $p[$k] = $v->format(self::DATE_SQL);
+      }
+    }
 
     if (!$q || !$q->execute($p)) return false;
     if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
@@ -160,7 +164,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -169,7 +173,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     finally { $q->closeCursor(); }
   }
 
-  public static function getAll(int $parent_type, int $parent_id) : ?array
+  public static function getAll(int $parent_type, int $parent_id): ?array
   {
     $q = Database::instance()->prepare('
       SELECT
@@ -195,7 +199,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public static function getCommentsByUserId(int $user_id, bool $descending) : ?array
+  public static function getCommentsByUserId(int $user_id, bool $descending): ?array
   {
     $o = $descending ? 'DESC' : 'ASC';
     $q = Database::instance()->prepare(sprintf('
@@ -218,7 +222,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getContent(bool $format, bool $autobreak = true) : string
+  public function getContent(bool $format, bool $autobreak = true): string
   {
     if (!$format) return $this->content;
 
@@ -228,37 +232,37 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $md->text($this->content);
   }
 
-  public function getCreatedDateTime() : DateTimeInterface
+  public function getCreatedDateTime(): DateTimeInterface
   {
     return $this->created_datetime;
   }
 
-  public function getEditedCount() : int
+  public function getEditedCount(): int
   {
     return $this->edited_count;
   }
 
-  public function getEditedDateTime() : ?DateTimeInterface
+  public function getEditedDateTime(): ?DateTimeInterface
   {
     return $this->edited_datetime;
   }
 
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
 
-  public function getParentId() : int
+  public function getParentId(): int
   {
     return $this->parent_id;
   }
 
-  public function getParentType() : int
+  public function getParentType(): int
   {
     return $this->parent_type;
   }
 
-  public function getParentTypeCreatedEventId() : int
+  public function getParentTypeCreatedEventId(): int
   {
     $pt = $this->getParentType();
     switch ($pt)
@@ -274,7 +278,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getParentTypeEditedEventId() : int
+  public function getParentTypeEditedEventId(): int
   {
     $pt = $this->getParentType();
     switch ($pt)
@@ -290,7 +294,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getParentTypeDeletedEventId() : int
+  public function getParentTypeDeletedEventId(): int
   {
     $pt = $this->getParentType();
     switch ($pt)
@@ -306,7 +310,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $r;
   }
 
-  public function getParentUrl() : string|false
+  public function getParentUrl(): string|false
   {
     $pt = $this->getParentType();
     switch ($pt)
@@ -322,17 +326,17 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return Common::relativeUrlToAbsolute(sprintf('/%s/%d', $pts, $this->getParentId()));
   }
 
-  public function getUser() : ?User
+  public function getUser(): ?User
   {
     return is_null($this->user_id) ? null : new User($this->user_id);
   }
 
-  public function getUserId() : ?int
+  public function getUserId(): ?int
   {
     return $this->user_id;
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'content' => $this->getContent(false),
@@ -346,16 +350,18 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     ];
   }
 
-  public function incrementEdited() : void
+  public function incrementEdited(): void
   {
     $this->setEditedCount($this->getEditedCount() + 1);
     $this->setEditedDateTime(new DateTimeImmutable('now'));
   }
 
-  public function setContent(string $value) : void
+  public function setContent(string $value): void
   {
     if (strlen($value) > self::MAX_CONTENT)
+    {
       throw new UnexpectedValueException(sprintf('value must be between 0-%d characters', self::MAX_CONTENT));
+    }
 
     $this->content = $value;
   }
@@ -367,60 +373,74 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     );
   }
 
-  public function setEditedCount(int $value) : void
+  public function setEditedCount(int $value): void
   {
     if ($value < 0 || $value > self::MAX_EDITED_COUNT)
+    {
       throw new UnexpectedValueException(sprintf('value must be an integer between 0-%d', self::MAX_EDITED_COUNT));
+    }
 
     $this->edited_count = $value;
   }
 
-  public function setEditedDateTime(DateTimeInterface|string|null $value)
+  public function setEditedDateTime(DateTimeInterface|string|null $value): void
   {
     $this->edited_datetime = (is_string($value) ?
       new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : $value
     );
   }
 
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     if ($value < 0 || $value > self::MAX_ID)
+    {
       throw new UnexpectedValueException(sprintf('value must be null or an integer between 0-%d', self::MAX_ID));
+    }
 
     $this->id = $value;
   }
 
-  public function setParentId(int $value) : void
+  public function setParentId(int $value): void
   {
     if ($value < 0 || $value > self::MAX_PARENT_ID)
+    {
       throw new UnexpectedValueException(sprintf('value must be an integer between 0-%d', self::MAX_PARENT_ID));
+    }
 
     $this->parent_id = $value;
   }
 
-  public function setParentType(int $value) : void
+  public function setParentType(int $value): void
   {
     if ($value < 0 || $value > self::MAX_PARENT_TYPE)
+    {
       throw new UnexpectedValueException(sprintf('value must be an integer between 0-%d', self::MAX_PARENT_TYPE));
+    }
 
     if (!self::validateParentType($value))
+    {
       throw new UnexpectedValueException('value must be a valid Comment::PARENT_TYPE_ constant');
+    }
 
     $this->parent_type = $value;
   }
 
-  public function setUserId(?int $value) : void
+  public function setUserId(?int $value): void
   {
     if ($value < 0 || $value > self::MAX_USER_ID)
+    {
       throw new UnexpectedValueException(sprintf('value must be null or an integer between 0-%d', self::MAX_USER_ID));
+    }
 
     $this->user_id = $value;
   }
 
-  public static function validateParentType(int $value) : bool
+  public static function validateParentType(int $value): bool
   {
     if ($value < 0 || $value > self::MAX_PARENT_TYPE)
+    {
       throw new UnexpectedValueException(sprintf('value must be an integer between 0-%d', self::MAX_PARENT_TYPE));
+    }
 
     switch ($value)
     {

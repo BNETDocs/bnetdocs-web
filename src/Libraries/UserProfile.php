@@ -43,7 +43,7 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
     }
   }
 
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setBiography(null);
     $this->setDiscordUsername(null);
@@ -79,7 +79,7 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
     return true;
   }
 
-  protected function allocateObject(StdClass $value) : void
+  protected function allocateObject(StdClass $value): void
   {
     $this->setBiography($value->biography);
     $this->setDiscordUsername($value->discord_username);
@@ -95,7 +95,7 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
     $this->setWebsite($value->website);
   }
 
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('
       INSERT INTO `user_profiles` (
@@ -164,7 +164,7 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getUserId();
     if (is_null($id)) return false;
@@ -173,94 +173,94 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
     finally { $q->closeCursor(); }
   }
 
-  public function getBiography() : ?string
+  public function getBiography(): ?string
   {
     return $this->biography;
   }
 
-  public function getDiscordURI() : ?string
+  public function getDiscordURI(): ?string
   {
     $value = $this->getDiscordUsername();
     return is_null($value) ? $value : sprintf('https://discordapp.com/users/%s', rawurlencode($value));
   }
 
-  public function getDiscordUsername() : ?string
+  public function getDiscordUsername(): ?string
   {
     return $this->discord_username;
   }
 
-  public function getFacebookURI() : ?string
+  public function getFacebookURI(): ?string
   {
     $value = $this->getFacebookUsername();
     return is_null($value) ? $value : sprintf('https://www.facebook.com/%s', rawurlencode($value));
   }
 
-  public function getFacebookUsername() : ?string
+  public function getFacebookUsername(): ?string
   {
     return $this->facebook_username;
   }
 
-  public function getGitHubURI() : ?string
+  public function getGitHubURI(): ?string
   {
     $value = $this->getGitHubUsername();
     return is_null($value) ? $value : sprintf('https://github.com/%s', rawurlencode($value));
   }
 
-  public function getGitHubUsername() : ?string
+  public function getGitHubUsername(): ?string
   {
     return $this->github_username;
   }
 
-  public function getInstagramURI() : ?string
+  public function getInstagramURI(): ?string
   {
     $value = $this->getInstagramUsername();
     return is_null($value) ? $value : sprintf('https://instagram.com/%s', rawurlencode($value));
   }
 
-  public function getInstagramUsername() : ?string
+  public function getInstagramUsername(): ?string
   {
     return $this->instagram_username;
   }
 
-  public function getPhone() : ?string
+  public function getPhone(): ?string
   {
     return $this->phone;
   }
 
-  public function getPhoneURI() : ?string
+  public function getPhoneURI(): ?string
   {
     $value = $this->getPhone();
     return is_null($value) ? $value : sprintf('tel://%s', rawurlencode($value));
   }
 
-  public function getRedditURI() : ?string
+  public function getRedditURI(): ?string
   {
     $value = $this->getRedditUsername();
     return is_null($value) ? $value : sprintf('https://reddit.com/u/%s', rawurlencode($value));
   }
 
-  public function getRedditUsername() : ?string
+  public function getRedditUsername(): ?string
   {
     return $this->reddit_username;
   }
 
-  public function getSkypeURI() : ?string
+  public function getSkypeURI(): ?string
   {
     $value = $this->getSkypeUsername();
     return is_null($value) ? $value : sprintf('skype:%s?chat', rawurlencode($value));
   }
 
-  public function getSkypeUsername() : ?string
+  public function getSkypeUsername(): ?string
   {
     return $this->skype_username;
   }
 
-  public function getSteamId() : ?string
+  public function getSteamId(): ?string
   {
     return $this->steam_id;
   }
 
-  public function getSteamURI() : ?string
+  public function getSteamURI(): ?string
   {
     $value = $this->getSteamId();
     return is_null($value) ? $value : sprintf('https://steamcommunity.com/%s/%s',
@@ -268,33 +268,33 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
     );
   }
 
-  public function getTwitterURI() : ?string
+  public function getTwitterURI(): ?string
   {
     $value = $this->getTwitterUsername();
     return is_null($value) ? $value : sprintf('https://twitter.com/%s', rawurlencode($value));
   }
 
-  public function getTwitterUsername() : ?string
+  public function getTwitterUsername(): ?string
   {
     return $this->twitter_username;
   }
 
-  public function getUser() : ?User
+  public function getUser(): ?User
   {
     return is_null($this->user_id) ? null : new User($this->user_id);
   }
 
-  public function getUserId() : int
+  public function getUserId(): int
   {
     return $this->user_id;
   }
 
-  public function getWebsite($clean = true) : ?string
+  public function getWebsite($clean = true): ?string
   {
     return (empty($this->website) || !$clean) ? $this->website : $this->getWebsiteURI();
   }
 
-  public function getWebsiteURI() : ?string
+  public function getWebsiteURI(): ?string
   {
     if (empty($this->website)) return $this->website;
     $value = strtolower($this->website);
@@ -321,122 +321,146 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
     ];
   }
 
-  public function setBiography(?string $value) : void
+  public function setBiography(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->biography = $value;
   }
 
-  public function setDiscordUsername(?string $value) : void
+  public function setDiscordUsername(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->discord_username = $value;
   }
 
-  public function setFacebookUsername(?string $value) : void
+  public function setFacebookUsername(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->facebook_username = $value;
   }
 
-  public function setGitHubUsername(?string $value) : void
+  public function setGitHubUsername(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->github_username = $value;
   }
 
-  public function setInstagramUsername(?string $value) : void
+  public function setInstagramUsername(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->instagram_username = $value;
   }
 
-  public function setPhone(?string $value) : void
+  public function setPhone(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->phone = $value;
   }
 
-  public function setRedditUsername(?string $value) : void
+  public function setRedditUsername(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->reddit_username = $value;
   }
 
-  public function setSkypeUsername(?string $value) : void
+  public function setSkypeUsername(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->skype_username = $value;
   }
 
-  public function setSteamId(?string $value) : void
+  public function setSteamId(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->steam_id = $value;
   }
 
-  public function setTwitterUsername(?string $value) : void
+  public function setTwitterUsername(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->twitter_username = $value;
   }
 
-  public function setUserId(int $value) : void
+  public function setUserId(int $value): void
   {
     if ($value < 0 || $value > self::MAX_USER_ID)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be an integer between 0-%d', self::MAX_USER_ID
       ));
+    }
 
     $this->user_id = $value;
   }
 
-  public function setWebsite(?string $value) : void
+  public function setWebsite(?string $value): void
   {
     if (!is_null($value) && strlen($value) > self::MAX_LEN)
+    {
       throw new UnexpectedValueException(sprintf(
         'value must be null or a string between 0-%d characters', self::MAX_LEN
       ));
+    }
 
     $this->website = $value;
   }

@@ -10,24 +10,26 @@ class Transport extends \BNETDocs\Libraries\Packet\Layer
     3 => ['Internet Control Message Protocol', 'ICMP'],
   ];
 
-  protected function assign(int $id) : void
+  protected function assign(int $id): void
   {
     if (!isset(self::$table[$id]))
+    {
       throw new \OutOfBoundsException(\sprintf(
         'transport id: %d not found', $id
       ));
+    }
 
     $this->id    = $id;
     $this->label = self::$table[$id][0];
     $this->tag   = self::$table[$id][1];
   }
 
-  public static function getAllAsArray() : array
+  public static function getAllAsArray(): array
   {
     return self::$table;
   }
 
-  public static function getAllAsObjects() : array
+  public static function getAllAsObjects(): array
   {
     $r = [];
     $k = array_keys(self::$table);

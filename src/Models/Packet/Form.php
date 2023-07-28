@@ -29,7 +29,7 @@ class Form extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
   /**
    * Implements the JSON serialization function from the JsonSerializable interface.
    */
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return \array_merge(parent::jsonSerialize(), [
       'comments' => $this->comments,

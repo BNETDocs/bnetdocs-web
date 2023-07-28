@@ -32,7 +32,7 @@ final class Router
    * @return void
    * @throws LogicException if a route is invalid.
    */
-  public static function invoke() : void
+  public static function invoke(): void
   {
     $uri = (\getenv('REQUEST_URI') ?? null);
     if (empty($uri) && \php_sapi_name() == 'cli') $uri = self::CLI_REQUEST_URI;
@@ -71,7 +71,7 @@ final class Router
     self::invokeController(new $controller, self::negotiateView(self::$route_not_found[1]), null);
   }
 
-  protected static function invokeController(\BNETDocs\Interfaces\Controller $controller, string $view, ?array $args) : void
+  protected static function invokeController(\BNETDocs\Interfaces\Controller $controller, string $view, ?array $args): void
   {
     if (!$controller->invoke($args)) return;
 
@@ -92,7 +92,7 @@ final class Router
    * @return string The negotiated ViewBase class or subclass, to be used by the Router to invoke the Controller.
    * @throws LogicException if a class is invalid.
    */
-  protected static function negotiateView(array $route_views) : string
+  protected static function negotiateView(array $route_views): string
   {
     // Accept header examples.
     // Firefox 98 on Windows 10: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8=
@@ -148,12 +148,12 @@ final class Router
     return $mimetypes[$preferred_mimetype]; // cannot find preferrable mimetype, use default view
   }
 
-  public static function requestMethod() : string
+  public static function requestMethod(): string
   {
     return \getenv('REQUEST_METHOD') ?? '';
   }
 
-  public static function query() : array
+  public static function query(): array
   {
     if (!is_null(self::$args)) return self::$args;
 

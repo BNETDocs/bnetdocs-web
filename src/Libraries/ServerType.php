@@ -27,7 +27,7 @@ class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializab
     }
   }
 
-  public function allocate() : bool
+  public function allocate(): bool
   {
     $this->setLabel('');
     $id = $this->getId();
@@ -39,13 +39,13 @@ class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializab
     return true;
   }
 
-  private function allocateObject(StdClass $value)
+  private function allocateObject(StdClass $value): void
   {
     $this->setId($value->id);
     $this->setLabel($value->label);
   }
 
-  public function commit() : bool
+  public function commit(): bool
   {
     $q = Database::instance()->prepare('UPDATE `server_types` SET `id` = :id, `label` = :label WHERE `id` = :id LIMIT 1;');
     $p = [':id' => $this->getId(), ':label' => $this->getLabel()];
@@ -58,7 +58,7 @@ class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializab
    *
    * @return boolean Whether the operation was successful.
    */
-  public function deallocate() : bool
+  public function deallocate(): bool
   {
     $id = $this->getId();
     if (is_null($id)) return false;
@@ -67,7 +67,7 @@ class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializab
     finally { $q->closeCursor(); }
   }
 
-  public static function getAllServerTypes() : ?array
+  public static function getAllServerTypes(): ?array
   {
     $q = Database::instance()->prepare('SELECT `id`, `label` FROM `server_types` ORDER BY `id` ASC;');
     if (!$q || !$q->execute()) return null;
@@ -77,17 +77,17 @@ class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializab
     return $r;
   }
 
-  public function getId() : ?int
+  public function getId(): ?int
   {
     return $this->id;
   }
 
-  public function getLabel() : string
+  public function getLabel(): string
   {
     return $this->label;
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     return [
       'id' => $this->getId(),
@@ -95,22 +95,26 @@ class ServerType implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializab
     ];
   }
 
-  public function setId(?int $value) : void
+  public function setId(?int $value): void
   {
     if ($value < 0 || $value > self::MAX_ID)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be null or an integer between 0-%d', self::MAX_ID
       ));
+    }
 
     $this->id = $value;
   }
 
-  public function setLabel(string $value) : void
+  public function setLabel(string $value): void
   {
     if (strlen($value) > self::MAX_LABEL)
+    {
       throw new OutOfBoundsException(sprintf(
         'value must be a string between 0-%d characters', self::MAX_LABEL
       ));
+    }
 
     $this->label = $value;
   }

@@ -3,7 +3,6 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Database;
-use \CarlBennett\MVC\Libraries\Common;
 
 class Credits
 {
@@ -15,7 +14,7 @@ class Credits
     throw new \LogicException('This static class cannot be constructed');
   }
 
-  public static function getTotalUsers() : int|false
+  public static function getTotalUsers(): int|false
   {
     $q = Database::instance()->prepare('SELECT COUNT(*) AS `sum` FROM `users`;');
     if (!$q || !$q->execute()) return false;
@@ -24,7 +23,7 @@ class Credits
     return (int) $r->sum;
   }
 
-  protected static function getTopContributors(string $table, string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  protected static function getTopContributors(string $table, string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT): array|false
   {
     $q = Database::instance()->prepare(sprintf('
       SELECT
@@ -44,37 +43,37 @@ class Credits
     return $r;
   }
 
-  public static function getTopContributorsByComments(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  public static function getTopContributorsByComments(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT): array|false
   {
     return self::getTopContributors('comments', $anonymous, $limit);
   }
 
-  public static function getTopContributorsByDocuments(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  public static function getTopContributorsByDocuments(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT): array|false
   {
     return self::getTopContributors('documents', $anonymous, $limit);
   }
 
-  public static function getTopContributorsByNewsPosts(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  public static function getTopContributorsByNewsPosts(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT): array|false
   {
     return self::getTopContributors('news_posts', $anonymous, $limit);
   }
 
-  public static function getTopContributorsByPackets(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  public static function getTopContributorsByPackets(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT): array|false
   {
     return self::getTopContributors('packets', $anonymous, $limit);
   }
 
-  public static function getTopContributorsByServers(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT) : array|false
+  public static function getTopContributorsByServers(string $anonymous = self::DEFAULT_ANONYMOUS, int $limit = self::DEFAULT_LIMIT): array|false
   {
     return self::getTopContributors('servers', $anonymous, $limit);
   }
 
-  public static function getTotalCommentsByUserId(int $user_id) : int|false
+  public static function getTotalCommentsByUserId(int $user_id): int|false
   {
     return self::getTotalByUserId('comments', $user_id);
   }
 
-  protected static function getTotalByUserId(string $table, int $user_id) : int|false
+  protected static function getTotalByUserId(string $table, int $user_id): int|false
   {
     $q = Database::instance()->prepare(sprintf('SELECT COUNT(*) AS `sum` FROM `%s` WHERE `user_id` = :id;', $table));
     if (!$q || !$q->execute([':id' => $user_id])) return false;
@@ -83,22 +82,22 @@ class Credits
     return (int) $o->sum;
   }
 
-  public static function getTotalDocumentsByUserId(int $user_id) : int|false
+  public static function getTotalDocumentsByUserId(int $user_id): int|false
   {
     return self::getTotalByUserId('documents', $user_id);
   }
 
-  public static function getTotalNewsPostsByUserId(int $user_id) : int|false
+  public static function getTotalNewsPostsByUserId(int $user_id): int|false
   {
     return self::getTotalByUserId('news_posts', $user_id);
   }
 
-  public static function getTotalPacketsByUserId(int $user_id) : int|false
+  public static function getTotalPacketsByUserId(int $user_id): int|false
   {
     return self::getTotalByUserId('packets', $user_id);
   }
 
-  public static function getTotalServersByUserId(int $user_id) : int|false
+  public static function getTotalServersByUserId(int $user_id): int|false
   {
     return self::getTotalByUserId('servers', $user_id);
   }

@@ -19,7 +19,7 @@ class EmbedImage implements \JsonSerializable
     $this->setWidth($width);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     $r = [
       'height' => $this->height,
@@ -31,22 +31,22 @@ class EmbedImage implements \JsonSerializable
     return $r;
   }
 
-  public function setHeight(int $value) : void
+  public function setHeight(int $value): void
   {
     $this->height = $value;
   }
 
-  public function setProxyUrl(string $value) : void
+  public function setProxyUrl(string $value): void
   {
     $this->proxy_url = $value;
   }
 
-  public function setUrl(string $value) : void
+  public function setUrl(string $value): void
   {
     $this->url = $value;
   }
 
-  public function setWidth(int $value) : void
+  public function setWidth(int $value): void
   {
     $this->width = $value;
   }

@@ -47,7 +47,7 @@ class Delete extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function tryDelete() : void
+  protected function tryDelete(): void
   {
     $this->model->error = $this->model->comment->deallocate() ? false : 'INTERNAL_ERROR';
     \BNETDocs\Libraries\Event::log(

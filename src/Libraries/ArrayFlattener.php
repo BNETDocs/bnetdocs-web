@@ -23,7 +23,7 @@ class ArrayFlattener
    * @param iterable|object $value The array or object to be flattened.
    * @return string The flattened value.
    */
-  public static function flatten(iterable|object &$value) : string
+  public static function flatten(iterable|object &$value): string
   {
     $buffer = '';
     $vars = \is_object($value) ? \get_object_vars($value) : $value;
@@ -40,7 +40,7 @@ class ArrayFlattener
    * @param $depth The current depth level, not to exceed MAX_DEPTH.
    * @return void
    */
-  private static function __flatten(string &$buffer, mixed &$key, mixed &$value, int $depth) : void
+  private static function __flatten(string &$buffer, mixed &$key, mixed &$value, int $depth): void
   {
     if ($depth >= self::MAX_DEPTH)
     {

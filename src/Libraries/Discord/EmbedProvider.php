@@ -15,7 +15,7 @@ class EmbedProvider implements \JsonSerializable
     $this->setUrl($url);
   }
 
-  public function jsonSerialize() : mixed
+  public function jsonSerialize(): mixed
   {
     $r = [
       'name' => $this->name,
@@ -25,12 +25,12 @@ class EmbedProvider implements \JsonSerializable
     return $r;
   }
 
-  public function setName(string $value) : void
+  public function setName(string $value): void
   {
     $this->name = $value;
   }
 
-  public function setUrl(string $value) : void
+  public function setUrl(string $value): void
   {
     $this->url = $value;
   }

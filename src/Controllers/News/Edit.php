@@ -58,7 +58,7 @@ class Edit extends \BNETDocs\Controllers\Base
     return $this->model;
   }
 
-  protected function handlePost() : void
+  protected function handlePost(): void
   {
     $q = Router::query();
     $category = $q['category'] ?? null;

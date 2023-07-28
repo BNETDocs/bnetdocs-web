@@ -9,7 +9,7 @@ class GeoIP
 
   private function __construct() {}
 
-  protected static function getReader()
+  protected static function getReader(): ?\GeoIp2\ProviderInterface
   {
     if (self::$reader) return self::$reader;
 
@@ -26,7 +26,7 @@ class GeoIP
     return self::$reader;
   }
 
-  public static function getRecord(string $address) : mixed
+  public static function getRecord(string $address): mixed
   {
     if (!filter_var($address, FILTER_VALIDATE_IP))
       throw new \UnexpectedValueException('not a valid IP address');

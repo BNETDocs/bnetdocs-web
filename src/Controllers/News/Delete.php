@@ -44,7 +44,7 @@ class Delete extends \BNETDocs\Controllers\Base
     return true;
   }
 
-  protected function tryDelete() : void
+  protected function tryDelete(): void
   {
     $this->model->error = $this->model->news_post->deallocate() ? false : 'INTERNAL_ERROR';
 

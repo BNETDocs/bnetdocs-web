@@ -4,10 +4,12 @@ namespace BNETDocs\Views\Packet;
 
 class IndexJava extends \BNETDocs\Views\Base\Java
 {
-  public static function invoke(\BNETDocs\Interfaces\Model $model) : void
+  public static function invoke(\BNETDocs\Interfaces\Model $model): void
   {
     if (!$model instanceof \BNETDocs\Models\Packet\Index)
+    {
       throw new \BNETDocs\Exceptions\InvalidModelException($model);
+    }
 
     $model->_responseHeaders['Content-Type'] = self::mimeType();
 
@@ -35,6 +37,8 @@ class IndexJava extends \BNETDocs\Views\Base\Java
     echo " */\n\n";
 
     foreach ($model->packets as $pkt)
+    {
       printf("static final byte %s = %s;\n", $pkt->getName(), $pkt->getPacketId(true));
+    }
   }
 }
