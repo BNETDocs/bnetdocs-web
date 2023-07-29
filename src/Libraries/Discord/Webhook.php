@@ -80,15 +80,81 @@ class Webhook implements \JsonSerializable
     $this->embeds = new SplObjectStorage();
   }
 
-  public function send(int $connect_timeout = 5, int $max_redirects = 10): \StdClass
+  public function send(bool $wait = false, int $connect_timeout = 2, int $transmit_timeout = 8, int $max_redirects = 10): array
   {
-    return \CarlBennett\MVC\Libraries\Common::curlRequest(
-      $this->webhook_url,
-      json_encode($this),
-      'application/json',
-      $connect_timeout,
-      $max_redirects
-    );
+    try
+    {
+      $state = [
+        'http_user_agent' => 'Mozilla/5.0 (compatible; BNETDocs; +https://bnetdocs.org/)',
+        'received_body' => null,
+        'received_code' => null,
+        'received_content_type' => null,
+        'received_json' => null,
+        'sent_json' => null,
+        'time_end' => null,
+        'time_start' => microtime(true),
+        'time_total' => null,
+        'webhook_url' => $this->webhook_url . (
+          $wait ? (strpos($this->webhook_url, '?') === false ? '?' : '&') . 'wait=true' : ''),
+      ];
+
+      $curl = curl_init();
+
+      curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $connect_timeout);
+      curl_setopt($curl, CURLOPT_TIMEOUT, $transmit_timeout);
+
+      curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+      curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+      curl_setopt($curl, CURLOPT_MAXREDIRS, $max_redirects);
+      curl_setopt($curl, CURLOPT_POSTREDIR, CURL_REDIR_POST_ALL);
+
+      curl_setopt($curl, CURLOPT_URL, $state['webhook_url']);
+
+      $state['sent_json'] = json_encode($this); // uses the return from $this->jsonSerialize()
+
+      if ($state['sent_json'] !== false)
+      {
+        curl_setopt($curl, CURLOPT_POST, true);
+        if (PHP_VERSION >= 5.5 && PHP_VERSION < 7.0)
+        {
+          // disable processing of @ symbol as a filename in CURLOPT_POSTFIELDS.
+          // option introduced in PHP 5.5, deprecated in 7.0.
+          curl_setopt($curl, CURLOPT_SAFE_UPLOAD, true);
+        }
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $state['sent_json']);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+          'Content-Type: application/json;charset=utf-8',
+          'User-Agent: ' . $state['http_user_agent'],
+        ]);
+      }
+
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+      $state['received_body'] = curl_exec($curl);
+      $state['received_code'] = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+      $state['received_content_type'] = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
+
+      if (stripos(trim($state['received_content_type']), 'application/json') === 0)
+      {
+        $state['received_json'] = json_decode(
+          $state['received_body'],
+          true, // associative array
+          512, // max depth (default: 512)
+          JSON_OBJECT_AS_ARRAY | JSON_THROW_ON_ERROR // options
+        );
+      }
+    }
+    finally
+    {
+      if ($curl)
+      {
+        curl_close($curl);
+      }
+
+      $state['time_end'] = microtime(true);
+      $state['time_total'] = ($state['time_end'] ?? 0) - ($state['time_start'] ?? 0);
+      return $state;
+    }
   }
 
   public function removeEmbed(Embed $embed_object): void
