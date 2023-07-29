@@ -4,7 +4,8 @@ namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Exceptions\RecaptchaException;
 use \BNETDocs\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\EventTypes;
+use \BNETDocs\Libraries\EventLog\Event;
+use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\GeoIP;
 use \BNETDocs\Libraries\Recaptcha;
 use \BNETDocs\Libraries\Router;
@@ -178,7 +179,7 @@ class Register extends \BNETDocs\Controllers\Base
 
     if (!is_null($user_id))
     {
-      \BNETDocs\Libraries\Event::log(
+      Event::log(
         EventTypes::USER_CREATED,
         $user_id,
         getenv('REMOTE_ADDR'),
@@ -246,7 +247,7 @@ class Register extends \BNETDocs\Controllers\Base
 
         $mail->send();
 
-        \BNETDocs\Libraries\Event::log(
+        Event::log(
           EventTypes::EMAIL_SENT,
           $user_id,
           getenv('REMOTE_ADDR'),

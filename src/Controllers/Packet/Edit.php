@@ -59,8 +59,8 @@ class Edit extends \BNETDocs\Controllers\Base
 
     if ($this->model->error === FormModel::ERROR_SUCCESS)
     {
-      \BNETDocs\Libraries\Event::log(
-        \BNETDocs\Libraries\EventTypes::PACKET_EDITED,
+      \BNETDocs\Libraries\EventLog\Event::log(
+        \BNETDocs\Libraries\EventLog\EventTypes::PACKET_EDITED,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
         [

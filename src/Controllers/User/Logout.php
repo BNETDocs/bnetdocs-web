@@ -30,8 +30,8 @@ class Logout extends \BNETDocs\Controllers\Base
   {
     $user = $this->model->active_user;
     if (Authentication::logout()) $this->model->active_user = &Authentication::$user;
-    \BNETDocs\Libraries\Event::log(
-      \BNETDocs\Libraries\EventTypes::USER_LOGOUT, $user, getenv('REMOTE_ADDR'), ['error' => $this->model->error]
+    \BNETDocs\Libraries\EventLog\Event::log(
+      \BNETDocs\Libraries\EventLog\EventTypes::USER_LOGOUT, $user, getenv('REMOTE_ADDR'), ['error' => $this->model->error]
     );
   }
 }

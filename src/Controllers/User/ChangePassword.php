@@ -90,8 +90,8 @@ class ChangePassword extends \BNETDocs\Controllers\Base
     $this->model->active_user->setPassword($pw2);
     $this->model->error = $this->model->active_user->commit() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\Event::log(
-      \BNETDocs\Libraries\EventTypes::USER_PASSWORD_CHANGE,
+    \BNETDocs\Libraries\EventLog\Event::log(
+      \BNETDocs\Libraries\EventLog\EventTypes::USER_PASSWORD_CHANGE,
       $this->model->active_user,
       getenv('REMOTE_ADDR'),
       [

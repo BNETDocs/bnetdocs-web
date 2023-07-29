@@ -46,8 +46,8 @@ class Create extends \BNETDocs\Controllers\Base
 
     if ($this->model->error === FormModel::ERROR_SUCCESS)
     {
-      \BNETDocs\Libraries\Event::log(
-        \BNETDocs\Libraries\EventTypes::PACKET_CREATED,
+      \BNETDocs\Libraries\EventLog\Event::log(
+        \BNETDocs\Libraries\EventLog\EventTypes::PACKET_CREATED,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
         [

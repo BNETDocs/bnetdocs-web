@@ -4,7 +4,7 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DateTimeImmutable;
-use \BNETDocs\Libraries\EventTypes;
+use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \DateTimeInterface;

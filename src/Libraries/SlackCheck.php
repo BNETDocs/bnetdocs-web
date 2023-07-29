@@ -103,8 +103,8 @@ class SlackCheck
   {
     if (!self::is_slack()) return; // do not log non-Slack requests
 
-    \BNETDocs\Libraries\Event::log(
-      \BNETDocs\Libraries\EventTypes::SLACK_UNFURL,
+    \BNETDocs\Libraries\EventLog\Event::log(
+      \BNETDocs\Libraries\EventLog\EventTypes::SLACK_UNFURL,
       Authentication::$user,
       getenv('REMOTE_ADDR'),
       [

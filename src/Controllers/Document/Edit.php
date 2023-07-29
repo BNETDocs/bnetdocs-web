@@ -87,8 +87,8 @@ class Edit extends \BNETDocs\Controllers\Base
 
     $this->model->error = $this->model->document->commit() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\Event::log(
-      \BNETDocs\Libraries\EventTypes::DOCUMENT_EDITED,
+    \BNETDocs\Libraries\EventLog\Event::log(
+      \BNETDocs\Libraries\EventLog\EventTypes::DOCUMENT_EDITED,
       $this->model->active_user,
       getenv('REMOTE_ADDR'),
       [

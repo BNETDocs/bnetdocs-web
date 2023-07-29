@@ -417,8 +417,8 @@ class Update extends \BNETDocs\Controllers\Base
 
       if ($profile_changed) $this->model->profile->commit();
 
-      \BNETDocs\Libraries\Event::log(
-        \BNETDocs\Libraries\EventTypes::USER_EDITED,
+      \BNETDocs\Libraries\EventLog\Event::log(
+        \BNETDocs\Libraries\EventLog\EventTypes::USER_EDITED,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
         [

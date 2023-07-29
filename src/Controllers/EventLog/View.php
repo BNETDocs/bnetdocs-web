@@ -23,7 +23,7 @@ class View extends \BNETDocs\Controllers\Base
     $q = \BNETDocs\Libraries\Router::query();
     $this->model->id = isset($q['id']) ? (int) $q['id'] : null;
 
-    try { if (!is_null($this->model->id)) $this->model->event = new \BNETDocs\Libraries\Event($this->model->id); }
+    try { if (!is_null($this->model->id)) $this->model->event = new \BNETDocs\Libraries\EventLog\Event($this->model->id); }
     catch (\UnexpectedValueException) { $this->model->event = null; }
 
     $this->model->_responseCode = $this->model->event ? 200 : 404;

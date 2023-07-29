@@ -1,6 +1,6 @@
 <?php
 
-namespace BNETDocs\Libraries;
+namespace BNETDocs\Libraries\EventLog;
 
 class EventTypes
 {

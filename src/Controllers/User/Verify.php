@@ -47,8 +47,8 @@ class Verify extends \BNETDocs\Controllers\Base
     catch (\Throwable) { $this->model->error = 'INTERNAL_ERROR'; }
 
     if (!$this->model->error)
-      \BNETDocs\Libraries\Event::log(
-        \BNETDocs\Libraries\EventTypes::USER_VERIFIED,
+      \BNETDocs\Libraries\EventLog\Event::log(
+        \BNETDocs\Libraries\EventLog\EventTypes::USER_VERIFIED,
         $this->model->user_id,
         getenv('REMOTE_ADDR'),
         ['error' => $this->model->error]

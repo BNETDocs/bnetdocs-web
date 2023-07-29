@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Controllers\EventLog;
 
-use \BNETDocs\Libraries\Event;
+use \BNETDocs\Libraries\EventLog\Event;
 
 class Index extends \BNETDocs\Controllers\Base
 {

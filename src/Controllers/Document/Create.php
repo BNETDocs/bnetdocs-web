@@ -65,8 +65,8 @@ class Create extends \BNETDocs\Controllers\Base
     $this->model->error = $document->commit() ? false : 'INTERNAL_ERROR';
 
     if ($this->model->error === false)
-      \BNETDocs\Libraries\Event::log(
-        \BNETDocs\Libraries\EventTypes::DOCUMENT_CREATED,
+      \BNETDocs\Libraries\EventLog\Event::log(
+        \BNETDocs\Libraries\EventLog\EventTypes::DOCUMENT_CREATED,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
         [

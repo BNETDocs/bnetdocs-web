@@ -1,7 +1,8 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Libraries\EventTypes;
+use \BNETDocs\Libraries\EventLog\Event;
+use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\User;
@@ -29,7 +30,7 @@ class ResetPassword extends \BNETDocs\Controllers\Base
     if (Router::requestMethod() == Router::METHOD_POST)
     {
       $this->model->error = $this->doPasswordReset();
-      \BNETDocs\Libraries\Event::log(
+      Event::log(
         EventTypes::USER_PASSWORD_RESET,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
@@ -154,7 +155,7 @@ class ResetPassword extends \BNETDocs\Controllers\Base
 
       $mail->send();
 
-      \BNETDocs\Libraries\Event::log(
+      Event::log(
         EventTypes::EMAIL_SENT,
         $this->model->user,
         getenv('REMOTE_ADDR'),

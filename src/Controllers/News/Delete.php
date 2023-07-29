@@ -48,8 +48,8 @@ class Delete extends \BNETDocs\Controllers\Base
   {
     $this->model->error = $this->model->news_post->deallocate() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\Event::log(
-      \BNETDocs\Libraries\EventTypes::NEWS_DELETED,
+    \BNETDocs\Libraries\EventLog\Event::log(
+      \BNETDocs\Libraries\EventLog\EventTypes::NEWS_DELETED,
       $this->model->active_user,
       getenv('REMOTE_ADDR'),
       [

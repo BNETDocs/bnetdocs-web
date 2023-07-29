@@ -87,8 +87,8 @@ class Create extends \BNETDocs\Controllers\Base
       $this->model->error = $this->model->news_post->commit() ? false : 'INTERNAL_ERROR';
     }
 
-    \BNETDocs\Libraries\Event::log(
-      \BNETDocs\Libraries\EventTypes::NEWS_CREATED,
+    \BNETDocs\Libraries\EventLog\Event::log(
+      \BNETDocs\Libraries\EventLog\EventTypes::NEWS_CREATED,
       $this->model->active_user,
       getenv('REMOTE_ADDR'),
       [

@@ -1,12 +1,13 @@
 <?php
 
-namespace BNETDocs\Libraries;
+namespace BNETDocs\Libraries\EventLog;
 
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\Discord\Embed as DiscordEmbed;
 use \BNETDocs\Libraries\Discord\EmbedAuthor as DiscordEmbedAuthor;
 use \BNETDocs\Libraries\Discord\EmbedField as DiscordEmbedField;
 use \BNETDocs\Libraries\Discord\Webhook as DiscordWebhook;
+use \BNETDocs\Libraries\EventLog\EventType;
 use \BNETDocs\Libraries\User;
 use \CarlBennett\MVC\Libraries\Common;
 use \DateTimeInterface;
@@ -37,7 +38,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public function allocate(): bool
   {
     $this->setEventDateTime('now');
-    $this->setEventTypeId(\BNETDocs\Libraries\EventTypes::LOG_NOTE);
+    $this->setEventTypeId(\BNETDocs\Libraries\EventLog\EventTypes::LOG_NOTE);
     $this->setIPAddress(null);
     $this->setMetadata(null);
     $this->setUserId(null);
@@ -193,7 +194,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 
   public function getEventTypeName(): string
   {
-    return new \BNETDocs\Libraries\EventType($this->getEventTypeId());
+    return new EventType($this->getEventTypeId());
   }
 
   public function getId(): ?int
@@ -257,7 +258,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $webhook = new DiscordWebhook($c->webhook);
     $embed = new DiscordEmbed();
 
-    $embed->setColor(\BNETDocs\Libraries\EventType::color($event->getEventTypeId()));
+    $embed->setColor(EventType::color($event->getEventTypeId()));
     $embed->setTimestamp($event->getEventDateTime());
     $embed->setTitle($event->getEventTypeName());
     $embed->setUrl(Common::relativeUrlToAbsolute(sprintf('/eventlog/view?id=%d', $event->getId())));
@@ -274,7 +275,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     if (!$c->exclude_meta_data)
     {
       $data = $event->getMetadata();
-      foreach (\explode(\PHP_EOL, ArrayFlattener::flatten($data)) as $line)
+      foreach (\explode(\PHP_EOL, \BNETDocs\Libraries\ArrayFlattener::flatten($data)) as $line)
       {
         $key = \substr($line, 0, \strpos($line, ' '));
         $field = new DiscordEmbedField($key, \substr($line, \strlen($key) + 2), true);

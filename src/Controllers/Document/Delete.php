@@ -43,8 +43,8 @@ class Delete extends \BNETDocs\Controllers\Base
     {
       $this->model->error = $this->model->document->deallocate() ? DeleteModel::ERROR_SUCCESS : DeleteModel::ERROR_INTERNAL;
   
-      \BNETDocs\Libraries\Event::log(
-        \BNETDocs\Libraries\EventTypes::DOCUMENT_DELETED,
+      \BNETDocs\Libraries\EventLog\Event::log(
+        \BNETDocs\Libraries\EventLog\EventTypes::DOCUMENT_DELETED,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
         [

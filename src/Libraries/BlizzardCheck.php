@@ -3,7 +3,6 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Authentication;
-use \BNETDocs\Libraries\EventTypes;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\IP;
 
@@ -57,8 +56,8 @@ class BlizzardCheck
     // Blizzard would likely never login to our site... would they?
     // But if they happened to be logged in already from a previously non-Blizzard identity...
 
-    \BNETDocs\Libraries\Event::log(
-      EventTypes::BLIZZARD_VISIT,
+    \BNETDocs\Libraries\EventLog\Event::log(
+      \BNETDocs\Libraries\EventLog\EventTypes::BLIZZARD_VISIT,
       Authentication::$user,
       getenv('REMOTE_ADDR'),
       [
