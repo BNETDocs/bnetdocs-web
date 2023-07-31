@@ -226,7 +226,8 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 
   public function getTypeName(): string
   {
-    return new EventType($this->getTypeId());
+    $type = new \BNETDocs\Libraries\EventLog\EventType($this->getTypeId());
+    return (string) $type;
   }
 
   public function getUser(): ?User
@@ -285,7 +286,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public function setMetaData(mixed $value): void
   {
     $v = \is_null($value) ? null : \json_encode($value, \JSON_PRESERVE_ZERO_FRACTION | \JSON_THROW_ON_ERROR);
-    $l = \strlen($v);
+    $l = \is_null($v) ? 0 : \strlen($v);
 
     if ($l > self::MAX_META_DATA)
     {
