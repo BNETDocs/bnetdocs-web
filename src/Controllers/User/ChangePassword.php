@@ -3,8 +3,8 @@
 namespace BNETDocs\Controllers\User;
 
 use \CarlBennett\MVC\Libraries\Common;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
-use \Exception;
 
 class ChangePassword extends \BNETDocs\Controllers\Base
 {
@@ -90,7 +90,7 @@ class ChangePassword extends \BNETDocs\Controllers\Base
     $this->model->active_user->setPassword($pw2);
     $this->model->error = $this->model->active_user->commit() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\EventLog\Event::log(
+    $event = Logger::initEvent(
       \BNETDocs\Libraries\EventLog\EventTypes::USER_PASSWORD_CHANGE,
       $this->model->active_user,
       getenv('REMOTE_ADDR'),
@@ -102,5 +102,11 @@ class ChangePassword extends \BNETDocs\Controllers\Base
         'new_password_salt' => $this->model->active_user->getPasswordSalt()
       ]
     );
+
+    if ($event->commit())
+    {
+      $embed = Logger::initDiscordEmbed($event, $this->model->active_user->getURI());
+      Logger::logToDiscord($event, $embed);
+    }
   }
 }

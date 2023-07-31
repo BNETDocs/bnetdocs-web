@@ -45,7 +45,9 @@ require('./header.inc.phtml'); ?>
   <div class="alert alert-success">
     <p class="mb-0"><strong>The comment was successfully deleted!</strong></p>
   </div>
+<? if (isset($c_parent_url) && !empty($c_parent_url)) { ?>
   <a class="btn btn-primary" href="<?=$c_parent_url?>">Back</a>
+<? } ?>
 
 <? } else { ?>
 
@@ -54,7 +56,9 @@ require('./header.inc.phtml'); ?>
     <p class="mb-0"><strong>An error occurred while attempting to delete the comment:</strong></p>
     <p class="mb-0"><?=$message?></p>
   </div>
+<? if (isset($c_parent_url) && !empty($c_parent_url)) { ?>
   <a class="btn btn-primary" href="<?=$c_parent_url?>">Back</a>
+<? } ?>
 
 <? } ?>
 </div>

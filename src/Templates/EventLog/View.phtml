@@ -13,7 +13,7 @@ $object_id = $this->getContext()->id;
 $object = $this->getContext()->event;
 
 $object_ip_address = ($object instanceof Event ? $object->getIPAddress() : null);
-$object_metadata = ($object instanceof Event ? $object->getMetadata() : null);
+$object_metadata = ($object instanceof Event ? $object->getMetaData() : null);
 $object_user = ($object instanceof Event ? $object->getUser() : null);
 $object_user_id = ($object instanceof Event ? $object->getUserId() : null);
 
@@ -77,8 +77,8 @@ require('./header.inc.phtml'); ?>
     <table class="table table-hover table-striped">
       <thead></thead><tbody>
         <tr><th scope="row" class="text-right">Id</th><td><code><a href="<?=Common::relativeUrlToAbsolute('/eventlog/view?id=' . $object_id)?>"><?=$object_id?></a></code></td></tr>
-        <tr><th scope="row" class="text-right">Event Type</th><td><?=$object->getEventTypeName()?></td></tr>
-        <tr><th scope="row" class="text-right">Timestamp</th><td><time datetime='<?=$object->getEventDateTime()->format('c')?>'><?=$object->getEventDateTime()->format('l, F j, Y')?></time></td></tr>
+        <tr><th scope="row" class="text-right">Event Type</th><td><?=$object->getTypeName()?></td></tr>
+        <tr><th scope="row" class="text-right">Timestamp</th><td><time datetime='<?=$object->getDateTime()->format('c')?>'><?=$object->getDateTime()->format('l, F j, Y')?></time></td></tr>
         <tr><th scope="row" class="text-right">IP Address</th><td><?=($object_ip_address ? '<code>' . $object_ip_address . '</code>' : '<em>(null)</em>')?></td></tr>
         <tr><th scope="row" class="text-right">User Account</th><td><?=$tpl_user?></td></tr>
       </tbody>

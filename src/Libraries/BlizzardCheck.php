@@ -3,6 +3,7 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\IP;
 
@@ -55,18 +56,35 @@ class BlizzardCheck
 
     // Blizzard would likely never login to our site... would they?
     // But if they happened to be logged in already from a previously non-Blizzard identity...
+    // Authentication::$user will associate their previous session to this session.
 
-    \BNETDocs\Libraries\EventLog\Event::log(
+    $method = \getenv('REQUEST_METHOD');
+    $referer = \getenv('HTTP_REFERER');
+    $url = Common::relativeUrlToAbsolute(\getenv('REQUEST_URI'));
+    $user_agent = \getenv('HTTP_USER_AGENT');
+
+    $event = Logger::initEvent(
       \BNETDocs\Libraries\EventLog\EventTypes::BLIZZARD_VISIT,
       Authentication::$user,
       getenv('REMOTE_ADDR'),
       [
-        'method'     => getenv('REQUEST_METHOD'),
-        'referer'    => getenv('HTTP_REFERER'),
-        'uri'        => Common::relativeUrlToAbsolute(getenv('REQUEST_URI')),
-        'user_agent' => getenv('HTTP_USER_AGENT'),
+        'method'     => $method,
+        'referer'    => $referer,
+        'uri'        => $url,
+        'user_agent' => $user_agent,
         'version'    => VersionInfo::get(),
       ]
     );
+
+    if ($event->commit())
+    {
+      $embed = Logger::initDiscordEmbed($event, $url, [
+        'Method' => $method,
+        'URL' => $url,
+        'Referer' => ($referer === false || empty($referer) ? '*empty*' : $referer),
+        'User Agent' => $user_agent,
+      ]);
+      Logger::logToDiscord($event, $embed);
+    }
   }
 }

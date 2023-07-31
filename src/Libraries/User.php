@@ -4,6 +4,7 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Database;
 use \BNETDocs\Libraries\DateTimeImmutable;
+use \BNETDocs\Libraries\Discord\EmbedAuthor as DiscordEmbedAuthor;
 use \BNETDocs\Libraries\UserProfile;
 use \CarlBennett\MVC\Libraries\Common;
 use \DateTimeInterface;
@@ -396,6 +397,16 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     while ($row = $q->fetchObject()) $r[] = new self($row);
     $q->closeCursor();
     return $r;
+  }
+
+  public function getAsDiscordEmbedAuthor(): DiscordEmbedAuthor
+  {
+    return new DiscordEmbedAuthor($this->getName(), $this->getURI(), $this->getAvatarURI(null));
+  }
+
+  public function getAsMarkdown(): string
+  {
+    return \sprintf('[%s](%s)', $this->getName(), $this->getURI());
   }
 
   /**

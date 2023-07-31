@@ -1,7 +1,7 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\EventLog;
 
-use \BNETDocs\Libraries\Exceptions\UserNotFoundException;
+use \BNETDocs\Exceptions\UserNotFoundException;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
@@ -70,8 +70,8 @@ require('./header.inc.phtml'); ?>
 ?>
       <tr>
         <td class="text-right"><a href="<?=Common::relativeUrlToAbsolute('/eventlog/view?id=' . $e_id)?>"><?=$e_id?></a></td>
-        <td><?=$event->getEventTypeName()?></td>
-        <td><time datetime="<?=$event->getEventDateTime()->format('c')?>"><?=$event->getEventDateTime()->format('l, F j, Y')?></time></td>
+        <td><?=$event->getTypeName()?></td>
+        <td><time datetime="<?=$event->getDateTime()->format('c')?>"><?=$event->getDateTime()->format('l, F j, Y')?></time></td>
         <td><?=$e_user?></td>
         <td><a class="btn btn-sm btn-primary" href="<?=Common::relativeUrlToAbsolute('/eventlog/view?id=' . $e_id)?>" title="View Event #<?=$e_id?>">🔎</a></td>
       </tr>

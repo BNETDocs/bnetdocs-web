@@ -2,6 +2,8 @@
 namespace BNETDocs\Controllers\Packet;
 
 use \BNETDocs\Libraries\Comment;
+use \BNETDocs\Libraries\Discord\EmbedField as DiscordEmbedField;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Packet;
 use \BNETDocs\Libraries\Product;
 use \BNETDocs\Libraries\Router;
@@ -59,7 +61,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
     if ($this->model->error === FormModel::ERROR_SUCCESS)
     {
-      \BNETDocs\Libraries\EventLog\Event::log(
+      $event = Logger::initEvent(
         \BNETDocs\Libraries\EventLog\EventTypes::PACKET_EDITED,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
@@ -83,6 +85,59 @@ class Edit extends \BNETDocs\Controllers\Base
           'used_by' => $this->model->packet->getUsedBy(),
         ]
       );
+
+      if ($event->commit())
+      {
+        $packet = $this->model->packet;
+
+        $brief = $packet->getBrief(false);
+        $format = $packet->getFormat();
+        $remarks = $packet->getRemarks(false);
+
+        $offset = 13; // char count of code block, end-of-line, and ellipsis addons
+        if (\strlen($brief) - $offset > DiscordEmbedField::MAX_VALUE)
+        {
+          $brief = \substr($brief, 0, DiscordEmbedField::MAX_VALUE - $offset) . '…';
+        }
+        if (\strlen($format) - $offset > DiscordEmbedField::MAX_VALUE)
+        {
+          $format = \substr($format, 0, DiscordEmbedField::MAX_VALUE - $offset) . '…';
+        }
+        if (\strlen($remarks) - $offset > DiscordEmbedField::MAX_VALUE)
+        {
+          $remarks = \substr($remarks, 0, DiscordEmbedField::MAX_VALUE - $offset) . '…';
+        }
+
+        $used_by = '';
+        foreach ($packet->getUsedBy() as $product)
+        {
+          if (!empty($used_by)) $used_by .= ', ';
+          $used_by .= $product->getLabel();
+        }
+        if (empty($used_by)) $used_by = '*Unknown*';
+
+        $embed = Logger::initDiscordEmbed($event, $packet->getURI(), [
+          'Direction' => $packet->getDirectionLabel(),
+          'Id' => $packet->getPacketId(true),
+          'Name' => $packet->getName(),
+          'Brief' => !empty($brief) ? $brief : '*empty*',
+
+          'Deprecated' => $packet->isDeprecated() ? ':white_check_mark:' : ':x:',
+          'Draft' => !$packet->isPublished() ? ':white_check_mark:' : ':x:',
+          'Markdown' => $packet->isMarkdown() ? ':white_check_mark:' : ':x:',
+          'In research' => $packet->isInResearch() ? ':white_check_mark:' : ':x:',
+
+          'Application layer' => $packet->getApplicationLayer()->getLabel(),
+          'Transport layer' => $packet->getTransportLayer()->getTag(),
+          'Used by' => $used_by,
+
+          'Authored by' => !\is_null($packet->getUserId()) ? $packet->getUser()->getAsMarkdown() : '*Anonymous*',
+          'Edited by' => $this->model->active_user->getAsMarkdown(),
+        ]);
+        $embed->addField(new DiscordEmbedField('Format', '```' . \PHP_EOL . $format . \PHP_EOL . '```', false));
+        $embed->setDescription($packet->isMarkdown() ? $remarks : '```' . \PHP_EOL . $remarks . \PHP_EOL . '```');
+        Logger::logToDiscord($event, $embed);
+      }
     }
 
     $this->model->_responseCode = 200;

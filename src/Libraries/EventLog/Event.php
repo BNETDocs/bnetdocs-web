@@ -3,26 +3,31 @@
 namespace BNETDocs\Libraries\EventLog;
 
 use \BNETDocs\Libraries\Database;
-use \BNETDocs\Libraries\Discord\Embed as DiscordEmbed;
-use \BNETDocs\Libraries\Discord\EmbedAuthor as DiscordEmbedAuthor;
-use \BNETDocs\Libraries\Discord\EmbedField as DiscordEmbedField;
-use \BNETDocs\Libraries\Discord\Webhook as DiscordWebhook;
-use \BNETDocs\Libraries\EventLog\EventType;
+use \BNETDocs\Libraries\DateTimeImmutable;
+use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\User;
-use \CarlBennett\MVC\Libraries\Common;
 use \DateTimeInterface;
+use \DateTimeZone;
+use \LengthException;
+use \OutOfBoundsException;
 use \StdClass;
 
 class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
-  protected DateTimeInterface $event_datetime;
-  protected int $event_type_id;
-  protected ?int $id;
-  protected ?string $ip_address;
-  protected mixed $meta_data;
-  protected ?int $user_id;
+  public const MAX_ID = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_IP_ADDRESS = 0xFF;
+  public const MAX_META_DATA = 0xFFFFFF;
+  public const MAX_TYPE_ID = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_USER_ID = 0xFFFFFFFFFFFFFFFF;
 
-  public function __construct(StdClass|int|null $value)
+  private ?DateTimeInterface $datetime;
+  private ?int $id;
+  private ?string $ip_address;
+  private mixed $meta_data;
+  private int $type_id;
+  private ?int $user_id;
+
+  public function __construct(StdClass|int|null $value = null)
   {
     if ($value instanceof StdClass)
     {
@@ -31,170 +36,172 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     else
     {
       $this->setId($value);
-      if (!$this->allocate()) throw new \BNETDocs\Exceptions\EventNotFoundException($this);
+      if (!$this->allocate())
+      {
+        throw new \BNETDocs\Exceptions\EventNotFoundException($value);
+      }
     }
   }
 
   public function allocate(): bool
   {
-    $this->setEventDateTime('now');
-    $this->setEventTypeId(\BNETDocs\Libraries\EventLog\EventTypes::LOG_NOTE);
+    $this->setDateTime(null);
     $this->setIPAddress(null);
-    $this->setMetadata(null);
+    $this->setMetaData(null);
+    $this->setTypeId(EventTypes::LOG_NOTE);
     $this->setUserId(null);
 
     $id = $this->getId();
-    if (is_null($id)) return true;
+    if (\is_null($id)) return true;
 
-    $q = Database::instance()->prepare('
-      SELECT
-        `event_datetime`,
-        `event_type_id`,
-        `id`,
-        `ip_address`,
-        `meta_data`,
-        `user_id`
-      FROM `event_log` WHERE `id` = ? LIMIT 1;
-    ');
-    if (!$q || !$q->execute([$id]) || $q->rowCount() != 1) return false;
-    $this->allocateObject($q->fetchObject());
-    $q->closeCursor();
+    try
+    {
+      $q = Database::instance()->prepare('
+        SELECT
+          `event_datetime` AS `datetime`,
+          `event_type_id` AS `type_id`,
+          `id`,
+          `ip_address`,
+          `meta_data`,
+          `user_id`
+        FROM `event_log` WHERE `id` = ? LIMIT 1;
+      ');
+      if (!$q || !$q->execute([$id]) || $q->rowCount() != 1) return false;
+      $this->allocateObject($q->fetchObject());
+    }
+    finally
+    {
+      if ($q) $q->closeCursor();
+    }
+
     return true;
   }
 
-  protected function allocateObject(StdClass $value): void
+  public static function allocateAll(mixed $filter = null, string $order_column = '', bool $descending = false, ?int $limit = null, ?int $offset = null): ?array
   {
-    $this->setEventDateTime($value->event_datetime);
-    $this->setEventTypeId($value->event_type_id);
+    try
+    {
+      $where_clause = empty($filter) ? '' : \sprintf(
+        ' WHERE `event_type_id` IN (%s)', \implode(',', $filter)
+      );
+      $sort = $descending ? 'DESC' : 'ASC';
+      $order_clause = ' ORDER BY ' . (empty($order_column) ? \sprintf('`id` %s', $sort)
+        : \sprintf('`%s` %s, `id` %s', $order_column, $sort, $sort));
+      $limit_clause = ' LIMIT ' . $offset . ',' . $limit;
+      $q = \sprintf('
+        SELECT
+          `event_datetime` AS `datetime`,
+          `event_type_id` AS `type_id`,
+          `id`,
+          `ip_address`,
+          `meta_data`,
+          `user_id`
+        FROM `event_log`%s%s%s;', $where_clause, $order_clause, $limit_clause
+      );
+      $q = Database::instance()->prepare($q);
+      if (!$q || !$q->execute()) return null;
+      $r = [];
+      while ($row = $q->fetchObject()) $r[] = new self($row);
+      return $r;
+    }
+    finally
+    {
+      if ($q) $q->closeCursor();
+    }
+  }
+
+  public function allocateObject(StdClass $value): void
+  {
+    $this->setDateTime($value->datetime);
     $this->setId($value->id);
     $this->setIPAddress($value->ip_address);
-    $this->setMetadata(\json_decode($value->meta_data, true));
+    $this->setMetaData(\json_decode($value->meta_data, true, 512, \JSON_PRESERVE_ZERO_FRACTION | \JSON_THROW_ON_ERROR));
+    $this->setTypeId($value->type_id);
     $this->setUserId($value->user_id);
   }
 
   public function commit(): bool
   {
-    $q = Database::instance()->prepare('
-      INSERT INTO `event_log` (
-        `event_datetime`,
-        `event_type_id`,
-        `id`,
-        `ip_address`,
-        `meta_data`,
-        `user_id`
-      ) VALUES (
-        :edt, :etid, :id, :ip, :data, :uid
-      ) ON DUPLICATE KEY UPDATE
-        `event_datetime` = :edt,
-        `event_type_id` = :etid,
-        `id` = :id,
-        `ip_address` = :ip,
-        `meta_data` = :data,
-        `user_id` = :uid;
-    ');
-
-    $p = [
-      ':edt' => $this->getEventDateTime(),
-      ':etid' => $this->getEventTypeId(),
-      ':id' => $this->getId(),
-      ':ip' => $this->getIPAddress(),
-      ':data' => \json_encode($this->getMetadata(), (\JSON_PRESERVE_ZERO_FRACTION | \JSON_THROW_ON_ERROR)),
-      ':uid' => $this->getUserId(),
-    ];
-
-    foreach ($p as $k => $v)
+    try
     {
-      if ($v instanceof DateTimeInterface)
+      $q = Database::instance()->prepare('
+        INSERT INTO `event_log` (
+          `event_datetime`,
+          `event_type_id`,
+          `id`,
+          `ip_address`,
+          `meta_data`,
+          `user_id`
+        ) VALUES (
+          :dt, :tid, :id, :ip, :md, :uid
+        ) ON DUPLICATE KEY UPDATE
+          `event_datetime` = :dt,
+          `event_type_id` = :tid,
+          `id` = :id,
+          `ip_address` = :ip,
+          `meta_data` = :md,
+          `user_id` = :uid;
+      ');
+
+      $p = [
+        ':dt' => $this->getDateTime(),
+        ':id' => $this->getId(),
+        ':ip' => $this->getIPAddress(),
+        ':md' => \json_encode($this->getMetaData(), \JSON_PRESERVE_ZERO_FRACTION | \JSON_THROW_ON_ERROR),
+        ':tid' => $this->getTypeId(),
+        ':uid' => $this->getUserId(),
+      ];
+
+      foreach ($p as $k => $v)
       {
-        $p[$k] = $v->format(self::DATE_SQL);
+        if ($v instanceof DateTimeInterface)
+        {
+          $p[$k] = $v->format(self::DATE_SQL);
+        }
       }
+
+      if (!$q || !$q->execute($p)) return false;
+      if (\is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
+    }
+    finally
+    {
+      if ($q) $q->closeCursor();
     }
 
-    if (!$q || !$q->execute($p)) return false;
-    if (is_null($p[':id'])) $this->setId(Database::instance()->lastInsertId());
-    $q->closeCursor();
     return true;
   }
 
-  /**
-   * Deallocates the properties of this object from the database.
-   *
-   * @return boolean Whether the operation was successful.
-   */
   public function deallocate(): bool
   {
     $id = $this->getId();
-    if (is_null($id)) return false;
+    if (\is_null($id)) return false;
     $q = Database::instance()->prepare('DELETE FROM `event_log` WHERE `id` = ? LIMIT 1;');
     try { return $q && $q->execute([$id]); }
-    finally { $q->closeCursor(); }
+    finally { if ($q) $q->closeCursor(); }
   }
 
-  public static function &getAllEvents($filter_types = null, ?array $order = null, ?int $limit = null, ?int $index = null): ?array
+  public static function countAll(mixed $filter = null): ?int
   {
-    if (empty($filter_types)) {
-      $where_clause = '';
-    } else {
-      $where_clause = 'WHERE `event_type_id` IN ('
-        . implode( ',', $filter_types ) . ')'
-      ;
+    try
+    {
+      $where_clause = empty($filter) ? '' : \sprintf(
+        ' WHERE `event_type_id` IN (%s)', \implode(',', $filter)
+      );
+      $q = Database::instance()->prepare(sprintf(
+        'SELECT COUNT(*) AS `count` FROM `event_log`%s;', $where_clause
+      ));
+      if (!$q || !$q->execute() || $q->rowCount() != 1) return null;
+      return $q->fetchObject()->count;
     }
-
-    if (!(is_numeric($limit) || is_numeric($index))) {
-      $limit_clause = '';
-    } else if (!is_numeric($index)) {
-      $limit_clause = 'LIMIT ' . (int) $limit;
-    } else {
-      $limit_clause = 'LIMIT ' . (int) $index . ',' . (int) $limit;
+    finally
+    {
+      if ($q) $q->closeCursor();
     }
-
-    $q = Database::instance()->prepare(sprintf('
-      SELECT
-        `event_datetime`,
-        `event_type_id`,
-        `id`,
-        `ip_address`,
-        `meta_data`,
-        `user_id`
-      FROM `event_log` %s
-      ORDER BY %s %s;
-    ', $where_clause, (
-      $order ? (sprintf('`%s` %s, `id` %s', $order[0], $order[1], $order[1])) : '`id` ASC'
-    ), $limit_clause));
-    if (!$q || !$q->execute()) return null;
-    $r = [];
-    while ($row = $q->fetchObject()) $r[] = new self($row);
-    $q->closeCursor();
-    return $r;
   }
 
-  public static function getEventCount(?array $filter_types = null): ?int
+  public function getDateTime(): ?DateTimeInterface
   {
-    $where_clause = empty($filter_types) ? '' : sprintf(
-      ' WHERE `event_type_id` IN (%s)', implode(',', $filter_types)
-    );
-    $q = Database::instance()->prepare(sprintf(
-      'SELECT COUNT(*) AS `count` FROM `event_log`%s;', $where_clause
-    ));
-    if (!$q || !$q->execute() || $q->rowCount() != 1) return null;
-    $r = $q->fetchObject()->count;
-    $q->closeCursor();
-    return $r;
-  }
-
-  public function getEventDateTime(): DateTimeInterface
-  {
-    return $this->event_datetime;
-  }
-
-  public function getEventTypeId(): int
-  {
-    return $this->event_type_id;
-  }
-
-  public function getEventTypeName(): string
-  {
-    return new EventType($this->getEventTypeId());
+    return $this->datetime;
   }
 
   public function getId(): ?int
@@ -207,16 +214,24 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $this->ip_address;
   }
 
-  public function getMetadata(): mixed
+  public function getMetaData(): mixed
   {
     return $this->meta_data;
   }
 
+  public function getTypeId(): int
+  {
+    return $this->type_id;
+  }
+
+  public function getTypeName(): string
+  {
+    return new EventType($this->getTypeId());
+  }
+
   public function getUser(): ?User
   {
-    if (is_null($this->user_id)) return null;
-    try { return new User($this->user_id); }
-    catch (\UnexpectedValueException) { return null; }
+    return \is_null($this->user_id) ? null : new User($this->user_id);
   }
 
   public function getUserId(): ?int
@@ -227,162 +242,78 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public function jsonSerialize(): mixed
   {
     return [
-      'event_datetime' => $this->getEventDateTime(),
-      'event_id' => $this->getId(),
-      'event_ip_address' => $this->getIPAddress(),
-      'event_meta_data' => $this->getMetadata(),
-      'event_type_id' => $this->getEventTypeId(),
-      'event_user' => $this->getUser(),
+      'datetime' => $this->getDateTime(),
+      'id' => $this->getId(),
+      'ip_address' => $this->getIPAddress(),
+      'meta_data' => $this->getMetaData(),
+      'type_id' => $this->getTypeId(),
+      'user_id' => $this->getUserId(),
     ];
   }
 
-  public static function log(int $type_id, User|int|null $user = null, ?string $ip_address = null, mixed $meta_data = null, bool $dispatch_discord = true): bool
+  public function setDateTime(DateTimeInterface|string|null $value): void
   {
-    $event = new Event(null);
-    $event->setEventTypeId($type_id);
-    $event->setIPAddress($ip_address);
-    $event->setMetadata($meta_data);
-    $event->setUserId($user instanceof User ? $user->getId() : $user);
-
-    if (!$event->commit()) return false;
-    if ($dispatch_discord) self::logToDiscord($event);
-    return true;
-  }
-
-  protected static function logToDiscord(Event $event): void
-  {
-    $c = &Common::$config->discord->forward_event_log;
-    if (!$c->enabled) return;
-    if (in_array($event->getEventTypeId(), $c->ignore_event_types)) return;
-
-    $webhook = new DiscordWebhook($c->webhook);
-    $embed = new DiscordEmbed();
-
-    $embed->setColor(EventType::color($event->getEventTypeId()));
-    $embed->setTimestamp($event->getEventDateTime());
-    $embed->setTitle($event->getEventTypeName());
-    $embed->setUrl(Common::relativeUrlToAbsolute(sprintf('/eventlog/view?id=%d', $event->getId())));
-
-    $user = $event->getUser();
-    if (!is_null($user))
-    {
-      $author = new DiscordEmbedAuthor(
-        $user->getName(), $user->getURI(), $user->getAvatarURI(null)
-      );
-      $embed->setAuthor($author);
-    }
-
-    if (!$c->exclude_meta_data)
-    {
-      $data = $event->getMetadata();
-      foreach (\explode(\PHP_EOL, \BNETDocs\Libraries\ArrayFlattener::flatten($data)) as $line)
-      {
-        $key = \substr($line, 0, \strpos($line, ' '));
-        $field = new DiscordEmbedField($key, \substr($line, \strlen($key) + 2), true);
-        $embed->addField($field);
-      }
-      /*$parse_fx = function($value, $key, $embed)
-      {
-        $field = null;
-
-        if (!$field && is_string($value))
-        {
-          $v = substr($value, 0, DiscordEmbedField::MAX_VALUE - 3);
-          if (strlen($value) > DiscordEmbedField::MAX_VALUE - 3)
-          {
-            $v .= '...';
-          }
-          if (strlen($value) == 0)
-          {
-            $v = '*(empty)*';
-          }
-          $field = new DiscordEmbedField(
-            $key, $v, (strlen($v) < DiscordEmbedField::MAX_VALUE / 4)
-          );
-        }
-
-        if (!$field && is_numeric($value))
-        {
-          $field = new DiscordEmbedField($key, $value, true);
-        }
-
-        if (!$field && is_bool($value))
-        {
-          $field = new DiscordEmbedField(
-            $key, ($value ? 'true' : 'false'), true
-          );
-        }
-
-        if (!$field)
-        {
-          $field = new DiscordEmbedField($key, gettype($value), true);
-        }
-
-        $embed->addField($field);
-      };
-
-      $flatten_fx = function(&$tree, &$flatten_fx, &$parse_fx, &$depth, &$embed)
-      {
-        if (!is_array($tree))
-        {
-          $parse_fx($tree, implode('_', $depth), $embed);
-          return;
-        }
-
-        array_push($depth, '');
-        if (count($depth) > 2) return;
-
-        foreach ($tree as $key => $value)
-        {
-          $depth[count($depth)-1] = $key;
-          $flatten_fx($value, $flatten_fx, $parse_fx, $depth, $embed);
-        }
-
-        array_pop($depth);
-      };
-
-      $depth = [];
-      $flatten_fx($data, $flatten_fx, $parse_fx, $depth, $embed);*/
-    }
-
-    $webhook->addEmbed($embed);
-    $r = $webhook->send();
-  }
-
-  public function setEventDateTime(DateTimeInterface|string $value): void
-  {
-    $this->event_datetime = (is_string($value) ?
-      new \BNETDocs\Libraries\DateTimeImmutable($value, new \DateTimeZone(self::DATE_TZ)) : $value
+    $this->datetime = \is_null($value) ? null : (
+      \is_string($value) ? new DateTimeImmutable($value, new DateTimeZone(self::DATE_TZ)) : DateTimeImmutable::createFromInterface($value)
     );
-  }
-
-  public function setEventTypeId(int $value): void
-  {
-    $this->event_type_id = $value;
   }
 
   public function setId(?int $value): void
   {
+    if (!\is_null($value) && ($value < 0 || $value > self::MAX_ID))
+    {
+      throw new OutOfBoundsException(\sprintf('value must be null or an integer between 0-%d, got: %d', self::MAX_ID, $value));
+    }
+
     $this->id = $value;
   }
 
   public function setIPAddress(?string $value): void
   {
+    if (\is_string($value))
+    {
+      $l = \strlen($value);
+      if ($l < 1 || $l > self::MAX_IP_ADDRESS || !\filter_var($value, \FILTER_VALIDATE_IP))
+      {
+        throw new LengthException(\sprintf('value must be null or a formatted IP address string between 1-%d characters, got: %d characters', self::MAX_IP_ADDRESS, $l));
+      }
+    }
+
     $this->ip_address = $value;
   }
 
-  public function setMetadata(mixed $value): void
+  public function setMetaData(mixed $value): void
   {
+    $v = \is_null($value) ? null : \json_encode($value, \JSON_PRESERVE_ZERO_FRACTION | \JSON_THROW_ON_ERROR);
+    $l = \strlen($v);
+
+    if ($l > self::MAX_META_DATA)
+    {
+      throw new LengthException(\sprintf('value must be null or a string between 0-%d characters, got: %d characters', self::MAX_META_DATA, $l));
+    }
+
     $this->meta_data = $value;
   }
 
-  public function setUser(User $value): void
+  public function setTypeId(int $value): void
   {
-    $this->user_id = $value->getId();
+    if ($value < 0 || $value > self::MAX_TYPE_ID)
+    {
+      throw new OutOfBoundsException(\sprintf('value must be an integer between 0-%d, got: %d', self::MAX_TYPE_ID, $value));
+    }
+
+    $this->type_id = $value;
   }
 
-  public function setUserId(?int $value): void
+  public function setUserId(User|int|null $value): void
   {
-    $this->user_id = $value;
+    $v = $value instanceof User ? $value->getId() : $value;
+
+    if (!\is_null($v) && ($v < 0 || $v > self::MAX_USER_ID))
+    {
+      throw new OutOfBoundsException(\sprintf('value must be null or an integer between 0-%d, got: %d', self::MAX_TYPE_ID, $v));
+    }
+
+    $this->user_id = $v;
   }
 }

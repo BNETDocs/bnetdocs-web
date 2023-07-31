@@ -1,8 +1,8 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Controllers\User;
 
-use \BNETDocs\Libraries\EventLog\Event;
 use \BNETDocs\Libraries\EventLog\EventTypes;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\Template;
 use \BNETDocs\Libraries\User;
@@ -30,7 +30,8 @@ class ResetPassword extends \BNETDocs\Controllers\Base
     if (Router::requestMethod() == Router::METHOD_POST)
     {
       $this->model->error = $this->doPasswordReset();
-      Event::log(
+
+      $event = Logger::initEvent(
         EventTypes::USER_PASSWORD_RESET,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
@@ -41,6 +42,12 @@ class ResetPassword extends \BNETDocs\Controllers\Base
           'user' => $this->model->user,
         ]
       );
+
+      if ($event->commit())
+      {
+        $embed = Logger::initDiscordEmbed($event, $this->model->active_user->getURI());
+        Logger::logToDiscord($event, $embed);
+      }
     }
 
     $this->model->_responseCode = 200;
@@ -155,7 +162,7 @@ class ResetPassword extends \BNETDocs\Controllers\Base
 
       $mail->send();
 
-      Event::log(
+      $event = Logger::initEvent(
         EventTypes::EMAIL_SENT,
         $this->model->user,
         getenv('REMOTE_ADDR'),
@@ -169,8 +176,17 @@ class ResetPassword extends \BNETDocs\Controllers\Base
           'alt_body' => $mail->AltBody,
         ]
       );
+
+      if ($event->commit())
+      {
+        $embed = Logger::initDiscordEmbed($event, $this->model->user->getURI());
+        Logger::logToDiscord($event, $embed);
+      }
     }
-    catch (\PHPMailer\PHPMailer\Exception) { return ResetPasswordModel::E_INTERNAL_ERROR; }
+    catch (\PHPMailer\PHPMailer\Exception)
+    {
+      return ResetPasswordModel::E_INTERNAL_ERROR;
+    }
 
     return ResetPasswordModel::E_SUCCESS;
   }

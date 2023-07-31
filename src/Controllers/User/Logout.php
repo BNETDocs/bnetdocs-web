@@ -3,6 +3,7 @@
 namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
 
 class Logout extends \BNETDocs\Controllers\Base
@@ -30,8 +31,20 @@ class Logout extends \BNETDocs\Controllers\Base
   {
     $user = $this->model->active_user;
     if (Authentication::logout()) $this->model->active_user = &Authentication::$user;
-    \BNETDocs\Libraries\EventLog\Event::log(
-      \BNETDocs\Libraries\EventLog\EventTypes::USER_LOGOUT, $user, getenv('REMOTE_ADDR'), ['error' => $this->model->error]
+
+    $event = Logger::initEvent(
+      \BNETDocs\Libraries\EventLog\EventTypes::USER_LOGOUT,
+      $user,
+      getenv('REMOTE_ADDR'),
+      [
+        'error' => $this->model->error
+      ]
     );
+
+    if ($event->commit())
+    {
+      $embed = Logger::initDiscordEmbed($event, $user->getURI());
+      Logger::logToDiscord($event, $embed);
+    }
   }
 }

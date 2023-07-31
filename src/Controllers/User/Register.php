@@ -4,8 +4,8 @@ namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Exceptions\RecaptchaException;
 use \BNETDocs\Exceptions\UserNotFoundException;
-use \BNETDocs\Libraries\EventLog\Event;
 use \BNETDocs\Libraries\EventLog\EventTypes;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\GeoIP;
 use \BNETDocs\Libraries\Recaptcha;
 use \BNETDocs\Libraries\Router;
@@ -179,7 +179,7 @@ class Register extends \BNETDocs\Controllers\Base
 
     if (!is_null($user_id))
     {
-      Event::log(
+      $event = Logger::initEvent(
         EventTypes::USER_CREATED,
         $user_id,
         getenv('REMOTE_ADDR'),
@@ -193,6 +193,12 @@ class Register extends \BNETDocs\Controllers\Base
           'options_bitmask' => 0,
         ]
       );
+
+      if ($event->commit())
+      {
+        $embed = Logger::initDiscordEmbed($event, $user->getURI());
+        Logger::logToDiscord($event, $embed);
+      }
 
       $mail = new PHPMailer(true); // true enables exceptions
       $mail_config = &Common::$config->email;
@@ -247,7 +253,7 @@ class Register extends \BNETDocs\Controllers\Base
 
         $mail->send();
 
-        Event::log(
+        $event = Logger::initEvent(
           EventTypes::EMAIL_SENT,
           $user_id,
           getenv('REMOTE_ADDR'),
@@ -262,7 +268,14 @@ class Register extends \BNETDocs\Controllers\Base
           ]
         );
 
-      } catch (\Throwable $e) {
+        if ($event->commit())
+        {
+          $embed = Logger::initDiscordEmbed($event, $user->getURI());
+          Logger::logToDiscord($event, $embed);
+        }
+      }
+      catch (\Throwable $e)
+      {
         $this->model->error = 'EMAIL_FAILURE';
       }
     }

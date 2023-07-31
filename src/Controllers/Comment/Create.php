@@ -3,10 +3,14 @@
 namespace BNETDocs\Controllers\Comment;
 
 use \BNETDocs\Libraries\Comment;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
 
 class Create extends \BNETDocs\Controllers\Base
 {
+  public const EMPTY_CONTENT = 'EMPTY_CONTENT';
+  public const INTERNAL_ERROR = 'INTERNAL_ERROR';
+
   public function __construct()
   {
     $this->model = new \BNETDocs\Models\Comment\Create();
@@ -48,7 +52,7 @@ class Create extends \BNETDocs\Controllers\Base
 
     if (empty($content))
     {
-      $this->model->error = 'EMPTY_CONTENT';
+      $this->model->error = self::EMPTY_CONTENT;
       return 400;
     }
 
@@ -59,9 +63,15 @@ class Create extends \BNETDocs\Controllers\Base
     $this->model->comment->setParentType($pt);
     $this->model->origin = $this->model->comment->getParentUrl();
 
-    $this->model->comment->setUserId($this->model->active_user);
+    $this->model->comment->setUser($this->model->active_user);
 
-    $this->model->error = $this->model->comment->commit() ? false : 'INTERNAL_ERROR';
+    if (!$this->model->comment->commit())
+    {
+      $this->model->error = self::INTERNAL_ERROR;
+      return 500;
+    }
+
+    $this->model->error = false;
     $this->model->response = [
       'content' => $content,
       'error' => $this->model->error,
@@ -70,9 +80,19 @@ class Create extends \BNETDocs\Controllers\Base
       'parent_type' => $pt
     ];
 
-    \BNETDocs\Libraries\EventLog\Event::log(
-      $this->model->comment->getParentTypeCreatedEventId(), $this->model->active_user, getenv('REMOTE_ADDR'), $this->model->response
+    $event = Logger::initEvent(
+      $this->model->comment->getParentTypeCreatedEventId(),
+      $this->model->active_user,
+      getenv('REMOTE_ADDR'),
+      $this->model->response
     );
+
+    if ($event->commit())
+    {
+      $embed = Logger::initDiscordEmbed($event, $this->model->comment->getParentUrl() . '#comments');
+      $embed->setDescription($content);
+      Logger::logToDiscord($event, $embed);
+    }
 
     return 303;
   }

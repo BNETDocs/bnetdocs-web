@@ -2,6 +2,8 @@
 
 namespace BNETDocs\Controllers\Packet;
 
+use \BNETDocs\Libraries\Discord\EmbedField as DiscordEmbedField;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Product;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Models\Packet\Form as FormModel;
@@ -26,50 +28,99 @@ class Create extends \BNETDocs\Controllers\Base
     $this->model->form_fields = Router::query();
     $this->model->products = Product::getAllProducts();
     $this->model->packet = new \BNETDocs\Libraries\Packet(null);
+    $packet = &$this->model->packet;
 
-    self::assignDefault($this->model->form_fields, 'application_layer', $this->model->packet->getApplicationLayerId());
-    self::assignDefault($this->model->form_fields, 'brief', $this->model->packet->getBrief(false));
-    self::assignDefault($this->model->form_fields, 'deprecated', $this->model->packet->isDeprecated());
-    self::assignDefault($this->model->form_fields, 'direction', $this->model->packet->getDirection());
-    self::assignDefault($this->model->form_fields, 'format', $this->model->packet->getFormat());
-    self::assignDefault($this->model->form_fields, 'markdown', $this->model->packet->isMarkdown());
-    self::assignDefault($this->model->form_fields, 'name', $this->model->packet->getName());
-    self::assignDefault($this->model->form_fields, 'packet_id', $this->model->packet->getPacketId(true));
-    self::assignDefault($this->model->form_fields, 'published', $this->model->packet->isPublished());
-    self::assignDefault($this->model->form_fields, 'remarks', $this->model->packet->getRemarks(false));
-    self::assignDefault($this->model->form_fields, 'research', $this->model->packet->isInResearch());
-    self::assignDefault($this->model->form_fields, 'transport_layer', $this->model->packet->getTransportLayerId());
-    self::assignDefault($this->model->form_fields, 'used_by', Product::getProductsFromIds($this->model->packet->getUsedBy()));
+    self::assignDefault($this->model->form_fields, 'application_layer', $packet->getApplicationLayerId());
+    self::assignDefault($this->model->form_fields, 'brief', $packet->getBrief(false));
+    self::assignDefault($this->model->form_fields, 'deprecated', $packet->isDeprecated());
+    self::assignDefault($this->model->form_fields, 'direction', $packet->getDirection());
+    self::assignDefault($this->model->form_fields, 'format', $packet->getFormat());
+    self::assignDefault($this->model->form_fields, 'markdown', $packet->isMarkdown());
+    self::assignDefault($this->model->form_fields, 'name', $packet->getName());
+    self::assignDefault($this->model->form_fields, 'packet_id', $packet->getPacketId(true));
+    self::assignDefault($this->model->form_fields, 'published', $packet->isPublished());
+    self::assignDefault($this->model->form_fields, 'remarks', $packet->getRemarks(false));
+    self::assignDefault($this->model->form_fields, 'research', $packet->isInResearch());
+    self::assignDefault($this->model->form_fields, 'transport_layer', $packet->getTransportLayerId());
+    self::assignDefault($this->model->form_fields, 'used_by', Product::getProductsFromIds($packet->getUsedBy()));
 
     if (Router::requestMethod() == Router::METHOD_POST) $this->handlePost($this->model);
     else $this->model->error = FormModel::ERROR_NONE;
 
     if ($this->model->error === FormModel::ERROR_SUCCESS)
     {
-      \BNETDocs\Libraries\EventLog\Event::log(
+      $event = Logger::initEvent(
         \BNETDocs\Libraries\EventLog\EventTypes::PACKET_CREATED,
         $this->model->active_user,
         getenv('REMOTE_ADDR'),
         [
-          'application_layer' => $this->model->packet->getApplicationLayer()->getLabel(),
-          'brief' => $this->model->packet->getBrief(false),
-          'created_dt' => $this->model->packet->getCreatedDateTime(),
-          'deprecated' => $this->model->packet->isDeprecated(),
-          'direction' => $this->model->packet->getDirectionLabel(),
-          'draft' => !$this->model->packet->isPublished(),
-          'edited_dt' => $this->model->packet->getEditedDateTime(),
-          'edits' => $this->model->packet->getEditedCount(),
-          'format' => $this->model->packet->getFormat(),
-          'id' => $this->model->packet->getId(),
-          'markdown' => $this->model->packet->isMarkdown(),
-          'name' => $this->model->packet->getName(),
-          'owner' => $this->model->packet->getUser(),
-          'remarks' => $this->model->packet->getRemarks(false),
-          'research' => $this->model->packet->isInResearch(),
-          'transport_layer' => $this->model->packet->getTransportLayer()->getLabel(),
-          'used_by' => $this->model->packet->getUsedBy(),
+          'application_layer' => $packet->getApplicationLayer()->getLabel(),
+          'brief' => $packet->getBrief(false),
+          'created_dt' => $packet->getCreatedDateTime(),
+          'deprecated' => $packet->isDeprecated(),
+          'direction' => $packet->getDirectionLabel(),
+          'draft' => !$packet->isPublished(),
+          'edited_dt' => $packet->getEditedDateTime(),
+          'edits' => $packet->getEditedCount(),
+          'format' => $packet->getFormat(),
+          'id' => $packet->getId(),
+          'markdown' => $packet->isMarkdown(),
+          'name' => $packet->getName(),
+          'owner' => $packet->getUser(),
+          'remarks' => $packet->getRemarks(false),
+          'research' => $packet->isInResearch(),
+          'transport_layer' => $packet->getTransportLayer()->getLabel(),
+          'used_by' => $packet->getUsedBy(),
         ]
       );
+
+      if ($event->commit())
+      {
+        $brief = $packet->getBrief(false);
+        $format = $packet->getFormat();
+        $remarks = $packet->getRemarks(false);
+
+        $offset = 13; // char count of code block, end-of-line, and ellipsis addons
+        if (\strlen($brief) - $offset > DiscordEmbedField::MAX_VALUE)
+        {
+          $brief = \substr($brief, 0, DiscordEmbedField::MAX_VALUE - $offset) . '…';
+        }
+        if (\strlen($format) - $offset > DiscordEmbedField::MAX_VALUE)
+        {
+          $format = \substr($format, 0, DiscordEmbedField::MAX_VALUE - $offset) . '…';
+        }
+        if (\strlen($remarks) - $offset > DiscordEmbedField::MAX_VALUE)
+        {
+          $remarks = \substr($remarks, 0, DiscordEmbedField::MAX_VALUE - $offset) . '…';
+        }
+
+        $used_by = '';
+        foreach ($packet->getUsedBy() as $product)
+        {
+          if (!empty($used_by)) $used_by .= ', ';
+          $used_by .= $product->getLabel();
+        }
+        if (empty($used_by)) $used_by = '*Unknown*';
+
+        $embed = Logger::initDiscordEmbed($event, $packet->getURI(), [
+          'Direction' => $packet->getDirectionLabel(),
+          'Id' => $packet->getPacketId(true),
+          'Name' => $packet->getName(),
+          'Brief' => !empty($brief) ? $brief : '*empty*',
+
+          'Deprecated' => $packet->isDeprecated() ? ':white_check_mark:' : ':x:',
+          'Draft' => !$packet->isPublished() ? ':white_check_mark:' : ':x:',
+          'Markdown' => $packet->isMarkdown() ? ':white_check_mark:' : ':x:',
+          'In research' => $packet->isInResearch() ? ':white_check_mark:' : ':x:',
+
+          'Application layer' => $packet->getApplicationLayer()->getLabel(),
+          'Transport layer' => $packet->getTransportLayer()->getTag(),
+          'Used by' => $used_by,
+        ]);
+        $embed->addField(new DiscordEmbedField('Format', '```' . \PHP_EOL . $format . \PHP_EOL . '```', false));
+        $embed->setDescription($packet->isMarkdown() ? $remarks : '```' . \PHP_EOL . $remarks . \PHP_EOL . '```');
+        Logger::logToDiscord($event, $embed);
+      }
     }
 
     $this->model->_responseCode = ($this->model->error === FormModel::ERROR_SUCCESS ? 200 : 500);

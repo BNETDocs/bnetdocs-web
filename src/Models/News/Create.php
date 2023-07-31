@@ -4,8 +4,13 @@ namespace BNETDocs\Models\News;
 
 class Create extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
 {
+  public const ACL_NOT_SET = 'ACL_NOT_SET';
+  public const EMPTY_CONTENT = 'EMPTY_CONTENT';
+  public const EMPTY_TITLE = 'EMPTY_TITLE';
+  public const INTERNAL_ERROR = 'INTERNAL_ERROR';
+
   public bool $acl_allowed = false;
-  public ?\BNETDocs\Libraries\NewsCategory $category = null;
+  public ?int $category_id = null;
   public string $content = '';
   public mixed $error = 'INTERNAL_ERROR';
   public bool $markdown = false;
@@ -18,7 +23,7 @@ class Create extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
   {
     return \array_merge(parent::jsonSerialize(), [
       'acl_allowed' => $this->acl_allowed,
-      'category' => $this->category,
+      'category' => $this->category_id,
       'content' => $this->content,
       'error' => $this->error,
       'markdown' => $this->markdown,

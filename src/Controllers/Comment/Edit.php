@@ -2,10 +2,16 @@
 
 namespace BNETDocs\Controllers\Comment;
 
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
 
 class Edit extends \BNETDocs\Controllers\Base
 {
+  public const ACL_NOT_SET = 'ACL_NOT_SET';
+  public const NOT_FOUND = 'NOT_FOUND';
+  public const NOT_LOGGED_IN = 'NOT_LOGGED_IN';
+  public const INTERNAL_ERROR = 'INTERNAL_ERROR';
+
   public function __construct()
   {
     $this->model = new \BNETDocs\Models\Comment\Edit();
@@ -28,14 +34,14 @@ class Edit extends \BNETDocs\Controllers\Base
     if (!$this->model->acl_allowed)
     {
       $this->model->_responseCode = 403;
-      $this->model->error = $this->model->active_user ? 'ACL_NOT_SET' : 'NOT_LOGGED_IN';
+      $this->model->error = $this->model->active_user ? self::ACL_NOT_SET : self::NOT_LOGGED_IN;
       return true;
     }
 
     if (!$this->model->comment)
     {
       $this->model->_responseCode = 404;
-      $this->model->error = 'NOT_FOUND';
+      $this->model->error = self::NOT_FOUND;
       return true;
     }
 
@@ -45,18 +51,24 @@ class Edit extends \BNETDocs\Controllers\Base
     $this->model->return_url = $this->model->comment->getParentUrl();
     if (is_null($this->model->content)) $this->model->content = $this->model->comment->getContent(false);
 
-    if (Router::requestMethod() == Router::METHOD_POST) $this->tryModify();
+    if (Router::requestMethod() == Router::METHOD_POST) $this->tryEdit();
     return true;
   }
 
-  protected function tryModify(): void
+  protected function tryEdit(): void
   {
     $this->model->comment->setContent($this->model->content);
     $this->model->comment->incrementEdited();
 
-    $this->model->error = $this->model->comment->commit() ? false : 'INTERNAL_ERROR';
+    if (!$this->model->comment->commit())
+    {
+      $this->model->error = self::INTERNAL_ERROR;
+      return;
+    }
 
-    \BNETDocs\Libraries\EventLog\Event::log(
+    $this->model->error = false;
+
+    $event = Logger::initEvent(
       $this->model->comment->getParentTypeEditedEventId(),
       $this->model->active_user,
       getenv('REMOTE_ADDR'),
@@ -67,5 +79,17 @@ class Edit extends \BNETDocs\Controllers\Base
         'parent_id'   => $this->model->parent_id
       ]
     );
+
+    if ($event->commit())
+    {
+      $comment_user = $this->model->comment->getUser();
+      $fields = [];
+      if (!\is_null($comment_user)) $fields['Authored by'] = $comment_user->getAsMarkdown();
+      $fields['Edited by'] = $this->model->active_user->getAsMarkdown();
+      $embed = Logger::initDiscordEmbed($event, $this->model->comment->getParentUrl() . '#comments', $fields);
+      if (!\is_null($comment_user)) $embed->setAuthor($comment_user->getAsDiscordEmbedAuthor());
+      $embed->setDescription($this->model->comment->getContent(false));
+      Logger::logToDiscord($event, $embed);
+    }
   }
 }

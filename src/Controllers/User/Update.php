@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Libraries\UserProfile;
@@ -415,46 +416,56 @@ class Update extends \BNETDocs\Controllers\Base
         }
       }
 
-      if ($profile_changed) $this->model->profile->commit();
+      if ($profile_changed && $this->model->profile->commit())
+      {
+        $event = Logger::initEvent(
+          \BNETDocs\Libraries\EventLog\EventTypes::USER_EDITED,
+          $this->model->active_user,
+          getenv('REMOTE_ADDR'),
+          [
+            'username_error'           => $this->model->username_error,
+            'email_error'              => $this->model->email_error,
+            'display_name_error'       => $this->model->display_name_error,
+            'biography_error'          => $this->model->biography_error,
+            'discord_username_error'   => $this->model->discord_username_error,
+            'facebook_username_error'  => $this->model->facebook_username_error,
+            'github_username_error'    => $this->model->github_username_error,
+            'instagram_username_error' => $this->model->instagram_username_error,
+            'phone_error'              => $this->model->phone_error,
+            'reddit_username_error'    => $this->model->reddit_username_error,
+            'skype_username_error'     => $this->model->skype_username_error,
+            'steam_id_error'           => $this->model->steam_id_error,
+            'twitter_username_error'   => $this->model->twitter_username_error,
+            'website_error'            => $this->model->website_error,
+            'user_id'                  => $this->model->user->getId(),
+            'username'                 => $this->model->username,
+            'email_1'                  => $this->model->email_1,
+            'email_2'                  => $this->model->email_2,
+            'display_name'             => $display_name,
+            'profile_changed'          => $profile_changed,
+            'biography'                => $this->model->biography,
+            'discord_username'         => $this->model->discord_username,
+            'facebook_username'        => $this->model->facebook_username,
+            'github_username'          => $this->model->github_username,
+            'instagram_username'       => $this->model->instagram_username,
+            'phone'                    => $this->model->phone,
+            'reddit_username'          => $this->model->reddit_username,
+            'skype_username'           => $this->model->skype_username,
+            'steam_id'                 => $this->model->steam_id,
+            'twitter_username'         => $this->model->twitter_username,
+            'website'                  => $this->model->website,
+          ]
+        );
 
-      \BNETDocs\Libraries\EventLog\Event::log(
-        \BNETDocs\Libraries\EventLog\EventTypes::USER_EDITED,
-        $this->model->active_user,
-        getenv('REMOTE_ADDR'),
-        [
-          'username_error'           => $this->model->username_error,
-          'email_error'              => $this->model->email_error,
-          'display_name_error'       => $this->model->display_name_error,
-          'biography_error'          => $this->model->biography_error,
-          'discord_username_error'   => $this->model->discord_username_error,
-          'facebook_username_error'  => $this->model->facebook_username_error,
-          'github_username_error'    => $this->model->github_username_error,
-          'instagram_username_error' => $this->model->instagram_username_error,
-          'phone_error'              => $this->model->phone_error,
-          'reddit_username_error'    => $this->model->reddit_username_error,
-          'skype_username_error'     => $this->model->skype_username_error,
-          'steam_id_error'           => $this->model->steam_id_error,
-          'twitter_username_error'   => $this->model->twitter_username_error,
-          'website_error'            => $this->model->website_error,
-          'user_id'                  => $this->model->user->getId(),
-          'username'                 => $this->model->username,
-          'email_1'                  => $this->model->email_1,
-          'email_2'                  => $this->model->email_2,
-          'display_name'             => $display_name,
-          'profile_changed'          => $profile_changed,
-          'biography'                => $this->model->biography,
-          'discord_username'         => $this->model->discord_username,
-          'facebook_username'        => $this->model->facebook_username,
-          'github_username'          => $this->model->github_username,
-          'instagram_username'       => $this->model->instagram_username,
-          'phone'                    => $this->model->phone,
-          'reddit_username'          => $this->model->reddit_username,
-          'skype_username'           => $this->model->skype_username,
-          'steam_id'                 => $this->model->steam_id,
-          'twitter_username'         => $this->model->twitter_username,
-          'website'                  => $this->model->website,
-        ]
-      );
+        if ($event->commit())
+        {
+          $embed = Logger::initDiscordEmbed($event, $this->model->active_user->getURI(), [
+            'Edited by' => $this->model->active_user->getAsMarkdown(),
+            'Edited user' => $this->model->user->getAsMarkdown(),
+          ]);
+          Logger::logToDiscord($event, $embed);
+        }
+      }
     }
 
     return true;

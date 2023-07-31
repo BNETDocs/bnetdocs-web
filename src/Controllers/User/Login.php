@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
 use \BNETDocs\Libraries\User;
 use \BNETDocs\Models\User\Login as LoginModel;
@@ -70,7 +71,7 @@ class Login extends \BNETDocs\Controllers\Base
     \BNETDocs\Libraries\Authentication::login($this->model->user);
     $this->model->error = LoginModel::ERROR_SUCCESS;
 
-    \BNETDocs\Libraries\EventLog\Event::log(
+    $event = Logger::initEvent(
       \BNETDocs\Libraries\EventLog\EventTypes::USER_LOGIN,
       $this->model->user,
       getenv('REMOTE_ADDR'),
@@ -79,6 +80,12 @@ class Login extends \BNETDocs\Controllers\Base
         'email' => $this->model->email,
       ]
     );
+
+    if ($event->commit())
+    {
+      $embed = Logger::initDiscordEmbed($event, $this->model->user->getURI());
+      Logger::logToDiscord($event, $embed);
+    }
 
     return true;
   }

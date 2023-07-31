@@ -31,10 +31,10 @@ class Index extends \BNETDocs\Controllers\Base
 
     switch ($this->model->order)
     {
-      case 'id-asc': $order = ['id', 'ASC']; break;
-      case 'id-desc': $order = ['id', 'DESC']; break;
-      case 'datetime-asc': $order = ['event_datetime', 'ASC']; break;
-      case 'datetime-desc': $order = ['event_datetime', 'DESC']; break;
+      case 'id-asc': $order = ['id', false]; break;
+      case 'id-desc': $order = ['id', true]; break;
+      case 'datetime-asc': $order = ['event_datetime', false]; break;
+      case 'datetime-desc': $order = ['event_datetime', true]; break;
       default: $order = null;
     }
 
@@ -44,12 +44,12 @@ class Index extends \BNETDocs\Controllers\Base
     if ($this->model->page < 1) $this->model->page = 1;
     if ($this->model->limit < self::PAGINATION_LIMIT_MIN) $this->model->limit = self::PAGINATION_LIMIT_MIN;
     if ($this->model->limit > self::PAGINATION_LIMIT_MAX) $this->model->limit = self::PAGINATION_LIMIT_MAX;
-    $this->model->pages = ceil(Event::getEventCount() / $this->model->limit);
+    $this->model->pages = ceil(Event::countAll() / $this->model->limit);
     if ($this->model->page > $this->model->pages) $this->model->page = $this->model->pages;
 
-    $this->model->events = Event::getAllEvents(
+    $this->model->events = Event::allocateAll(
       null,
-      $order,
+      $order[0], $order[1],
       $this->model->limit,
       $this->model->limit * ( $this->model->page - 1 )
     );

@@ -21,17 +21,17 @@ if ($object)
   $edited_dt = $object->getEditedDateTime();
   $url = $object->getURI();
   $user = $object->getUser();
-  $user_avatar = $user->getAvatarURI(40);
+  $user_avatar = $user ? $user->getAvatarURI(40) : null;
   $user_id = $object->getUserId();
-  $user_name = $user->getName();
-  $user_url = $user->getURI();
+  $user_name = $user ? $user->getName() : null;
+  $user_url = $user ? $user->getURI() : null;
 
   $this->opengraph->attach(new Pair('image', '/a/news_categories/' . $object->getCategory()->getFilename()));
   $this->opengraph->attach(new Pair('article:published_time', $created_dt->format('c')));
   if (!is_null($object->getEditedDateTime())) {
     $this->opengraph->attach(new Pair('article:modified_time', $edited_dt->format('c')));
   }
-  $this->opengraph->attach(new Pair('article:author:username', $user_name));
+  if (!empty($user_name)) $this->opengraph->attach(new Pair('article:author:username', $user_name));
   $this->opengraph->attach(new Pair('article:section', $object->getCategory()->getLabel()));
 
 }

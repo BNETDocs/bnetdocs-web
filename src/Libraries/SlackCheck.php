@@ -3,6 +3,7 @@
 namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Authentication;
+use \BNETDocs\Libraries\EventLog\Logger;
 use \CarlBennett\MVC\Libraries\Common;
 
 /**
@@ -103,17 +104,33 @@ class SlackCheck
   {
     if (!self::is_slack()) return; // do not log non-Slack requests
 
-    \BNETDocs\Libraries\EventLog\Event::log(
+    $method = \getenv('REQUEST_METHOD');
+    $referer = \getenv('HTTP_REFERER');
+    $url = Common::relativeUrlToAbsolute(\getenv('REQUEST_URI'));
+    $user_agent = \getenv('HTTP_USER_AGENT');
+
+    $event = Logger::initEvent(
       \BNETDocs\Libraries\EventLog\EventTypes::SLACK_UNFURL,
       Authentication::$user,
       getenv('REMOTE_ADDR'),
       [
-        'method'     => getenv('REQUEST_METHOD'),
-        'referer'    => getenv('HTTP_REFERER'),
-        'uri'        => Common::relativeUrlToAbsolute(getenv('REQUEST_URI')),
-        'user_agent' => getenv('HTTP_USER_AGENT'),
+        'method'     => $method,
+        'referer'    => $referer,
+        'uri'        => $url,
+        'user_agent' => $user_agent,
         'version'    => VersionInfo::get(),
       ]
     );
+
+    if ($event->commit())
+    {
+      $embed = Logger::initDiscordEmbed($event, $url, [
+        'Method' => $method,
+        'URL' => $url,
+        'Referer' => ($referer === false || empty($referer) ? '*empty*' : $referer),
+        'User Agent' => $user_agent,
+      ]);
+      Logger::logToDiscord($event, $embed);
+    }
   }
 }

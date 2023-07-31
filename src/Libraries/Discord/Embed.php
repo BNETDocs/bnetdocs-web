@@ -64,9 +64,88 @@ class Embed implements \JsonSerializable
     $this->fields->attach($value);
   }
 
+  public function addFields(array|SplObjectStorage $value): void
+  {
+    foreach ($value as $key => $value)
+    {
+      if ($value instanceof EmbedField)
+      {
+        $this->addField($value);
+      }
+      else if (\is_string($key) && \is_scalar($value))
+      {
+        $this->addField(new EmbedField($key, $value, true));
+      }
+      else
+      {
+        throw new \UnexpectedValueException('unexpected value in set cannot be sent to Discord');
+      }
+    }
+  }
+
   public function fieldCount(): int
   {
     return $this->fields->count();
+  }
+
+  public function getAuthor(): ?EmbedAuthor
+  {
+    return $this->author;
+  }
+
+  public function getColor(): int
+  {
+    return $this->color;
+  }
+
+  public function getDescription(): ?string
+  {
+    return $this->description;
+  }
+
+  public function getFooter(): ?EmbedFooter
+  {
+    return $this->footer;
+  }
+
+  public function getImage(): ?EmbedImage
+  {
+    return $this->image;
+  }
+
+  public function getProvider(): ?EmbedProvider
+  {
+    return $this->provider;
+  }
+
+  public function getThumbnail(): ?EmbedThumbnail
+  {
+    return $this->thumbnail;
+  }
+
+  public function getTimestamp(): ?DateTimeInterface
+  {
+    return $this->timestamp;
+  }
+
+  public function getTitle(): ?string
+  {
+    return $this->title;
+  }
+
+  public function getType(): ?string
+  {
+    return $this->type;
+  }
+
+  public function getUrl(): ?string
+  {
+    return $this->url;
+  }
+
+  public function getVideo(): ?EmbedVideo
+  {
+    return $this->video;
   }
 
   public function hasField(EmbedField $value): bool

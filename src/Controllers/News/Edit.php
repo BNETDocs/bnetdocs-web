@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\News;
 
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Router;
 
@@ -11,6 +12,7 @@ class Edit extends \BNETDocs\Controllers\Base
   {
     $this->model = new \BNETDocs\Models\News\Edit();
   }
+
   public function invoke(?array $args): bool
   {
     $this->model->acl_allowed = $this->model->active_user
@@ -55,7 +57,7 @@ class Edit extends \BNETDocs\Controllers\Base
     if (Router::requestMethod() == Router::METHOD_POST) $this->handlePost();
 
     $this->model->_responseCode = 200;
-    return $this->model;
+    return true;
   }
 
   protected function handlePost(): void
@@ -68,11 +70,11 @@ class Edit extends \BNETDocs\Controllers\Base
     $rss_exempt = $q['rss_exempt'] ?? null;
     $publish = $q['publish'] ?? null;
 
-    $this->model->category = $category;
+    $this->model->category = (int) $category;
     $this->model->title = $title;
-    $this->model->markdown = $markdown;
+    $this->model->markdown = (bool) $markdown;
     $this->model->content = $content;
-    $this->model->rss_exempt = $rss_exempt;
+    $this->model->rss_exempt = (bool) $rss_exempt;
 
     $this->model->error = empty($title) ? 'EMPTY_TITLE' : (empty($content) ? 'EMPTY_CONTENT' : null);
     if ($this->model->error) return;
@@ -87,7 +89,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
     $this->model->error = $this->model->news_post->commit() ? false : 'INTERNAL_ERROR';
 
-    \BNETDocs\Libraries\EventLog\Event::log(
+    $event = Logger::initEvent(
       \BNETDocs\Libraries\EventLog\EventTypes::NEWS_EDITED,
       $this->model->active_user,
       getenv('REMOTE_ADDR'),
@@ -100,5 +102,20 @@ class Edit extends \BNETDocs\Controllers\Base
         'content' => $this->model->news_post->getContent(false),
       ]
     );
+
+    if ($event->commit())
+    {
+      $content = $this->model->news_post->getContent(false);
+      $embed = Logger::initDiscordEmbed($event, $this->model->news_post->getURI(), [
+        'Category' => $this->model->news_post->getCategory()->getLabel(),
+        'Title' => $this->model->news_post->getTitle(),
+        'Markdown' => $this->model->news_post->isMarkdown() ? ':white_check_mark:' : ':x:',
+        'RSS exempt' => $this->model->news_post->isRSSExempt() ? ':white_check_mark:' : ':x:',
+        'Authored by' => !\is_null($this->model->news_post->getUserId()) ? $this->model->news_post->getUser()->getAsMarkdown() : '*Anonymous*',
+        'Edited by' => $this->model->active_user->getAsMarkdown(),
+      ]);
+      $embed->setDescription($this->model->news_post->isMarkdown() ? $content : '```' . \PHP_EOL . $content . \PHP_EOL . '```');
+      Logger::logToDiscord($event, $embed);
+    }
   }
 }

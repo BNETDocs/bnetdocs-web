@@ -2,10 +2,15 @@
 
 namespace BNETDocs\Controllers\Document;
 
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
 
 class Create extends \BNETDocs\Controllers\Base
 {
+  public const EMPTY_CONTENT = 'EMPTY_CONTENT';
+  public const EMPTY_TITLE = 'EMPTY_TITLE';
+  public const INTERNAL_ERROR = 'INTERNAL_ERROR';
+
   public function __construct()
   {
     $this->model = new \BNETDocs\Models\Document\Create();
@@ -50,9 +55,9 @@ class Create extends \BNETDocs\Controllers\Base
     $this->model->content = $content;
 
     if (empty($title)) {
-      $this->model->error = 'EMPTY_TITLE';
+      $this->model->error = self::EMPTY_TITLE;
     } else if (empty($content)) {
-      $this->model->error = 'EMPTY_CONTENT';
+      $this->model->error = self::EMPTY_CONTENT;
     }
 
     $document = new \BNETDocs\Libraries\Document(null);
@@ -62,21 +67,37 @@ class Create extends \BNETDocs\Controllers\Base
     $document->setPublished($publish);
     $document->setTitle($title);
     $document->setUser($this->model->active_user);
-    $this->model->error = $document->commit() ? false : 'INTERNAL_ERROR';
 
-    if ($this->model->error === false)
-      \BNETDocs\Libraries\EventLog\Event::log(
-        \BNETDocs\Libraries\EventLog\EventTypes::DOCUMENT_CREATED,
-        $this->model->active_user,
-        getenv('REMOTE_ADDR'),
-        [
-          'brief'     => $brief,
-          'content'   => $content,
-          'error'     => $this->model->error,
-          'markdown'  => $markdown,
-          'published' => $publish,
-          'title'     => $title,
-        ]
-      );
+    if (!$document->commit())
+    {
+      $this->model->error = self::INTERNAL_ERROR;
+      return;
+    }
+    $this->model->error = false;
+
+    $event = Logger::initEvent(
+      \BNETDocs\Libraries\EventLog\EventTypes::DOCUMENT_CREATED,
+      $this->model->active_user,
+      getenv('REMOTE_ADDR'),
+      [
+        'brief'     => $brief,
+        'content'   => $content,
+        'error'     => $this->model->error,
+        'markdown'  => $markdown,
+        'published' => $publish,
+        'title'     => $title,
+      ]
+    );
+
+    if ($event->commit())
+    {
+      $embed = Logger::initDiscordEmbed($event, $document->getURI(), [
+        'Title' => $title,
+        'Brief' => $brief,
+        'Markdown' => $markdown ? ':white_check_mark:' : ':x:',
+      ]);
+      $embed->setDescription($markdown ? $content : '```' . \PHP_EOL . $content . \PHP_EOL . '```');
+      Logger::logToDiscord($event, $embed);
+    }
   }
 }

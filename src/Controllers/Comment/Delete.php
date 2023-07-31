@@ -2,10 +2,15 @@
 
 namespace BNETDocs\Controllers\Comment;
 
+use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\Router;
 
 class Delete extends \BNETDocs\Controllers\Base
 {
+  public const ACL_NOT_SET = 'ACL_NOT_SET';
+  public const INTERNAL_ERROR = 'INTERNAL_ERROR';
+  public const NOT_FOUND = 'NOT_FOUND';
+
   public function __construct()
   {
     $this->model = new \BNETDocs\Models\Comment\Delete();
@@ -26,14 +31,14 @@ class Delete extends \BNETDocs\Controllers\Base
     if (!$this->model->acl_allowed)
     {
       $this->model->_responseCode = 403;
-      $this->model->error = 'ACL_NOT_SET';
+      $this->model->error = self::ACL_NOT_SET;
       return true;
     }
 
     if (!$this->model->comment)
     {
       $this->model->_responseCode = 404;
-      $this->model->error = 'NOT_FOUND';
+      $this->model->error = self::NOT_FOUND;
       return true;
     }
 
@@ -49,8 +54,15 @@ class Delete extends \BNETDocs\Controllers\Base
 
   protected function tryDelete(): void
   {
-    $this->model->error = $this->model->comment->deallocate() ? false : 'INTERNAL_ERROR';
-    \BNETDocs\Libraries\EventLog\Event::log(
+    if (!$this->model->comment->deallocate())
+    {
+      $this->model->error = self::INTERNAL_ERROR;
+      return;
+    }
+
+    $this->model->error = false;
+
+    $event = Logger::initEvent(
       $this->model->comment->getParentTypeDeletedEventId(),
       $this->model->active_user,
       getenv('REMOTE_ADDR'),
@@ -61,5 +73,17 @@ class Delete extends \BNETDocs\Controllers\Base
         'parent_id' => $this->model->parent_id
       ]
     );
+
+    if ($event->commit())
+    {
+      $comment_user = $this->model->comment->getUser();
+      $fields = [];
+      if (!\is_null($comment_user)) $fields['Authored by'] = $comment_user->getAsMarkdown();
+      $fields['Deleted by'] = $this->model->active_user->getAsMarkdown();
+      $embed = Logger::initDiscordEmbed($event, $this->model->comment->getParentUrl() . '#comments', $fields);
+      if (!\is_null($comment_user)) $embed->setAuthor($comment_user->getAsDiscordEmbedAuthor());
+      $embed->setDescription($this->model->comment->getContent(false));
+      Logger::logToDiscord($event, $embed);
+    }
   }
 }

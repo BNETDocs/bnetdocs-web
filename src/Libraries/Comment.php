@@ -80,7 +80,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
         `user_id`
       FROM `comments` WHERE `id` = ? LIMIT 1;
     ');
-    if (!$q || !$q->execute([$id])) return false;
+    if (!$q || !$q->execute([$id]) || $q->rowCount() != 1) return false;
     $this->allocateObject($q->fetchObject());
     $q->closeCursor();
     return true;
@@ -425,9 +425,14 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $this->parent_type = $value;
   }
 
+  public function setUser(?User $value): void
+  {
+    $this->user_id = $value instanceof User ? $value->getId() : null;
+  }
+
   public function setUserId(?int $value): void
   {
-    if ($value < 0 || $value > self::MAX_USER_ID)
+    if (!is_null($value) && ($value < 0 || $value > self::MAX_USER_ID))
     {
       throw new UnexpectedValueException(sprintf('value must be null or an integer between 0-%d', self::MAX_USER_ID));
     }

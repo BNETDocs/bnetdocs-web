@@ -15,10 +15,12 @@ class EventType
 
   public static function color(int $event_id): int
   {
-    $blue  = 0x0000ADCC;
-    $gray  = 0x00ADADAD;
-    $green = 0x0000CCAD;
-    $red   = 0x00CCAD00;
+    // "Code colors for embed discord.js" <https://gist.github.com/thomasbnt/b6f455e2c7d743b796917fa3c205f812>
+    $blue   = 0x5865F2;
+    $gray   = 0x99AAB5;
+    $green  = 0x57F287;
+    $red    = 0xED4245;
+    $yellow = 0xFEE75C;
 
     switch ($event_id)
     {
@@ -33,24 +35,13 @@ class EventType
       case EventTypes::COMMENT_CREATED_PACKET: return $green;
       case EventTypes::COMMENT_CREATED_SERVER: return $green;
       case EventTypes::COMMENT_CREATED_USER: return $green;
-      case EventTypes::COMMENT_EDITED_COMMENT: return $green;
-      case EventTypes::COMMENT_EDITED_DOCUMENT: return $green;
-      case EventTypes::COMMENT_EDITED_NEWS: return $green;
-      case EventTypes::COMMENT_EDITED_PACKET: return $green;
-      case EventTypes::COMMENT_EDITED_SERVER: return $green;
-      case EventTypes::COMMENT_EDITED_USER: return $green;
       case EventTypes::DOCUMENT_CREATED: return $green;
-      case EventTypes::DOCUMENT_EDITED: return $green;
       case EventTypes::EMAIL_SENT: return $green;
       case EventTypes::NEWS_CREATED: return $green;
-      case EventTypes::NEWS_EDITED: return $green;
       case EventTypes::PACKET_CREATED: return $green;
-      case EventTypes::PACKET_EDITED: return $green;
       case EventTypes::SERVER_CREATED: return $green;
-      case EventTypes::SERVER_EDITED: return $green;
       case EventTypes::SITE_DEPLOY: return $green;
       case EventTypes::USER_CREATED: return $green;
-      case EventTypes::USER_EDITED: return $green;
       case EventTypes::USER_EMAIL_CHANGE: return $green;
       case EventTypes::USER_LOGIN: return $green;
       case EventTypes::USER_PASSWORD_CHANGE: return $green;
@@ -69,6 +60,18 @@ class EventType
       case EventTypes::SERVER_DELETED: return $red;
       case EventTypes::USER_DELETED: return $red;
       case EventTypes::USER_LOGOUT: return $red;
+
+      case EventTypes::COMMENT_EDITED_COMMENT: return $yellow;
+      case EventTypes::COMMENT_EDITED_DOCUMENT: return $yellow;
+      case EventTypes::COMMENT_EDITED_NEWS: return $yellow;
+      case EventTypes::COMMENT_EDITED_PACKET: return $yellow;
+      case EventTypes::COMMENT_EDITED_SERVER: return $yellow;
+      case EventTypes::COMMENT_EDITED_USER: return $yellow;
+      case EventTypes::DOCUMENT_EDITED: return $yellow;
+      case EventTypes::NEWS_EDITED: return $yellow;
+      case EventTypes::PACKET_EDITED: return $yellow;
+      case EventTypes::SERVER_EDITED: return $yellow;
+      case EventTypes::USER_EDITED: return $yellow;
 
       default: return $gray;
     }

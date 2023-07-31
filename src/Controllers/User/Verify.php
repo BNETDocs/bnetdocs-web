@@ -2,6 +2,8 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Libraries\EventLog\Logger;
+
 class Verify extends \BNETDocs\Controllers\Base
 {
   /**
@@ -47,12 +49,20 @@ class Verify extends \BNETDocs\Controllers\Base
     catch (\Throwable) { $this->model->error = 'INTERNAL_ERROR'; }
 
     if (!$this->model->error)
-      \BNETDocs\Libraries\EventLog\Event::log(
+    {
+      $event = Logger::initEvent(
         \BNETDocs\Libraries\EventLog\EventTypes::USER_VERIFIED,
         $this->model->user_id,
         getenv('REMOTE_ADDR'),
         ['error' => $this->model->error]
       );
+
+      if ($event->commit())
+      {
+        $embed = Logger::initDiscordEmbed($event, $this->model->user->getURI());
+        Logger::logToDiscord($event, $embed);
+      }
+    }
 
     $this->model->_responseCode = 200;
     return true;
