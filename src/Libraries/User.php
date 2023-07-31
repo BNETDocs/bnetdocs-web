@@ -616,7 +616,14 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
    */
   public function getUserProfile(): ?UserProfile
   {
-    return is_null($this->id) ? null : new UserProfile($this->id);
+    try
+    {
+      return is_null($this->id) ? null : new UserProfile($this->id);
+    }
+    catch (\BNETDocs\Exceptions\UserProfileNotFoundException)
+    {
+      return null;
+    }
   }
 
   /**
