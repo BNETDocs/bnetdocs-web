@@ -20,12 +20,12 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public const MAX_TYPE_ID = 0xFFFFFFFFFFFFFFFF;
   public const MAX_USER_ID = 0xFFFFFFFFFFFFFFFF;
 
-  private ?DateTimeInterface $datetime;
-  private ?int $id;
-  private ?string $ip_address;
-  private mixed $meta_data;
-  private int $type_id;
-  private ?int $user_id;
+  private ?DateTimeInterface $datetime = null;
+  private ?int $id = null;
+  private ?string $ip_address = null;
+  private mixed $meta_data = null;
+  private int $type_id = 0;
+  private ?int $user_id = null;
 
   public function __construct(StdClass|int|null $value = null)
   {
