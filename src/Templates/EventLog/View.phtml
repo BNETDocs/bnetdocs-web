@@ -15,8 +15,8 @@ $object = $this->getContext()->event;
 
 $object_ip_address = ($object instanceof Event ? $object->getIPAddress() : null);
 $object_metadata = ($object instanceof Event ? $object->getMetaData() : null);
-$object_user = ($object instanceof Event ? $object->getUser() : null);
 $object_user_id = ($object instanceof Event ? $object->getUserId() : null);
+$object_user = ($object_user_id ? $object->getUser() : null);
 
 $object_ip_address_cc_emoji = !$object_ip_address ? null : (
   GeoIP::getCountryFlagEmoji(GeoIP::getCountryISOCode($object_ip_address) ?? '')
