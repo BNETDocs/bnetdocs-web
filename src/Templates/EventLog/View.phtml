@@ -16,7 +16,15 @@ $object = $this->getContext()->event;
 $object_ip_address = ($object instanceof Event ? $object->getIPAddress() : null);
 $object_metadata = ($object instanceof Event ? $object->getMetaData() : null);
 $object_user_id = ($object instanceof Event ? $object->getUserId() : null);
-$object_user = ($object_user_id ? $object->getUser() : null);
+
+try
+{
+  $object_user = ($object_user_id ? $object->getUser() : null);
+}
+catch (\BNETDocs\Exceptions\UserNotFoundException)
+{
+  $object_user = null;
+}
 
 $object_ip_address_cc = !$object_ip_address ? null : (GeoIP::getCountryISOCode($object_ip_address) ?? '');
 $object_ip_address_cc_emoji = !$object_ip_address_cc ? null : GeoIP::getCountryFlagEmoji($object_ip_address_cc);
