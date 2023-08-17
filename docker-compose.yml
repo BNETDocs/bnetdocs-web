@@ -12,6 +12,7 @@ services:
     volumes:
       - ./etc/nginx/conf.d/nginx-vhost-docker.conf:/etc/nginx/conf.d/default.conf
       - .:/var/www/html
+      - /usr/share/GeoIP/GeoLite2-City.mmdb:/usr/share/GeoIP/GeoLite2-City.mmdb
     ports:
       - "8080:80"
 
@@ -22,6 +23,7 @@ services:
     volumes:
       - mariadb-vol-1:/var/lib/mysql/:Z
       - .:/var/www/html
+      - /usr/share/GeoIP/GeoLite2-City.mmdb:/usr/share/GeoIP/GeoLite2-City.mmdb
     expose:
       - "9000"
 

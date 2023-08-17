@@ -2,6 +2,7 @@
 namespace BNETDocs\Templates\EventLog;
 
 use \BNETDocs\Libraries\EventLog\Event;
+use \BNETDocs\Libraries\GeoIP;
 use \CarlBennett\MVC\Libraries\Common;
 use \CarlBennett\MVC\Libraries\Pair;
 
@@ -16,6 +17,10 @@ $object_ip_address = ($object instanceof Event ? $object->getIPAddress() : null)
 $object_metadata = ($object instanceof Event ? $object->getMetaData() : null);
 $object_user = ($object instanceof Event ? $object->getUser() : null);
 $object_user_id = ($object instanceof Event ? $object->getUserId() : null);
+
+$object_ip_address_cc_emoji = !$object_ip_address ? null : (
+  GeoIP::getCountryFlagEmoji(GeoIP::getCountryISOCode($object_ip_address) ?? '')
+);
 
 if (!$object instanceof Event)
 {
@@ -79,7 +84,7 @@ require('./header.inc.phtml'); ?>
         <tr><th scope="row" class="text-right">Id</th><td><code><a href="<?=Common::relativeUrlToAbsolute('/eventlog/view?id=' . $object_id)?>"><?=$object_id?></a></code></td></tr>
         <tr><th scope="row" class="text-right">Event Type</th><td><?=$object->getTypeName()?></td></tr>
         <tr><th scope="row" class="text-right">Timestamp</th><td><time datetime='<?=$object->getDateTime()->format('c')?>'><?=$object->getDateTime()->format('l, F j, Y')?></time></td></tr>
-        <tr><th scope="row" class="text-right">IP Address</th><td><?=($object_ip_address ? '<code>' . $object_ip_address . '</code>' : '<em>(null)</em>')?></td></tr>
+        <tr><th scope="row" class="text-right">IP Address</th><td><?=($object_ip_address ? sprintf('%s <code>%s</code>', $object_ip_address_cc_emoji, $object_ip_address) : '<em>(null)</em>')?></td></tr>
         <tr><th scope="row" class="text-right">User Account</th><td><?=$tpl_user?></td></tr>
       </tbody>
     </table>
