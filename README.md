@@ -1,6 +1,6 @@
 # BNETDocs
 
-[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/BNETDocs/bnetdocs-web/bnetdocs-web/develop?style=for-the-badge)](https://github.com/BNETDocs/bnetdocs-web/actions?query=workflow%3Abnetdocs-web)
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/BNETDocs/bnetdocs-web/php.yml?branch=develop&style=for-the-badge)](https://github.com/BNETDocs/bnetdocs-web/actions?query=workflow%3Abnetdocs-web)
 ![PHP ^8.1](https://img.shields.io/badge/php-%5E8.1-blue?style=for-the-badge)
 ![License Badge](https://img.shields.io/github/license/BNETDocs/bnetdocs-web?style=for-the-badge)
 
