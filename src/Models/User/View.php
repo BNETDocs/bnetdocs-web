@@ -9,6 +9,7 @@ class View extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
   public $news_posts;
   public $packets;
   public $servers;
+  public $sum_comments;
   public $sum_documents;
   public $sum_news_posts;
   public $sum_packets;
@@ -25,6 +26,7 @@ class View extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
       'news_posts' => $this->news_posts,
       'packets' => $this->packets,
       'servers' => $this->servers,
+      'sum_comments' => $this->sum_comments,
       'sum_documents' => $this->sum_documents,
       'sum_news_posts' => $this->sum_news_posts,
       'sum_packets' => $this->sum_packets,
