@@ -9,8 +9,7 @@ class Update extends \BNETDocs\Models\ActiveUser
 {
   public ?User $user = null;
 
-  public ?string $display_name_1 = null;
-  public ?string $display_name_2 = null;
+  public ?string $display_name = null;
   public ?array $display_name_error = null;
   public int $display_name_max_len = User::MAX_DISPLAY_NAME;
 
