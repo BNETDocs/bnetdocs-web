@@ -4,6 +4,7 @@ namespace BNETDocs\Models\User;
 
 class View extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
 {
+  public $comments;
   public $contributions;
   public $documents;
   public $news_posts;
@@ -21,6 +22,7 @@ class View extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
   public function jsonSerialize(): mixed
   {
     $r = \array_merge(parent::jsonSerialize(), [
+      'comments' => $this->comments,
       'contributions' => $this->contributions,
       'documents' => $this->documents,
       'news_posts' => $this->news_posts,
