@@ -252,4 +252,4 @@ $_campaign_vultr = (
 
 <?=_header_nav_html($_header_nav, $_unique_asset)?>
 <main class="mb-3">
-<?=(BlizzardCheck::is_blizzard() && !empty(Common::$config->bnetdocs->blizzard_greeting_html) ? sprintf('<div class="container mb-3"><div class="alert alert-info">%s</div></div>', Common::$config->bnetdocs->blizzard_greeting_html) : '')?>
+<?=(BlizzardCheck::is_blizzard() && !empty(Common::$config->bnetdocs->blizzard_greeting_html) ? sprintf('<div class="container mb-3">%s</div>', Common::$config->bnetdocs->blizzard_greeting_html) : '')?>
