@@ -4,7 +4,7 @@
   },
   "bnetdocs": {
     "asset_versioning": true,
-    "blizzard_greeting_html": "<h4>Hey there Blizzard Employee!</h4><p class=\"mb-0\">We hope you find our information helpful with your work, if you have any questions please feel free to chat with us on <a href=\"https://discord.gg/u87WVeu\">Discord</a>.</p>",
+    "blizzard_greeting_html": "<div class=\"alert alert-secondary p-2\">Hey there, Blizzard! We hope you find our info useful with your work, come ask us in the Discord any questions. <a href=\"https://discord.gg/u87WVeu\">discord.gg/u87WVeu</a> 😊</div>",
     "campaigns": {
       "battleforthenet": "",
       "vultr": ""
