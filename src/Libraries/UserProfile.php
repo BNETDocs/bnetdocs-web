@@ -22,15 +22,15 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
   protected ?string $skype_username;
   protected ?string $steam_id;
   protected ?string $twitter_username;
-  protected int $user_id;
+  protected ?int $user_id;
   protected ?string $website;
 
   /**
    * Constructs a UserProfile object from properties, or a user id to lookup.
    *
-   * @param StdClass|integer $value Object properties or user id.
+   * @param StdClass|integer|null $value Object properties or user id, or null for a new profile.
    */
-  public function __construct(StdClass|int $value)
+  public function __construct(StdClass|int|null $value)
   {
     if ($value instanceof StdClass)
     {
@@ -45,6 +45,9 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
 
   public function allocate(): bool
   {
+    $user_id = $this->getUserId();
+    if (is_null($user_id)) return true;
+
     $this->setBiography(null);
     $this->setDiscordUsername(null);
     $this->setFacebookUsername(null);
@@ -73,7 +76,7 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
         `website`
       FROM `user_profiles` WHERE `user_id` = ? LIMIT 1;
     ');
-    if (!$q || !$q->execute([$this->getUserId()]) || $q->rowCount() == 0) return false;
+    if (!$q || !$q->execute([$user_id]) || $q->rowCount() == 0) return false;
     $this->allocateObject($q->fetchObject());
     $q->closeCursor();
     return true;
@@ -97,6 +100,9 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
 
   public function commit(): bool
   {
+    $user_id = $this->getUserId();
+    if (is_null($user_id)) throw new UnexpectedValueException('user id cannot be null');
+
     $q = Database::instance()->prepare('
       INSERT INTO `user_profiles` (
         `biography`,
@@ -150,7 +156,7 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
       ':skype' => $this->getSkypeUsername(),
       ':steam' => $this->getSteamId(),
       ':twitter' => $this->getTwitterUsername(),
-      ':user_id' => $this->getUserId(),
+      ':user_id' => $user_id,
       ':website' => $this->getWebsite(false),
     ];
 
@@ -441,12 +447,12 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
     $this->twitter_username = $value;
   }
 
-  public function setUserId(int $value): void
+  public function setUserId(?int $value): void
   {
-    if ($value < 0 || $value > self::MAX_USER_ID)
+    if (!is_null($value) && ($value < 0 || $value > self::MAX_USER_ID))
     {
       throw new UnexpectedValueException(sprintf(
-        'value must be an integer between 0-%d', self::MAX_USER_ID
+        'value must be null or an integer between 0-%d', self::MAX_USER_ID
       ));
     }
 
