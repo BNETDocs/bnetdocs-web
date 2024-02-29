@@ -12,20 +12,19 @@ require('./header.inc.phtml');
 $news_posts = $this->getContext()->news_posts;
 $pagination = $this->getContext()->pagination;
 
-if (is_null($news_posts) || empty($news_posts)) { ?>
-<div class="container">
-  <div class="alert alert-danger">
-    <h1>No News Found</h1>
-    <p class="mb-0">There are no news posts to view at this time.</p>
-  </div>
-</div>
-<? } else {
-
+if (is_null($news_posts) || empty($news_posts))
+{
+  echo '<div class="container"><div class="alert alert-danger">';
+  echo '<h1>No News Found</h1><p class="mb-0">There are no news posts to view at this time.</p>';
+  echo '</div></div>';
+}
+else
+{
   $active_user = $this->getContext()->active_user;
-  $edit_visible   = ($active_user && $active_user->getOption(User::OPTION_ACL_NEWS_MODIFY));
-  $delete_visible = ($active_user && $active_user->getOption(User::OPTION_ACL_NEWS_DELETE));
+  $edit_visible = $active_user && $active_user->getOption(User::OPTION_ACL_NEWS_MODIFY);
+  $delete_visible = $active_user && $active_user->getOption(User::OPTION_ACL_NEWS_DELETE);
+  $users_cache = [];
 
-  $users = [];
   foreach ($this->getContext()->news_posts as $news_post)
   {
     $news_post_title = $news_post->getTitle();
@@ -35,58 +34,89 @@ if (is_null($news_posts) || empty($news_posts)) { ?>
     $edit_url = Common::relativeUrlToAbsolute('/news/edit?id=' . urlencode($news_post->getId()));
     $delete_url = Common::relativeUrlToAbsolute('/news/delete?id=' . urlencode($news_post->getId()));
     $user_id = $news_post->getUserId();
-    if (!isset($users[$user_id])) $users[$user_id] = new User($user_id);
-    $avatar = $users[$user_id]->getAvatarURI(22); ?>
-<div class="container">
-  <div class="row"><div class="col">
-    <span class="float-right">
-<?    if ($edit_visible) { ?>
-      <a class="btn btn-sm btn-secondary" href="<?=$edit_url?>" title="Edit">📝</a>
-<?    } if ($delete_visible) { ?>
-      <a class="btn btn-sm btn-danger" href="<?=$delete_url?>" title="Delete">❌</a>
-<?    } ?>
-    </span>
-    <h1><a href="<?=$url?>"><?=filter_var($news_post_title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
-<?  if (!($news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED)) { ?>
-    <div class="alert alert-warning"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></div>
-<?  } ?>
-    <div style="background-color:rgba(0,0,0,0.45);" class="font-weight-bold float-left mb-2 mr-2 p-2 rounded small shadow text-center"><img alt="<?=$news_post->getCategory()->getLabel()?>" title="<?=$news_post->getCategory()->getLabel()?>" src="<?=Common::relativeUrlToAbsolute('/a/news_categories/' . $news_post->getCategory()->getFilename())?>"/><br/><?=$news_post->getCategory()->getLabel()?></div><?=$news_post->getContent(true)?>
-  </div></div>
-  <div class="row mb-4"><div class="col">
-    <div class="card"><div class="card-body">
-      <span class="float-right text-muted">
-        <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>
-<? if ($edited_dt) { ?>
-        | <strong>Edited:</strong> <time datetime="<?=$edited_dt->format('c')?>"><?=$edited_dt->format('l, F j, Y'); ?></time>
-<? } ?>
-      </span>
-<?=($users[$user_id] ?
-      sprintf('<a href="%s"><img class="img-fluid rounded mr-2" src="%s"/>%s</a>',
-        $users[$user_id]->getURI(), $users[$user_id]->getAvatarURI(40), filter_var($users[$user_id]->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
-      ) : 'Anonymous'
-    )?>
-    </div></div>
-  </div></div>
-</div>
-<? }
+    if (!isset($users_cache[$user_id])) $users_cache[$user_id] = new User($user_id);
+    $avatar = $users_cache[$user_id]->getAvatarURI(22);
+
+    echo '<div class="container">';
+    echo '<div class="row"><div class="col">';
+
+    if ($edit_visible || $delete_visible) echo '<span class="float-right">';
+    if ($edit_visible) echo '<a class="btn btn-sm btn-secondary" href="' . $edit_url . '" title="Edit">📝</a>';
+    if ($delete_visible) echo '<a class="btn btn-sm btn-secondary" href="' . $delete_url . '" title="Delete">❌</a>';
+    if ($edit_visible || $delete_visible) echo '</span>';
+
+    echo '<h1><a href="' . $url . '">' . filter_var($news_post_title, FILTER_SANITIZE_FULL_SPECIAL_CHARS) . '</a></h1>';
+    if (!($news_post->getOptionsBitmask() & NewsPost::OPTION_PUBLISHED))
+    {
+      echo '<div class="alert alert-warning"><p><strong>Warning:</strong> This news post is not yet published. '
+        . 'You can view this because you are allowed to create, modify, or delete news posts.</p></div>';
+    }
+
+    echo '<div style="background-color:rgba(0,0,0,0.45);" class="font-weight-bold float-left mb-2 mr-2 p-2 rounded small shadow text-center">';
+    echo '<img alt="' . $news_post->getCategory()->getLabel() . '" title="' . $news_post->getCategory()->getLabel() . '" src="'
+      . Common::relativeUrlToAbsolute('/a/news_categories/' . $news_post->getCategory()->getFilename()) . '"/><br/>'
+      . $news_post->getCategory()->getLabel() . '</div>';
+    echo $news_post->getContent(true);
+
+    echo '</div></div>';
+
+    echo '<div class="row mb-4"><div class="col">';
+    echo '<div class="card"><div class="card-body">';
+
+    echo '<span class="float-right text-muted">';
+    echo '<time datetime="' . $created_dt->format('c') . '">' . $created_dt->format('l, F j, Y') . '</time>';
+    if ($edited_dt) echo '<strong>Edited:</strong> '
+      . '<time datetime="' . $edited_dt->format('c') . '">' . $edited_dt->format('l, F j, Y') . '</time>';
+    echo '</span>';
+
+    if ($users_cache[$user_id])
+    {
+      printf('<a href="%s"><img class="img-fluid rounded mr-2" src="%s"/>%s</a>',
+        $users_cache[$user_id]->getURI(),
+        $users_cache[$user_id]->getAvatarURI(40),
+        filter_var($users_cache[$user_id]->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+      );
+    }
+    else
+    {
+      echo 'Anonymous';
+    }
+
+    echo '</div></div>'; 
+    echo '</div></div>';
+
+    echo '</div>'; // end of container
+  }
+
+  if ($pagination)
+  {
+    $page_current = $pagination->currentPage();
+    $page_count   = $pagination->pageCount();
+    $page_prev    = ($page_current > 0               ? $page_current + 0 : false);
+    $page_next    = ($page_current + 1 < $page_count ? $page_current + 2 : false);
+
+    echo '<div class="container mt-3">';
+    echo '<nav aria-label="User list navigation" class="d-flex justify-content-center">';
+    echo '<ul class="pagination">';
+    if ($page_prev)
+    {
+      echo '<li class="page-item"><a class="page-link" href="'
+        . Common::relativeUrlToAbsolute('/news?page=' . urlencode($page_prev)) . '">&lt;</a></li>';
+    }
+    for ($i = 1; $i <= $page_count; ++$i)
+    {
+      echo '<li class="page-item disabled"><a class="page-link' . ($i - 1 == $page_current ? ' active': '')
+        . '" href="' . Common::relativeUrlToAbsolute('/news?page=' . urlencode($i)) . '">' . $i . '</a></li>';
+    }
+    if ($page_next)
+    {
+      echo '<li class="page-item"><a class="page-link" href="'
+        . Common::relativeUrlToAbsolute('/news?page=' . urlencode($page_next)) . '">&gt;</a></li>';
+    }
+    echo '</ul>';
+    echo '</nav>';
+    echo '</div>';
+  }
 }
-if ($pagination) {
-  $page_current = $pagination->currentPage();
-  $page_count   = $pagination->pageCount();
-  $page_prev    = ($page_current > 0               ? $page_current + 0 : false);
-  $page_next    = ($page_current + 1 < $page_count ? $page_current + 2 : false);
-?>
-<div class="container mt-3">
-  <nav aria-label="User list navigation" class="d-flex justify-content-center">
-    <ul class="pagination">
-<?    if ($page_prev) { ?>
-      <li class="page-item"><a class="page-link" href="<?=Common::relativeUrlToAbsolute('/news?page=' . urlencode($page_prev))?>">&lt;</a></li>
-<?    } for ($i = 1; $i <= $page_count; ++$i) { ?>
-      <li class="page-item disabled"><a class="page-link<?=($i - 1 == $page_current ? ' active': '')?>" href="<? echo Common::relativeUrlToAbsolute('/news?page=' . urlencode($i))?>"><?=$i?></a></li>
-<?    } if ($page_next) { ?>
-      <li class="page-item"><a class="page-link" href="<?=Common::relativeUrlToAbsolute('/news?page=' . urlencode($page_next))?>">&gt;</a></li>
-<?    } ?>
-    </ul>
-  </nav>
-</div>
-<? } require('./footer.inc.phtml'); ?>
+
+require('./footer.inc.phtml');
