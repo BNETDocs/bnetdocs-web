@@ -1,13 +1,16 @@
 # vim: set colorcolumn=:
 name: bnetdocs-web
 
-on: [push]
+on: [push, pull_request]
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  linter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
       - name: Update apt cache
         run: sudo apt-get update
@@ -16,10 +19,19 @@ jobs:
         run: sudo apt-get install php8.1-cli
 
       - name: Validate composer.json and composer.lock
-        run: composer validate
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: lib
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
       - name: Install composer/vendor dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --ignore-platform-reqs
+        run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
       - name: Validate PHP syntax
-        run: bash -c 'set -e;for file in $(find ./src -type f -regex .*\.php -print); do php -e -l -f "$file"; done'
+        run: bash -c 'set -e;for file in $(find ./src -type f -regex ".*\.\(php\|phtml\)" -print); do php -e -l -f "$file"; done'
