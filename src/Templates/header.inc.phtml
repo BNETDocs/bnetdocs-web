@@ -210,9 +210,8 @@ $_campaign_vultr = (
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <title><?=$title?> &ndash; BNETDocs</title>
-<?  if (isset($url) && !empty($url)) { ?>
-    <link rel="canonical" href="<?=($url ?? '')?>"/>
+<?  if (isset($url) && is_string($url) && !empty($url)) { ?>
+    <link rel="canonical" href="<?=$url?>"/>
 <?  } ?>
     <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/bootstrap-4.4.1-slate.min.css' . $_unique_asset ?? '')?>" integrity="sha384-tfnMnZ6k273p3mDqSKikc9aXSvumltGq76Tbo+VMydpXeD5EDZwbQWo7nbZz+wc9" crossorigin="anonymous"/>
     <link rel="stylesheet" href="<?=Common::relativeUrlToAbsolute('/a/datatables.min.css' . $_unique_asset ?? '')?>" type="text/css" media="all"/>
@@ -223,17 +222,20 @@ $_campaign_vultr = (
     <link rel="alternate" href="<?=Common::relativeUrlToAbsolute('/news.rss')?>" type="application/rss+xml" title="BNETDocs News"/>
     <link rel="license" href="<?=Common::relativeUrlToAbsolute('/legal')?>"/>
     <meta name="keywords" content="battle.net,starcraft,warcraft,diablo,blizzard,logon sequences,packets,information,protocols,reference,programming,coding"/>
-<?  if (!empty($description)) { ?>
-    <meta name="description" content="<?=$description?>"/>
-    <meta property="og:description" content="<?=$description?>"/>
-    <meta property="twitter:description" content="<?=$description?>"/>
+<?  if (!empty($description)) { $_description = filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>
+    <meta name="description" content="<?=$_description?>"/>
+    <meta property="og:description" content="<?=$_description?>"/>
+    <meta property="twitter:description" content="<?=$_description?>"/>
 <?  } ?>
     <meta property="og:site_name" content="BNETDocs"/>
     <meta property="og:locale" content="en_US"/>
     <meta property="twitter:card" content="summary"/>
     <meta property="twitter:site" content="@BNETDocs"/>
-    <meta property="og:title" content="<?=$title?>"/>
-    <meta property="twitter:title" content="<?=$title?>"/>
+<?  if (!empty($title)) { $_title = filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS); ?>
+    <title><?=$_title?> &ndash; BNETDocs</title>
+    <meta property="og:title" content="<?=$_title?>"/>
+    <meta property="twitter:title" content="<?=$_title?>"/>
+<?  } ?>
 <?  $ogimage = false; $ogtype = false;
     foreach ($this->opengraph as $og) {
       $ogkey = $og->getKey();

@@ -1,0 +1,109 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates;
+use \CarlBennett\MVC\Libraries\Common;
+use \CarlBennett\MVC\Libraries\Pair;
+
+$title = 'Privacy Policy';
+$this->opengraph->attach(new Pair('url', '/privacy'));
+$this->opengraph->attach(new Pair('type', 'article'));
+
+$data_location = $this->getContext()->data_location;
+$email_domain = $this->getContext()->email_domain;
+$email_mailbox = $this->getContext()->email_mailbox;
+$org = $this->getContext()->organization;
+$description = sprintf(
+  'This %s describes how %s ("we", "us", or "our") collects, uses, and ' .
+  'discloses personal information when you use our website, located at %s (the "Site").',
+  $title, $org, Common::relativeUrlToAbsolute('/')
+);
+
+require('./header.inc.phtml'); ?>
+<div class="container">
+<h1><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></h1>
+<p>Last Updated: March 1, 2024</p>
+<p><?=filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></p>
+
+<nav class="bg-primary border border-1 border-secondary float-right m-2 p-1 rounded">
+  <p class="font-weight-bold mb-0 text-center">Table of Contents</p>
+  <ol class="mr-2">
+    <li><a href="#info-we-collect">Information We Collect</a></li>
+    <li><a href="#how-we-collect">How We Collect Information</a></li>
+    <li><a href="#how-we-use">How We Use Information</a></li>
+    <li><a href="#info-sharing">Information Sharing</a></li>
+    <li><a href="#data-security">Data Security</a></li>
+    <li><a href="#data-retention">Data Retention</a></li>
+    <li><a href="#user-rights">User Rights</a></li>
+    <li><a href="#use-of-cookies">Use of Cookies</a></li>
+    <li><a href="#gdpr-compliance">GDPR Compliance</a></li>
+    <li><a href="#changes-to-policy">Changes to This Policy</a></li>
+    <li><a href="#contact">Contacting Us</a></li>
+  </ol>
+</nav>
+
+<h2><a id="info-we-collect">1. Information We Collect</a></h2>
+
+<p>We collect the following types of personal information:</p>
+<ul>
+  <li>IP addresses</li>
+  <li>Browser user agents</li>
+  <li>Usernames</li>
+  <li>Passwords</li>
+  <li>Email addresses</li>
+  <li>Social media contact information (optional)</li>
+</ul>
+
+<h2><a id="how-we-collect">2. How We Collect Information</a></h2>
+
+<p>We collect personal information through various means, including:</p>
+<ul>
+  <li>Information provided directly by users through website forms, such as registration forms and contact forms.</li>
+  <li>Automatically collected information through the use of cookies and similar tracking technologies.</li>
+  <li>Information obtained through account creation and interactions with features of the site, such as submitting user-generated content or engaging in discussions.</li>
+</ul>
+
+<h2><a id="how-we-use">3. How We Use Information</a></h2>
+
+<p>We collect this information for the following purposes:</p>
+<ul>
+  <li>Functional use of the site.</li>
+  <li>Identification of users between subsequent visits.</li>
+  <li>Communication with users off-site (via email).</li>
+  <li>Displaying user profiles (social media contact information is optional and not necessary for site features).</li>
+  <li>Accepting user-generated content (e.g., documents, news posts, packet references, comments).</li>
+</ul>
+
+<h2><a id="info-sharing">4. Information Sharing</a></h2>
+
+<p>We do not sell personal information to third parties. Machine snapshots and database backups are created for system backup purposes only.</p>
+
+<h2><a id="data-security">5. Data Security</a></h2>
+
+<p>Full system machine snapshots are accessible only by the site owner with two-factor authentication. Our relational database schema is hosted in <?=filter_var($data_location, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>, with a firewall preventing unauthorized access. Passwords are securely hashed using PHP bcrypt. Access to personal information within the database is restricted to authorized staff members of <?=filter_var($org, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?> who require access for the purpose of maintaining and improving the website. However, no formal training on data protection and privacy practices is provided to staff members. Any access to personal information is logged and monitored for security purposes. In the unlikely event of a security breach, limited personal information may be exposed.</p>
+
+<h2><a id="data-retention">6. Data Retention</a></h2>
+
+<p>Personal information is stored for as long as the user account remains active. If a user requests to delete their account, we will promptly remove their personal details from our database. However, user-generated content will remain on the site, with any associated personal information anonymized.</p>
+
+<h2><a id="user-rights">7. User Rights</a></h2>
+
+<p>Users have the right to request access to their personal information, request corrections to any inaccuracies, request deletion of their data, request limitations on how their data is processed, object to the processing of their data, and request to receive their data in a portable format.</p>
+
+<h2><a id="use-of-cookies">8. Use of Cookies</a></h2>
+
+<p>We use cookies to record preferences and identify returning users after login. Users can opt-out of cookies, but some site features may not function properly.</p>
+
+<h2><a id="gdpr-compliance">9. GDPR Compliance</a></h2>
+
+<p>We are committed to respecting the rights and principles outlined in the General Data Protection Regulation (GDPR) where applicable. This includes ensuring the lawful processing of personal data, implementing appropriate security measures to protect personal information, and providing individuals with rights regarding their data, such as access, rectification, erasure, and portability. If you are a resident of the European Union (EU) or European Economic Area (EEA) and have questions or concerns about the processing of your personal data, please contact us using the information provided in this <?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>.</p>
+
+<h2><a id="changes-to-policy">10. Changes to This Policy</a></h2>
+
+<p>We reserve the right to modify this <?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?> at any time. Substantial modifications may be communicated to users via email.</p>
+
+<h2><a id="contact">11. Contacting Us</a></h2>
+
+<p>You may send an email message to the site owner. Please write to <?=filter_var($email_mailbox, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?><img width="13" height="13" alt="&#64;" src="<?=Common::relativeUrlToAbsolute('/a/svg/at-sign-white.svg' . $_unique_asset)?>"/><?=filter_var($email_domain, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>, it will reach the appropriate person.</p>
+<?=(Common::$config->discord->enabled ? '<p>Alternatively, you may try reaching ' . filter_var($org, FILTER_SANITIZE_FULL_SPECIAL_CHARS) . ' staff via <a href="' . Common::relativeUrlToAbsolute('/discord') . '">Discord</a>.</p>' : '')?>
+
+</div>
+<? require('./footer.inc.phtml'); ?>

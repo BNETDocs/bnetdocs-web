@@ -97,7 +97,7 @@ function main(): void
       ['#^/packet/index\.vb$#', 'Packet\\Index', ['Packet\\IndexVb'], true],
       ['#^/packet/index/?$#', 'Packet\\Index', ['Packet\\IndexHtml', 'Packet\\IndexJson'], false],
       ['#^/phpinfo/?$#', 'PhpInfo', ['PhpInfoHtml']],
-      ['#^/privacy(?:/|\.html?)?$#', 'PrivacyNotice', ['PrivacyNoticeHtml']],
+      ['#^/privacy(?:/|\.html?)?$#', 'PrivacyPolicy', ['PrivacyPolicyHtml']],
       ['#^/robots\.txt$#', 'Robotstxt', ['Robotstxt']],
       ['#^/server/(\d+)/?.*\.html?$#', 'Server\\View', ['Server\\ViewHtml']],
       ['#^/server/(\d+)/?.*\.json$#', 'Server\\View', ['Server\\ViewJson']],

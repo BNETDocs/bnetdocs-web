@@ -2,14 +2,14 @@
 
 namespace BNETDocs\Controllers;
 
-class PrivacyNotice extends Base
+class PrivacyPolicy extends Base
 {
   /**
    * Constructs a Controller, typically to initialize properties.
    */
   public function __construct()
   {
-    $this->model = new \BNETDocs\Models\PrivacyNotice();
+    $this->model = new \BNETDocs\Models\PrivacyPolicy();
   }
 
   /**
