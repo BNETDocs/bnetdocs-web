@@ -290,7 +290,7 @@ class UserProfile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializa
     return is_null($this->user_id) ? null : new User($this->user_id);
   }
 
-  public function getUserId(): int
+  public function getUserId(): ?int
   {
     return $this->user_id;
   }
