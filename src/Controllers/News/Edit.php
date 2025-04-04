@@ -117,7 +117,10 @@ class Edit extends \BNETDocs\Controllers\Base
         'Authored by' => !\is_null($this->model->news_post->getUserId()) ? $this->model->news_post->getUser()->getAsMarkdown() : '*Anonymous*',
         'Edited by' => $this->model->active_user->getAsMarkdown(),
       ]);
-      $embed->setDescription($this->model->news_post->isMarkdown() ? $content : '```' . \PHP_EOL . $content . \PHP_EOL . '```');
+      $desc = \substr($content, 0, \min(\BNETDocs\Libraries\Discord\Embed::MAX_DESCRIPTION - 13, \strlen($content) - 13));
+      if (\strlen($desc) != \strlen($content)) $desc .= '…';
+      if (!$this->model->news_post->isMarkdown()) $desc = '```' . \PHP_EOL . $desc . \PHP_EOL . '```';
+      $embed->setDescription($desc);
       Logger::logToDiscord($event, $embed);
     }
   }

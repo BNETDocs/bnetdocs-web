@@ -124,7 +124,10 @@ class Create extends \BNETDocs\Controllers\Base
         'Markdown' => $this->model->markdown ? ':white_check_mark:' : ':x:',
         'RSS exempt' => $this->model->rss_exempt ? ':white_check_mark:' : ':x:',
       ]);
-      $embed->setDescription($this->model->markdown ? $this->model->content : '```' . \PHP_EOL . $this->model->content . \PHP_EOL . '```');
+      $desc = \substr($this->model->content, 0, \min(\BNETDocs\Libraries\Discord\Embed::MAX_DESCRIPTION - 13, \strlen($this->model->content) - 13));
+      if (\strlen($desc) != \strlen($this->model->content)) $desc .= '…';
+      if (!$this->model->markdown) $desc = '```' . \PHP_EOL . $desc . \PHP_EOL . '```';
+      $embed->setDescription($desc);
       Logger::logToDiscord($event, $embed);
     }
   }

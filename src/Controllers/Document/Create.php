@@ -99,7 +99,10 @@ class Create extends \BNETDocs\Controllers\Base
         'Brief' => $brief,
         'Markdown' => $markdown ? ':white_check_mark:' : ':x:',
       ]);
-      $embed->setDescription($markdown ? $content : '```' . \PHP_EOL . $content . \PHP_EOL . '```');
+      $desc = \substr($content, 0, \min(\BNETDocs\Libraries\Discord\Embed::MAX_DESCRIPTION - 13, \strlen($content) - 13));
+      if (\strlen($desc) != \strlen($content)) $desc .= '…';
+      if (!$markdown) $desc = '```' . \PHP_EOL . $desc . \PHP_EOL . '```';
+      $embed->setDescription($desc);
       Logger::logToDiscord($event, $embed);
     }
   }
