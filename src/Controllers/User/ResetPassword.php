@@ -91,16 +91,16 @@ class ResetPassword extends \BNETDocs\Controllers\Base
     $req = Config::get('bnetdocs.user_register_requirements') ?? [];
     $pwlen = strlen($this->model->pw1);
 
-    if (is_numeric($req->password_length_max) && $pwlen > $req->password_length_max)
+    if (is_numeric($req['password_length_max']) && $pwlen > $req['password_length_max'])
       return ResetPasswordModel::ERROR_PASSWORD_TOO_LONG;
 
-    if (is_numeric($req->password_length_min) && $pwlen < $req->password_length_min)
+    if (is_numeric($req['password_length_min']) && $pwlen < $req['password_length_min'])
       return ResetPasswordModel::ERROR_PASSWORD_TOO_SHORT;
 
-    if (!$req->password_allow_email && stripos($this->model->pw1, $this->model->user->getEmail()))
+    if (!$req['password_allow_email'] && stripos($this->model->pw1, $this->model->user->getEmail()))
       return ResetPasswordModel::ERROR_PASSWORD_CONTAINS_EMAIL;
 
-    if (!$req->password_allow_username && stripos($this->model->pw1, $this->model->user->getUsername()))
+    if (!$req['password_allow_username'] && stripos($this->model->pw1, $this->model->user->getUsername()))
       return ResetPasswordModel::ERROR_PASSWORD_CONTAINS_USERNAME;
 
     if ($this->model->user->isDisabled()) return ResetPasswordModel::ERROR_USER_DISABLED;
