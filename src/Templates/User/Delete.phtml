@@ -10,7 +10,7 @@ switch ($this->getContext()->error)
   case DeleteModel::ERROR_ACL_NOT_SET: $message = 'You do not have the privilege to delete users.'; break;
   case DeleteModel::ERROR_NOT_FOUND: $message = 'Cannot find user by that id.'; break;
   case DeleteModel::ERROR_NOT_LOGGED_IN: $message = 'You must be logged in to delete users.'; break;
-  case DeleteModel::ERROR_INTERNAL_ERROR: $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
+  case DeleteModel::ERROR_INTERNAL: $message = 'An internal error occurred while processing your request. Our staff have been notified of the issue. Try again later.'; break;
   default: $message = $this->getContext()->error;
 }
 $target_id = $this->getContext()->target_id;
