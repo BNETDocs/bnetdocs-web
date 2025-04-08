@@ -55,13 +55,21 @@ class Register extends \BNETDocs\Controllers\Base
       return;
     }
 
+    if (!is_null($this->model->active_user))
+    {
+      $this->model->error = RegisterModel::ERROR_ALREADY_LOGGED_IN;
+      return;
+    }
+
     $q = Router::query();
     $this->model->email = $q['email'] ?? null;
     $this->model->username = $q['username'] ?? null;
 
-    if (!is_null($this->model->active_user))
+    $this->model->honeypot = $q['confirm_email'] ?? null;
+    if (is_string($this->model->honeypot) && strlen($this->model->honeypot) > 0)
     {
-      $this->model->error = RegisterModel::ERROR_ALREADY_LOGGED_IN;
+      // This field should never be filled unless it was a bot.
+      $this->model->error = RegisterModel::ERROR_REGISTER_DISABLED;
       return;
     }
 

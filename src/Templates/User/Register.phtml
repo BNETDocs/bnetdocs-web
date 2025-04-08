@@ -34,7 +34,7 @@ $email = filter_var($this->getContext()->email, FILTER_SANITIZE_FULL_SPECIAL_CHA
 $username = filter_var($this->getContext()->username, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
-  <script async defer="defer" src="https://www.google.com/recaptcha/api.js"><![CDATA[]]></script>
+  <script async defer="defer" src="https://www.google.com/recaptcha/api.js"></script>
   <div class="card mx-auto mb-3" style="width:22rem;">
     <h3 class="card-header text-center<?=($register_disabled ? ' text-danger' : '')?>"><?=$title?></h3>
     <div class="card-body">
@@ -49,6 +49,7 @@ require('./Includes/header.inc.phtml'); ?>
         <div class="form-group">
           <label class="font-weight-bold" for="email">Email address:</label>
           <input class="bg-dark border border-primary form-control text-light" type="email" name="email" id="email" placeholder="Enter the email address here" tabindex="1" value="<?=$email?>" required<?=($af == 'email' ? ' autofocus="autofocus"' : '')?>/>
+          <input type="text" name="confirm_email" style="display:none;"/>
         </div><div class="form-group">
           <label class="font-weight-bold" for="username">Username:</label>
           <input class="bg-dark border border-primary form-control text-light" type="text" name="username" id="username" placeholder="Enter the username here" tabindex="2" maxlength="<?=$this->getContext()->username_max_len?>" value="<?=$username?>" required<?=($af == 'email' ? ' autofocus="autofocus"' : '')?>/>

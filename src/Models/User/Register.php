@@ -24,6 +24,7 @@ class Register extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
 
     public ?string $denylist_reason = null;
     public ?string $email = null;
+    public ?string $honeypot = null;
     public ?\BNETDocs\Libraries\Core\Recaptcha $recaptcha = null;
     public ?string $username = null;
     public int $username_max_len = 0;
@@ -33,6 +34,7 @@ class Register extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
         return \array_merge(parent::jsonSerialize(), [
             'denylist_reason' => $this->denylist_reason,
             'email' => $this->email,
+            'honeypot' => $this->honeypot,
             'recaptcha' => $this->recaptcha,
             'username' => $this->username,
             'username_max_len' => $this->username_max_len,
