@@ -17,6 +17,7 @@ if ($object)
   $created_dt = $object->getCreatedDateTime();
   $draft = !$object->isPublished();
   $edited_dt = $object->getEditedDateTime();
+  $tags = $object->getTags();
   $url = $object->getURI();
   $user = $object->getUser();
   $user_avatar = $user ? $user->getAvatarURI(40) : null;
@@ -60,6 +61,7 @@ require('./Includes/header.inc.phtml'); ?>
 <?  } ?>
     <div style="background-color:rgba(0,0,0,0.45);" class="font-weight-bold float-left mb-2 mr-2 p-2 rounded small shadow text-center"><img alt="<?=$object->getCategory()->getLabel()?>" title="<?=$object->getCategory()->getLabel()?>" src="<?=UrlFormatter::format('/a/news_categories/' . $object->getCategory()->getFilename())?>"/><br/><?=$object->getCategory()->getLabel()?></div><?=$object->getContent(true)?>
   </div></div>
+<? require('./Includes/TagDisplay.inc.phtml'); ?>
   <div class="row"><div class="col">
     <div class="card"><div class="card-body">
       <span class="float-right text-muted">

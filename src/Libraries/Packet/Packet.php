@@ -7,6 +7,8 @@ use \BNETDocs\Libraries\Db\MariaDb;
 use \BNETDocs\Libraries\Packet\Application as ApplicationLayer;
 use \BNETDocs\Libraries\Packet\Transport as TransportLayer;
 use \BNETDocs\Libraries\Product;
+use \BNETDocs\Libraries\Tag\Tag;
+use \BNETDocs\Libraries\Tag\Types as TagTypes;
 use \BNETDocs\Libraries\User\User;
 use \DateTimeInterface;
 use \DateTimeZone;
@@ -430,6 +432,12 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $md = new Parsedown();
     $md->setBreaksEnabled(true);
     return $md->text($this->remarks);
+  }
+
+  public function getTags(): array
+  {
+    $id = $this->getId();
+    return is_null($id) ? [] : (Tag::allocateAll(TagTypes::Packet, $this->getId()) ?? []);
   }
 
   public function getTransportLayer(): TransportLayer

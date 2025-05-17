@@ -23,6 +23,7 @@ if ($object)
   $published = $object->isPublished();
   $remarks = $object->getRemarks(true);
   $research = $object->isInResearch();
+  $tags = $object->getTags();
   $title = $object->getLabel();
   $transport_layer = $object->getTransportLayer();
   $url = $object->getURI();
@@ -101,6 +102,7 @@ require('./Includes/header.inc.phtml'); ?>
   <h1>Remarks</h1>
   <div class="container"><?=\BNETDocs\Templates\Includes\MarkdownBootstrapFix($remarks, true, false)?></div>
 
+<? require('./Includes/TagDisplay.inc.phtml'); ?>
   <div class="card mt-3"><div class="card-body">
     <span class="float-right text-muted">
       <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>

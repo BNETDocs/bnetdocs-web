@@ -5,6 +5,8 @@ namespace BNETDocs\Libraries\News;
 use \BNETDocs\Libraries\Core\DateTimeImmutable;
 use \BNETDocs\Libraries\Db\MariaDb;
 use \BNETDocs\Libraries\News\Category as NewsCategory;
+use \BNETDocs\Libraries\Tag\Tag;
+use \BNETDocs\Libraries\Tag\Types as TagTypes;
 use \BNETDocs\Libraries\User\User;
 use \DateTimeInterface;
 use \DateTimeZone;
@@ -291,6 +293,12 @@ class Post implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public function getPublishedDateTime(): DateTimeInterface
   {
     return $this->getEditedDateTime() ?? $this->getCreatedDateTime();
+  }
+
+  public function getTags(): array
+  {
+    $id = $this->getId();
+    return is_null($id) ? [] : (Tag::allocateAll(TagTypes::NewsPost, $this->getId()) ?? []);
   }
 
   public function getTitle(): string

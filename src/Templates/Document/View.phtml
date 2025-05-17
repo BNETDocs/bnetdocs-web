@@ -28,6 +28,7 @@ if ($object)
   $content = $object->getContent(true);
   $created_dt = $object->getCreatedDateTime();
   $edited_dt = $object->getEditedDateTime();
+  $tags = $object->getTags();
   $user = $object->getUser();
   $draft = !$object->isPublished();
 
@@ -58,6 +59,7 @@ require('./Includes/header.inc.phtml'); ?>
 <?=(!empty($brief) ? sprintf('  <div class="alert alert-secondary"><span class="float-left font-weight-bold mr-1">Brief:</span> %s</div>', \BNETDocs\Templates\Includes\MarkdownBootstrapFix($brief, true, true)) : '')?>
   <?=\BNETDocs\Templates\Includes\MarkdownBootstrapFix($object->getContent(true), true)?>
 
+<? require('./Includes/TagDisplay.inc.phtml'); ?>
   <div class="card"><div class="card-body">
     <span class="float-right text-muted">
       <time datetime="<?=$created_dt->format('c')?>"><?=$created_dt->format('l, F j, Y')?></time>

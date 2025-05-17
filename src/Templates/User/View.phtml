@@ -25,6 +25,7 @@ if ($user)
   $_header_meta_properties['og:image'] = $user->getAvatarURI(null);
 
   $comments = $this->getContext()->comments;
+  $tags = $user->getTags();
   $sum_comments = $this->getContext()->sum_comments;
   $sum_documents = $this->getContext()->sum_documents;
   $sum_news_posts = $this->getContext()->sum_news_posts;
@@ -215,6 +216,7 @@ require('./Includes/header.inc.phtml'); ?>
     </div>
 <? } ?>
   </div>
+<? require('./Includes/TagDisplay.inc.phtml'); ?>
 <? if (!empty($comments)) {
     $comment_show_parent = true;
     require('./Comment/Section.inc.phtml');

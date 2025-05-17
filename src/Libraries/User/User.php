@@ -8,6 +8,8 @@ use \BNETDocs\Libraries\Core\StringProcessor;
 use \BNETDocs\Libraries\Core\UrlFormatter;
 use \BNETDocs\Libraries\Db\MariaDb;
 use \BNETDocs\Libraries\Discord\EmbedAuthor as DiscordEmbedAuthor;
+use \BNETDocs\Libraries\Tag\Tag;
+use \BNETDocs\Libraries\Tag\Types as TagTypes;
 use \BNETDocs\Libraries\User\Profile as UserProfile;
 use \DateTimeInterface;
 use \DateTimeZone;
@@ -562,6 +564,27 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   }
 
   /**
+   * Retrieves the Tag objects for this user.
+   *
+   * @return array The Tag objects.
+   */
+  public function getTags(): array
+  {
+    $id = $this->getId();
+    return is_null($id) ? [] : (Tag::allocateAll(TagTypes::User, $this->getId()) ?? []);
+  }
+
+  /**
+   * Retrieves the preferred timezone for this user, or null for no timezone preference/automatic.
+   *
+   * @return string|null The timezone.
+   */
+  public function getTimezone(): ?string
+  {
+    return $this->timezone;
+  }
+
+  /**
    * Retrieves the unique URL for this user.
    *
    * @return string|null The URL, or null if the id is null.
@@ -587,16 +610,6 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $r = (int) $q->fetchObject()->count;
     $q->closeCursor();
     return $r;
-  }
-
-  /**
-   * Retrieves the preferred timezone for this user, or null for no timezone preference/automatic.
-   *
-   * @return string|null The timezone.
-   */
-  public function getTimezone(): ?string
-  {
-    return $this->timezone;
   }
 
   /**

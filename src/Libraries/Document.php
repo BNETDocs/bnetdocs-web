@@ -4,6 +4,8 @@ namespace BNETDocs\Libraries;
 
 use \BNETDocs\Libraries\Core\DateTimeImmutable;
 use \BNETDocs\Libraries\Db\MariaDb;
+use \BNETDocs\Libraries\Tag\Tag;
+use \BNETDocs\Libraries\Tag\Types as TagTypes;
 use \BNETDocs\Libraries\User\User;
 use \DateTimeInterface;
 use \DateTimeZone;
@@ -306,6 +308,12 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return (!is_null($this->edited_datetime) ?
       $this->getEditedDateTime() : $this->getCreatedDateTime()
     );
+  }
+
+  public function getTags(): array
+  {
+    $id = $this->getId();
+    return is_null($id) ? [] : (Tag::allocateAll(TagTypes::Document, $this->getId()) ?? []);
   }
 
   public function getTitle(): string

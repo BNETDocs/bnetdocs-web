@@ -1,0 +1,15 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates\Includes;
+if (isset($tags) && count($tags) >= 1)
+{
+    $i = 0;
+    foreach ($tags as $tag)
+    {
+        if ($i == 0) echo '<div class="clearfix"><span style="filter:grayscale(100%);">🔖</span>';
+        echo '<span class="badge bg-primary ml-1">'
+            . filter_var($tag->getTagString(), \FILTER_SANITIZE_FULL_SPECIAL_CHARS)
+            . '</span>';
+        $i++;
+    }
+    if ($i > 0) echo '</div>';
+}
