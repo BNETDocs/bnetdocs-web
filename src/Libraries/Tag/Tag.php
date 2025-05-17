@@ -72,7 +72,8 @@ class Tag implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
                     `tag_string`
                 FROM `tags` WHERE
                     `reference_id` = :refid AND
-                    `reference_type` = :reftype;
+                    `reference_type` = :reftype
+                ORDER BY `tag_string` ASC;
             ');
             if (!$q || !$q->execute($p)) return null;
             $rows = [];
