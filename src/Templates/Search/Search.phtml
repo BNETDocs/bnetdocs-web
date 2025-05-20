@@ -82,13 +82,14 @@ require('./Includes/header.inc.phtml'); ?>
                     case $item instanceof \BNETDocs\Libraries\Packet\Packet:
                       $url = $item->getURI();
                       $title = $item->getLabel();
-                      $preview = $item->getFormat() ?: $item->getRemarks(true);
+                      $preview = $item->getRemarks(true) ?: $item->getFormat();
                       $tags = $item->getTags();
                       break;
 
                     case $item instanceof \BNETDocs\Libraries\Server\Server:
                       $url = $item->getURI();
-                      $title = $item->getLabel() . ' (' . $item->getAddress() . ':' . $item->getPort() . ')';
+                      $title = $item->getLabel();
+                      $preview = $item->getAddress() . ':' . $item->getPort();
                       $tags = $item->getTags();
                       break;
 
