@@ -3,10 +3,10 @@
 namespace BNETDocs\Libraries\Search;
 
 use \BNETDocs\Libraries\Comment;
-use \BNETDocs\Libraries\Db\MariaDb;
 use \BNETDocs\Libraries\Document;
 use \BNETDocs\Libraries\News\Post as NewsPost;
 use \BNETDocs\Libraries\Packet\Packet;
+use \BNETDocs\Libraries\Search\Results;
 use \BNETDocs\Libraries\Server\Server;
 use \BNETDocs\Libraries\User\User;
 
@@ -17,7 +17,7 @@ class Search
     public static function query(string $user_input): Results|null
     {
         $results = new Results();
-        $pdo = MariaDb::instance();
+        $pdo = \BNETDocs\Libraries\Db\MariaDb::instance();
 
         $term = trim($user_input);
         if ($term === '') return null;

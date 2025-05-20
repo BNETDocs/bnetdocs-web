@@ -35,6 +35,13 @@ function _header_active(string $url, bool $sr)
   if (!$match) return '';
   if ($sr) return ' <span class="sr-only">(current)</span>'; else return ' active';
 }
+function _header_search_query(): string
+{
+  $current_url = parse_url(getenv('REQUEST_URI'), PHP_URL_PATH);
+  $match = (substr($current_url, 0, strlen('/search')) == '/search');
+  if (!$match) return '';
+  return \BNETDocs\Libraries\Core\Router::query()['q'] ?? '';
+}
 $_header_nav = [
   ['label' => 'Welcome', 'url' => '/welcome'],
   ['label' => 'Community', 'dropdown' => [
@@ -177,6 +184,9 @@ function _header_nav_html($nav)
 
   // Navbar (End)
   _line('</ul>');
+
+  // Search
+  _line('<form action="%s" method="GET" class="mb-3 mb-lg-0 me-lg-3" role="search"><input name="q" type="search" class="form-control bg-dark border-dark text-light" placeholder="Search…" aria-label="Search" value="%s"></form>', UrlFormatter::format('/search'), _header_search_query());
 
   // Account
   if (!Authentication::$user)

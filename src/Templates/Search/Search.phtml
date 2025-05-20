@@ -1,0 +1,148 @@
+<?php
+namespace BNETDocs\Templates\Search;
+$title = 'Search';
+$results = $this->getContext()->results;
+$user_input = $this->getContext()->user_input ?? '';
+if ($results)
+{
+    $sections = [
+        'Comments' => $results->getComments(),
+        'Documents' => $results->getDocuments(),
+        'News Posts' => $results->getNewsPosts(),
+        'Packets' => $results->getPackets(),
+        'Servers' => $results->getServers(),
+        'Users' => $results->getUsers(),
+    ];
+}
+require('./Includes/header.inc.phtml'); ?>
+<div class="container">
+<?php if (!$results instanceof \BNETDocs\Libraries\Search\Results || $results->isEmpty()): ?>
+  <h1 class="mt-4 mb-3">No Results</h1>
+  <p class="text-muted">Your search for <code><?= filter_var($user_input, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?></code> returned no results.</p>
+<?php else:
+  $nonEmptyCount = 0;
+  foreach ($sections as $items) {
+    if (!empty($items)) $nonEmptyCount++;
+  }
+  $collapse_all_by_default = ($nonEmptyCount >= 2);
+?>
+  <h1 class="mt-4 mb-3">Search Results</h1>
+  <p class="text-muted">Query: <code><?= filter_var($user_input, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?></code></p>
+
+  <div class="mb-3">
+    <button class="btn btn-sm btn-outline-secondary mr-2" id="expand-all">Expand All</button>
+    <button class="btn btn-sm btn-outline-secondary" id="collapse-all">Collapse All</button>
+  </div>
+
+  <div id="searchAccordion">
+  <?php foreach ($sections as $label => $items): ?>
+    <?php if (!empty($items)): ?>
+      <?php $collapseId = strtolower(str_replace(' ', '-', $label)); ?>
+      <div class="card mb-3">
+        <div class="card-header" id="heading-<?= $collapseId ?>">
+          <h5 class="mb-0">
+            <button class="btn btn-link text-white" data-toggle="collapse" data-target="#collapse-<?= $collapseId ?>" aria-expanded="<?= $collapse_all_by_default ? 'false' : 'true' ?>" aria-controls="collapse-<?= $collapseId ?>">
+              <?= $label ?> (<?= count($items) ?>)
+            </button>
+          </h5>
+        </div>
+        <div id="collapse-<?= $collapseId ?>" class="collapse<?= $collapse_all_by_default ? '' : ' show' ?>" aria-labelledby="heading-<?= $collapseId ?>" data-parent="#searchAccordion">
+          <div class="card-body p-0">
+            <?php if ($label === 'Comments'): ?>
+              <?php
+              $comments = $items;
+              $comment_show_parent = true;
+              require('./Comment/Section.inc.phtml');
+              ?>
+            <?php else: ?>
+              <ul class="list-group list-group-flush">
+              <?php foreach ($items as $item): ?>
+                <li class="list-group-item">
+                  <?php
+                  $url = '#';
+                  $title = 'Untitled';
+                  $preview = '';
+                  $tags = [];
+
+                  switch (true) {
+                    case $item instanceof \BNETDocs\Libraries\Document:
+                      $url = $item->getURI();
+                      $title = $item->getTitle();
+                      $preview = $item->getBrief(true) ?: $item->getContent(true);
+                      $tags = $item->getTags();
+                      break;
+
+                    case $item instanceof \BNETDocs\Libraries\News\Post:
+                      $url = $item->getURI();
+                      $title = $item->getTitle();
+                      $preview = $item->getContent(true);
+                      $tags = $item->getTags();
+                      break;
+
+                    case $item instanceof \BNETDocs\Libraries\Packet\Packet:
+                      $url = $item->getURI();
+                      $title = $item->getLabel();
+                      $preview = $item->getFormat() ?: $item->getRemarks(true);
+                      $tags = $item->getTags();
+                      break;
+
+                    case $item instanceof \BNETDocs\Libraries\Server\Server:
+                      $url = $item->getURI();
+                      $title = $item->getLabel() . ' (' . $item->getAddress() . ':' . $item->getPort() . ')';
+                      $tags = $item->getTags();
+                      break;
+
+                    case $item instanceof \BNETDocs\Libraries\User\User:
+                      $url = $item->getURI();
+                      $title = $item->getName();
+                      $tags = $item->getTags();
+                      break;
+
+                    default:
+                      $title = 'ID ' . $item->getId();
+                      break;
+                  }
+
+                  $titleSafe = filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                  $previewSafe = filter_var(mb_strimwidth(strip_tags($preview), 0, 200, '…'), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+                  ?>
+                  <a href="<?= $url ?>"><strong><?= $titleSafe ?></strong></a>
+                  <?php if (!empty($previewSafe)): ?>
+                    <div class="text-muted small mt-1"><?= $previewSafe ?></div>
+                  <?php endif; ?>
+                  <?php if (!empty($tags)): ?>
+                    <div class="mt-2">
+                      <?php foreach ($tags as $tag): ?>
+                        <span class="badge badge-secondary"><?= filter_var($tag, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?></span>
+                      <?php endforeach; ?>
+                    </div>
+                  <?php endif; ?>
+                </li>
+              <?php endforeach; ?>
+              </ul>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+  <?php endforeach; ?>
+  </div>
+<?php endif; ?>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('expand-all').addEventListener('click', function () {
+      document.querySelectorAll('#searchAccordion .collapse').forEach(el => {
+        if (!el.classList.contains('show')) $(el).collapse('show');
+      });
+    });
+
+    document.getElementById('collapse-all').addEventListener('click', function () {
+      document.querySelectorAll('#searchAccordion .collapse').forEach(el => {
+        if (el.classList.contains('show')) $(el).collapse('hide');
+      });
+    });
+  });
+</script>
+<?php require('./Includes/footer.inc.phtml'); ?>

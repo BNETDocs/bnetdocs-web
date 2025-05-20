@@ -157,6 +157,18 @@ class Results implements \JsonSerializable
         return $this->users;
     }
 
+    public function isEmpty(): bool
+    {
+        if (!empty($this->comments)) return false;
+        if (!empty($this->documents)) return false;
+        if (!empty($this->news_posts)) return false;
+        if (!empty($this->packets)) return false;
+        if (!empty($this->servers)) return false;
+        if (!empty($this->users)) return false;
+
+        return true;
+    }
+
     public function jsonSerialize(): mixed
     {
         return [

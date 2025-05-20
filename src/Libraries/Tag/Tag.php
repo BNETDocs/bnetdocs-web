@@ -23,6 +23,11 @@ class Tag implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
         }
     }
 
+    public function __toString(): string
+    {
+        return $this->getTagString() ?? '';
+    }
+
     public function allocate(): bool
     {
         $p = [
