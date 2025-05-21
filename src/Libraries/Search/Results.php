@@ -30,7 +30,7 @@ class Results implements \JsonSerializable
         {
             foreach ($this->comments as $existing)
             {
-                if ($existing === $value) return;
+                if ($existing == $value) return;
             }
         }
 
@@ -48,7 +48,7 @@ class Results implements \JsonSerializable
         {
             foreach ($this->documents as $existing)
             {
-                if ($existing === $value) return;
+                if ($existing == $value) return;
             }
         }
 
@@ -66,7 +66,7 @@ class Results implements \JsonSerializable
         {
             foreach ($this->news_posts as $existing)
             {
-                if ($existing === $value) return;
+                if ($existing == $value) return;
             }
         }
 
@@ -84,7 +84,7 @@ class Results implements \JsonSerializable
         {
             foreach ($this->packets as $existing)
             {
-                if ($existing === $value) return;
+                if ($existing == $value) return;
             }
         }
 
@@ -102,7 +102,7 @@ class Results implements \JsonSerializable
         {
             foreach ($this->servers as $existing)
             {
-                if ($existing === $value) return;
+                if ($existing == $value) return;
             }
         }
 
@@ -120,7 +120,7 @@ class Results implements \JsonSerializable
         {
             foreach ($this->users as $existing)
             {
-                if ($existing === $value) return;
+                if ($existing == $value) return;
             }
         }
 
