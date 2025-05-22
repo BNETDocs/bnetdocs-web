@@ -20,7 +20,8 @@ if ($object)
   $brief = $object->getBrief(true);
   $edited_dt = $object->getEditedDateTime();
   $packet_id = $object->getPacketId(true);
-  $published = $object->isPublished();
+  $draft = !$object->isPublished();
+  $format = $object->getFormat();
   $remarks = $object->getRemarks(true);
   $research = $object->isInResearch();
   $tags = $object->getTags();
@@ -28,6 +29,8 @@ if ($object)
   $transport_layer = $object->getTransportLayer();
   $url = $object->getURI();
   $user = $object->getUser();
+
+  $format = filter_var($format, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
   $description = filter_var($brief, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   if (empty($description))
@@ -53,6 +56,7 @@ require_once('./Includes/MarkdownBootstrapFix.inc.php');
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
 <? if ($object) { ?>
+
 <? if ($delete_visible) { ?>
   <a class="btn btn-sm btn-danger float-right mr-1" href="<?=$delete_url?>" title="Delete">❌</a>
 <? } if ($edit_visible) { ?>
@@ -60,44 +64,66 @@ require('./Includes/header.inc.phtml'); ?>
 <? } ?>
 
   <h1><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
-  <table class="table table-striped"><tbody>
-    <tr><th class="text-right">Transport Layer:</th><td><?=sprintf('%s (%s)', $transport_layer->getLabel(), $transport_layer->getTag())?></td></tr>
-    <tr><th class="text-right">Application Layer:</th><td><?=sprintf('%s (%s)', $application_layer->getLabel(), $application_layer->getTag())?></td></tr>
-    <tr><th class="text-right">Message Id:</th><td><code><?=$packet_id?></code></td></tr>
-    <tr><th class="text-right">Message Name:</th><td><code><?=filter_var($object->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></td></tr>
-    <tr><th class="text-right">Direction:</th><td><?=filter_var($object->getDirectionLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></td></tr>
-<? if ($deprecated || $research || !$published) { ?>
-    <tr><th class="text-right">Options:</th><td>
-      <? if ($deprecated) require('./Includes/Deprecated.inc.phtml'); ?>
-      <? if ($research) require('./Includes/InResearch.inc.phtml'); ?>
-      <? if (!$published) require('./Includes/Draft.inc.phtml'); ?>
-    </td></tr>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <strong>Transport Layer:</strong>
+          <?=sprintf('%s (%s)', $transport_layer->getLabel(), $transport_layer->getTag())?>
+        </div>
+        <div class="col-md-6 mb-2">
+          <strong>Application Layer:</strong>
+          <?=sprintf('%s (%s)', $application_layer->getLabel(), $application_layer->getTag())?>
+        </div>
+        <div class="col-md-6 mb-2">
+          <strong>Message Id:</strong>
+          <code><?=$packet_id?></code>
+        </div>
+        <div class="col-md-6 mb-2">
+          <strong>Message Name:</strong>
+          <code><?=filter_var($object->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code>
+        </div>
+        <div class="col-md-6 mb-2">
+          <strong>Direction:</strong>
+          <?=$object->getDirectionLabel()?>
+        </div>
+<? if ($deprecated || $research || $draft) { ?>
+        <div class="col-md-6 mb-2">
+          <strong>Options:</strong><br/>
+          <? if ($deprecated) require('./Includes/Deprecated.inc.phtml'); ?>
+          <? if ($research) require('./Includes/InResearch.inc.phtml'); ?>
+          <? if ($draft) require('./Includes/Draft.inc.phtml'); ?>
+        </div>
 <? } ?>
-    <tr><th class="text-right">Used By:</th><td><?
-      $products = $this->getContext()->used_by;
-      if (count($products) == 0) {
-        echo '<em>(nothing or unknown)</em>';
-      } else if (count($products) == 1) {
-        echo filter_var($products[0]->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-      } else {
-        $j = count($this->getContext()->used_by);
-        for ($i = 0; $i < $j; ++$i) {
-          echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-          if ($i + 1 < $j) {
-            ++$i;
-            echo ', ';
-            echo filter_var($this->getContext()->used_by[$i]->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS) . "<br/>";
-          } else {
-            echo "<br/>";
-          }
-        }
-      }
-    ?></td></tr>
-    <tr><th class="text-right">Message Format:<br/><sup class="text-muted">(does not include <a rel="external" href="https://bnetdocs.org/document/16/protocol-headers">protocol header</a>)</sup></th><td>
-      <pre class="border border-primary overflow-auto rounded bg-dark text-light"><code class="language-objectivec"><?=$object->getFormat()?></code></pre>
-    </td></tr>
-<?=(!empty($brief) ? sprintf('<tr><th class="text-right">Brief:</th><td>%s</td></tr>', \BNETDocs\Templates\Includes\MarkdownBootstrapFix($brief, true, true)) : '')?>
-  </tbody></table>
+        <div class="col-12 mb-2">
+          <strong>Used By:</strong><br/>
+          <div class="d-flex flex-wrap mt-1"><?
+            $products = $this->getContext()->used_by;
+            if (empty($products)) {
+              echo '<em>(nothing or unknown)</em>';
+            } else {
+              foreach ($products as $product) {
+                $label = $product->getLabel();
+                echo '<span class="badge badge-primary mr-2 mb-2">' . $label . '</span>';
+              }
+            }
+            ?></div>
+        </div>
+        <div class="col-12">
+          <strong>Message Format:</strong><br/>
+          <small class="text-muted">(does not include <a rel="external" href="https://bnetdocs.org/document/16/protocol-headers">protocol header</a>)</small>
+          <pre class="border border-primary overflow-auto rounded bg-dark text-light"><code class="language-objectivec"><?=$format?></code></pre>
+        </div>
+<? if (!empty($brief)) { ?>
+        <div class="col-12">
+          <strong>Brief:</strong><br/>
+          <?=\BNETDocs\Templates\Includes\MarkdownBootstrapFix($brief, true, true)?>
+        </div>
+<? } ?>
+      </div>
+    </div>
+  </div>
 
   <h1>Remarks</h1>
   <div class="container"><?=\BNETDocs\Templates\Includes\MarkdownBootstrapFix($remarks, true, false)?></div>
