@@ -22,8 +22,8 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public const MAX_PARENT_TYPE  = 0xFFFFFFFFFFFFFFFF;
   public const MAX_USER_ID      = 0xFFFFFFFFFFFFFFFF;
 
-  public const PARENT_TYPE_DOCUMENT  = 0;
-  public const PARENT_TYPE_COMMENT   = 1;
+  public const PARENT_TYPE_COMMENT   = 0;
+  public const PARENT_TYPE_DOCUMENT  = 1;
   public const PARENT_TYPE_NEWS_POST = 2;
   public const PARENT_TYPE_PACKET    = 3;
   public const PARENT_TYPE_SERVER    = 4;
