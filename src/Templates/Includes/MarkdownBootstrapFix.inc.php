@@ -3,8 +3,13 @@ namespace BNETDocs\Templates\Includes;
 
 /**
  * Adds CSS classes to Markdown output
+ *
+ * @param string $v The HTML contents of Markdown-rendered output.
+ * @param bool $sm Whether to use a small table.
+ * @param bool $lpm Whether to set bottom-margin to zero (0) for the last paragraph (\<p\>) element.
+ * @return string The replaced HTML contents of Markdown-rendered output.
  */
-function MarkdownBootstrapFix(string $v, bool $sm = false, bool $lpm = false)
+function MarkdownBootstrapFix(string $v, bool $sm = false, bool $lpm = false): string
 {
   // Tables
   $v = str_replace('<table>', '<table class="table table-hover table-markdown ' . ($sm ? 'table-sm ' : '') . 'table-striped">', $v);
