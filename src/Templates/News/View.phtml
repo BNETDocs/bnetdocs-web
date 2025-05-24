@@ -48,13 +48,12 @@ require('./Includes/header.inc.phtml'); ?>
   <div class="alert alert-warning">This news post is marked as <strong>draft</strong>. Edit the news post to <strong>publish</strong> it.</div>
 <? } ?>
   <div class="row"><div class="col">
-    <span class="float-right">
-<?    if ($edit_visible) { ?>
-      <a class="btn btn-sm btn-secondary" href="<?=$edit_url?>" title="Edit">📝</a>
-<?    } if ($delete_visible) { ?>
-      <a class="btn btn-sm btn-danger" href="<?=$delete_url?>" title="Delete">❌</a>
-<?    } ?>
-    </span>
+<?  if ($delete_visible) { ?>
+    <span class="float-right ml-1"><a class="btn btn-sm btn-danger" href="<?=$delete_url?>" title="Delete">❌</a></span>
+<?  } if ($edit_visible) { ?>
+    <span class="float-right ml-1"><a class="btn btn-sm btn-secondary" href="<?=$edit_url?>" title="Edit">📝</a></span>
+<?  } ?>
+
     <h1><a href="<?=$url?>"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></h1>
 <?  if (!($object->getOptionsBitmask() & \BNETDocs\Libraries\News\Post::OPTION_PUBLISHED)) { ?>
     <section class="red"><p><strong>Warning:</strong> This news post is not yet published. You can view this because you are allowed to create, modify, or delete news posts.</p></section>

@@ -38,10 +38,8 @@ else
     echo '<div class="container">';
     echo '<div class="row"><div class="col">';
 
-    if ($edit_visible || $delete_visible) echo '<span class="float-right">';
-    if ($edit_visible) echo '<a class="btn btn-sm btn-secondary" href="' . $edit_url . '" title="Edit">📝</a>';
-    if ($delete_visible) echo '<a class="btn btn-sm btn-secondary" href="' . $delete_url . '" title="Delete">❌</a>';
-    if ($edit_visible || $delete_visible) echo '</span>';
+    if ($delete_visible) echo '<span class="float-right ml-1"><a class="btn btn-sm btn-danger" href="' . $delete_url . '" title="Delete">❌</a></span>';
+    if ($edit_visible) echo '<span class="float-right ml-1"><a class="btn btn-sm btn-secondary" href="' . $edit_url . '" title="Edit">📝</a></span>';
 
     echo '<h1><a href="' . $url . '">' . filter_var($news_post_title, FILTER_SANITIZE_FULL_SPECIAL_CHARS) . '</a></h1>';
     if (!($news_post->getOptionsBitmask() & \BNETDocs\Libraries\News\Post::OPTION_PUBLISHED))
