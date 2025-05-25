@@ -193,7 +193,7 @@ function _header_nav_html($nav)
   if (!Authentication::$user)
   {
     _line('<a class="btn btn-sm btn-outline-secondary my-2 my-lg-0" tabindex="-2" href="%s">Log&nbsp;in</a>', UrlFormatter::format('/user/login'));
-    if (Config::get('bnetdocs.user_register_disabled'))
+    if (!Config::get('bnetdocs.user_register_disabled'))
     {
       _line('<a class="btn btn-sm btn-outline-success my-2 my-lg-0 ml-2" tabindex="-1" href="%s">Register</a>', UrlFormatter::format('/user/register'));
     }
