@@ -58,6 +58,10 @@ class Main
       Router::$routes = [
         ['#^/\.well-known/change-password$#', 'Core\\Redirect', ['Core\\RedirectHtml', 'Core\\RedirectJson', 'Core\\RedirectPlain'], '/user/changepassword'],
         ['#^/$#', 'Core\\Legacy', ['Core\\LegacyHtml']],
+        ['#^/analytics/dashboard/?$#', 'Analytics\\Dashboard', ['Analytics\\DashboardHtml', 'Analytics\\DashboardJson', 'Analytics\\DashboardPlain']],
+        ['#^/analytics/dashboard\.html?$#', 'Analytics\\Dashboard', ['Analytics\\DashboardHtml']],
+        ['#^/analytics/dashboard\.json$#', 'Analytics\\Dashboard', ['Analytics\\DashboardJson']],
+        ['#^/analytics/dashboard\.txt$#', 'Analytics\\Dashboard', ['Analytics\\DashboardPlain']],
         ['#^/comment/create/?$#', 'Comment\\Create', ['Comment\\CreateJson']],
         ['#^/comment/delete/?$#', 'Comment\\Delete', ['Comment\\DeleteHtml']],
         ['#^/comment/edit/?$#', 'Comment\\Edit', ['Comment\\EditHtml']],

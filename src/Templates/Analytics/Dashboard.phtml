@@ -1,0 +1,103 @@
+<?php
+
+namespace BNETDocs\Templates\Analytics;
+
+use \DateTimeInterface;
+
+$title = 'Analytics Dashboard';
+
+if (!$this->getContext()->acl_allowed)
+{
+    require('./Includes/header.inc.phtml');
+    echo '<div class="container">';
+    require('./Includes/LoginRequired.inc.phtml');
+    echo '</div>';
+    require('./Includes/footer.inc.phtml');
+    return;
+}
+
+require('./Includes/header.inc.phtml');
+
+$today = new \DateTimeImmutable('today');
+$last7 = $today->sub(new \DateInterval('P6D'))->format('Y-m-d'); // includes today
+$firstOfMonth = $today->modify('first day of this month')->format('Y-m-d');
+$todayStr = $today->format('Y-m-d');
+
+$ctx = $this->getContext();
+$date_start = $ctx->date_start instanceof DateTimeInterface ?
+    $ctx->date_start->format('Y-m-d') : '';
+$date_end = $ctx->date_end instanceof DateTimeInterface ?
+    $ctx->date_end->format('Y-m-d') : '';
+
+?><div class="container">
+  <h1 class="mb-4">Analytics Dashboard</h1>
+
+  <h3>Date Range</h3>
+  <div class="row mb-4">
+    <div class="col-12">
+      <form class="form-inline">
+        <div class="form-group mr-2 mb-2">
+          <label for="date-start" class="sr-only">Start Date</label>
+          <input type="date" class="form-control form-control-sm" id="date-start" name="date_start"
+                value="<?= $date_start ?>">
+        </div>
+        <div class="form-group mr-2 mb-2">
+          <label for="date-end" class="sr-only">End Date</label>
+          <input type="date" class="form-control form-control-sm" id="date-end" name="date_end"
+                value="<?= $date_end ?>">
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary mb-2">Apply</button>
+      </form>
+      <div class="btn-group" role="group">
+        <form method="get" class="d-inline">
+          <input type="hidden" name="date_start" value="<?= $last7 ?>">
+          <input type="hidden" name="date_end" value="<?= $todayStr ?>">
+          <button type="submit" class="btn btn-sm btn-outline-secondary">Last 7 Days</button>
+        </form>
+        <form method="get" class="d-inline">
+          <input type="hidden" name="date_start" value="<?= $firstOfMonth ?>">
+          <input type="hidden" name="date_end" value="<?= $todayStr ?>">
+          <button type="submit" class="btn btn-sm btn-outline-secondary">This Month</button>
+        </form>
+        <form method="get" class="d-inline">
+          <input type="hidden" name="date_start" value="1996-01-01"><!-- DRTL released in 1996 -->
+          <input type="hidden" name="date_end" value="">
+          <button type="submit" class="btn btn-sm btn-outline-secondary">All Time</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <h3>Summary</h3>
+  <div class="row">
+    <?php
+    $metrics = [
+        'Comments'      => ['count' => $ctx->count_comments ?? 0,      'new' => $ctx->interval_new_comments ?? 0],
+        'Documents'     => ['count' => $ctx->count_documents ?? 0,     'new' => $ctx->interval_new_documents ?? 0],
+        'Event Logs'    => ['count' => $ctx->count_event_log ?? 0,     'new' => $ctx->interval_new_event_log ?? 0],
+        'News Posts'    => ['count' => $ctx->count_news_posts ?? 0,    'new' => $ctx->interval_new_news_posts ?? 0],
+        'Packets'       => ['count' => $ctx->count_packets ?? 0,       'new' => $ctx->interval_new_packets ?? 0],
+        'Servers'       => ['count' => $ctx->count_servers ?? 0,       'new' => $ctx->interval_new_servers ?? 0],
+        'Tags'          => ['count' => $ctx->count_tags ?? 0],
+        'User Profiles' => ['count' => $ctx->count_user_profiles ?? 0],
+        'Users'         => ['count' => $ctx->count_users ?? 0,         'new' => $ctx->interval_new_users ?? 0],
+    ];
+
+    foreach ($metrics as $label => $data): ?>
+      <div class="col-12 col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title"><?= filter_var($label, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?></h5>
+            <p class="card-text mb-1"><strong>Total:</strong> <?= number_format($data['count']) ?></p>
+            <? $new_class = isset($data['new']) ? (($data['new'] > 0 ? 'text-success' : ($data['new'] < 0 ? 'text-danger' : 'text-muted'))) : null; ?>
+            <? if (isset($new_class)): ?>
+              <p class="card-text <?= $new_class ?>"><small>New since interval: <?= number_format($data['new']) ?></small></p>
+            <? endif; ?>
+          </div>
+        </div>
+      </div>
+    <?php endforeach; ?>
+  </div>
+
+</div>
+<?php require('./Includes/footer.inc.phtml'); ?>
