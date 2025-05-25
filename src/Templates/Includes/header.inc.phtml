@@ -187,21 +187,21 @@ function _header_nav_html($nav)
   _line('</ul>');
 
   // Search
-  _line('<form action="%s" method="GET" class="mb-3 mb-lg-0 me-lg-3" role="search"><input name="q" type="search" class="form-control bg-dark border-dark text-light" placeholder="Search…" aria-label="Search" value="%s"></form>', UrlFormatter::format('/search'), _header_search_query());
+  _line('<form action="%s" method="GET" class="mb-3 mb-lg-0 mx-lg-3" role="search"><input name="q" type="search" class="form-control bg-dark border-dark text-light" tabindex="-3" placeholder="Search…" aria-label="Search" value="%s"></form>', UrlFormatter::format('/search'), _header_search_query());
 
   // Account
   if (!Authentication::$user)
   {
-    _line('<a class="btn btn-sm btn-outline-secondary my-2 my-sm-0" tabindex="-1" href="%s">Log in</a>', UrlFormatter::format('/user/login'));
-    if (!Config::get('bnetdocs.user_register_disabled'))
+    _line('<a class="btn btn-sm btn-outline-secondary my-2 my-lg-0" tabindex="-2" href="%s">Log&nbsp;in</a>', UrlFormatter::format('/user/login'));
+    if (Config::get('bnetdocs.user_register_disabled'))
     {
-      _line('<a class="btn btn-sm btn-outline-success my-2 my-sm-0 ml-2" tabindex="-2" href="%s">Register</a>', UrlFormatter::format('/user/register'));
+      _line('<a class="btn btn-sm btn-outline-success my-2 my-lg-0 ml-2" tabindex="-1" href="%s">Register</a>', UrlFormatter::format('/user/register'));
     }
   }
   else
   {
-    _line('<span class="nav-item navbar-text mx-3"><a href="%s">%s</a></span>', Authentication::$user->getURI(), filter_var(Authentication::$user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
-     _line('<a class="btn btn-sm btn-outline-danger my-2 my-sm-0" tabindex="-1" href="%s">Log out</a>', UrlFormatter::format('/user/logout'));
+    _line('<span class="nav-item navbar-text mr-3"><a href="%s">%s</a></span>', Authentication::$user->getURI(), filter_var(Authentication::$user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+    _line('<a class="btn btn-sm btn-outline-danger my-2 my-lg-0" tabindex="-2" href="%s">Log&nbsp;out</a>', UrlFormatter::format('/user/logout'));
   }
 
   // Collapsible Hamburger Menu (End)
