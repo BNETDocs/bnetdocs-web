@@ -20,7 +20,10 @@ require('./Includes/header.inc.phtml');
 
 $today = new \DateTimeImmutable('today');
 $last7 = $today->sub(new \DateInterval('P6D'))->format('Y-m-d'); // includes today
-$firstOfMonth = $today->modify('first day of this month')->format('Y-m-d');
+$last30 = $today->sub(new \DateInterval('P29D'))->format('Y-m-d'); // includes today
+$last365 = $today->sub(new \DateInterval('P364D'))->format('Y-m-d'); // includes today
+$firstOfMonth = (new \DateTimeImmutable('today'))->modify('first day of this month')->format('Y-m-d');
+$firstOfYear = (new \DateTimeImmutable('today'))->modify('first day of January')->format('Y-m-d');
 $todayStr = $today->format('Y-m-d');
 
 $ctx = $this->getContext();
@@ -38,12 +41,12 @@ $date_end = $ctx->date_end instanceof DateTimeInterface ?
       <form class="form-inline">
         <div class="form-group mr-2 mb-2">
           <label for="date-start" class="sr-only">Start Date</label>
-          <input type="date" class="form-control form-control-sm" id="date-start" name="date_start"
+          <input type="date" class="form-control form-control-sm bg-dark text-light border-primary" id="date-start" name="date_start"
                 value="<?= $date_start ?>">
         </div>
         <div class="form-group mr-2 mb-2">
           <label for="date-end" class="sr-only">End Date</label>
-          <input type="date" class="form-control form-control-sm" id="date-end" name="date_end"
+          <input type="date" class="form-control form-control-sm bg-dark text-light border-primary" id="date-end" name="date_end"
                 value="<?= $date_end ?>">
         </div>
         <button type="submit" class="btn btn-sm btn-primary mb-2">Apply</button>
@@ -52,17 +55,32 @@ $date_end = $ctx->date_end instanceof DateTimeInterface ?
         <form method="get" class="d-inline">
           <input type="hidden" name="date_start" value="<?= $last7 ?>">
           <input type="hidden" name="date_end" value="<?= $todayStr ?>">
-          <button type="submit" class="btn btn-sm btn-outline-secondary">Last 7 Days</button>
+          <button type="submit" class="btn btn-sm btn-secondary">Last 7 Days</button>
+        </form>
+        <form method="get" class="d-inline">
+          <input type="hidden" name="date_start" value="<?= $last30 ?>">
+          <input type="hidden" name="date_end" value="<?= $todayStr ?>">
+          <button type="submit" class="btn btn-sm btn-secondary">Last 30 Days</button>
+        </form>
+        <form method="get" class="d-inline">
+          <input type="hidden" name="date_start" value="<?= $last365 ?>">
+          <input type="hidden" name="date_end" value="<?= $todayStr ?>">
+          <button type="submit" class="btn btn-sm btn-secondary">Last 365 Days</button>
         </form>
         <form method="get" class="d-inline">
           <input type="hidden" name="date_start" value="<?= $firstOfMonth ?>">
           <input type="hidden" name="date_end" value="<?= $todayStr ?>">
-          <button type="submit" class="btn btn-sm btn-outline-secondary">This Month</button>
+          <button type="submit" class="btn btn-sm btn-secondary">This Month</button>
+        </form>
+        <form method="get" class="d-inline">
+          <input type="hidden" name="date_start" value="<?= $firstOfYear ?>">
+          <input type="hidden" name="date_end" value="<?= $todayStr ?>">
+          <button type="submit" class="btn btn-sm btn-secondary">This Year</button>
         </form>
         <form method="get" class="d-inline">
           <input type="hidden" name="date_start" value="1996-01-01"><!-- DRTL released in 1996 -->
           <input type="hidden" name="date_end" value="">
-          <button type="submit" class="btn btn-sm btn-outline-secondary">All Time</button>
+          <button type="submit" class="btn btn-sm btn-secondary">All Time</button>
         </form>
       </div>
     </div>
