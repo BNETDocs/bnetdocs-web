@@ -58,7 +58,7 @@ class Delete extends \BNETDocs\Controllers\Base
             if (!$this->model->deleted)
             {
                 $this->model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
-                $this->model->error = DeleteModel::ERROR_INTERNAL_ERROR;
+                $this->model->error = DeleteModel::ERROR_INTERNAL;
                 return true;
             }
             else

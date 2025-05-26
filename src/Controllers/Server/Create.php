@@ -56,9 +56,9 @@ class Create extends \BNETDocs\Controllers\Base
     $this->model->server->setDisabled((bool) ($this->model->form_fields['disabled'] ?? null));
     $this->model->server->setOnline((bool) ($this->model->form_fields['online'] ?? null));
 
-    $this->model->error = $this->model->server->commit() ? FormModel::ERROR_SUCCESS : FormModel::ERROR_INTERNAL;
+    $this->model->error = $this->model->server->commit() ? false : FormModel::ERROR_INTERNAL;
 
-    if ($this->model->error === FormModel::ERROR_SUCCESS)
+    if ($this->model->error === false)
     {
       $event = Logger::initEvent(
         \BNETDocs\Libraries\EventLog\EventTypes::SERVER_CREATED,
