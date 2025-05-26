@@ -23,7 +23,7 @@ class Delete extends \BNETDocs\Controllers\Base
 
     $this->model->acl_allowed = ($this->model->active_user && (
       $this->model->active_user->getOption(\BNETDocs\Libraries\User\User::OPTION_ACL_COMMENT_DELETE) ||
-      ($this->model->comment && $this->model->active_user->getId() == $this->model->comment->getUserId())
+      ($this->model->comment && $this->model->active_user->getId() === $this->model->comment->getUserId())
     ));
 
     if (!$this->model->acl_allowed)
