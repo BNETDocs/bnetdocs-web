@@ -175,10 +175,10 @@ class Authentication
    * @param string $key The unique key, ostensibly from the client,
    *                       hexadecimal-formatted and must be 64 bytes in length.
    * @param bool $throw Whether to throw exceptions or simply return false on error.
-   * @return array|null The fingerprint details, or false if not found.
+   * @return array|false The fingerprint details, or false if not found.
    * @throws UnexpectedValueException if key is not 64 characters in length and/or not a hexadecimal-formatted string.
    */
-  protected static function lookup(string $key, bool $throw = true): ?array
+  protected static function lookup(string $key, bool $throw = true): array|false
   {
     if (strlen($key) !== 64 || !preg_match('/^(?:(0x|0X)?[a-fA-F0-9]+)$/', $key))
     {
@@ -194,7 +194,7 @@ class Authentication
         (`expires_datetime` = NULL OR `expires_datetime` > :dt)
       LIMIT 1;'
     );
-    if (!$q || !$q->execute([':dt' => $now, ':id' => $key])) return null;
+    if (!$q || !$q->execute([':dt' => $now, ':id' => $key])) return false;
     try { return $q->fetch(PDO::FETCH_ASSOC); }
     finally { if ($q) $q->closeCursor(); }
   }
