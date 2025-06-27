@@ -35,7 +35,7 @@ if ($object)
   $description = filter_var($brief, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
   if (empty($description))
   {
-    $description = rtrim(StringProcessor::stripUpTo(StringProcessor::stripUpTo(trim(filter_var($content, FILTER_SANITIZE_FULL_SPECIAL_CHARS)), "\n", 300), '. ', 300), '.');
+    $description = rtrim(StringProcessor::stripUpTo(StringProcessor::stripUpTo(trim(strip_tags($content)), "\n", 128), '. ', 128), '.');
   }
 }
 $edit_url = UrlFormatter::format('/document/edit?id=' . rawurlencode($object_id));
