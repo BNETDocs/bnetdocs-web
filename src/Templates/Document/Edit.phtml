@@ -41,7 +41,7 @@ require('./Includes/header.inc.phtml'); ?>
     <p class="mb-0">The document was successfully edited!</p>
   </div>
   <div class="text-center">
-    <a class="btn btn-primary" href="<?=UrlFormatter::format('/document/' . rawurlencode($document_id))?>"><img class="float-left" src="<?=UrlFormatter::format('/a/svg/chevron-right-white.svg' . $_unique_asset)?>"/> Return to Document</a>
+    <a class="btn btn-primary" href="<?=UrlFormatter::format('/document/' . rawurlencode($document_id))?>"><img class="float-left" src="<?=UrlFormatter::assetify('svg/chevron-right-white.svg')?>"/> Return to Document</a>
   </div>
 <?  }
   } else { require('./Includes/LoginRequired.inc.phtml'); } ?>
