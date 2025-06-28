@@ -11,6 +11,7 @@ class EmbedField implements \JsonSerializable
 {
   public const MAX_NAME = 256;
   public const MAX_VALUE = 1024;
+  public const MIN_VALUE = 1;
 
   protected bool $inline;
   protected string $name;
@@ -53,11 +54,23 @@ class EmbedField implements \JsonSerializable
 
   public function setValue(int|float|string|bool $value): void
   {
-    if (is_string($value) && strlen($value) > self::MAX_VALUE)
+    if (is_string($value))
     {
-      throw new LengthException(sprintf(
-        'Discord forbids value longer than %d characters', self::MAX_VALUE
-      ));
+      if (strlen($value) > self::MAX_VALUE)
+      {
+        throw new LengthException(sprintf(
+          'Discord forbids value longer than %d characters', self::MAX_VALUE
+        ));
+      }
+      else if (strlen($value) < self::MIN_VALUE)
+      {
+        // It's necessary to check for short values because Discord replies with a 400 Bad Request
+        // if the `field.value` is empty; this is *NOT* documented in Discord's Developers Docs:
+        // <https://discord.com/developers/docs/resources/message#embed-object-embed-field-structure>
+        throw new LengthException(sprintf(
+          'Discord forbids value shorter than %d characters', self::MIN_VALUE
+        ));
+      }
     }
 
     $this->value = $value;

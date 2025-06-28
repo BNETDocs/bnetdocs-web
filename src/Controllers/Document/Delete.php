@@ -57,20 +57,26 @@ class Delete extends \BNETDocs\Controllers\Base
 
       if ($event->commit())
       {
+        $brief = $this->model->document->getBrief(false);
+        if (empty($brief)) $brief = '*empty*';
+
         $content = $this->model->document->getContent(false);
         $markdown = $this->model->document->isMarkdown();
         $user = $this->model->document->getUser();
+
         $embed = Logger::initDiscordEmbed($event, $this->model->document->getURI(), [
           'Title' => $this->model->document->getTitle(),
-          'Brief' => $this->model->document->getBrief(false),
+          'Brief' => $brief,
           'Markdown' => $markdown ? ':white_check_mark:' : ':x:',
           'Authored by' => !\is_null($user) ? $user->getAsMarkdown() : '*Anonymous*',
           'Deleted by' => $this->model->active_user->getAsMarkdown(),
         ]);
+
         $desc = \substr($content, 0, \min(\BNETDocs\Libraries\Discord\Embed::MAX_DESCRIPTION - 13, \strlen($content) - 13));
         if (\strlen($desc) != \strlen($content)) $desc .= '…';
         if (!$markdown) $desc = '```' . \PHP_EOL . $desc . \PHP_EOL . '```';
         $embed->setDescription($desc);
+
         Logger::logToDiscord($event, $embed);
       }
     }

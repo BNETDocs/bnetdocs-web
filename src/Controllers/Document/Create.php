@@ -94,6 +94,7 @@ class Create extends \BNETDocs\Controllers\Base
 
     if ($event->commit())
     {
+      if (empty($brief)) $brief = '*empty*';
       $embed = Logger::initDiscordEmbed($event, $document->getURI(), [
         'Title' => $title,
         'Brief' => $brief,
