@@ -28,9 +28,9 @@ class MariaDb extends PDO
     ]);
   }
 
-  public static function instance(): self
+  public static function instance(bool $auto_construct = true): ?self
   {
-    if (!self::$instance) self::$instance = new self();
+    if (!self::$instance && $auto_construct) self::$instance = new self();
     return self::$instance;
   }
 }
