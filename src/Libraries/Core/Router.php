@@ -176,4 +176,12 @@ final class Router
     self::$args = \array_merge($url_args, $body_args);
     return self::$args;
   }
+
+  public static function serverName(): string
+  {
+    $name = \getenv('HTTP_HOST') ?? '';
+    if (empty($name)) $name = \getenv('SERVER_NAME') ?? '';
+    if (empty($name)) $name = \getenv('HOST') ?? '';
+    return $name ?? '';
+  }
 }

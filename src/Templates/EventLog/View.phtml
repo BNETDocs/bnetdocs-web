@@ -61,7 +61,7 @@ if (!empty($tpl_referer))
 {
   $tpl_referer = '<a href="' . filter_var($tpl_referer, FILTER_SANITIZE_FULL_SPECIAL_CHARS) . '">&lt;&lt; Back to Previous</a>';
 }
-if (stripos($tpl_referer, getenv('HTTP_HOST')) === false)
+if (stripos($tpl_referer, \BNETDocs\Libraries\Core\Router::serverName()) === false)
 {
   $tpl_referer = '';
 }

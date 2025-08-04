@@ -32,9 +32,9 @@ class UrlFormatter
     
         // Current request
         $current_scheme = 'http' . ($secure ? 's' : '') . ':';
-        $current_host   = \getenv('HTTP_HOST');
-        $current_path   = \getenv('DOCUMENT_URI');
-        $current_query  = \getenv('QUERY_STRING');
+        $current_host   = \BNETDocs\Libraries\Core\Router::serverName();
+        $current_path   = \getenv('DOCUMENT_URI') ?? '';
+        $current_query  = \getenv('QUERY_STRING') ?? '';
     
         // Placeholders
         $scheme = null;
