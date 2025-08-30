@@ -19,7 +19,7 @@ class GeoIP
   public static function getCountryISOCode(?string $address = null): ?string
   {
     $ip = $address ?? '';
-    if (empty($ip)) $ip = \getenv('REMOTE_ADDR');
+    if (empty($ip)) $ip = \getenv('REMOTE_ADDR') ?? '';
 
     $record = self::getRecord($ip);
     if (!$record) return null;
