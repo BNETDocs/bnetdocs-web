@@ -1,5 +1,6 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
+use \BNETDocs\Libraries\Core\UrlFormatter;
 use \BNETDocs\Models\User\Login as LoginModel;
 $title = 'Account Login';
 $description = 'This form enables a user to log in to their account.';
@@ -26,6 +27,7 @@ require('./Includes/header.inc.phtml'); ?>
     <div class="row"><div class="card mx-auto justify-content-center">
       <h3 class="card-header text-center"><?=$title?></h3>
       <div class="card-body">
+      <p class="text-muted">By logging in, you agree to our <a href="<?=UrlFormatter::format('/privacy')?>">Privacy Policy</a>.</p>
 <? if (!empty($message)) { ?>
       <div class="alert alert-danger"><p class="mb-0"><?=$message?></p></div>
 <? } ?>
@@ -38,8 +40,10 @@ require('./Includes/header.inc.phtml'); ?>
         <input class="bg-dark border border-primary form-control text-light" type="password" name="password" id="password" placeholder="Enter the password here" value="" tabindex="2"/>
       </div>
       <p class="text-muted">Session lifetime is 1 month.</p>
-      <input class="btn btn-success" type="submit" value="Log In" tabindex="3"/>
-      <a class="btn btn-primary" href="<?=\BNETDocs\Libraries\Core\UrlFormatter::format('/user/resetpassword')?>" tabindex="4">Recover Password</a>
+      <div class="form-group">
+        <input class="btn btn-success" type="submit" value="Log In" tabindex="3"/>
+        <a class="btn btn-primary" href="<?=UrlFormatter::format('/user/resetpassword')?>" tabindex="4">Recover Password</a>
+      </div>
     </div></div></div>
   </form>
 <? } else { ?>
