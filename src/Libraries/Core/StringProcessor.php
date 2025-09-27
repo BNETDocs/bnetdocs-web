@@ -5,6 +5,20 @@ namespace BNETDocs\Libraries\Core;
 class StringProcessor
 {
     /**
+     * Matches a pattern to a fuzzy subject, e.g. 'api.*' should match 'api.enabled'
+     *
+     * @param string $pattern The pattern that the subject should match, e.g. 'api.*'
+     * @param string $subject The subject that is being compared, e.g. 'api.enabled'
+     * @return boolean Whether the string matches.
+     */
+    public static function fuzzyMatch(string $pattern, string $subject): bool
+    {
+        $pattern = \preg_replace_callback('/([^*])/', 'preg_quote', $pattern);
+        $pattern = \str_replace('*', '.*', $pattern);
+        return (bool) \preg_match('/^' . $pattern . '$/i', $subject);
+    }
+
+    /**
      * Checks whether the current User Agent is a GUI web browser known by a common string, e.g. Firefox.
      *
      * @param string $user_agent User Agent to check, or null to check HTTP_USER_AGENT environment variable.
