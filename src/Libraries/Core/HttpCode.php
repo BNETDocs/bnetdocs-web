@@ -206,6 +206,27 @@ class HttpCode implements \JsonSerializable
         return $this->code;
     }
 
+    public function isRedirect(bool $range_check = true): bool
+    {
+        return self::isRedirectFromCode($this->code, $range_check);
+    }
+
+    public static function isRedirectFromCode(int $code, bool $range_check = true): bool
+    {
+        switch ($code)
+        {
+            case self::HTTP_MULTIPLE_CHOICES:
+            case self::HTTP_MOVED_PERMANENTLY:
+            case self::HTTP_FOUND:
+            case self::HTTP_SEE_OTHER:
+            case self::HTTP_TEMPORARY_REDIRECT:
+            case self::HTTP_PERMANENT_REDIRECT:
+                return true;
+            default:
+                return $range_check ? ($code >= 300 && $code < 400) : false;
+        }
+    }
+
     public function jsonSerialize(): mixed
     {
         return ['code' => $this->code, 'name' => self::codeFromInt($this->code)];
