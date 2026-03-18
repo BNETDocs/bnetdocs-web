@@ -43,7 +43,7 @@ class StringProcessor
         {
             \array_walk($result, fn(&$v) => $v = \trim($v, '-'));
         }
-        if ($lowercase) $result = \strtolower($result);
+        if ($lowercase) $result = \is_array($result) ? \array_map('\strtolower', $result) : \strtolower($result);
         return $result;
     }
 
