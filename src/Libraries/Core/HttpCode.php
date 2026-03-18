@@ -128,7 +128,7 @@ class HttpCode implements \JsonSerializable
 
     public static function codeFromString(string $value): int
     {
-        $needle = \str_replace(' ', '_', \strtoupper(\preg_replace('/[^A-Za-z\s]/', '', \trim($value))));
+        $needle = \str_replace(' ', '_', \strtoupper(\preg_replace('/[^A-Za-z\s_]/', '', \trim($value))));
         if (\substr($needle, 0, 5) == 'HTTP_') $needle = \substr($needle, 5);
 
         switch ($needle)

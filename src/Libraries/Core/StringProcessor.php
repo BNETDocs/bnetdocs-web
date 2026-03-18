@@ -13,7 +13,7 @@ class StringProcessor
      */
     public static function fuzzyMatch(string $pattern, string $subject): bool
     {
-        $pattern = \preg_replace_callback('/([^*])/', 'preg_quote', $pattern);
+        $pattern = \preg_replace_callback('/([^*])/', fn($m) => \preg_quote($m[0]), $pattern);
         $pattern = \str_replace('*', '.*', $pattern);
         return (bool) \preg_match('/^' . $pattern . '$/i', $subject);
     }
@@ -41,7 +41,7 @@ class StringProcessor
         }
         else
         {
-            \array_walk($result, '\trim', '-');
+            \array_walk($result, fn(&$v) => $v = \trim($v, '-'));
         }
         if ($lowercase) $result = \strtolower($result);
         return $result;
