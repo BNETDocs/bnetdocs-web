@@ -28,11 +28,6 @@ find src/ -name "*.php" -o -name "*.phtml" | xargs -I{} php -e -l -f {}
 lib/bin/phpunit                     # Run all tests
 ```
 
-### Deployment
-```bash
-bin/deploy -e <environment> -f -y   # -f skip composer update, -y skip confirmation
-```
-
 ### Docker (local development)
 ```bash
 docker compose up -d                # Start nginx, PHP-FPM, MariaDB
@@ -95,4 +90,4 @@ MariaDB 10.7+ with UTF8MB4. Initial schema at `etc/database.sample.sql`. Key tab
 ## CI/CD
 
 - **php-linter.yml**: Runs on every push/PR — validates `composer.json` and lints all PHP files.
-- **deployment.yml**: Auto-deploys on push to `develop` or `phoenix` branches via rsync. Deploy targets defined in `etc/deploy-targets.csv`. Deployment injects `WEB_CONFIG_JSON` secret as the live config file.
+- **deployment.yml**: Auto-deploys on push to `develop` or `phoenix` branches via rsync. Deploy target defined via GitHub secrets (`SSH_HOST`, `SSH_USER`, etc.). Deployment injects `WEB_CONFIG_JSON` secret as the live config file.
