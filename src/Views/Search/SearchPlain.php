@@ -52,7 +52,7 @@ class SearchPlain extends \BNETDocs\Views\Base\Plain
                 switch (true)
                 {
                     case $item instanceof Comment:
-                        printf("- Comment #%d\n", $item->getId());
+                        printf("- Comment #%d <%s>\n", $item->getId(), $item->getParentUrl());
                         break;
                     case $item instanceof Document:
                         printf("- %s <%s>\n", $item->getTitle(), $item->getURI());
