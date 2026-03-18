@@ -16,7 +16,8 @@ class Index extends \BNETDocs\Controllers\Base
 
     $q = \BNETDocs\Libraries\Core\Router::query();
     $this->model->order = isset($q['order']) ? $q['order'] : 'packet-id-asc';
-    $this->model->pktapplayer = isset($q['pktapplayer']) ? $q['pktapplayer'] : [];
+    $pktapplayer = !isset($q['pktapplayer']) ? [] : (is_array($q['pktapplayer']) ? $q['pktapplayer'] : [$q['pktapplayer']]);
+    $this->model->pktapplayer = array_map('intval', array_filter($pktapplayer, fn($v) => $v !== ''));
 
     switch ($this->model->order)
     {
