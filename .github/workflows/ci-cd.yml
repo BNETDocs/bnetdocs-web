@@ -49,6 +49,7 @@ jobs:
         run: bash -c 'set -e;for file in $(find ./src ./tests -type f -regex ".*\.\(php\|phtml\)" -print); do php -e -l -f "$file"; done'
 
   tests:
+    needs: [linter]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
