@@ -1,5 +1,5 @@
 # vim: set colorcolumn=:
-name: deployment
+name: ci-cd
 
 on:
   push:
