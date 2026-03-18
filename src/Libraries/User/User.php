@@ -58,6 +58,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public const OPTION_ACL_USER_MODIFY      = 0x00200000;
   public const OPTION_ACL_USER_DELETE      = 0x00400000;
   public const OPTION_ACL_PHPINFO          = 0x00800000;
+  public const OPTION_ACL_ANALYTICS_VIEW   = 0x01000000;
 
   public const OPTION_STAFF = self::DEFAULT_OPTION
     | self::OPTION_ACL_COMMENT_DELETE

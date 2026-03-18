@@ -17,7 +17,7 @@ class Dashboard extends \BNETDocs\Controllers\Base
     public function invoke(?array $args): bool
     {
         $this->model->acl_allowed = ($this->model->active_user && $this->model->active_user->getOption(
-            \BNETDocs\Libraries\User\User::OPTION_ACL_EVENT_LOG_VIEW // TODO : Use correct ACL permission bit
+            \BNETDocs\Libraries\User\User::OPTION_ACL_ANALYTICS_VIEW
         ));
 
         if (!$this->model->acl_allowed)
