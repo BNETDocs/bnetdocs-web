@@ -170,7 +170,7 @@ class HttpCode implements \JsonSerializable
             case 'OKAY': return self::HTTP_OK;
             case 'OTHER': return self::HTTP_SEE_OTHER;
             case 'PARTIAL_CONTENT': return self::HTTP_PARTIAL_CONTENT;
-            case 'PAYLOAD_TOO_LARGE'; return self::HTTP_PAYLOAD_TOO_LARGE;
+            case 'PAYLOAD_TOO_LARGE': return self::HTTP_PAYLOAD_TOO_LARGE;
             case 'PERMANENT_REDIRECT': return self::HTTP_PERMANENT_REDIRECT;
             case 'PERMANENT': return self::HTTP_MOVED_PERMANENTLY;
             case 'PRECONDITION_FAILED': return self::HTTP_PRECONDITION_FAILED;
