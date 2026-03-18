@@ -28,7 +28,7 @@ jobs:
         run: sudo apt-get update
 
       - name: Install php ${{ env.PHP_VERSION }}
-        run: sudo apt-get install php${{ env.PHP_VERSION }}-cli
+        run: sudo apt-get install php${{ env.PHP_VERSION }}-cli php${{ env.PHP_VERSION }}-mbstring php${{ env.PHP_VERSION }}-xml
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
@@ -46,4 +46,7 @@ jobs:
         run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
       - name: Validate PHP syntax
-        run: bash -c 'set -e;for file in $(find ./src -type f -regex ".*\.\(php\|phtml\)" -print); do php -e -l -f "$file"; done'
+        run: bash -c 'set -e;for file in $(find ./src ./tests -type f -regex ".*\.\(php\|phtml\)" -print); do php -e -l -f "$file"; done'
+
+      - name: Run PHPUnit tests
+        run: lib/bin/phpunit --testdox
