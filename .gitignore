@@ -23,6 +23,7 @@
 .Spotlight-V100
 .Trashes
 ._*
+/.phpunit.result.cache
 Desktop.ini
 Thumbs.db
 composer.phar
