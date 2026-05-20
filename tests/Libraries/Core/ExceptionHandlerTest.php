@@ -77,7 +77,8 @@ class ExceptionHandlerTest extends TestCase
     public function testPhpErrorNameEStrict(): void
     {
         // E_STRICT (2048) is deprecated as a constant in PHP 8.4; use the integer value directly.
-        $this->assertSame('E_STRICT', ExceptionHandler::phpErrorName(2048));
+        // E_STRICT (2048) is removed in PHP 8.5; verify string is E_UNKNOWN.
+        $this->assertSame('E_UNKNOWN', ExceptionHandler::phpErrorName(2048));
     }
 
     public function testPhpErrorNameERecoverableError(): void
