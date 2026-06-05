@@ -28,7 +28,11 @@ jobs:
         run: sudo apt-get update
 
       - name: Install PHP ${{ env.PHP_VERSION }}
-        run: sudo apt-get install php${{ env.PHP_VERSION }}-cli php${{ env.PHP_VERSION }}-mbstring php${{ env.PHP_VERSION }}-xml
+        env:
+          _PHP_VER: ${{ env.PHP_VERSION }}
+        run: |
+          [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
+          sudo apt-get install "php${_PHP_VER}-cli" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
@@ -59,7 +63,11 @@ jobs:
         run: sudo apt-get update
 
       - name: Install PHP ${{ env.PHP_VERSION }}
-        run: sudo apt-get install php${{ env.PHP_VERSION }}-cli php${{ env.PHP_VERSION }}-mbstring php${{ env.PHP_VERSION }}-xml
+        env:
+          _PHP_VER: ${{ env.PHP_VERSION }}
+        run: |
+          [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
+          sudo apt-get install "php${_PHP_VER}-cli" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
 
       - name: Cache Composer packages
         id: composer-cache
@@ -92,7 +100,11 @@ jobs:
         run: sudo apt-get update
 
       - name: Install PHP ${{ env.PHP_VERSION }}
-        run: sudo apt-get install php${{ env.PHP_VERSION }}-cli php${{ env.PHP_VERSION }}-mbstring php${{ env.PHP_VERSION }}-xml
+        env:
+          _PHP_VER: ${{ env.PHP_VERSION }}
+        run: |
+          [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
+          sudo apt-get install "php${_PHP_VER}-cli" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
 
       - name: Cache Composer packages
         id: composer-cache
