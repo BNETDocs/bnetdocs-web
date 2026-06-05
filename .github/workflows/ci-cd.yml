@@ -174,5 +174,6 @@ jobs:
           rm -fv "${HOME}/.ssh/id_${SSH_USER}" "${HOME}/.ssh/id_${SSH_USER}.pub"
 
       - name: Cleanup Config
+        if: always()
         run: |
           rm -fv ./etc/config.phoenix.json
