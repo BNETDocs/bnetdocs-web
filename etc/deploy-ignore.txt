@@ -24,7 +24,9 @@
 .gitattributes
 .gitignore
 .gitkeep
+/.github/
 /.vscode/
+/CLAUDE.md
 /CONTRIBUTING.md
 /README.md
 /composer.json
