@@ -17,15 +17,21 @@ if (!$cfg) { exit_line('Failed to open and read config'); }
 $cfg = json_decode($cfg);
 if (!$cfg || json_last_error() !== JSON_ERROR_NONE) { exit_line('Failed to parse json config'); }
 
-$dbsid = 0;
-$dbhost = $cfg->mysql->servers[$dbsid]->hostname;
-$dbport = $cfg->mysql->servers[$dbsid]->port;
-
+$dbhost = $cfg->mysql->hostname;
+$dbport = $cfg->mysql->port;
 $dbname = $cfg->mysql->database;
 $dbuser = $cfg->mysql->username;
 $dbpass = $cfg->mysql->password;
-
 $dbchrset = $cfg->mysql->character_set;
+
+fwrite(STDERR, "## CONNECTION ##\n");
+fwrite(STDERR, "dbhost=${dbhost}\n");
+fwrite(STDERR, "dbport=${dbport}\n");
+fwrite(STDERR, "dbname=${dbname}\n");
+fwrite(STDERR, "dbuser=${dbuser}\n");
+fwrite(STDERR, "dbpass=${dbpass}\n");
+fwrite(STDERR, "dbchrset=${dbchrset}\n");
+fwrite(STDERR, "## OUTPUT ##\n");
 
 $db = new PDO(sprintf('mysql:host=%s;port=%d;dbname=%s;charset=%s', $dbhost, $dbport, $dbname, $dbchrset), $dbuser, $dbpass);
 if (!$db) { exit_line('Failed to connect to database'); }
