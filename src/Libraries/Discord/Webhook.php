@@ -208,7 +208,7 @@ class Webhook implements \JsonSerializable
 
   public function setWebhookUrl(string $value): void
   {
-    if (empty($webhook_url)) throw new \LengthException('Webhook url must not be empty');
+    if (empty($value)) throw new \LengthException('Webhook url must not be empty');
     $this->webhook_url = $value;
   }
 }

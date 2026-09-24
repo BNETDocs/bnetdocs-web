@@ -153,6 +153,73 @@ class EmbedTest extends TestCase
         $this->embed->addFields([['not', 'a', 'field']]);
     }
 
+    // Regression: addField/hasField/removeField must not raise any PHP error.
+    // SplObjectStorage::attach()/contains()/detach() were deprecated in PHP 8.5, and this
+    // application's global error handler (ExceptionHandler::errorHandler) treats every raised
+    // error, including deprecations, as fatal and aborts the request with a 500 response. A
+    // silently-reported PHPUnit deprecation is not enough to catch that in CI, so these assert
+    // directly that no error is raised.
+
+    public function testAddFieldDoesNotRaiseError(): void
+    {
+        $raised = null;
+        set_error_handler(function (int $errno, string $errstr) use (&$raised): bool {
+            $raised = $errstr;
+            return true;
+        });
+        try
+        {
+            $this->embed->addField(new EmbedField('Name', 'Value', true));
+        }
+        finally
+        {
+            restore_error_handler();
+        }
+        $this->assertNull($raised, "addField() raised a PHP error/deprecation: $raised");
+    }
+
+    public function testHasFieldDoesNotRaiseError(): void
+    {
+        $f = new EmbedField('Name', 'Value', true);
+        $this->embed->addField($f);
+
+        $raised = null;
+        set_error_handler(function (int $errno, string $errstr) use (&$raised): bool {
+            $raised = $errstr;
+            return true;
+        });
+        try
+        {
+            $this->embed->hasField($f);
+        }
+        finally
+        {
+            restore_error_handler();
+        }
+        $this->assertNull($raised, "hasField() raised a PHP error/deprecation: $raised");
+    }
+
+    public function testRemoveFieldDoesNotRaiseError(): void
+    {
+        $f = new EmbedField('Name', 'Value', true);
+        $this->embed->addField($f);
+
+        $raised = null;
+        set_error_handler(function (int $errno, string $errstr) use (&$raised): bool {
+            $raised = $errstr;
+            return true;
+        });
+        try
+        {
+            $this->embed->removeField($f);
+        }
+        finally
+        {
+            restore_error_handler();
+        }
+        $this->assertNull($raised, "removeField() raised a PHP error/deprecation: $raised");
+    }
+
     // setAuthor / setFooter / setTimestamp
 
     public function testSetAuthorStored(): void
