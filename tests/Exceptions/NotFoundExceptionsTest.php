@@ -15,6 +15,7 @@ use \BNETDocs\Exceptions\TemplateNotFoundException;
 use \BNETDocs\Exceptions\UserNotFoundException;
 use \BNETDocs\Exceptions\UserProfileNotFoundException;
 use \Exception;
+use \PHPUnit\Framework\Attributes\DataProvider;
 use \PHPUnit\Framework\TestCase;
 use \UnexpectedValueException;
 
@@ -55,9 +56,7 @@ class NotFoundExceptionsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider intValuedClassesProvider
-     */
+    #[DataProvider('intValuedClassesProvider')]
     public function testConstructWithOnlyValueRaisesNoError(string $class, int $value): void
     {
         $raised = null;
@@ -76,9 +75,7 @@ class NotFoundExceptionsTest extends TestCase
         $this->assertNull($raised, "$class raised a PHP error/deprecation: $raised");
     }
 
-    /**
-     * @dataProvider stringValuedClassesProvider
-     */
+    #[DataProvider('stringValuedClassesProvider')]
     public function testConstructWithOnlyStringValueRaisesNoError(string $class, string $value): void
     {
         $raised = null;
@@ -97,27 +94,21 @@ class NotFoundExceptionsTest extends TestCase
         $this->assertNull($raised, "$class raised a PHP error/deprecation: $raised");
     }
 
-    /**
-     * @dataProvider intValuedClassesProvider
-     */
+    #[DataProvider('intValuedClassesProvider')]
     public function testConstructWithIntValueIsThrowable(string $class, int $value): void
     {
         $this->expectException(UnexpectedValueException::class);
         throw new $class($value);
     }
 
-    /**
-     * @dataProvider stringValuedClassesProvider
-     */
+    #[DataProvider('stringValuedClassesProvider')]
     public function testConstructWithStringValueIsThrowable(string $class, string $value): void
     {
         $this->expectException(\InvalidArgumentException::class);
         throw new $class($value);
     }
 
-    /**
-     * @dataProvider intValuedClassesProvider
-     */
+    #[DataProvider('intValuedClassesProvider')]
     public function testPreviousIsPreserved(string $class, int $value): void
     {
         $previous = new Exception('cause');
