@@ -146,10 +146,8 @@ class Webhook implements \JsonSerializable
     }
     finally
     {
-      if ($curl)
-      {
-        curl_close($curl);
-      }
+      // curl_close() is a no-op since PHP 8.0 (handles are freed automatically) and deprecated
+      // since PHP 8.5, so it is intentionally not called here.
 
       $state['time_end'] = microtime(true);
       $state['time_total'] = ($state['time_end'] ?? 0) - ($state['time_start'] ?? 0);

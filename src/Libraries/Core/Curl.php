@@ -39,7 +39,8 @@ class Curl
         $response['type'] = \curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
         $response['time'] = \microtime(true) - $time;
 
-        \curl_close($curl);
+        // curl_close() is a no-op since PHP 8.0 (handles are freed automatically) and deprecated
+        // since PHP 8.5, so it is intentionally not called here.
         return $response;
     }
 }

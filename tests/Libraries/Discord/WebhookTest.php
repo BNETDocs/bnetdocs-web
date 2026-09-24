@@ -214,4 +214,31 @@ class WebhookTest extends TestCase
         }
         $this->assertNull($raised, "removeEmbed() raised a PHP error/deprecation: $raised");
     }
+
+    // send() — regression: curl_close() is a no-op since PHP 8.0 and deprecated since PHP 8.5.
+    // It used to be called unconditionally in send()'s finally block, which raised a deprecation
+    // on every webhook delivery (successful or not) and, via this app's global error handler,
+    // turned a successful Discord post into a 500 response. Point at an address nothing listens
+    // on (127.0.0.1:1) with a short timeout so this runs fast and does not require network
+    // access; the exact connection outcome doesn't matter, only that no error is raised.
+
+    public function testSendDoesNotRaiseError(): void
+    {
+        $w = new Webhook('http://127.0.0.1:1/');
+
+        $raised = null;
+        set_error_handler(function (int $errno, string $errstr) use (&$raised): bool {
+            $raised = $errstr;
+            return true;
+        });
+        try
+        {
+            $w->send(false, 1, 1);
+        }
+        finally
+        {
+            restore_error_handler();
+        }
+        $this->assertNull($raised, "send() raised a PHP error/deprecation: $raised");
+    }
 }
