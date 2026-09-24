@@ -46,7 +46,7 @@ class Webhook implements \JsonSerializable
         'Discord forbids adding more than %d embeds', self::MAX_EMBEDS
       ));
 
-    $this->embeds->attach($value);
+    $this->embeds->offsetSet($value);
   }
 
   public function embedCount(): int
@@ -56,7 +56,7 @@ class Webhook implements \JsonSerializable
 
   public function hasEmbed(Embed $value): bool
   {
-    return $this->embeds->contains($value);
+    return $this->embeds->offsetExists($value);
   }
 
   public function jsonSerialize(): mixed
@@ -159,7 +159,7 @@ class Webhook implements \JsonSerializable
 
   public function removeEmbed(Embed $embed_object): void
   {
-    $this->embeds->detach($embed_object);
+    $this->embeds->offsetUnset($embed_object);
   }
 
   public function setAvatarUrl(string $value): void

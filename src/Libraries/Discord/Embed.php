@@ -61,7 +61,7 @@ class Embed implements \JsonSerializable
       ));
     }
 
-    $this->fields->attach($value);
+    $this->fields->offsetSet($value);
   }
 
   public function addFields(array|SplObjectStorage $value): void
@@ -150,7 +150,7 @@ class Embed implements \JsonSerializable
 
   public function hasField(EmbedField $value): bool
   {
-    return $this->fields->contains($value);
+    return $this->fields->offsetExists($value);
   }
 
   public function jsonSerialize(): mixed
@@ -195,7 +195,7 @@ class Embed implements \JsonSerializable
 
   public function removeField(EmbedField $value): void
   {
-    $this->fields->detach($value);
+    $this->fields->offsetUnset($value);
   }
 
   public function setAuthor(?EmbedAuthor $value): void
