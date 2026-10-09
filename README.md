@@ -20,7 +20,11 @@ Battle.net&trade; and in-game protocols.
 [BNETDocs: Redux](https://github.com/BNETDocs/bnetdocs-web/tree/redux).
 
 ## Contributing
-Please read the [CONTRIBUTING.md](/CONTRIBUTING.md) file.
+Please read the [CONTRIBUTING.md](/CONTRIBUTING.md) file. It covers the branch
+and deployment workflow, setting up a development environment with Docker, and
+running the linter and tests.
+
+BNETDocs requires PHP 8.4 or newer and MariaDB 10.7 or newer.
 
 ## Copyright Disclaimer
 This project is licensed under the AGPLv3. A copy of the GNU Affero General
