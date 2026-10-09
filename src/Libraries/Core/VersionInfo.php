@@ -110,7 +110,7 @@ class VersionInfo
 
     // Reject a malformed file rather than display garbage from it.
     if (count($values) < 3
-      || !preg_match('/^[0-9a-f]{40}$/', $values[1])
+      || !preg_match('/^[0-9a-f]{40}$/D', $values[1])
       || !self::isTimestamp($values[2]))
     {
       return null;
@@ -128,7 +128,7 @@ class VersionInfo
   private static function isTimestamp(mixed $value): bool
   {
     return is_string($value)
-      && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/', $value) === 1;
+      && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/D', $value) === 1;
   }
 
   /**
