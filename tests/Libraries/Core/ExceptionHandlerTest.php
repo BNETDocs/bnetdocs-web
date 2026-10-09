@@ -112,4 +112,61 @@ class ExceptionHandlerTest extends TestCase
     {
         $this->assertSame('E_UNKNOWN', ExceptionHandler::phpErrorName(0));
     }
+
+    // errorHandler — deprecations are logged, not fatal
+
+    private function callErrorHandler(int $errno, int $reporting, ?string &$log): bool
+    {
+        $logFile = tempnam(sys_get_temp_dir(), 'bnetdocs-error-log-');
+        $savedLog = ini_set('error_log', $logFile);
+        $savedReporting = error_reporting($reporting);
+        try
+        {
+            return ExceptionHandler::errorHandler($errno, 'Something is deprecated', '/path/to/file.php', 42);
+        }
+        finally
+        {
+            error_reporting($savedReporting);
+            ini_set('error_log', $savedLog);
+            $log = file_get_contents($logFile);
+            unlink($logFile);
+        }
+    }
+
+    public function testErrorHandlerLogsAndContinuesOnDeprecated(): void
+    {
+        // Reaching the assertions at all means the handler didn't exit().
+        $this->assertTrue($this->callErrorHandler(E_DEPRECATED, E_ALL, $log));
+        $this->assertStringContainsString('E_DEPRECATED: Something is deprecated in /path/to/file.php on line 42', $log);
+    }
+
+    public function testErrorHandlerLogsAndContinuesOnUserDeprecated(): void
+    {
+        $this->assertTrue($this->callErrorHandler(E_USER_DEPRECATED, E_ALL, $log));
+        $this->assertStringContainsString('E_USER_DEPRECATED: Something is deprecated in /path/to/file.php on line 42', $log);
+    }
+
+    public function testErrorHandlerKeepsOutputBuffersOnDeprecated(): void
+    {
+        // A deprecation must not discard the page rendered so far.
+        ob_start();
+        echo 'partial page';
+        $level = ob_get_level();
+        try
+        {
+            $this->callErrorHandler(E_DEPRECATED, E_ALL, $log);
+            $this->assertSame($level, ob_get_level());
+            $this->assertSame('partial page', ob_get_contents());
+        }
+        finally
+        {
+            ob_end_clean();
+        }
+    }
+
+    public function testErrorHandlerIgnoresErrorsExcludedFromErrorReporting(): void
+    {
+        $this->assertFalse($this->callErrorHandler(E_DEPRECATED, E_ALL & ~E_DEPRECATED, $log));
+        $this->assertSame('', $log);
+    }
 }

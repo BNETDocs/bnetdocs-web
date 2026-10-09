@@ -27,6 +27,16 @@ class ExceptionHandler
     // Don't handle this error if it's turned off administratively:
     if (!(\error_reporting() & $errno)) return false;
 
+    // Deprecations only warn about future PHP versions, so log them and let the request continue:
+    if ($errno === \E_DEPRECATED || $errno === \E_USER_DEPRECATED)
+    {
+      \error_log(\sprintf(
+        '%s: %s in %s on line %d',
+        self::phpErrorName($errno), $errstr, $errfile, $errline
+      ));
+      return true;
+    }
+
     // Back out of any output buffers:
     while (\ob_get_level()) \ob_end_clean();
 
