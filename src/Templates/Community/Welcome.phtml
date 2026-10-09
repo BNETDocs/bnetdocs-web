@@ -1,6 +1,7 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Community;
 use \BNETDocs\Libraries\Core\UrlFormatter;
+use \BNETDocs\Libraries\Core\VersionInfo;
 $title = 'Welcome';
 $description = 'Welcome to the documentation and discussion for the Battle.net&trade; protocol';
 $url = '/welcome';
@@ -11,7 +12,7 @@ require('./Includes/header.inc.phtml'); ?>
   <p>BNETDocs is a community website that documents and discusses the Battle.net&trade; protocol.</p>
   <h2>Our Legacy</h2>
   <img style="float:right;height:100px;" alt="BNETDocs Logo" title="BNETDocs Logo" src="<?=UrlFormatter::assetify('VSZX0bJ.png')?>"/>
-  <p>From 2003 to today, the documentation has been maintained by a loving and passionate community of gamers and developers like you. A lot of us have poured our heart and soul into keeping accurate documentation to the best of our ability. It is with the support of our community that we are able to continue this legacy, as Blizzard Entertainment continues updating their classic games.</p>
+  <p>From <?=VersionInfo::COPYRIGHT_START_YEAR?> to today, the documentation has been maintained by a loving and passionate community of gamers and developers like you. A lot of us have poured our heart and soul into keeping accurate documentation to the best of our ability. It is with the support of our community that we are able to continue this legacy, as Blizzard Entertainment continues updating their classic games.</p>
   <h2>Support Us</h2>
   <img style="float:right;height:80px;" alt="Gnome Icon" title="Gnome Icon" src="<?=UrlFormatter::assetify('gnome_l.gif')?>"/>
   <p>To that end, if you would like to support us, there are a few ways you can do so. You could:</p>

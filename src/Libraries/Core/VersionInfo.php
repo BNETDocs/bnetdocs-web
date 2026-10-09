@@ -14,6 +14,9 @@ class VersionInfo
   // Default path to version file relative to src/ directory.
   const VERSION_INFO_FILE = self::PROJECT_ROOT . '/etc/.rsync-version';
 
+  // Year BNETDocs was founded, the start of the copyright range.
+  public const COPYRIGHT_START_YEAR = 2003;
+
   private static ?array $version = null;
 
   /**
@@ -68,6 +71,16 @@ class VersionInfo
   {
     $timestamp = self::get()['bnetdocs'][2] ?? null;
     return self::isTimestamp($timestamp) ? substr($timestamp, 0, 4) : date('Y');
+  }
+
+  /**
+   * Gets the year range for use in copyright notices, e.g. "2003-2026".
+   *
+   * @return string The start year and the year of the last commit.
+   */
+  public static function copyrightYears(): string
+  {
+    return self::COPYRIGHT_START_YEAR . '-' . self::copyrightYear();
   }
 
   /**

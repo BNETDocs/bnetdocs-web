@@ -15,7 +15,7 @@ class IndexCpp extends \BNETDocs\Views\Base\Cpp
 
     echo "/**\n";
     echo " *  BNETDocs, the documentation and discussion website for Blizzard protocols\n";
-    echo ' *  Copyright (C) 2003-' . \date('Y') . " \"Arta\", Don Cullen \"Kyro\", Carl Bennett, others\n";
+    echo ' *  Copyright (C) ' . \BNETDocs\Libraries\Core\VersionInfo::copyrightYears() . " \"Arta\", Don Cullen \"Kyro\", Carl Bennett, others\n";
     echo ' *  <' . \BNETDocs\Libraries\Core\UrlFormatter::format('/legal') . ">\n";
     echo " *\n";
     echo " *  BNETDocs is free software: you can redistribute it and/or modify\n";
