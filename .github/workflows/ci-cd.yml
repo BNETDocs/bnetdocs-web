@@ -32,7 +32,7 @@ jobs:
           _PHP_VER: ${{ env.PHP_VERSION }}
         run: |
           [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
-          sudo apt-get install "php${_PHP_VER}-cli" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
+          sudo apt-get install -y "php${_PHP_VER}-cli" "php${_PHP_VER}-curl" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
@@ -47,7 +47,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install composer/vendor dependencies
-        run: composer install --prefer-dist --no-progress --ignore-platform-reqs
+        run: composer install --prefer-dist --no-progress
 
       - name: Validate PHP syntax
         run: bash -c 'set -e;for file in $(find ./src ./tests -type f -regex ".*\.\(php\|phtml\)" -print); do php -e -l -f "$file"; done'
@@ -67,7 +67,7 @@ jobs:
           _PHP_VER: ${{ env.PHP_VERSION }}
         run: |
           [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
-          sudo apt-get install "php${_PHP_VER}-cli" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
+          sudo apt-get install -y "php${_PHP_VER}-cli" "php${_PHP_VER}-curl" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
 
       - name: Cache Composer packages
         id: composer-cache
@@ -79,7 +79,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install composer/vendor dependencies
-        run: composer install --prefer-dist --no-progress --ignore-platform-reqs
+        run: composer install --prefer-dist --no-progress
 
       - name: Run PHPUnit tests
         run: lib/bin/phpunit --testdox
@@ -104,7 +104,7 @@ jobs:
           _PHP_VER: ${{ env.PHP_VERSION }}
         run: |
           [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
-          sudo apt-get install "php${_PHP_VER}-cli" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
+          sudo apt-get install -y "php${_PHP_VER}-cli" "php${_PHP_VER}-curl" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
 
       - name: Cache Composer packages
         id: composer-cache
@@ -116,7 +116,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install composer/vendor dependencies
-        run: composer install --prefer-dist --no-progress --ignore-platform-reqs
+        run: composer install --prefer-dist --no-progress
 
       - name: Sanitize Branch Name
         run: |

@@ -96,8 +96,9 @@ from [etc/docker/php/Dockerfile](./etc/docker/php/Dockerfile)), and MariaDB,
 with this repository mounted into the containers.
 
 1. Install the vendor files with `composer install`. The containers use the
-   `lib/` directory from your checkout. If your host PHP is missing extensions
-   listed in `composer.json`, add `--ignore-platform-reqs` as CI does.
+   `lib/` directory from your checkout, so your host PHP needs the extensions
+   listed in `composer.json`. On Ubuntu 26.04, CI gets them from the
+   `php8.5-cli`, `php8.5-curl`, `php8.5-mbstring`, and `php8.5-xml` packages.
 2. Copy [etc/config.sample.json](./etc/config.sample.json) to
    `etc/config.phoenix.json` and point the `mysql` section at the MariaDB
    container, using the credentials from `docker-compose.yml`:
