@@ -136,13 +136,13 @@ jobs:
           set -ex -o pipefail
 
           # Version identifier
-          echo "$(git describe --always --tags)" > ./etc/.rsync-version
+          echo "$(git describe --always --tags)" > ./etc/deploy-version.txt
           # Version hash
-          echo "$(git rev-parse HEAD)" >> ./etc/.rsync-version
+          echo "$(git rev-parse HEAD)" >> ./etc/deploy-version.txt
           # Version ISO8601 timestamp
-          echo "$(git log -n 1 --pretty='%aI' HEAD)" >> ./etc/.rsync-version
+          echo "$(git log -n 1 --pretty='%aI' HEAD)" >> ./etc/deploy-version.txt
           # LICENSE version and ISO8601 timestamp
-          echo -n "$(git log -n 1 --pretty='%h %aI' ./LICENSE.txt)" >> ./etc/.rsync-version
+          echo -n "$(git log -n 1 --pretty='%h %aI' ./LICENSE.txt)" >> ./etc/deploy-version.txt
 
       - name: Deploy to Remote
         env:

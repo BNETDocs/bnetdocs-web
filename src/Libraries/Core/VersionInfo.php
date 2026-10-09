@@ -12,7 +12,7 @@ class VersionInfo
   const PROJECT_ROOT = __DIR__ . '/../../..';
 
   // Default path to version file relative to src/ directory.
-  const VERSION_INFO_FILE = self::PROJECT_ROOT . '/etc/.rsync-version';
+  const VERSION_INFO_FILE = self::PROJECT_ROOT . '/etc/deploy-version.txt';
 
   // Year BNETDocs was founded, the start of the copyright range.
   public const COPYRIGHT_START_YEAR = 2003;
