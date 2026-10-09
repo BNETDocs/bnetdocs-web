@@ -8,8 +8,11 @@ class VersionInfo
   // the file is generated externally by production deploy job.
   public const EOL = "\n";
 
+  // Project root directory, which contains .git/ when running from a git checkout.
+  const PROJECT_ROOT = __DIR__ . '/../../..';
+
   // Default path to version file relative to src/ directory.
-  const VERSION_INFO_FILE = __DIR__ . '/../../../etc/.rsync-version';
+  const VERSION_INFO_FILE = self::PROJECT_ROOT . '/etc/.rsync-version';
 
   private static ?array $version = null;
 
@@ -28,7 +31,10 @@ class VersionInfo
     if (!is_null(self::$version)) return self::$version;
     $r = [];
 
-    $r['bnetdocs'] = self::deploymentVersion() ?? self::reflectVersion();
+    // A git checkout may contain a stale version file left over from a previous
+    // deployment, so it is only trusted when there is no git metadata to ask.
+    $r['bnetdocs'] = file_exists(self::PROJECT_ROOT . '/.git')
+      ? self::reflectVersion() : self::deploymentVersion();
     $r['asset'] = self::assetVersion($r['bnetdocs']);
     $r['php'] = phpversion();
 
@@ -50,6 +56,18 @@ class VersionInfo
       !\BNETDocs\Libraries\Core\Config::get('bnetdocs.asset_versioning') ? '' :
       (!is_null($version) ? $version[1] : date('YmdHis'))
     );
+  }
+
+  /**
+   * Gets the year of the last commit, for use in copyright notices.
+   * Falls back to the current year if the commit timestamp is not available.
+   *
+   * @return string The four-digit year.
+   */
+  public static function copyrightYear(): string
+  {
+    $timestamp = self::get()['bnetdocs'][2] ?? null;
+    return self::isTimestamp($timestamp) ? substr($timestamp, 0, 4) : date('Y');
   }
 
   /**
@@ -75,7 +93,29 @@ class VersionInfo
       return null;
     }
 
-    return explode(self::EOL, $buffer);
+    $values = explode(self::EOL, $buffer);
+
+    // Reject a malformed file rather than display garbage from it.
+    if (count($values) < 3
+      || !preg_match('/^[0-9a-f]{40}$/', $values[1])
+      || !self::isTimestamp($values[2]))
+    {
+      return null;
+    }
+
+    return $values;
+  }
+
+  /**
+   * Checks whether a value is an ISO8601 timestamp as written by `git log --pretty='%aI'`.
+   *
+   * @param mixed $value The value to check.
+   * @return bool Whether the value is a valid timestamp.
+   */
+  private static function isTimestamp(mixed $value): bool
+  {
+    return is_string($value)
+      && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/', $value) === 1;
   }
 
   /**
@@ -91,10 +131,14 @@ class VersionInfo
   {
     $values = [null, null, null, null];
 
-    $identifier = shell_exec('git describe --always --tags');
-    $hash = shell_exec('git rev-parse HEAD');
-    $timestamp = shell_exec('git log -n 1 --pretty=\'%aI\' HEAD');
-    $license = shell_exec('git log -n 1 --pretty=\'%h %aI\' ../../LICENSE.txt');
+    if (!function_exists('shell_exec')) return null;
+
+    // Run from the project root regardless of the working directory of the request.
+    $git = 'git -C ' . escapeshellarg(self::PROJECT_ROOT) . ' ';
+    $identifier = shell_exec($git . 'describe --always --tags 2>/dev/null');
+    $hash = shell_exec($git . 'rev-parse HEAD 2>/dev/null');
+    $timestamp = shell_exec($git . 'log -n 1 --pretty=\'%aI\' HEAD 2>/dev/null');
+    $license = shell_exec($git . 'log -n 1 --pretty=\'%h %aI\' HEAD -- LICENSE.txt 2>/dev/null');
 
     if (!empty($identifier)) $values[0] = trim($identifier);
     if (!empty($hash)) $values[1] = trim($hash);
