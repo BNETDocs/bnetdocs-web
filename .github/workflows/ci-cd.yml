@@ -7,19 +7,19 @@ on:
   workflow_dispatch:
     inputs:
       php_version:
-        description: "Specify the PHP version to use (e.g., 8.3)"
+        description: "Specify the PHP version to use (e.g., 8.5)"
         required: false
-        default: '8.3'
+        default: '8.5'
 
 env:
-  PHP_VERSION: ${{ inputs.php_version || '8.3' }}
+  PHP_VERSION: ${{ inputs.php_version || '8.5' }}
 
 permissions:
   contents: read
 
 jobs:
   linter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -54,7 +54,7 @@ jobs:
 
   tests:
     needs: [linter]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -87,7 +87,7 @@ jobs:
   deploy:
     needs: [linter, tests]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/phoenix')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment: production
     steps:
       - name: Checkout Code
