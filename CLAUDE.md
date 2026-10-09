@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-BNETDocs: Phoenix is a PHP 8.3+ web application for documenting Blizzard Entertainment's Battle.net and in-game protocols. Production site: https://bnetdocs.org
+BNETDocs: Phoenix is a PHP 8.4+ web application for documenting Blizzard Entertainment's Battle.net and in-game protocols. Production site: https://bnetdocs.org
 
 ## Commands
 
