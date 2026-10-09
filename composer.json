@@ -37,8 +37,6 @@
     "require": {
         "erusev/parsedown": "^1.7",
         "ext-curl": "*",
-        "ext-gmp": "*",
-        "ext-http": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
