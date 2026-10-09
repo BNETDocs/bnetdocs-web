@@ -1,5 +1,4 @@
 ---
-version: "3.3"
 services:
 
   nginx:
@@ -21,7 +20,6 @@ services:
     container_name: bnetdocs-php
     restart: always
     volumes:
-      - mariadb-vol-1:/var/lib/mysql/:Z
       - .:/var/www/html
       - /usr/share/GeoIP/GeoLite2-City.mmdb:/usr/share/GeoIP/GeoLite2-City.mmdb
     expose:
@@ -32,7 +30,7 @@ services:
     container_name: bnetdocs-mariadb
     restart: always
     volumes:
-      - mariadb-vol-1:/var/lib/mysql/:Z
+      - mariadb-vol-1:/var/lib/mysql/
     expose:
       - "3306"
     environment:
