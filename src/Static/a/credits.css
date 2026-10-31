@@ -1,0 +1,60 @@
+/**
+ * @project bnetdocs-web
+ * @copyright MIT
+ *
+ * Contributors page (Templates/Community/Credits.phtml). Designed for the Slate theme.
+ */
+
+.credits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.credits-board {
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+}
+.credits-board-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8e959c;
+  margin-bottom: 0.75rem;
+}
+
+.credits-list { list-style: none; margin: 0; padding: 0; }
+.credits-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0 0.6rem;
+}
+.credits-row + .credits-row { border-top: 1px solid rgba(255,255,255,0.05); }
+.credits-rank { color: #8e959c; font-variant-numeric: tabular-nums; text-align: center; }
+.credits-row.is-leader .credits-rank { color: #f89406; font-weight: 700; }
+.credits-who { display: flex; align-items: center; gap: 0.5rem; min-width: 0; color: #fff; }
+.credits-who span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.credits-who img { border-radius: 0.35rem; flex: 0 0 auto; }
+.credits-anon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; flex: 0 0 auto;
+  border-radius: 0.35rem; background: rgba(255,255,255,0.08); color: #8e959c;
+}
+.credits-row.is-leader .credits-who { font-weight: 600; }
+.credits-count { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 0.9rem; }
+.credits-bar {
+  position: absolute;
+  left: 2.25rem;
+  bottom: 0.2rem;
+  height: 2px;
+  max-width: calc(100% - 2.25rem);
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+}
+.credits-row.is-leader .credits-bar { background: rgba(248,148,6,0.6); }
