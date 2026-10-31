@@ -1,81 +1,79 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Server;
+use \BNETDocs\Libraries\Core\UrlFormatter;
 use \BNETDocs\Libraries\User\User;
 $title = 'Server Not Found';
 $description = 'The requested server does not exist or could not be found.';
+$_header_stylesheets = ['servers.css'];
+
+$e = fn(?string $value): string => filter_var($value ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
 $server = $this->getContext()->server;
-if (!$server)
+$url = null;
+if ($server)
 {
-  $server_id = null;
-  $server_type = null;
-  $server_user = null;
-  $url = null;
-}
-else
-{
-  $server_address = filter_var(sprintf('%s:%s', $server->getAddress(), $server->getPort()), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $server_id = $server->getId();
-  $server_name = filter_var($server->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $server_label = !empty($server->getLabel()) ? filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS) : '<em>(empty)</em>';
+  $active_user = $this->getContext()->active_user;
+  $can_server_modify = ($active_user && $active_user->getOption(User::OPTION_ACL_SERVER_MODIFY));
+
+  $server_address = sprintf('%s:%s', $server->getAddress(), $server->getPort());
+  $server_label = $server->getLabel();
   $server_type = $server->getType();
-
-  $title = $server_name;
-  $description = sprintf('The server details and status for %s', $server_name);
-  $url = $server->getURI();
-  $url_json = sprintf('%s.json', $url);
-  $url_txt = sprintf('%s.txt', $url);
-
+  $server_updated = $server->getUpdatedDateTime();
+  $server_user = $server->getUser();
   $tags = $server->getTags();
 
-  $server_type = $server->getType();
-  $server_type_label = filter_var($server_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  $title = $server->getName();
+  $description = sprintf('The server details and status for %s', $title);
+  $url = $server->getURI();
 
-  $server_user = $server->getUser();
-  if (!$server_user)
-  {
-    $server_user_string = 'Anonymous';
-  }
-  else
-  {
-    $server_user_avatar = $server_user->getAvatarURI(22);
-    $server_user_name = filter_var($server_user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $server_user_url = $server_user->getURI();
-    $server_user_string = sprintf('<a href="%s"><img class="mr-2 rounded" src="%s"/>%s</a>', $server_user_url, $server_user_avatar, $server_user_name);
-  }
-
-  $server_online = $server->isOnline();
-  $server_status = sprintf('<span class="text-%s">%s</span>', ($server_online ? 'success' : 'danger'), ($server_online ? 'Online' : 'Offline'));
-  if ($server->isDisabled())
-  {
-    $server_status = '<span class="text-warning">Disabled</span>';
-  }
-  else
-  {
-    $server_status = sprintf('<span class="text-%s">%s</span>',
-      ($server_online ? 'success' : 'danger'), ($server_online ? 'Online' : 'Offline')
-    );
-  }
+  if ($server->isDisabled()) { $status_class = 'is-disabled'; $status_text = 'Disabled'; $status_help = 'This server is not actively checked.'; }
+  else if ($server->isOnline()) { $status_class = 'is-online'; $status_text = 'Online'; $status_help = 'The port is open.'; }
+  else { $status_class = 'is-offline'; $status_text = 'Offline'; $status_help = 'The port is closed.'; }
 }
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
 <? if (!$server) { ?>
-  <h1 class="text-danger"><?=filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></h1>
-  <div class="alert alert-danger"><?=filter_var($description, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></div></div>
+  <div class="alert alert-danger">
+    <h1 class="h2"><?=$e($title)?></h1>
+    <p class="mb-0"><?=$e($description)?> <a class="alert-link" href="<?=UrlFormatter::format('/servers')?>">View all servers</a>.</p>
+  </div>
 <? } else { ?>
-  <span class="float-right">
-<?=($this->getContext()->active_user && $this->getContext()->active_user->getOption(User::OPTION_ACL_SERVER_MODIFY) ? sprintf('<a class="btn btn-sm btn-secondary" href="%s" title="Edit">📝</a>', \BNETDocs\Libraries\Core\UrlFormatter::format(sprintf('/server/edit?id=%d', $server_id))) : '')?>
-    <a class="btn btn-sm btn-primary" href="<?=$url_json?>">JSON</a>
-    <a class="btn btn-sm btn-primary" href="<?=$url_txt?>">TXT</a>
-  </span>
-  <h1><?=$title?></h1>
-  <table class="table table-hover table-sm table-striped"><thead></thead><tbody>
-    <tr><th class="text-right">Label</th><td><?=$server_label?></td></tr>
-    <tr><th class="text-right">Address</th><td onclick="bnetdocs.fSelectText(this);"><code><?=$server_address?></code></td></tr>
-    <tr><th class="text-right">Owner</th><td><?=$server_user_string?></td></tr>
-    <tr><th class="text-right">Type</th><td><?=$server_type_label?></td></tr>
-    <tr><th class="text-right">Current Status</th><td class="font-weight-bold"><?=$server_status?></td></tr>
-  </tbody></table>
-<? require('./Includes/TagDisplay.inc.phtml'); ?>
+  <nav class="small mb-2" aria-label="Breadcrumb"><a href="<?=UrlFormatter::format('/servers')?>">Servers</a> <span class="text-muted">/</span> <a href="<?=UrlFormatter::format('/servers#type-' . (int) $server->getTypeId())?>"><?=$e($server_type->getLabel())?></a></nav>
+  <section class="server-hero mb-3">
+    <div class="server-hero-head">
+      <div>
+        <h1><?=$e($title)?></h1>
+        <span class="server-status <?=$status_class?>" title="<?=$status_help?>"><?=$status_text?></span>
+      </div>
+      <div class="server-actions">
+<?  if ($can_server_modify) { ?>
+        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format(sprintf('/server/edit?id=%d', $server->getId()))?>">📝 Edit</a>
+<?  } ?>
+        <a class="btn btn-sm btn-outline-secondary" href="<?=$url?>.json">JSON</a>
+        <a class="btn btn-sm btn-outline-secondary" href="<?=$url?>.txt">TXT</a>
+      </div>
+    </div>
+    <div class="server-address" title="Address"><code><?=$e($server_address)?></code></div>
+    <dl class="server-facts">
+<?  if (!empty($server_label) && $server_label !== $title) { ?>
+      <div><dt>Label</dt><dd><?=$e($server_label)?></dd></div>
+<?  } ?>
+      <div><dt>Type</dt><dd><?=$e($server_type->getLabel())?></dd></div>
+      <div><dt>Owner</dt><dd>
+<?  if ($server_user) { ?>
+        <a href="<?=$server_user->getURI()?>"><img src="<?=$server_user->getAvatarURI(22)?>" width="22" height="22" alt=""/><?=$e($server_user->getName())?></a>
+<?  } else { ?>
+        <span class="text-muted">Anonymous</span>
+<?  } ?>
+      </dd></div>
+<?  if ($server_updated) { ?>
+      <div><dt>Last updated</dt><dd><time datetime="<?=$server_updated->format('c')?>"><?=$server_updated->format('D M j, Y g:ia T')?></time></dd></div>
+<?  } ?>
+    </dl>
+<?  if (!empty($tags)) { ?>
+    <div class="mt-3"><? require('./Includes/TagDisplay.inc.phtml'); ?></div>
+<?  } ?>
+  </section>
 <? } ?>
 </div>
 <? require('./Includes/footer.inc.phtml'); ?>

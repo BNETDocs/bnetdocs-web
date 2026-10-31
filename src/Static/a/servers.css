@@ -70,3 +70,40 @@
 .server-card-address { font-size: 0.8rem; color: #8e959c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .server-card-address code { color: inherit; }
 .server-card-edit { position: relative; z-index: 1; font-size: 0.75rem; align-self: flex-start; }
+
+/* Detail page */
+.server-hero {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  padding: 1.5rem;
+}
+.server-hero-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.server-hero h1 { color: #fff; font-size: 1.75rem; font-weight: 600; margin: 0 0 0.5rem; overflow-wrap: anywhere; }
+.server-hero .server-status { font-size: 0.9rem; padding: 0.2rem 0.75rem; }
+.server-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.server-address {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  background: rgba(0,0,0,0.3);
+  font-size: 1.1rem;
+  user-select: all;
+  overflow-wrap: anywhere;
+}
+.server-address code { color: #fff; }
+.server-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 1.25rem 0 0;
+}
+.server-facts dt { font-size: 0.75rem; font-weight: normal; letter-spacing: 0.05em; text-transform: uppercase; color: #8e959c; }
+.server-facts dd { margin: 0.15rem 0 0; overflow-wrap: anywhere; }
+.server-facts img { border-radius: 0.25rem; margin-right: 0.4rem; vertical-align: -0.3rem; }
+
+@media (max-width: 575.98px) {
+  .server-hero { padding: 1rem; }
+  .server-hero h1 { font-size: 1.4rem; }
+}
