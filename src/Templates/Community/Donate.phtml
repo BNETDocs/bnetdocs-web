@@ -1,41 +1,90 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Community;
+use \BNETDocs\Libraries\Core\Config;
 use \BNETDocs\Libraries\Core\UrlFormatter;
 $title = 'Donate';
 $description = 'Donate to BNETDocs to show your support for this project!';
 $url = '/donate';
 $_header_meta_properties = ['og:type' => 'article'];
+$_header_stylesheets = ['donate.css'];
+
+$e = fn(?string $value): string => filter_var($value ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
 $btc_address = $this->getContext()->donations_btc_address;
 $email_address = $this->getContext()->donations_email_address;
 $paypal_url = $this->getContext()->donations_paypal_url;
-$user_id = $this->getContext()->donations_user_id;
 $user = $this->getContext()->donations_user;
+
+$has_payment = (!empty($paypal_url) || !empty($btc_address));
+$has_contact = (!empty($email_address) || $user);
+$discord_enabled = (Config::get('discord.enabled') ?? false);
+
 require('./Includes/header.inc.phtml'); ?>
-<div class="container">
-  <h1>Support Us</h1>
-  <p>The following are the methods available for supporting us:</p>
-  <ul type="circle">
-<? if ($user) { ?>
-  <li>Contact: <a href="<?=$user->getURI()?>"><?=filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
+<div class="container donate-page">
+  <header class="donate-intro">
+    <h1>Support BNETDocs</h1>
+    <p class="lead">BNETDocs is free, ad-free, and run by volunteers. Donations pay for hosting and help fund the open-source software behind the site.</p>
+  </header>
+
+<? if (!$has_payment) { ?>
+  <p class="donate-notice">Online donations aren't set up right now.<?=($has_contact ? ' Get in touch below and we can arrange one.' : '')?></p>
 <? } ?>
-<? if (!empty($paypal_url)) { ?>
-  <li>PayPal: <a href="<?=filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"><?=filter_var($paypal_url, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
+
+<? if ($has_payment || $has_contact) { ?>
+  <div class="donate-methods">
+<?  if (!empty($paypal_url)) { ?>
+    <section class="donate-method">
+      <h2>PayPal</h2>
+      <p>Send a donation through PayPal.</p>
+      <a class="btn btn-primary" rel="external" href="<?=$e($paypal_url)?>">Donate with PayPal</a>
+    </section>
+<?  } ?>
+<?  if (!empty($btc_address)) { ?>
+    <section class="donate-method">
+      <h2>Bitcoin</h2>
+      <p>Send to this address:</p>
+      <code class="donate-address" title="Click to select"><?=$e($btc_address)?></code>
+      <a class="btn btn-sm btn-outline-secondary" href="bitcoin:<?=$e($btc_address)?>">Open in wallet</a>
+    </section>
+<?  } ?>
+<?  if (!empty($email_address)) { ?>
+    <section class="donate-method">
+      <h2>Email</h2>
+      <p>Questions about donating, or another way to give?</p>
+      <a class="btn btn-outline-secondary" href="mailto:<?=$e($email_address)?>"><?=$e($email_address)?></a>
+    </section>
+<?  } ?>
+<?  if ($user) { ?>
+    <section class="donate-method">
+      <h2>Contact</h2>
+      <p>Donations are handled by:</p>
+      <a class="donate-person" href="<?=$user->getURI()?>"><img src="<?=$user->getAvatarURI(80)?>" width="40" height="40" alt=""/><span><?=$e($user->getName())?></span></a>
+    </section>
+<?  } ?>
+  </div>
 <? } ?>
-<? if (!empty($btc_address)) { ?>
-  <li>BTC: <code><?=$btc_address?></code></li>
+
+  <section class="donate-other">
+    <h2>Other ways to help</h2>
+    <ul>
+      <li><a href="<?=UrlFormatter::format('/user/register')?>">Create an account</a> and comment on packets and documents with corrections or new findings.</li>
+      <li>Report bugs or contribute code on <a rel="external" href="https://github.com/BNETDocs/bnetdocs-web">GitHub</a>.</li>
+<? if ($discord_enabled) { ?>
+      <li>Join the community on <a href="<?=UrlFormatter::format('/discord')?>">Discord</a>.</li>
 <? } ?>
-<? if (!empty($email_address)) { ?>
-  <li>Email us: <a href="mailto:<?=rawurlencode($email_address)?>"><?=filter_var($email_address, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
-<? } ?>
-  </ul>
-  <h3>Disclaimer</h3>
-  <p>By donating to BNETDocs, you understand the following:</p>
-  <ol>
-    <li>The donation is non-refundable.</li>
-    <li>The donation's purpose is to pay for hosting of this website and all associated costs, and to further the development of open-source software (OSS).</li>
-    <li>A donation is not acceptable as payment for goods, products, or merchant items.</li>
-    <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net's Terms of Service.</li>
-  </ol>
-  <p>Please see our <a href="<?=UrlFormatter::format('/legal')?>">Legal</a> and <a href="<?=UrlFormatter::format('/privacy')?>">Privacy Policy</a> pages for more info.</p>
+    </ul>
+  </section>
+
+  <section class="donate-terms">
+    <h2>Before you donate</h2>
+    <p>By donating to BNETDocs, you understand that:</p>
+    <ol>
+      <li>The donation is non-refundable.</li>
+      <li>The donation's purpose is to pay for hosting of this website and all associated costs, and to further the development of open-source software (OSS).</li>
+      <li>A donation is not acceptable as payment for goods, products, or merchant items.</li>
+      <li>In absolutely no scenario will a donation be used to willfully violate Blizzard Entertainment's Terms of Service or Battle.net's Terms of Service.</li>
+    </ol>
+    <p class="mb-0">See our <a href="<?=UrlFormatter::format('/legal')?>">Legal</a> and <a href="<?=UrlFormatter::format('/privacy')?>">Privacy Policy</a> pages for more info.</p>
+  </section>
 </div>
 <? require('./Includes/footer.inc.phtml'); ?>

@@ -1,0 +1,65 @@
+/**
+ * @project bnetdocs-web
+ * @copyright MIT
+ *
+ * Donate page (Templates/Community/Donate.phtml). Designed for the Slate theme.
+ */
+
+.donate-intro h1 { color: #fff; font-weight: 600; }
+.donate-intro .lead { max-width: 45rem; color: #aaa; }
+
+.donate-notice {
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #f89406;
+  border-radius: 0 0.5rem 0.5rem 0;
+  background: rgba(248,148,6,0.08);
+  color: #ddd;
+}
+
+.donate-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+.donate-method {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  min-width: 0;
+}
+.donate-method h2 { font-size: 1.1rem; color: #fff; margin: 0; }
+.donate-method p { margin: 0; color: #8e959c; font-size: 0.9rem; }
+.donate-method .btn { margin-top: auto; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.donate-address {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.4rem;
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.donate-person { display: inline-flex; align-items: center; gap: 0.6rem; margin-top: auto; color: #fff; font-weight: 500; }
+.donate-person img { border-radius: 0.5rem; }
+
+.donate-other, .donate-terms { margin-top: 2rem; }
+.donate-other h2, .donate-terms h2 { font-size: 1.15rem; color: #fff; }
+.donate-other ul { padding-left: 1.25rem; }
+.donate-terms {
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 0.75rem;
+  background: rgba(0,0,0,0.15);
+  font-size: 0.875rem;
+  color: #8e959c;
+}
+.donate-terms ol { padding-left: 1.25rem; }
+.donate-terms li + li { margin-top: 0.25rem; }
