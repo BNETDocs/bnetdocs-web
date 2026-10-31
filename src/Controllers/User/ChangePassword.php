@@ -18,7 +18,7 @@ class ChangePassword extends \BNETDocs\Controllers\Base
   public function invoke(?array $args): bool
   {
     if (!$this->model->active_user)
-      $this->model->error = 'NOT_LOGGED_IN';
+      $this->model->error = ChangePasswordModel::ERROR_NOT_LOGGED_IN;
     else if (Router::requestMethod() == Router::METHOD_POST)
       $this->tryChangePassword();
 

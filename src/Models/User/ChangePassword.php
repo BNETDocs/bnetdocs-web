@@ -2,7 +2,7 @@
 
 namespace BNETDocs\Models\User;
 
-class ChangePassword extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
+class ChangePassword extends \BNETDocs\Models\Core\AccessControl implements \JsonSerializable
 {
     public const ERROR_NONMATCHING_PASSWORD = 'NONMATCHING_PASSWORD';
     public const ERROR_PASSWORD_CONTAINS_EMAIL = 'PASSWORD_CONTAINS_EMAIL';
