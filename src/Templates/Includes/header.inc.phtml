@@ -40,7 +40,8 @@ function _header_search_query(): string
   $current_url = parse_url(getenv('REQUEST_URI'), PHP_URL_PATH);
   $match = (substr($current_url, 0, strlen('/search')) == '/search');
   if (!$match) return '';
-  return \BNETDocs\Libraries\Core\Router::query()['q'] ?? '';
+  $q = \BNETDocs\Libraries\Core\Router::query()['q'] ?? '';
+  return is_string($q) ? htmlspecialchars($q, ENT_QUOTES | ENT_HTML5, 'UTF-8') : '';
 }
 $_header_nav = [
   ['label' => 'Welcome', 'url' => '/welcome'],
