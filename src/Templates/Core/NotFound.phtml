@@ -1,12 +1,41 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Core;
+use \BNETDocs\Libraries\Core\UrlFormatter;
 $title = 'Not Found';
 $description = 'The requested resource does not exist or could not be found.';
+
+// Suggest a search based on the last path segment, e.g. /packet/sid-auth-info -> "sid auth info".
+$request_path = (string) parse_url(getenv('REQUEST_URI') ?: '', PHP_URL_PATH);
+$last_segment = basename(rawurldecode($request_path));
+$last_segment = preg_replace('/\.[a-z0-9]{1,5}$/i', '', $last_segment);
+$suggested_query = trim(preg_replace('/[-_+]+/', ' ', $last_segment));
+if (ctype_digit($suggested_query)) $suggested_query = '';
+
+$e = fn(?string $value): string => filter_var($value ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+$links = [
+  ['/packet/index', 'Packets'],
+  ['/document/index', 'Documents'],
+  ['/news', 'News'],
+  ['/servers', 'Servers'],
+  ['/welcome', 'Home'],
+];
+
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
-  <div class="alert alert-danger" role="alert">
-    <h4 class="alert-heading"><?=$title?></h4>
-    <p class="mb-0"><?=$description?></p>
+  <div class="mx-auto text-center py-5" style="max-width:36rem;">
+    <p class="display-1 font-weight-bold text-muted mb-0" aria-hidden="true">404</p>
+    <h1 class="h3 text-light">Page not found</h1>
+    <p class="text-muted">Nothing lives at <code><?=$e($request_path)?></code>. It may have been moved, renamed, or never existed.</p>
+    <form class="d-flex my-4" action="<?=UrlFormatter::format('/search')?>" method="GET" role="search">
+      <input class="form-control bg-dark border-secondary text-light mr-2" type="search" name="q" value="<?=$e($suggested_query)?>" placeholder="Search BNETDocs…" aria-label="Search BNETDocs"/>
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+    <nav class="d-flex flex-wrap justify-content-center" aria-label="Popular sections">
+<? foreach ($links as [$href, $label]) { ?>
+      <a class="btn btn-sm btn-outline-secondary m-1" href="<?=UrlFormatter::format($href)?>"><?=$label?></a>
+<? } ?>
+    </nav>
   </div>
 </div>
 <?php require('./Includes/footer.inc.phtml'); ?>
