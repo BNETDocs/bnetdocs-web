@@ -1,0 +1,65 @@
+/**
+ * @project bnetdocs-web
+ * @copyright MIT
+ *
+ * Search results page (Templates/Search/Search.phtml). Designed for the Slate theme.
+ */
+
+.search-form { display: flex; gap: 0.5rem; max-width: 40rem; }
+.search-form .form-control { flex: 1 1 auto; min-width: 0; }
+
+.search-jump { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.search-jump .badge { font-size: 0.85rem; font-weight: 500; padding: 0.4rem 0.75rem; }
+
+.search-empty {
+  padding: 1.25rem 1.5rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.75rem;
+  background: rgba(255,255,255,0.03);
+}
+
+.search-section { margin-top: 1.75rem; scroll-margin-top: 1rem; }
+.search-section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.search-section-title .badge { font-size: 0.75rem; font-weight: 500; }
+
+.search-results { list-style: none; margin: 0; padding: 0; }
+.search-results li + li { margin-top: 0.4rem; }
+.search-more > .search-results { margin-top: 0.4rem; }
+.search-result {
+  display: block;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 0.5rem;
+  background: rgba(255,255,255,0.03);
+  color: inherit;
+}
+.search-result:hover, .search-result:focus { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: inherit; text-decoration: none; }
+.search-result-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; }
+.search-result-title { color: #fff; font-weight: 500; overflow-wrap: anywhere; }
+.search-result-title code { color: inherit; font-size: 0.95em; }
+.search-result-sub { font-size: 0.8rem; color: #8e959c; }
+.search-result-sub code { color: inherit; }
+.search-result-preview { display: block; margin-top: 0.2rem; font-size: 0.875rem; color: #aaa; overflow-wrap: anywhere; }
+.search-result-tags { display: block; margin-top: 0.35rem; }
+
+.search-more > summary {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  background: rgba(255,255,255,0.06);
+  font-size: 0.875rem;
+  cursor: pointer;
+  list-style: none;
+}
+.search-more > summary::-webkit-details-marker { display: none; }
+.search-more > summary:hover { background: rgba(255,255,255,0.12); }
+.search-more[open] > summary { display: none; }

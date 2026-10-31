@@ -1,149 +1,133 @@
-<?php
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\Search;
-$title = 'Search';
+
+use \BNETDocs\Libraries\Comment;
+use \BNETDocs\Libraries\Core\UrlFormatter;
+use \BNETDocs\Libraries\Document;
+use \BNETDocs\Libraries\News\Post as NewsPost;
+use \BNETDocs\Libraries\Packet\Packet;
+use \BNETDocs\Libraries\Search\Results;
+use \BNETDocs\Libraries\Server\Server;
+use \BNETDocs\Libraries\User\User;
+
 $results = $this->getContext()->results;
-$user_input = $this->getContext()->user_input ?? '';
-if ($results)
+$user_input = trim($this->getContext()->user_input ?? '');
+$title = (empty($user_input) ? 'Search' : 'Search: ' . $user_input);
+$description = 'Search documents, packets, news posts, servers, users, and comments on BNETDocs.';
+$_header_stylesheets = ['search.css'];
+
+$e = fn(?string $value): string => filter_var($value ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$snippet = fn(?string $value): string => $e(mb_strimwidth(trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($value ?? ''), ENT_QUOTES | ENT_HTML5, 'UTF-8'))), 0, 200, '…'));
+
+// Number of results shown per section before the remainder is tucked behind a "Show all" toggle.
+$preview_count = 5;
+
+$sections = [];
+if ($results instanceof Results && !$results->isEmpty())
 {
-    $sections = [
-        'Comments' => $results->getComments(),
-        'Documents' => $results->getDocuments(),
-        'News Posts' => $results->getNewsPosts(),
-        'Packets' => $results->getPackets(),
-        'Servers' => $results->getServers(),
-        'Users' => $results->getUsers(),
-    ];
+  $sections = [
+    ['documents', 'Documents', $results->getDocuments() ?? []],
+    ['packets', 'Packets', $results->getPackets() ?? []],
+    ['news', 'News posts', $results->getNewsPosts() ?? []],
+    ['servers', 'Servers', $results->getServers() ?? []],
+    ['users', 'Users', $results->getUsers() ?? []],
+    ['comments', 'Comments', $results->getComments() ?? []],
+  ];
+  $sections = array_values(array_filter($sections, fn(array $section): bool => !empty($section[2])));
 }
-require('./Includes/header.inc.phtml'); ?>
-<div class="container">
-<?php if (!$results instanceof \BNETDocs\Libraries\Search\Results || $results->isEmpty()): ?>
-  <h1 class="mt-4 mb-3">No Results</h1>
-  <p class="text-muted">Your search for <code><?= filter_var($user_input, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?></code> returned no results.</p>
-<?php else:
-  $nonEmptyCount = 0;
-  foreach ($sections as $items) {
-    if (!empty($items)) $nonEmptyCount++;
+$total = array_sum(array_map(fn(array $section): int => count($section[2]), $sections));
+
+/**
+ * Normalizes a search result into [title html, subtitle html, preview html, href, tags].
+ */
+$describe = function (object $item) use ($e, $snippet): array
+{
+  switch (true)
+  {
+    case $item instanceof Document:
+      return [$e($item->getTitle()), '', $snippet($item->getBrief(true) ?: $item->getContent(true)), $item->getURI(), $item->getTags()];
+    case $item instanceof NewsPost:
+      return [$e($item->getTitle()), $e($item->getPublishedDateTime()->format('M j, Y')), $snippet($item->getContent(true)), $item->getURI(), $item->getTags()];
+    case $item instanceof Packet:
+      return ['<code>' . $e($item->getName()) . '</code>', $e($item->getPacketId(true) . ' · ' . $item->getDirectionLabel()), $snippet($item->getRemarks(true)), $item->getURI(), $item->getTags()];
+    case $item instanceof Server:
+      return [$e($item->getName()), '<code>' . $e($item->getAddress() . ':' . $item->getPort()) . '</code>', '', $item->getURI(), $item->getTags()];
+    case $item instanceof User:
+      return [$e($item->getName()), $e('Member for ' . $item->getCreatedEstimate()), '', $item->getURI(), $item->getTags()];
+    case $item instanceof Comment:
+      $author = $item->getUser();
+      return [
+        $e($author ? $author->getName() : 'Anonymous'),
+        $e($item->getCreatedDateTime()->format('M j, Y')),
+        $snippet($item->getContent(true)),
+        $item->getParentUrl(),
+        [],
+      ];
+    default:
+      return [$e('ID ' . $item->getId()), '', '', '#', []];
   }
-  $collapse_all_by_default = ($nonEmptyCount >= 2);
-?>
-  <h1 class="mt-4 mb-3">Search Results</h1>
-  <p class="text-muted">Query: <code><?= filter_var($user_input, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?></code></p>
+};
 
-  <div class="mb-3">
-    <button class="btn btn-sm btn-outline-secondary mr-2" id="expand-all">Expand All</button>
-    <button class="btn btn-sm btn-outline-secondary" id="collapse-all">Collapse All</button>
+$render_item = function (object $item) use ($describe, $e): void
+{
+  [$item_title, $item_sub, $item_preview, $item_href, $item_tags] = $describe($item);
+  echo '<li><a class="search-result" href="' . $item_href . '">';
+  echo '<span class="search-result-head"><span class="search-result-title">' . $item_title . '</span>';
+  if ($item_sub) echo '<span class="search-result-sub">' . $item_sub . '</span>';
+  echo '</span>';
+  if ($item_preview) echo '<span class="search-result-preview">' . $item_preview . '</span>';
+  if (!empty($item_tags))
+  {
+    echo '<span class="search-result-tags">';
+    foreach ($item_tags as $tag) echo '<span class="badge badge-secondary">' . $e($tag->getTagString()) . '</span> ';
+    echo '</span>';
+  }
+  echo '</a></li>' . PHP_EOL;
+};
+
+require('./Includes/header.inc.phtml'); ?>
+<div class="container search-page">
+  <h1 class="h2 mt-2 mb-3"><?=(empty($user_input) ? 'Search BNETDocs' : 'Search results')?></h1>
+  <form class="search-form mb-3" action="<?=UrlFormatter::format('/search')?>" method="GET" role="search">
+    <input class="form-control bg-dark border-secondary text-light" type="search" name="q" value="<?=$e($user_input)?>" placeholder="Packet name, document title, server, user…" aria-label="Search query"<?=(empty($user_input) ? ' autofocus' : '')?>/>
+    <button class="btn btn-primary" type="submit">Search</button>
+  </form>
+<? if (empty($user_input)) { ?>
+  <p class="text-muted">Search documents, packets, news posts, servers, users, and comments.</p>
+<? } else if (empty($sections)) { ?>
+  <div class="search-empty">
+    <p class="mb-1">No results for <strong><?=$e($user_input)?></strong>.</p>
+    <p class="mb-0 text-muted">Try a shorter or different term, or browse
+      <a href="<?=UrlFormatter::format('/document/index')?>">documents</a>,
+      <a href="<?=UrlFormatter::format('/packet/index')?>">packets</a>, or
+      <a href="<?=UrlFormatter::format('/servers')?>">servers</a>.</p>
   </div>
-
-  <div id="searchAccordion">
-  <?php foreach ($sections as $label => $items): ?>
-    <?php if (!empty($items)): ?>
-      <?php $collapseId = strtolower(str_replace(' ', '-', $label)); ?>
-      <div class="card mb-3">
-        <div class="card-header" id="heading-<?= $collapseId ?>">
-          <h5 class="mb-0">
-            <button class="btn btn-link text-white" data-toggle="collapse" data-target="#collapse-<?= $collapseId ?>" aria-expanded="<?= $collapse_all_by_default ? 'false' : 'true' ?>" aria-controls="collapse-<?= $collapseId ?>">
-              <?= $label ?> (<?= count($items) ?>)
-            </button>
-          </h5>
-        </div>
-        <div id="collapse-<?= $collapseId ?>" class="collapse<?= $collapse_all_by_default ? '' : ' show' ?>" aria-labelledby="heading-<?= $collapseId ?>" data-parent="#searchAccordion">
-          <div class="card-body p-0">
-            <?php if ($label === 'Comments'): ?>
-              <?php
-              $comments = $items;
-              $comment_show_parent = true;
-              require('./Comment/Section.inc.phtml');
-              ?>
-            <?php else: ?>
-              <ul class="list-group list-group-flush">
-              <?php foreach ($items as $item): ?>
-                <li class="list-group-item">
-                  <?php
-                  $url = '#';
-                  $title = 'Untitled';
-                  $preview = '';
-                  $tags = [];
-
-                  switch (true) {
-                    case $item instanceof \BNETDocs\Libraries\Document:
-                      $url = $item->getURI();
-                      $title = $item->getTitle();
-                      $preview = $item->getBrief(true) ?: $item->getContent(true);
-                      $tags = $item->getTags();
-                      break;
-
-                    case $item instanceof \BNETDocs\Libraries\News\Post:
-                      $url = $item->getURI();
-                      $title = $item->getTitle();
-                      $preview = $item->getContent(true);
-                      $tags = $item->getTags();
-                      break;
-
-                    case $item instanceof \BNETDocs\Libraries\Packet\Packet:
-                      $url = $item->getURI();
-                      $title = $item->getLabel();
-                      $preview = $item->getRemarks(true) ?: $item->getFormat();
-                      $tags = $item->getTags();
-                      break;
-
-                    case $item instanceof \BNETDocs\Libraries\Server\Server:
-                      $url = $item->getURI();
-                      $title = $item->getLabel();
-                      $preview = $item->getAddress() . ':' . $item->getPort();
-                      $tags = $item->getTags();
-                      break;
-
-                    case $item instanceof \BNETDocs\Libraries\User\User:
-                      $url = $item->getURI();
-                      $title = $item->getName();
-                      $tags = $item->getTags();
-                      break;
-
-                    default:
-                      $title = 'ID ' . $item->getId();
-                      break;
-                  }
-
-                  $titleSafe = filter_var($title, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                  $previewSafe = filter_var(mb_strimwidth(strip_tags($preview), 0, 200, '…'), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-                  ?>
-                  <a href="<?= $url ?>"><strong><?= $titleSafe ?></strong></a>
-                  <?php if (!empty($previewSafe)): ?>
-                    <div class="text-muted small mt-1"><?= $previewSafe ?></div>
-                  <?php endif; ?>
-                  <?php if (!empty($tags)): ?>
-                    <div class="mt-2">
-                      <?php foreach ($tags as $tag): ?>
-                        <span class="badge badge-secondary"><?= filter_var($tag, FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?></span>
-                      <?php endforeach; ?>
-                    </div>
-                  <?php endif; ?>
-                </li>
-              <?php endforeach; ?>
-              </ul>
-            <?php endif; ?>
-          </div>
-        </div>
-      </div>
-    <?php endif; ?>
-  <?php endforeach; ?>
-  </div>
-<?php endif; ?>
+<? } else { ?>
+  <p class="text-muted mb-2"><?=number_format($total)?> result<?=($total === 1 ? '' : 's')?> for <strong class="text-light"><?=$e($user_input)?></strong></p>
+<?  if (count($sections) > 1) { ?>
+  <nav class="search-jump mb-3" aria-label="Result types">
+<?    foreach ($sections as [$anchor, $label, $items]) { ?>
+    <a class="badge badge-pill badge-dark" href="#<?=$anchor?>"><?=$label?> <span class="text-muted"><?=number_format(count($items))?></span></a>
+<?    } ?>
+  </nav>
+<?  } ?>
+<?  foreach ($sections as [$anchor, $label, $items]) {
+      $items = array_values($items); ?>
+  <section class="search-section" id="<?=$anchor?>">
+    <h2 class="search-section-title"><?=$label?> <span class="badge badge-secondary"><?=number_format(count($items))?></span></h2>
+    <ul class="search-results">
+<?    foreach (array_slice($items, 0, $preview_count) as $item) $render_item($item); ?>
+    </ul>
+<?    if (count($items) > $preview_count) { ?>
+    <details class="search-more">
+      <summary>Show all <?=number_format(count($items))?> <?=strtolower($label)?></summary>
+      <ul class="search-results">
+<?      foreach (array_slice($items, $preview_count) as $item) $render_item($item); ?>
+      </ul>
+    </details>
+<?    } ?>
+  </section>
+<?  } ?>
+<? } ?>
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('expand-all').addEventListener('click', function () {
-      document.querySelectorAll('#searchAccordion .collapse').forEach(el => {
-        if (!el.classList.contains('show')) $(el).collapse('show');
-      });
-    });
-
-    document.getElementById('collapse-all').addEventListener('click', function () {
-      document.querySelectorAll('#searchAccordion .collapse').forEach(el => {
-        if (el.classList.contains('show')) $(el).collapse('hide');
-      });
-    });
-  });
-</script>
-<?php require('./Includes/footer.inc.phtml'); ?>
+<? require('./Includes/footer.inc.phtml'); ?>

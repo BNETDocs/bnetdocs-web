@@ -24,7 +24,8 @@ class Search extends \BNETDocs\Controllers\Base
     public function invoke(?array $args): bool
     {
         $request_args = Router::query();
-        $this->model->user_input = $request_args['q'] ?? null;
+        $q = $request_args['q'] ?? null;
+        $this->model->user_input = is_string($q) ? trim($q) : null;
 
         if (!empty($this->model->user_input))
         {
