@@ -1,225 +1,279 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
 
+use \BNETDocs\Libraries\Comment;
 use \BNETDocs\Libraries\Core\UrlFormatter;
 use \BNETDocs\Libraries\User\User;
 
 $active_user = $this->getContext()->active_user;
-$contributions = $this->getContext()->contributions;
-$documents = $this->getContext()->documents;
-$news_posts = $this->getContext()->news_posts;
-$packets = $this->getContext()->packets;
-$servers = $this->getContext()->servers;
+$documents = $this->getContext()->documents ?? [];
+$news_posts = $this->getContext()->news_posts ?? [];
+$packets = $this->getContext()->packets ?? [];
+$servers = $this->getContext()->servers ?? [];
+$comments = $this->getContext()->comments ?? [];
 $user = $this->getContext()->user;
 $user_id = $this->getContext()->user_id;
 $user_profile = $this->getContext()->user_profile;
-$user_verified = $user && $user->isVerified();
 $title = ($user ? $user->getName() : 'User Not Found');
 $description = ($user ? $user->getName() . '\'s user profile on BNETDocs' : 'The requested user does not exist or could not be found.');
 $url = ($user ? $user->getURI() : UrlFormatter::format('/user/' . rawurlencode($user_id ?? '')));
 $_header_meta_properties = ['og:type' => 'profile'];
+$_header_stylesheets = ['user-profile.css'];
+
+$e = fn(?string $value): string => filter_var($value ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+// Number of items in a list shown before the remainder is tucked behind a "Show all" toggle.
+$list_preview = 12;
+$comment_preview = 5;
 
 if ($user)
 {
-  $_header_meta_properties['og:profile:username'] = $user->getName();
+  $_header_meta_properties['og:profile:username'] = $user->getUsername();
   $_header_meta_properties['og:image'] = $user->getAvatarURI(null);
 
-  $comments = $this->getContext()->comments;
+  $is_self = ($active_user && $active_user->getId() === $user->getId());
+  $can_modify = ($active_user && $active_user->getOption(User::OPTION_ACL_USER_MODIFY));
+  $can_edit_comments = ($active_user && $active_user->getOption(User::OPTION_ACL_COMMENT_MODIFY));
+  $can_delete_comments = ($active_user && $active_user->getOption(User::OPTION_ACL_COMMENT_DELETE));
+  $viewer_is_staff = ($active_user && $active_user->isStaff());
+
   $tags = $user->getTags();
-  $sum_comments = $this->getContext()->sum_comments;
-  $sum_documents = $this->getContext()->sum_documents;
-  $sum_news_posts = $this->getContext()->sum_news_posts;
-  $sum_packets = $this->getContext()->sum_packets;
-  $sum_servers = $this->getContext()->sum_servers;
-
   $user_created_dt = $user->getCreatedDateTime();
-  $user_est = $user->getCreatedEstimate();
-  $user_name = filter_var($user->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $user_record_updated_dt = $user->getRecordUpdated();
+  $user_display_name = $user->getDisplayName();
+  $user_verified = $user->isVerified();
   $user_verified_dt = $user->getVerifiedDateTime();
+
+  $biography = $user_profile ? trim($user_profile->getBiography() ?? '') : '';
+  if (!empty($biography)) $description = $biography;
+
+  // Social and contact links: [service, display value, href or null]
+  $links = [];
+  if ($user_profile)
+  {
+    $website = $user_profile->getWebsite();
+    $candidates = [
+      ['Discord', $user_profile->getDiscordUsername(), null],
+      ['GitHub', $user_profile->getGitHubUsername(), $user_profile->getGitHubURI()],
+      ['Reddit', $user_profile->getRedditUsername(), $user_profile->getRedditURI()],
+      ['Steam', $user_profile->getSteamId(), $user_profile->getSteamURI()],
+      ['Twitter', $user_profile->getTwitterUsername(), $user_profile->getTwitterURI()],
+      ['Facebook', $user_profile->getFacebookUsername(), $user_profile->getFacebookURI()],
+      ['Instagram', $user_profile->getInstagramUsername(), $user_profile->getInstagramURI()],
+      ['Skype', $user_profile->getSkypeUsername(), $user_profile->getSkypeURI()],
+      ['Website', empty($website) ? null : preg_replace('#^https?://|/$#i', '', $website), $website],
+    ];
+    foreach ($candidates as $candidate)
+    {
+      if (is_string($candidate[1]) && $candidate[1] !== '') $links[] = $candidate;
+    }
+  }
+
+  // Contribution tiles; counts reflect what is actually listed (unpublished items are hidden).
+  $stats = [
+    ['documents', 'Documents', count($documents)],
+    ['packets', 'Packets', count($packets)],
+    ['news', 'News posts', count($news_posts)],
+    ['servers', 'Servers', count($servers)],
+    ['comments', 'Comments', count($comments)],
+  ];
+  $stats = array_values(array_filter($stats, fn(array $stat): bool => $stat[2] > 0));
 }
 
-if ($user_profile)
+/**
+ * Renders a grid of linked items, collapsing anything past $list_preview behind a toggle.
+ *
+ * @param array $items Objects to render.
+ * @param string $noun Plural noun for the toggle label.
+ * @param callable $render Returns [title html, subtitle html, href] for an item.
+ */
+$render_grid = function (array $items, string $noun, callable $render) use ($list_preview): void
 {
-  $biography = filter_var($user_profile->getBiography(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $discord_username = filter_var($user_profile->getDiscordUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $facebook_uri = filter_var($user_profile->getFacebookURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $facebook_username = filter_var($user_profile->getFacebookUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $github_uri = filter_var($user_profile->getGitHubURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $github_username = filter_var($user_profile->getGitHubUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $instagram_uri = filter_var($user_profile->getInstagramURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $instagram_username = filter_var($user_profile->getInstagramUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $phone = filter_var($user_profile->getPhone(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $phone_uri = filter_var($user_profile->getPhoneURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $reddit_uri = filter_var($user_profile->getRedditURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $reddit_username = filter_var($user_profile->getRedditUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $skype_uri = filter_var($user_profile->getSkypeURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $skype_username = filter_var($user_profile->getSkypeUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $steam_id = filter_var($user_profile->getSteamId(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $steam_uri = $user_profile->getSteamURI();
-  $twitter_uri = filter_var($user_profile->getTwitterURI(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $twitter_username = filter_var($user_profile->getTwitterUsername(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-  $website = filter_var($user_profile->getWebsite(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-}
+  $items = array_values($items);
+  $chunks = [array_slice($items, 0, $list_preview), array_slice($items, $list_preview)];
+  foreach ($chunks as $i => $chunk)
+  {
+    if (empty($chunk)) continue;
+    if ($i === 1) printf('<details class="profile-more"><summary>Show all %d %s</summary>' . PHP_EOL, count($items), $noun);
+    echo '<ul class="profile-grid">' . PHP_EOL;
+    foreach ($chunk as $item)
+    {
+      [$item_title, $item_sub, $item_href] = $render($item);
+      printf('<li><a href="%s"><span class="profile-item-title">%s</span>%s</a></li>' . PHP_EOL,
+        $item_href, $item_title, ($item_sub ? sprintf('<span class="profile-item-sub">%s</span>', $item_sub) : '')
+      );
+    }
+    echo '</ul>' . PHP_EOL;
+    if ($i === 1) echo '</details>' . PHP_EOL;
+  }
+};
 
-if (isset($biography) && is_string($biography) && !empty($biography)) $description = $biography;
+$short_date = fn(?\DateTimeInterface $dt): string => $dt ? sprintf(
+  '<time datetime="%s" data-localize="false">%s</time>', $dt->format('c'), $dt->format('M j, Y')
+) : '';
+
+$parent_labels = [
+  Comment::PARENT_TYPE_COMMENT => 'a comment',
+  Comment::PARENT_TYPE_DOCUMENT => 'a document',
+  Comment::PARENT_TYPE_NEWS_POST => 'a news post',
+  Comment::PARENT_TYPE_PACKET => 'a packet',
+  Comment::PARENT_TYPE_SERVER => 'a server',
+  Comment::PARENT_TYPE_USER => 'a user',
+];
 
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
-  <span class="float-right">
-<?  if ($active_user && $user && $active_user->getId() == $user->getId()) { ?>
-    <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update')?>" title="Update Profile">📝 Update Profile</a>
-    <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>" title="Change Password">🔑 Change Password</a>
-<?  } ?>
-<?  if ($active_user && $user && $active_user->getOption(User::OPTION_ACL_USER_MODIFY)) { ?>
-    <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update?id=' . rawurlencode($user->getId()))?>" title="Edit User">📝</a>
-<?  } ?>
-  </span>
-<? if ($user) { ?>
-  <h1>User Profile</h1>
-  <div class="row justify-content-md-center">
-    <div class="col-sm-3 mb-2">
-      <!-- Avatar -->
-
-      <img class="rounded w-100" src="<?=$user->getAvatarURI(1024)?>" />
-    </div>
-    <div class="col-lg-4">
-      <!-- User name, Biography -->
-
-      <h2><?=$user_name?></h2>
-      <p><?=(empty($biography) ? '<em>(no biography information)</em>' : $biography)?></p>
-    </div>
-    <div class="col-lg-5">
-      <!-- Id, Timestamps -->
-
-      <table class="table table-borderless table-sm">
-        <thead></thead><tbody>
-          <tr class="text-muted">
-            <th scope="row" class="align-middle text-right">Id</th>
-            <td><code><?=filter_var($user_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></code></td>
-          </tr>
-<? if ($active_user && $active_user->isStaff()) { ?>
-          <tr class="text-success">
-            <th scope="row" class="align-middle text-right">Date created</th>
-            <td><time datetime="<?=$user_created_dt->format('c')?>"><?=$user_created_dt->format('D M j, Y')?></time></td>
-          </tr>
-          <tr class="text-<?=($user_verified && $user_verified_dt ? 'success' : 'danger')?>">
-            <th scope="row" class="align-middle text-right">Date verified</th>
-            <td><?=($user_verified && $user_verified_dt ? '<time datetime="' . $user_verified_dt->format('c') . '">' . $user_verified_dt->format('D M j, Y') . '</time>' : '<em>(not verified)</em>')?></td>
-          </tr>
-          <tr class="text-info">
-            <th scope="row" class="align-middle text-right">Record last updated</th>
-            <td><time datetime="<?=$user_record_updated_dt->format('c')?>"><?=$user_record_updated_dt->format('D M j, Y')?></time></td>
-          </tr>
-<? } ?>
-          <tr class="text-muted"><th scope="row" class="align-middle text-right">Member for</th><td><?=$user_est?></td></tr>
-          <tr class="text-muted"><th scope="row" class="align-middle text-right">Comments made</th><td><?=number_format($sum_comments)?></td></tr>
-          <tr class="text-muted"><th scope="row" class="align-middle text-right">Documents authored</th><td><?=number_format($sum_documents)?></td></tr>
-          <tr class="text-muted"><th scope="row" class="align-middle text-right">News posted</th><td><?=number_format($sum_news_posts)?></td></tr>
-          <tr class="text-muted"><th scope="row" class="align-middle text-right">Packets authored</th><td><?=number_format($sum_packets)?></td></tr>
-          <tr class="text-muted"><th scope="row" class="align-middle text-right">Servers owned</th><td><?=number_format($sum_servers)?></td></tr>
-        </tbody>
-      </table>
-
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-<?  if (isset($user_profile) && $user_profile)
-{
-      echo '<ul>';
-      if (isset($discord_username) && !empty($discord_username))
-      {
-        echo '<li><strong>Discord:</strong> ' . $discord_username . '</li>' . PHP_EOL;
-      }
-      if (isset($github_username) && !empty($github_username))
-      {
-        echo '<li><strong>GitHub:</strong> <a rel="external" href="' . $github_uri . '">' . $github_username . '</a></li>' . PHP_EOL;
-      }
-      if (isset($reddit_username) && !empty($reddit_username))
-      {
-        echo '<li><strong>Reddit:</strong> <a rel="external" href="' . $reddit_uri . '">' . $reddit_username . '</a></li>' . PHP_EOL;
-      }
-      if (isset($steam_username) && !empty($steam_username))
-      {
-        echo '<li><strong>Steam:</strong> <a rel="external" href="' . $steam_uri . '">' . $steam_username . '</a></li>' . PHP_EOL;
-      }
-      if (isset($facebook_username) && !empty($facebook_username))
-      {
-        echo '<li><strong>Facebook:</strong> <a rel="external" href="' . $facebook_uri . '">' . $facebook_username . '</a></li>' . PHP_EOL;
-      }
-      if (isset($twitter_username) && !empty($twitter_username))
-      {
-        echo '<li><strong>Twitter:</strong> <a rel="external" href="' . $twitter_uri . '">' . $twitter_username . '</a></li>' . PHP_EOL;
-      }
-      if (isset($instagram_username) && !empty($instagram_username))
-      {
-        echo '<li><strong>Instagram:</strong> <a rel="external" href="' . $instagram_uri . '">' . $instagram_username . '</a></li>' . PHP_EOL;
-      }
-      if (isset($skype_username) && !empty($skype_username))
-      {
-        echo '<li><strong>Skype:</strong> <a href="' . $skype_uri . '">' . $skype_username . '</a></li>' . PHP_EOL;
-      }
-      if (isset($website) && !empty($website))
-      {
-        echo '<li><strong>Website:</strong> <a rel="external" href="' . $website . '">' . $website . '</a></li>' . PHP_EOL;
-      }
-      echo '</ul>';
-    }?>
-    </div>
-  </div>
-<? } else { ?>
+<? if (!$user) { ?>
   <div class="alert alert-danger">
-    <h2><?=$title?></h2>
+    <h1 class="h2"><?=$title?></h1>
     <p class="mb-0"><?=$description?></p>
   </div>
-<? } ?>
-  <div class="row justify-content-center">
-<? if (!empty($documents)) { ?>
-    <div class="col-md-auto mb-3">
-      <h3>Documents</h3>
-      <ul>
-<? foreach ($documents as $document) { ?>
-        <li><a href="<?=$document->getURI()?>"><?=filter_var($document->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
-<? } ?>
-      </ul>
+<? } else { ?>
+  <section class="profile-hero mb-3" aria-label="User profile">
+    <div class="profile-hero-body">
+      <img class="profile-avatar" src="<?=$user->getAvatarURI(128)?>" srcset="<?=$user->getAvatarURI(256)?> 2x" width="128" height="128" alt="<?=$e($user->getName())?>'s avatar"/>
+      <div class="profile-identity">
+        <h1 class="profile-name"><?=$e($user->getName())?>
+<?  if ($user->isStaff()) { ?>
+          <span class="badge badge-info ml-1" title="BNETDocs staff member">Staff</span>
+<?  } ?>
+<?  if ($user->isDisabled()) { ?>
+          <span class="badge badge-danger ml-1" title="This account is disabled">Disabled</span>
+<?  } ?>
+        </h1>
+        <div class="profile-meta">
+<?  if (!empty($user_display_name) && $user_display_name !== $user->getUsername()) { ?>
+          <span>@<?=$e($user->getUsername())?></span>
+<?  } ?>
+          <span title="<?=$user_created_dt->format('D M j, Y')?>">Member for <?=$e($user->getCreatedEstimate())?></span>
+          <span>User #<?=$e((string) $user->getId())?></span>
+        </div>
+<?  if (!empty($biography)) { ?>
+        <p class="profile-bio"><?=$e($biography)?></p>
+<?  } else if ($is_self) { ?>
+        <p class="profile-bio text-muted"><em>You haven't written a biography yet.</em> <a href="<?=UrlFormatter::format('/user/update')?>">Add one</a></p>
+<?  } ?>
+<?  if (!empty($links)) { ?>
+        <ul class="profile-links">
+<?    foreach ($links as [$service, $value, $href]) { ?>
+          <li><span class="profile-link-service"><?=$service?></span>
+<?      if ($href) { ?>
+            <a class="profile-link-value" rel="external nofollow" href="<?=$e($href)?>"><?=$e($value)?></a></li>
+<?      } else { ?>
+            <span class="profile-link-value text-light"><?=$e($value)?></span></li>
+<?      } ?>
+<?    } ?>
+        </ul>
+<?  } ?>
+<?  if (!empty($tags)) { ?>
+        <div class="mt-3"><? require('./Includes/TagDisplay.inc.phtml'); ?></div>
+<?  } ?>
+      </div>
+<?  if ($is_self || $can_modify) { ?>
+      <div class="profile-actions">
+<?    if ($is_self) { ?>
+        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update')?>">📝 Edit profile</a>
+        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>">🔑 Password</a>
+<?    } else { ?>
+        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update?id=' . rawurlencode($user->getId()))?>">📝 Edit user</a>
+<?    } ?>
+      </div>
+<?  } ?>
     </div>
+<?  if (!empty($stats)) { ?>
+    <nav class="profile-stats" aria-label="Contributions">
+<?    foreach ($stats as [$anchor, $label, $count]) { ?>
+      <a class="profile-stat" href="#<?=$anchor?>"><span class="profile-stat-value"><?=number_format($count)?></span><span class="profile-stat-label"><?=$label?></span></a>
+<?    } ?>
+    </nav>
+<?  } else { ?>
+    <div class="profile-empty"><?=($is_self ? 'You haven\'t contributed yet. Comments, documents, and packets you write will show up here.' : $e($user->getName()) . ' hasn\'t contributed anything yet.')?></div>
+<?  } ?>
+<?  if ($viewer_is_staff) { ?>
+    <details class="profile-staff">
+      <summary>Account details (staff only)</summary>
+      <dl>
+        <dt>Created</dt><dd><time datetime="<?=$user_created_dt->format('c')?>"><?=$user_created_dt->format('D M j, Y g:ia T')?></time></dd>
+        <dt>Verified</dt><dd class="<?=($user_verified ? '' : 'text-danger')?>"><?=($user_verified && $user_verified_dt ? sprintf('<time datetime="%s">%s</time>', $user_verified_dt->format('c'), $user_verified_dt->format('D M j, Y g:ia T')) : '<em>not verified</em>')?></dd>
+        <dt>Record updated</dt><dd><time datetime="<?=$user->getRecordUpdated()->format('c')?>"><?=$user->getRecordUpdated()->format('D M j, Y g:ia T')?></time></dd>
+      </dl>
+    </details>
+<?  } ?>
+  </section>
+
+<?  if (!empty($documents)) { ?>
+  <section class="profile-section" id="documents">
+    <h2 class="profile-section-title">Documents <span class="badge badge-secondary"><?=number_format(count($documents))?></span></h2>
+<?    $render_grid($documents, 'documents', fn($d) => [$e($d->getTitle()), $short_date($d->getPublishedDateTime()), $d->getURI()]); ?>
+  </section>
+<?  } ?>
+
+<?  if (!empty($packets)) { ?>
+  <section class="profile-section" id="packets">
+    <h2 class="profile-section-title">Packets <span class="badge badge-secondary"><?=number_format(count($packets))?></span></h2>
+<?    $render_grid($packets, 'packets', fn($p) => [
+        '<code>' . $e($p->getName()) . '</code>',
+        sprintf('%s &middot; %s', $e($p->getPacketId(true)), $e($p->getDirectionLabel())),
+        $p->getURI(),
+      ]); ?>
+  </section>
+<?  } ?>
+
+<?  if (!empty($news_posts)) { ?>
+  <section class="profile-section" id="news">
+    <h2 class="profile-section-title">News posts <span class="badge badge-secondary"><?=number_format(count($news_posts))?></span></h2>
+<?    $render_grid($news_posts, 'news posts', fn($n) => [$e($n->getTitle()), $short_date($n->getPublishedDateTime()), $n->getURI()]); ?>
+  </section>
+<?  } ?>
+
+<?  if (!empty($servers)) { ?>
+  <section class="profile-section" id="servers">
+    <h2 class="profile-section-title">Servers <span class="badge badge-secondary"><?=number_format(count($servers))?></span></h2>
+<?    $render_grid($servers, 'servers', fn($s) => [
+        $e($s->getName()),
+        '<code>' . $e($s->getAddress() . ':' . $s->getPort()) . '</code>',
+        $s->getURI(),
+      ]); ?>
+  </section>
+<?  } ?>
+
+<?  if (!empty($comments)) { ?>
+  <section class="profile-section" id="comments">
+    <h2 class="profile-section-title">Comments <span class="badge badge-secondary"><?=number_format(count($comments))?></span></h2>
+<?    foreach (array_values($comments) as $i => $c) {
+        $c_id = rawurlencode((string) $c->getId());
+        $c_dt = $c->getCreatedDateTime();
+        $c_own = ($active_user && $c->getUserId() === $active_user->getId());
+        if ($i === $comment_preview) printf('<details class="profile-more"><summary>Show %d older comments</summary>' . PHP_EOL, count($comments) - $comment_preview); ?>
+    <article class="profile-comment">
+      <div class="profile-comment-meta">
+        <span>On <a href="<?=$c->getParentUrl()?>"><?=($parent_labels[$c->getParentType()] ?? 'a page')?></a></span>
+        <span>&middot;</span>
+        <time datetime="<?=$c_dt->format('c')?>"><?=$c_dt->format('D M j, Y g:ia T')?></time>
+<?      if ($c_own || $can_edit_comments || $can_delete_comments) { ?>
+        <span class="profile-comment-actions">
+<?        if ($c_own || $can_edit_comments) { ?>
+          <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/comment/edit?id=' . $c_id)?>" title="Edit">📝</a>
+<?        } ?>
+<?        if ($c_own || $can_delete_comments) { ?>
+          <a class="btn btn-sm btn-danger" href="<?=UrlFormatter::format('/comment/delete?id=' . $c_id)?>" title="Delete">❌</a>
+<?        } ?>
+        </span>
+<?      } ?>
+      </div>
+<?      $c_raw = $c->getContent(false);
+        $c_long = (strlen($c_raw) > 800 || substr_count($c_raw, "\n") > 10);
+        if ($c_long) { ?>
+      <input type="checkbox" class="profile-clamp-toggle sr-only" id="comment-<?=$c_id?>-more"/>
+<?      } ?>
+      <div class="profile-comment-body<?=($c_long ? ' profile-clamp' : '')?>"><?=$c->getContent(true)?></div>
+<?      if ($c_long) { ?>
+      <label class="profile-clamp-label" for="comment-<?=$c_id?>-more"></label>
+<?      } ?>
+    </article>
+<?    }
+      if (count($comments) > $comment_preview) echo '</details>' . PHP_EOL; ?>
+  </section>
+<?  } ?>
 <? } ?>
-<? if (!empty($news_posts)) { ?>
-    <div class="col-md-auto mb-3">
-      <h3>News Posts</h3>
-      <ul>
-<? foreach ($news_posts as $news_post) { ?>
-        <li><a href="<?=$news_post->getURI()?>"><?=filter_var($news_post->getTitle(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
-<? } ?>
-      </ul>
-    </div>
-<? } ?>
-<? if (!empty($packets)) { ?>
-    <div class="col-md-auto mb-3">
-      <h3>Packets</h3>
-      <ul>
-<? foreach ($packets as $packet) { ?>
-        <li><a href="<?=$packet->getURI()?>"><?=filter_var($packet->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
-<? } ?>
-      </ul>
-    </div>
-<? } ?>
-<? if (!empty($servers)) { ?>
-    <div class="col-md-auto mb-3">
-      <h3>Servers</h3>
-      <ul>
-<? foreach ($servers as $server) { ?>
-        <li><a href="<?=$server->getURI()?>"><?=filter_var($server->getName(), FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></a></li>
-<? } ?>
-      </ul>
-    </div>
-<? } ?>
-  </div>
-<? require('./Includes/TagDisplay.inc.phtml'); ?>
-<? if (!empty($comments)) {
-    $comment_show_parent = true;
-    require('./Comment/Section.inc.phtml');
-  } ?>
 </div>
 <? require('./Includes/footer.inc.phtml'); ?>

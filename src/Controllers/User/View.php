@@ -94,12 +94,9 @@ class View extends \BNETDocs\Controllers\Base
     // Process news posts
     if ($this->model->news_posts)
     {
-      // Alphabetically sort the news posts
+      // Sort the news posts newest first
       usort($this->model->news_posts, function($a, $b){
-        $a1 = $a->getTitle();
-        $b1 = $b->getTitle();
-        if ($a1 == $b1) return 0;
-        return ($a1 < $b1 ? -1 : 1);
+        return $b->getPublishedDateTime() <=> $a->getPublishedDateTime();
       });
 
       // Remove news posts that are not published

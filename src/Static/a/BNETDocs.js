@@ -71,7 +71,8 @@ function BNETDocs() {
     var timestamps = document.getElementsByTagName('time');
     for (var id in timestamps) {
       if (timestamps[id].attributes === undefined ||
-        timestamps[id].attributes.datetime === undefined
+        timestamps[id].attributes.datetime === undefined ||
+        timestamps[id].dataset.localize === 'false'
       ) continue;
       var d = new Date(timestamps[id].attributes.datetime.value);
       timestamps[id].innerText = self.dateToString(d);

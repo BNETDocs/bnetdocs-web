@@ -1,0 +1,178 @@
+/**
+ * @project bnetdocs-web
+ * @copyright MIT
+ *
+ * User profile page (Templates/User/View.phtml). Designed for the Slate theme.
+ */
+
+.profile-hero {
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+.profile-hero-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+.profile-avatar {
+  flex: 0 0 auto;
+  width: 128px;
+  height: 128px;
+  border-radius: 1rem;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1), 0 0.5rem 1.5rem rgba(0,0,0,0.4);
+}
+.profile-identity { flex: 1 1 18rem; min-width: 0; }
+.profile-name {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+  overflow-wrap: anywhere;
+}
+.profile-name .badge { font-size: 0.75rem; vertical-align: middle; }
+.profile-meta { color: #8e959c; font-size: 0.9rem; }
+.profile-meta > span { white-space: nowrap; }
+.profile-meta > span + span::before { content: "\00b7"; margin: 0 0.5rem; }
+.profile-bio {
+  margin: 1rem 0 0;
+  max-width: 65ch;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.profile-actions { flex: 0 0 auto; display: flex; gap: 0.5rem; align-items: flex-start; }
+
+.profile-links { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; margin: 1rem 0 0; padding: 0; }
+.profile-links li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 2rem;
+  background: rgba(0,0,0,0.2);
+  font-size: 0.875rem;
+  max-width: 100%;
+}
+.profile-links .profile-link-service { color: #8e959c; }
+.profile-links .profile-link-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.2);
+}
+.profile-stat {
+  display: block;
+  padding: 0.85rem 1rem;
+  text-align: center;
+  color: inherit;
+}
+.profile-stat + .profile-stat { border-left: 1px solid rgba(255,255,255,0.06); }
+a.profile-stat:hover, a.profile-stat:focus { background: rgba(255,255,255,0.05); color: #fff; text-decoration: none; }
+.profile-stat-value { display: block; font-size: 1.5rem; font-weight: 600; color: #fff; line-height: 1.2; }
+.profile-stat-label { display: block; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: #8e959c; }
+.profile-empty {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.2);
+  color: #8e959c;
+  text-align: center;
+}
+
+.profile-staff {
+  border-top: 1px dashed rgba(98,196,98,0.35);
+  padding: 0.5rem 1.5rem;
+  font-size: 0.85rem;
+}
+.profile-staff summary { color: #62c462; cursor: pointer; }
+.profile-staff dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.25rem 1rem; margin: 0.5rem 0 0.25rem; }
+.profile-staff dt { font-weight: normal; color: #8e959c; }
+.profile-staff dd { margin: 0; }
+
+.profile-section { margin-top: 2rem; scroll-margin-top: 1rem; }
+.profile-section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.profile-section-title .badge { font-size: 0.75rem; font-weight: 500; }
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.profile-grid + details > .profile-grid, .profile-more > .profile-grid { margin-top: 0.5rem; }
+.profile-grid a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 0.5rem;
+  background: rgba(255,255,255,0.03);
+  color: inherit;
+  min-width: 0;
+}
+.profile-grid a:hover, .profile-grid a:focus { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); text-decoration: none; }
+.profile-grid .profile-item-title { color: #fff; overflow-wrap: anywhere; }
+.profile-grid .profile-item-sub { font-size: 0.8rem; color: #8e959c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-grid code { color: inherit; font-size: 0.85rem; }
+
+.profile-more > summary {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  background: rgba(255,255,255,0.06);
+  font-size: 0.875rem;
+  cursor: pointer;
+  list-style: none;
+}
+.profile-more > summary::-webkit-details-marker { display: none; }
+.profile-more > summary:hover { background: rgba(255,255,255,0.12); }
+.profile-more[open] > summary { display: none; }
+
+.profile-comment {
+  padding: 0.75rem 1rem;
+  border-left: 3px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.03);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+.profile-comment + .profile-comment, .profile-more > .profile-comment:first-of-type { margin-top: 0.5rem; }
+.profile-comment-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #8e959c; margin-bottom: 0.35rem; }
+.profile-comment-meta .btn { padding: 0 0.4rem; font-size: 0.75rem; }
+.profile-comment-actions { margin-left: auto; display: flex; gap: 0.25rem; }
+.profile-comment-body { overflow-wrap: anywhere; }
+.profile-comment-body > :last-child { margin-bottom: 0; }
+.profile-clamp {
+  max-height: 12rem;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  mask-image: linear-gradient(to bottom, #000 60%, transparent);
+}
+.profile-clamp-toggle:checked ~ .profile-clamp { max-height: none; -webkit-mask-image: none; mask-image: none; }
+.profile-clamp-label { display: inline-block; margin: 0.25rem 0 0; font-size: 0.85rem; color: #fff; cursor: pointer; }
+.profile-clamp-label::after { content: "Show full comment \25be"; }
+.profile-clamp-toggle:checked ~ .profile-clamp-label::after { content: "Show less \25b4"; }
+.profile-clamp-toggle:focus-visible ~ .profile-clamp-label { outline: 2px solid #62c462; outline-offset: 2px; }
+
+@media (max-width: 575.98px) {
+  .profile-hero-body { padding: 1rem; gap: 1rem; }
+  .profile-avatar { width: 80px; height: 80px; border-radius: 0.75rem; }
+  .profile-name { font-size: 1.5rem; }
+  .profile-actions { width: 100%; }
+  .profile-stat + .profile-stat { border-left: 0; }
+}

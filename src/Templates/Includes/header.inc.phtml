@@ -230,6 +230,9 @@ function _header_nav_html($nav)
     <link rel="stylesheet" href="<?=UrlFormatter::assetify('datatables.min.css')?>" type="text/css" media="all"/>
     <link rel="stylesheet" href="<?=UrlFormatter::assetify('highlight/styles/vs2015.min.css')?>" type="text/css" media="all"/>
     <link rel="stylesheet" href="<?=UrlFormatter::assetify('footer.css')?>" type="text/css" media="all"/>
+<?  foreach (($_header_stylesheets ?? []) as $_header_stylesheet) { ?>
+    <link rel="stylesheet" href="<?=UrlFormatter::assetify($_header_stylesheet)?>" type="text/css" media="all"/>
+<?  } ?>
     <link rel="icon" href="<?=UrlFormatter::assetify('VSZX0bJ.png')?>" type="image/png" sizes="156x174"/>
     <script type="text/javascript" src="<?=UrlFormatter::assetify('BNETDocs.js')?>" async></script>
     <link rel="alternate" href="<?=UrlFormatter::format('/news.rss')?>" type="application/rss+xml" title="BNETDocs News"/>
