@@ -5,74 +5,91 @@ use \BNETDocs\Libraries\User\User;
 $title = 'Server List';
 $description = 'This is a list of servers that are well-known and monitored for port status.';
 $url = '/servers';
+$_header_stylesheets = ['servers.css'];
 
+$e = fn(?string $value): string => filter_var($value ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+$servers = $this->getContext()->servers ?? [];
 $servers_by_type = [];
-foreach ($this->context->servers as $server) {
+$count_online = $count_offline = $count_disabled = 0;
+foreach ($servers as $server)
+{
   $servers_by_type[$server->getTypeId()][] = $server;
+  if ($server->isDisabled()) ++$count_disabled;
+  else if ($server->isOnline()) ++$count_online;
+  else ++$count_offline;
 }
 ksort($servers_by_type);
 
-$can_server_create = $this->getContext()->active_user && $this->getContext()->active_user->getOption(User::OPTION_ACL_SERVER_CREATE);
-$can_server_modify = $this->getContext()->active_user && $this->getContext()->active_user->getOption(User::OPTION_ACL_SERVER_MODIFY);
+$active_user = $this->getContext()->active_user;
+$can_server_create = $active_user && $active_user->getOption(User::OPTION_ACL_SERVER_CREATE);
+$can_server_modify = $active_user && $active_user->getOption(User::OPTION_ACL_SERVER_MODIFY);
 
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
-<?=($can_server_create ? sprintf('<a class="btn btn-success text-white float-right" href="%s">Create Server</a>', UrlFormatter::format('/server/create')) : '')?>
-  <h1><?=$title?></h1>
-  <div class="row"><div class="col">
-    <p><?=$description?></p>
-    <p>The status represents if the port is opened or closed, not if the service is functioning correctly. These are the statuses a server could be in:</p>
-    <ul>
-      <li><span class="text-success">Online</span>: The port is open.</li>
-      <li><span class="text-danger">Offline</span>: The port is closed.</li>
-      <li><span class="text-warning">Disabled</span>: The server is not actively checked.</li>
+  <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+    <h1 class="mb-0 mr-3"><?=$title?></h1>
+    <div>
+<?  if ($can_server_create) { ?>
+      <a class="btn btn-sm btn-success" href="<?=UrlFormatter::format('/server/create')?>">Create Server</a>
+<?  } ?>
+      <a class="btn btn-sm btn-outline-secondary" href="<?=UrlFormatter::format('/servers.json')?>">JSON</a>
+    </div>
+  </div>
+  <p class="servers-note"><?=$description?> Status shows whether the port is open, not whether the service is working correctly.</p>
+  <div class="servers-summary">
+    <span class="servers-summary-total"><?=number_format(count($servers))?> servers</span>
+    <span class="server-status is-online" title="The port is open"><?=number_format($count_online)?> online</span>
+    <span class="server-status is-offline" title="The port is closed"><?=number_format($count_offline)?> offline</span>
+    <span class="server-status is-disabled" title="The server is not actively checked"><?=number_format($count_disabled)?> disabled</span>
+  </div>
+  <input class="form-control form-control-sm bg-dark border-secondary text-light servers-filter" id="servers-filter" type="search" placeholder="Filter by name or address…" aria-label="Filter servers" hidden/>
+
+<? foreach ($servers_by_type as $type_id => $type_servers) {
+     $type_label = (new \BNETDocs\Libraries\Server\Type($type_id))->getLabel(); ?>
+  <section class="servers-group" id="type-<?=(int) $type_id?>">
+    <h2 class="servers-group-title"><?=$e($type_label)?> <span class="badge badge-secondary"><?=number_format(count($type_servers))?></span></h2>
+    <ul class="servers-grid">
+<?   foreach ($type_servers as $server) {
+       $server_address = $server->getAddress() . ':' . $server->getPort();
+       $server_label = $server->getLabel();
+       $server_name = (!empty($server_label) && $server_label !== $server->getAddress()) ? $server_label : $server_address;
+       if ($server->isDisabled()) { $status_class = 'is-disabled'; $status_text = 'Disabled'; }
+       else if ($server->isOnline()) { $status_class = 'is-online'; $status_text = 'Online'; }
+       else { $status_class = 'is-offline'; $status_text = 'Offline'; } ?>
+      <li class="server-card" data-filter="<?=$e(strtolower($server_name . ' ' . $server_address))?>">
+        <div class="server-card-head">
+          <a class="server-card-name" href="<?=$server->getURI()?>"><?=$e($server_name)?></a>
+          <span class="server-status <?=$status_class?>"><?=$status_text?></span>
+        </div>
+        <div class="server-card-address"><code><?=$e($server_address)?></code></div>
+<?     if ($can_server_modify) { ?>
+        <a class="server-card-edit" href="<?=UrlFormatter::format(sprintf('/server/edit?id=%d', $server->getId()))?>" title="Edit <?=$e($server_name)?>">Edit</a>
+<?     } ?>
+      </li>
+<?   } ?>
     </ul>
-    <p>We have a total of <strong><?=number_format(count($this->context->servers))?> servers</strong> that we monitor. <a href="<?=UrlFormatter::format('/servers.json')?>">Click here</a> to see this list in JSON format.</p>
-  </div></div>
-  <div class="row"><div class="col">
-    <table class="table table-hover table-sm table-striped" id="servers_tbl">
-      <thead><tr><th scope="col">Status</th><th scope="col">Label</th><th scope="col">Address</th><th scope="col"></th></tr></thead><tbody>
-<?    foreach ($servers_by_type as $type_id => $servers)
-      {
-        $server_type = new \BNETDocs\Libraries\Server\Type($type_id);
-        $server_type_label = filter_var($server_type->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-        printf('<tr><th scope="row" colspan="4">%s</th></tr>', $server_type_label);
-        foreach ($servers as $server)
-        {
-          $server_id = $server->getId();
-          $server_label = filter_var($server->getLabel(), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-          $server_online = $server->isOnline();
-          if ($server->isDisabled())
-          {
-            $server_status = '<span class="text-warning">Disabled</span>';
-          }
-          else
-          {
-            $server_status = sprintf('<span class="text-%s">%s</span>',
-              ($server_online ? 'success' : 'danger'), ($server_online ? 'Online' : 'Offline')
-            );
-          }
-?>
-        <tr>
-          <td class="font-weight-bold text-center"><?=$server_status?></td>
-          <td><?=($server->getLabel() != $server->getAddress() && !empty($server->getLabel()) ? $server_label : '&nbsp;')?></td>
-          <td><code><?=$server->getAddress()?>:<?=$server->getPort()?></code></td>
-          <td>
-<?=($can_server_modify ? sprintf('<a class="btn btn-sm btn-secondary" href="%s" title="Edit Server for %s">📝</a>', UrlFormatter::format(sprintf('/server/edit?id=%d', $server_id)), $server_label) : '')?>
-            <a class="btn btn-sm btn-primary" href="<?=$server->getURI()?>" title="View Server Details for <?=$server_label?>">🔎</a></td>
-        </tr>
-<?    }} ?>
-      </tbody>
-    </table>
-  </div></div>
+  </section>
+<? } ?>
 </div>
 <? ob_start(); ?>
-  <script type="text/javascript">
-    $(document).ready(function(){
-      $('#servers_tbl').DataTable({
-        "language": {"zeroRecords": "No matching servers found"},
-        "responsive": true,
+<script type="text/javascript">
+  (function () {
+    var input = document.getElementById('servers-filter');
+    if (!input) return;
+    input.hidden = false;
+    input.addEventListener('input', function () {
+      var q = input.value.trim().toLowerCase();
+      document.querySelectorAll('.servers-group').forEach(function (group) {
+        var shown = 0;
+        group.querySelectorAll('.server-card').forEach(function (card) {
+          var match = !q || card.dataset.filter.indexOf(q) !== -1;
+          card.hidden = !match;
+          if (match) ++shown;
+        });
+        group.hidden = (shown === 0);
       });
     });
-  </script>
+  })();
+</script>
 <? $_footer_script = ob_get_clean(); require('./Includes/footer.inc.phtml'); ?>

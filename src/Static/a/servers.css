@@ -1,0 +1,72 @@
+/**
+ * @project bnetdocs-web
+ * @copyright MIT
+ *
+ * Server list and server detail pages (Templates/Server/Index.phtml, View.phtml). Designed for the Slate theme.
+ */
+
+/* Status pill: dot + label */
+.server-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.06);
+}
+.server-status::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
+.server-status.is-online { color: #62c462; background: rgba(98,196,98,0.12); }
+.server-status.is-online::before { box-shadow: 0 0 0 3px rgba(98,196,98,0.25); }
+.server-status.is-offline { color: #ee5f5b; background: rgba(238,95,91,0.12); }
+.server-status.is-disabled { color: #f89406; background: rgba(248,148,6,0.12); }
+
+/* Index: summary */
+.servers-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin-bottom: 1rem; }
+.servers-summary .servers-summary-total { color: #fff; font-weight: 600; }
+.servers-note { color: #8e959c; font-size: 0.875rem; max-width: 65ch; }
+.servers-filter { max-width: 24rem; }
+
+/* Index: groups and cards */
+.servers-group { margin-top: 1.75rem; scroll-margin-top: 1rem; }
+.servers-group-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 1.15rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.servers-group-title .badge { font-size: 0.75rem; font-weight: 500; }
+.servers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.server-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 0.5rem;
+  background: rgba(255,255,255,0.03);
+  min-width: 0;
+}
+.server-card:hover, .server-card:focus-within { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+.server-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+.server-card-name { color: #fff; overflow-wrap: anywhere; }
+.server-card-name::after { content: ""; position: absolute; inset: 0; } /* whole card is clickable */
+.server-card-name:hover, .server-card-name:focus { color: #fff; text-decoration: none; }
+.server-card-address { font-size: 0.8rem; color: #8e959c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.server-card-address code { color: inherit; }
+.server-card-edit { position: relative; z-index: 1; font-size: 0.75rem; align-self: flex-start; }
