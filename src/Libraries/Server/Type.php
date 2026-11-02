@@ -8,7 +8,7 @@ use \StdClass;
 
 class Type implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
-  public const MAX_ID = 0xFFFFFFFFFFFFFFFF; // bigint(20) unsigned
+  public const MAX_ID = \PHP_INT_MAX; // bigint(20) unsigned
   public const MAX_LABEL = 0xFF; // varchar(255)
 
   protected ?int $id;

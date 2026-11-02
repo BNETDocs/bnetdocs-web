@@ -14,11 +14,11 @@ use \StdClass;
 
 class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
-  public const MAX_ID = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_ID = \PHP_INT_MAX;
   public const MAX_IP_ADDRESS = 0xFF;
   public const MAX_META_DATA = 0xFFFFFF;
-  public const MAX_TYPE_ID = 0xFFFFFFFFFFFFFFFF;
-  public const MAX_USER_ID = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_TYPE_ID = \PHP_INT_MAX;
+  public const MAX_USER_ID = \PHP_INT_MAX;
 
   private ?DateTimeInterface $datetime = null;
   private ?int $id = null;

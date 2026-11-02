@@ -16,11 +16,11 @@ use \UnexpectedValueException;
 class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
   public const MAX_CONTENT      = 0xFFFF;
-  public const MAX_EDITED_COUNT = 0xFFFFFFFFFFFFFFFF;
-  public const MAX_ID           = 0xFFFFFFFFFFFFFFFF;
-  public const MAX_PARENT_ID    = 0xFFFFFFFFFFFFFFFF;
-  public const MAX_PARENT_TYPE  = 0xFFFFFFFFFFFFFFFF;
-  public const MAX_USER_ID      = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_EDITED_COUNT = \PHP_INT_MAX;
+  public const MAX_ID           = \PHP_INT_MAX;
+  public const MAX_PARENT_ID    = \PHP_INT_MAX;
+  public const MAX_PARENT_TYPE  = \PHP_INT_MAX;
+  public const MAX_USER_ID      = \PHP_INT_MAX;
 
   public const PARENT_TYPE_COMMENT   = 0;
   public const PARENT_TYPE_DOCUMENT  = 1;

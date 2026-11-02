@@ -16,13 +16,13 @@ use \StdClass;
 
 class Post implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
-  public const MAX_CATEGORY_ID = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_CATEGORY_ID = \PHP_INT_MAX;
   public const MAX_CONTENT = 0xFFFFFF;
   public const MAX_EDITED_COUNT = 0xFFFFFFFF;
-  public const MAX_ID = 0xFFFFFFFFFFFFFFFF;
-  public const MAX_OPTIONS = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_ID = \PHP_INT_MAX;
+  public const MAX_OPTIONS = \PHP_INT_MAX;
   public const MAX_TITLE = 0xFF;
-  public const MAX_USER_ID = 0xFFFFFFFFFFFFFFFF;
+  public const MAX_USER_ID = \PHP_INT_MAX;
 
   public const OPTION_MARKDOWN = 0x00000001;
   public const OPTION_PUBLISHED = 0x00000002;
