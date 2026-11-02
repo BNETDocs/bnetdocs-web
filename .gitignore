@@ -27,3 +27,4 @@
 Desktop.ini
 Thumbs.db
 composer.phar
+/.phpunit.cache/

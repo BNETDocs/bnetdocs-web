@@ -45,3 +45,8 @@ composer.json
 composer.lock
 test/
 tests/
+/phpstan-baseline.neon
+/phpstan.neon
+/phpunit.xml
+/.phpunit.cache/
+/.phpunit.result.cache

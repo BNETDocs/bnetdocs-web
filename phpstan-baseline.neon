@@ -1,0 +1,2443 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_documents\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_event_log\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_news_posts\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_packets\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_servers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_tags\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_user_profiles\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$count_users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$date_end\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$date_start\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$interval_new_comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$interval_new_documents\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$interval_new_event_log\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$interval_new_news_posts\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$interval_new_packets\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$interval_new_servers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$interval_new_users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Analytics/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Comment/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseHeaders\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Comment/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Comment/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comment\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Comment/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$origin\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$response\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Comment/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comment\.$#'
+			identifier: property.notFound
+			count: 8
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$parent_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$parent_type\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Comment/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comment\.$#'
+			identifier: property.notFound
+			count: 12
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 6
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$parent_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$parent_type\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$return_url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Comment/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Credits.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$top_contributors_by_comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Credits.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$top_contributors_by_documents\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Credits.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$top_contributors_by_news_posts\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Credits.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$top_contributors_by_packets\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Credits.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$top_contributors_by_servers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Credits.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$total_users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Credits.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Discord.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$discord_server_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Discord.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$discord_url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Discord.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$enabled\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Discord.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Donate.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$donations_btc_address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Donate.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$donations_email_address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Donate.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$donations_paypal_url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Donate.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$donations_user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Community/Donate.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$donations_user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Donate.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Legal.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email_domain\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Legal.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email_mailbox\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Legal.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$license\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Legal.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$license_version\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Legal.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/PrivacyPolicy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$data_location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/PrivacyPolicy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email_domain\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/PrivacyPolicy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email_mailbox\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/PrivacyPolicy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$organization\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/PrivacyPolicy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Community/Welcome.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseHeaders\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$did\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$is_legacy\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$lang\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$nid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$op\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$pid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Legacy.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Maintenance.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$message\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Maintenance.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/NotFound.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Core/PhpInfo.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/PhpInfo.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$phpinfo\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Core/PhpInfo.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Redirect.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseHeaders\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Redirect.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Redirect.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Robotstxt.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$rules\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Robotstxt.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Core/Status.php
+
+		-
+			message: '#^Call to function is_bool\(\) with bool will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Controllers/Core/Status.php
+
+		-
+			message: '#^Parameter \#1 \$model of static method BNETDocs\\Controllers\\Core\\Status\:\:getStatus\(\) expects BNETDocs\\Models\\Core\\Status, BNETDocs\\Interfaces\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controllers/Core/Status.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Document/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$brief\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Document/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$markdown\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Document/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Document/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$document\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Document/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Document/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$brief\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$category\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$document\.$#'
+			identifier: property.notFound
+			count: 19
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$document_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$markdown\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$published\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$documents\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$sum_documents\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$document\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Document/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$document_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Document/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$events\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$limit\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$page\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$pages\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$sum_events\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/EventLog/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/EventLog/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$event\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/EventLog/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/EventLog/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$category_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$markdown\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_categories\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_post\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$rss_exempt\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/News/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/News/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/News/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_post\.$#'
+			identifier: property.notFound
+			count: 14
+			path: src/Controllers/News/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$category\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$markdown\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_categories\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_post\.$#'
+			identifier: property.notFound
+			count: 23
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_post_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$published\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$rss_exempt\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_posts\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$pagination\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_post\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/News/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_post_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/News/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Packet/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Packet/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 14
+			path: src/Controllers/Packet/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$form_fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$packet\.$#'
+			identifier: property.notFound
+			count: 16
+			path: src/Controllers/Packet/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$products\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Create.php
+
+		-
+			message: '#^Method BNETDocs\\Controllers\\Packet\\Create\:\:handlePost\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Controllers/Packet/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Packet/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Packet/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Packet/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$packet\.$#'
+			identifier: property.notFound
+			count: 6
+			path: src/Controllers/Packet/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$packet_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Packet/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Packet/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Packet/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Packet/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$form_fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$packet\.$#'
+			identifier: property.notFound
+			count: 36
+			path: src/Controllers/Packet/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$products\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Edit.php
+
+		-
+			message: '#^Method BNETDocs\\Controllers\\Packet\\Edit\:\:handlePost\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Controllers/Packet/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$application_layers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$packets\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$pktapplayer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$timestamp\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Packet/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$packet\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Packet/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$packet_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$used_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Packet/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Search/Search.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$results\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Search/Search.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user_input\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Search/Search.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Server/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Server/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 6
+			path: src/Controllers/Server/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$form_fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server\.$#'
+			identifier: property.notFound
+			count: 17
+			path: src/Controllers/Server/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server_types\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Create.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Server/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Server/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Server/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server\.$#'
+			identifier: property.notFound
+			count: 11
+			path: src/Controllers/Server/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server_delete\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/Server/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/Server/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 7
+			path: src/Controllers/Server/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$form_fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server\.$#'
+			identifier: property.notFound
+			count: 17
+			path: src/Controllers/Server/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server_edit\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server_types\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Edit.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server_types\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$servers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$status_bitmasks\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/Controllers/Server/UpdateJob.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseHeaders\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/UpdateJob.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$old_status_bitmask\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/UpdateJob.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Server/UpdateJob.php
+
+		-
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
+			count: 2
+			path: src/Controllers/Server/UpdateJob.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/Server/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$server\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/Server/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/ChangePassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 12
+			path: src/Controllers/User/ChangePassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$denylist_reason\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/ChangePassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 9
+			path: src/Controllers/User/ChangePassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/CreatePassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$input\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/CreatePassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$output\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/CreatePassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/User/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$acl_allowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$deleted\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/User/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$form_fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$target_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$target_user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Delete.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$limit\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$order\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$page\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$pages\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$sum_users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Index.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Login.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Login.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Login.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Login.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$password\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Login.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Login.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Logout.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Logout.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Logout.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$denylist_reason\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 20
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$honeypot\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$recaptcha\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Register.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$form_fields\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$pw1\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$pw2\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$token\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 10
+			path: src/Controllers/User/ResetPassword.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$biography\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$biography_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$biography_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$discord_username\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$discord_username_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$discord_username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$display_name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$display_name_error\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email_1\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email_2\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$email_error\.$#'
+			identifier: property.notFound
+			count: 8
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$facebook_username\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$facebook_username_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$facebook_username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$github_username\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$github_username_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$github_username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$instagram_username\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$instagram_username_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$instagram_username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$phone\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$phone_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$phone_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$profile\.$#'
+			identifier: property.notFound
+			count: 24
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$reddit_username\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$reddit_username_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$reddit_username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$skype_username\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$skype_username_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$skype_username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$steam_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$steam_id_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$steam_id_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$twitter_username\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$twitter_username_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$twitter_username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 20
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$username_error\.$#'
+			identifier: property.notFound
+			count: 7
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$username_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$website\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$website_error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$website_max_len\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Call to function is_null\(\) with null will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: src/Controllers/User/Update.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/Verify.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Verify.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$token\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Verify.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Controllers/User/Verify.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/Verify.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$contributions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$documents\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$news_posts\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$packets\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$servers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$sum_comments\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$sum_documents\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$sum_news_posts\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$sum_packets\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$sum_servers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user_profile\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 2
+			path: src/Controllers/User/View.php
+
+		-
+			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\Comment\:\:setId\(\) expects int\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Libraries/Comment.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Libraries/Core/Config.php
+
+		-
+			message: '#^Variable \$data in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Libraries/Core/Recaptcha.php
+
+		-
+			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Controller\:\:\$model\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Libraries/Core/Router.php
+
+		-
+			message: '#^Comparison operation "\>" between int\<1, max\> and 0 is always true\.$#'
+			identifier: greater.alwaysTrue
+			count: 1
+			path: src/Libraries/Core/StringProcessor.php
+
+		-
+			message: '#^Call to function is_null\(\) with non\-falsy\-string will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/Libraries/Core/UrlFormatter.php
+
+		-
+			message: '#^Offset ''time_end'' on array\{http_user_agent\: ''Mozilla/5\.0 …'', received_body\: bool\|string\|null, received_code\: int\|null, received_content_type\: string\|false\|null, received_json\: mixed, sent_json\: non\-empty\-string\|false\|null, time_end\: float, time_start\: float, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Libraries/Discord/Webhook.php
+
+		-
+			message: '#^Offset ''time_start'' on array\{http_user_agent\: ''Mozilla/5\.0 …'', received_body\: bool\|string\|null, received_code\: int\|null, received_content_type\: string\|false\|null, received_json\: mixed, sent_json\: non\-empty\-string\|false\|null, time_end\: float, time_start\: float, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Libraries/Discord/Webhook.php
+
+		-
+			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\Document\:\:setId\(\) expects int\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Libraries/Document.php
+
+		-
+			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\EventLog\\Event\:\:setId\(\) expects int\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Libraries/EventLog/Event.php
+
+		-
+			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\News\\Category\:\:setId\(\) expects int\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Libraries/News/Category.php
+
+		-
+			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\News\\Post\:\:setId\(\) expects int\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Libraries/News/Post.php
+
+		-
+			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\Packet\\Packet\:\:setId\(\) expects int\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Libraries/Packet/Packet.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 6
+			path: src/Libraries/Search/Results.php
+
+		-
+			message: '#^Instanceof between BNETDocs\\Libraries\\Server\\Type and BNETDocs\\Libraries\\Server\\Type will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Libraries/Server/Server.php
+
+		-
+			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\Server\\Server\:\:setId\(\) expects int\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Libraries/Server/Server.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Libraries/User/Authentication.php
+
+		-
+			message: '#^Comparison operation "\<" between 0 and 3 is always true\.$#'
+			identifier: smaller.alwaysTrue
+			count: 1
+			path: src/Libraries/User/User.php
+
+		-
+			message: '#^Comparison operation "\<" between 0\|1 and 3 is always true\.$#'
+			identifier: smaller.alwaysTrue
+			count: 1
+			path: src/Libraries/User/User.php
+
+		-
+			message: '#^Comparison operation "\<" between 0\|1\|2 and 3 is always true\.$#'
+			identifier: smaller.alwaysTrue
+			count: 1
+			path: src/Libraries/User/User.php
+
+		-
+			message: '#^PHPDoc tag @return with type string\|null is not subtype of native type string\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Libraries/User/User.php
+
+		-
+			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\User\\User\:\:setId\(\) expects int\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Libraries/User/User.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: src/Libraries/User/User.php
+
+		-
+			message: '#^Variable \$value in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Libraries/User/User.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/main.php
+
+		-
+			message: '#^Parameter &\$log by\-ref type of method BNETDocs\\Tests\\Libraries\\Core\\ExceptionHandlerTest\:\:callErrorHandler\(\) expects string\|null, string\|false given\.$#'
+			identifier: parameterByRef.type
+			count: 1
+			path: tests/Libraries/Core/ExceptionHandlerTest.php

@@ -1,0 +1,16 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    phpVersion: 80400 # the minimum in composer.json
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - src/Static
+    ignoreErrors:
+        # Tests deliberately construct classes with private constructors to assert they throw.
+        -
+            identifier: new.privateConstructor
+            path: tests/*
