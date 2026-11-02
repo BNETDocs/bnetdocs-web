@@ -26,7 +26,7 @@ services:
       - "9000"
 
   mariadb:
-    image: mariadb:10.7
+    image: mariadb:12.3
     container_name: bnetdocs-mariadb
     restart: always
     volumes:
