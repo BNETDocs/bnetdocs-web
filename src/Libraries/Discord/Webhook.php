@@ -82,22 +82,22 @@ class Webhook implements \JsonSerializable
 
   public function send(bool $wait = false, int $connect_timeout = 2, int $transmit_timeout = 8, int $max_redirects = 10): array
   {
+    $state = [
+      'http_user_agent' => 'Mozilla/5.0 (compatible; BNETDocs; +https://bnetdocs.org/)',
+      'received_body' => null,
+      'received_code' => null,
+      'received_content_type' => null,
+      'received_json' => null,
+      'sent_json' => null,
+      'time_end' => null,
+      'time_start' => microtime(true),
+      'time_total' => null,
+      'webhook_url' => $this->webhook_url . (
+        $wait ? (strpos($this->webhook_url, '?') === false ? '?' : '&') . 'wait=true' : ''),
+    ];
+
     try
     {
-      $state = [
-        'http_user_agent' => 'Mozilla/5.0 (compatible; BNETDocs; +https://bnetdocs.org/)',
-        'received_body' => null,
-        'received_code' => null,
-        'received_content_type' => null,
-        'received_json' => null,
-        'sent_json' => null,
-        'time_end' => null,
-        'time_start' => microtime(true),
-        'time_total' => null,
-        'webhook_url' => $this->webhook_url . (
-          $wait ? (strpos($this->webhook_url, '?') === false ? '?' : '&') . 'wait=true' : ''),
-      ];
-
       $curl = curl_init();
 
       curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $connect_timeout);
@@ -144,15 +144,22 @@ class Webhook implements \JsonSerializable
         );
       }
     }
+    catch (\JsonException)
+    {
+      // A malformed JSON response must not throw: send() runs while logging, and a failure to
+      // reach Discord shouldn't fail the request being logged. received_json stays null.
+    }
     finally
     {
       // curl_close() is a no-op since PHP 8.0 (handles are freed automatically) and deprecated
       // since PHP 8.5, so it is intentionally not called here.
 
       $state['time_end'] = microtime(true);
-      $state['time_total'] = ($state['time_end'] ?? 0) - ($state['time_start'] ?? 0);
-      return $state;
+      $state['time_total'] = $state['time_end'] - $state['time_start'];
     }
+
+    // Not returned from the finally block, which is deprecated since PHP 8.6.
+    return $state;
   }
 
   public function removeEmbed(Embed $embed_object): void

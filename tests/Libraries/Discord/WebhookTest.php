@@ -241,4 +241,20 @@ class WebhookTest extends TestCase
         }
         $this->assertNull($raised, "send() raised a PHP error/deprecation: $raised");
     }
+
+    // Regression: send() returned its state from inside the finally block, which is deprecated
+    // since PHP 8.6. It must still return the full state, with timing, when the request fails.
+    public function testSendReturnsStateWithTiming(): void
+    {
+        $w = new Webhook('http://127.0.0.1:1/');
+        $state = $w->send(true, 1, 1);
+
+        $this->assertSame('http://127.0.0.1:1/?wait=true', $state['webhook_url']);
+        $this->assertIsString($state['sent_json']);
+        $this->assertNull($state['received_json']);
+        $this->assertIsFloat($state['time_start']);
+        $this->assertIsFloat($state['time_end']);
+        $this->assertGreaterThanOrEqual($state['time_start'], $state['time_end']);
+        $this->assertEqualsWithDelta($state['time_end'] - $state['time_start'], $state['time_total'], 1e-9);
+    }
 }

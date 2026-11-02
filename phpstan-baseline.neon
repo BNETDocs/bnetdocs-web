@@ -2323,18 +2323,6 @@ parameters:
 			path: src/Libraries/Core/UrlFormatter.php
 
 		-
-			message: '#^Offset ''time_end'' on array\{http_user_agent\: ''Mozilla/5\.0 …'', received_body\: bool\|string\|null, received_code\: int\|null, received_content_type\: string\|false\|null, received_json\: mixed, sent_json\: non\-empty\-string\|false\|null, time_end\: float, time_start\: float, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: src/Libraries/Discord/Webhook.php
-
-		-
-			message: '#^Offset ''time_start'' on array\{http_user_agent\: ''Mozilla/5\.0 …'', received_body\: bool\|string\|null, received_code\: int\|null, received_content_type\: string\|false\|null, received_json\: mixed, sent_json\: non\-empty\-string\|false\|null, time_end\: float, time_start\: float, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: src/Libraries/Discord/Webhook.php
-
-		-
 			message: '#^Parameter \#1 \$value of method BNETDocs\\Libraries\\Document\:\:setId\(\) expects int\|null, string\|false given\.$#'
 			identifier: argument.type
 			count: 1

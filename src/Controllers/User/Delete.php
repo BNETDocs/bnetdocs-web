@@ -37,18 +37,16 @@ class Delete extends \BNETDocs\Controllers\Base
                 $this->model->target_user = new \BNETDocs\Libraries\User\User($this->model->target_id);
             }
         }
-        catch (\BNETDocs\Exceptions\UserNotFoundException)
+        catch (\BNETDocs\Exceptions\UserNotFoundException | \OutOfBoundsException)
         {
             $this->model->target_user = null;
         }
-        finally
+
+        if (!$this->model->target_user)
         {
-            if (!$this->model->target_user)
-            {
-                $this->model->_responseCode = HttpCode::HTTP_NOT_FOUND;
-                $this->model->error = DeleteModel::ERROR_NOT_FOUND;
-                return true;
-            }
+            $this->model->_responseCode = HttpCode::HTTP_NOT_FOUND;
+            $this->model->error = DeleteModel::ERROR_NOT_FOUND;
+            return true;
         }
 
         if (Router::requestMethod() == Router::METHOD_POST)
