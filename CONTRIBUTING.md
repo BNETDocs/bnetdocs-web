@@ -13,6 +13,8 @@ against **develop**.
 Every push and pull request runs the
 [ci-cd](./.github/workflows/ci-cd.yml) GitHub Actions workflow, which lints
 every PHP file and runs the PHPUnit tests on PHP 8.4 and 8.5, and runs PHPStan.
+Lint and tests also run on nightly builds of PHP 8.6 and 8.7 as an early
+warning; those jobs may fail without failing the run.
 Pushes to **develop** and **phoenix** are then deployed automatically:
 
 | Branch  | Deployed to                                      |

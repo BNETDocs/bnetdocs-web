@@ -13,10 +13,17 @@ jobs:
   linter:
     name: linter (PHP ${{ matrix.php }})
     runs-on: ubuntu-26.04
+    # Nightly PHP builds may fail; that is reported but doesn't fail the run or block deploy.
+    continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: false
       matrix:
         php: ['8.4', '8.5'] # keep the oldest in step with composer.json
+        include:
+          - php: '8.6' # nightly
+            experimental: true
+          - php: '8.7' # nightly
+            experimental: true
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -87,10 +94,17 @@ jobs:
     name: tests (PHP ${{ matrix.php }})
     needs: [linter]
     runs-on: ubuntu-26.04
+    # Nightly PHP builds may fail; that is reported but doesn't fail the run or block deploy.
+    continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: false
       matrix:
         php: ['8.4', '8.5'] # keep the oldest in step with composer.json
+        include:
+          - php: '8.6' # nightly
+            experimental: true
+          - php: '8.7' # nightly
+            experimental: true
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3

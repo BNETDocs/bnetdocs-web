@@ -94,5 +94,5 @@ MariaDB 10.7+ with UTF8MB4. Initial schema at `etc/database.sample.sql`. Key tab
 
 ## CI/CD
 
-- **ci-cd.yml**: Runs on every push/PR. Validates `composer.json`, lints all PHP files (failing on deprecations) and runs PHPUnit on PHP 8.4 and 8.5, and runs PHPStan on 8.5.
+- **ci-cd.yml**: Runs on every push/PR. Validates `composer.json`, lints all PHP files (failing on deprecations) and runs PHPUnit on PHP 8.4 and 8.5, and runs PHPStan on 8.5. Lint and PHPUnit also run on nightly PHP 8.6 and 8.7, which may fail without failing the run.
 - The same workflow's deploy job auto-deploys on push to `develop` or `phoenix` branches via rsync, after all checks pass. Deploy target defined via GitHub secrets (`SSH_HOST`, `SSH_USER`, etc.). Deployment injects `WEB_CONFIG_JSON` secret as the live config file.
