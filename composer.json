@@ -35,12 +35,13 @@
         }
     },
     "require": {
-        "erusev/parsedown": "^1.7",
+        "erusev/parsedown": "~1.7.4",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "geoip2/geoip2": "~2.0",
+        "ext-pdo_mysql": "*",
+        "geoip2/geoip2": "^3.0",
         "php-64bit": "^8.4",
         "phpmailer/phpmailer": "^6.0"
     },
@@ -50,6 +51,7 @@
         }
     },
     "require-dev": {
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^12.5"
     }
 }

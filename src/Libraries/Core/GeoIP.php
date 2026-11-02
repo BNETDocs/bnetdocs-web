@@ -79,7 +79,7 @@ class GeoIP
     return self::$reader;
   }
 
-  public static function getRecord(string $address): ?\GeoIp2\Model\AbstractModel
+  public static function getRecord(string $address): ?\JsonSerializable
   {
     if (!\filter_var($address, FILTER_VALIDATE_IP))
     {
