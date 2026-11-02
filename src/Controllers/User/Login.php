@@ -56,8 +56,8 @@ class Login extends \BNETDocs\Controllers\Base
 
     if ($this->model->error) return true;
 
-    // Upgrade old password (we checked it matches earlier above)
-    if (substr($this->model->user->getPasswordHash(), 0, 1) !== '$')
+    // Upgrade a legacy hash or an outdated bcrypt cost (we checked it matches earlier above)
+    if ($this->model->user->needsPasswordRehash())
     {
       $this->model->user->setPassword($this->model->password);
       if (!$this->model->user->commit())

@@ -264,13 +264,8 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     else if (substr($this->password_hash, 0, 1) == '$')
     {
       // new style bcrypt password
-      $cost = Config::get('bnetdocs.user_password_bcrypt_cost') ?? self::DEFAULT_BCRYPT_COST;
-      $match = password_verify($password, $this->password_hash);
-      $rehash = password_needs_rehash(
-        $this->password_hash, PASSWORD_BCRYPT, array('cost' => $cost)
-      );
-
-      return $match && !$rehash;
+      // Verify only. An outdated cost must not reject a correct password; see needsPasswordRehash().
+      return password_verify($password, $this->password_hash);
     }
     else
     {
@@ -282,6 +277,21 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
       $hash = strtoupper(hash('sha256', $password.$salt.$pepper));
       return strtoupper($this->password_hash) === $hash;
     }
+  }
+
+  /**
+   * Whether this user's password hash should be replaced by calling setPassword() and commit(),
+   * because it is a legacy sha256 hash or a bcrypt hash with an outdated cost.
+   *
+   * @return boolean Whether the password hash is outdated.
+   */
+  public function needsPasswordRehash(): bool
+  {
+    if (is_null($this->password_hash)) return false;
+    if (substr($this->password_hash, 0, 1) !== '$') return true;
+
+    $cost = Config::get('bnetdocs.user_password_bcrypt_cost') ?? self::DEFAULT_BCRYPT_COST;
+    return password_needs_rehash($this->password_hash, PASSWORD_BCRYPT, array('cost' => $cost));
   }
 
   /**
