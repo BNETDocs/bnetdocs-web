@@ -5,34 +5,29 @@ on:
   push:
   pull_request:
   workflow_dispatch:
-    inputs:
-      php_version:
-        description: "Specify the PHP version to use (e.g., 8.5)"
-        required: false
-        default: '8.5'
-
-env:
-  PHP_VERSION: ${{ inputs.php_version || '8.5' }}
 
 permissions:
   contents: read
 
 jobs:
   linter:
+    name: linter (PHP ${{ matrix.php }})
     runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4', '8.5'] # keep the oldest in step with composer.json
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      - name: Update apt cache
-        run: sudo apt-get update
-
-      - name: Install PHP ${{ env.PHP_VERSION }}
-        env:
-          _PHP_VER: ${{ env.PHP_VERSION }}
-        run: |
-          [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
-          sudo apt-get install -y "php${_PHP_VER}-cli" "php${_PHP_VER}-curl" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
+      - name: Install PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, mbstring, pdo_mysql, xml
+          tools: composer:v2
+          coverage: none
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
@@ -42,41 +37,80 @@ jobs:
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: lib
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-php${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php-
+            ${{ runner.os }}-php${{ matrix.php }}-
 
       - name: Install composer/vendor dependencies
         run: composer install --prefer-dist --no-progress
 
-      - name: Validate PHP syntax
-        run: bash -c 'set -e;for file in $(find ./src ./tests -type f -regex ".*\.\(php\|phtml\)" -print); do php -e -l -f "$file"; done'
+      # Production reports E_DEPRECATED, so this fails on compile-time deprecations too.
+      - name: Validate PHP syntax and deprecations
+        run: |
+          for file in $(find ./src ./tests -type f -regex ".*\.\(php\|phtml\)" -not -path "./src/Static/*" -print); do
+            out="$(php -d error_reporting=-1 -d display_errors=stderr -d log_errors=0 -d short_open_tag=On -l -f "$file" 2>&1)" || { echo "$out"; exit 1; }
+            echo "$out"
+            if grep -q '^Deprecated:' <<< "$out"; then exit 1; fi
+          done
 
-  tests:
+  phpstan:
     needs: [linter]
     runs-on: ubuntu-26.04
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      - name: Update apt cache
-        run: sudo apt-get update
-
-      - name: Install PHP ${{ env.PHP_VERSION }}
-        env:
-          _PHP_VER: ${{ env.PHP_VERSION }}
-        run: |
-          [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
-          sudo apt-get install -y "php${_PHP_VER}-cli" "php${_PHP_VER}-curl" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
+      - name: Install PHP 8.5
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: curl, mbstring, pdo_mysql, xml
+          tools: composer:v2
+          coverage: none
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: lib
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-php8.5-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php-
+            ${{ runner.os }}-php8.5-
+
+      - name: Install composer/vendor dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHPStan
+        run: lib/bin/phpstan analyse --no-progress --memory-limit=1G --error-format=github
+
+  tests:
+    name: tests (PHP ${{ matrix.php }})
+    needs: [linter]
+    runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4', '8.5'] # keep the oldest in step with composer.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Install PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, mbstring, pdo_mysql, xml
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: lib
+          key: ${{ runner.os }}-php${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php${{ matrix.php }}-
 
       - name: Install composer/vendor dependencies
         run: composer install --prefer-dist --no-progress
@@ -85,7 +119,7 @@ jobs:
         run: lib/bin/phpunit --testdox
 
   deploy:
-    needs: [linter, tests]
+    needs: [linter, phpstan, tests]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/phoenix')
     runs-on: ubuntu-26.04
     environment: production
@@ -96,27 +130,25 @@ jobs:
           fetch-depth: 0 # Everything
           fetch-tags: true
 
-      - name: Update apt cache
-        run: sudo apt-get update
-
-      - name: Install PHP ${{ env.PHP_VERSION }}
-        env:
-          _PHP_VER: ${{ env.PHP_VERSION }}
-        run: |
-          [[ "$_PHP_VER" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "Invalid PHP version: $_PHP_VER"; exit 1; }
-          sudo apt-get install -y "php${_PHP_VER}-cli" "php${_PHP_VER}-curl" "php${_PHP_VER}-mbstring" "php${_PHP_VER}-xml"
+      - name: Install PHP 8.5
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: curl, mbstring, pdo_mysql, xml
+          tools: composer:v2
+          coverage: none
 
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: lib
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-php8.5-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php-
+            ${{ runner.os }}-php8.5-
 
       - name: Install composer/vendor dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --no-dev --optimize-autoloader
 
       - name: Sanitize Branch Name
         run: |

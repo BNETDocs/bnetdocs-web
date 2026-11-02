@@ -19,13 +19,18 @@ composer update -o --no-dev         # Production update with optimization
 # Lint a single PHP file
 php -e -l -f src/path/to/file.php
 
-# Lint all PHP/PHTML files (mirrors CI)
-find src/ -name "*.php" -o -name "*.phtml" | xargs -I{} php -e -l -f {}
+# Lint all PHP/PHTML files, showing deprecations (CI fails on any "Deprecated:" line)
+find src/ tests/ -name "*.php" -o -name "*.phtml" | xargs -I{} php -d error_reporting=-1 -d short_open_tag=On -l -f {}
+```
+
+### Static analysis
+```bash
+lib/bin/phpstan analyse --memory-limit=1G   # Level 5; existing findings live in phpstan-baseline.neon
 ```
 
 ### Testing
 ```bash
-lib/bin/phpunit                     # Run all tests
+lib/bin/phpunit                     # Run all tests (fails on PHP deprecations, warnings, and notices)
 ```
 
 ### Docker (local development)
@@ -89,5 +94,5 @@ MariaDB 10.7+ with UTF8MB4. Initial schema at `etc/database.sample.sql`. Key tab
 
 ## CI/CD
 
-- **php-linter.yml**: Runs on every push/PR — validates `composer.json` and lints all PHP files.
-- **deployment.yml**: Auto-deploys on push to `develop` or `phoenix` branches via rsync. Deploy target defined via GitHub secrets (`SSH_HOST`, `SSH_USER`, etc.). Deployment injects `WEB_CONFIG_JSON` secret as the live config file.
+- **ci-cd.yml**: Runs on every push/PR. Validates `composer.json`, lints all PHP files (failing on deprecations) and runs PHPUnit on PHP 8.4 and 8.5, and runs PHPStan on 8.5.
+- The same workflow's deploy job auto-deploys on push to `develop` or `phoenix` branches via rsync, after all checks pass. Deploy target defined via GitHub secrets (`SSH_HOST`, `SSH_USER`, etc.). Deployment injects `WEB_CONFIG_JSON` secret as the live config file.

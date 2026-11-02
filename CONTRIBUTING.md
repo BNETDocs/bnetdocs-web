@@ -12,8 +12,8 @@ against **develop**.
 
 Every push and pull request runs the
 [ci-cd](./.github/workflows/ci-cd.yml) GitHub Actions workflow, which lints
-every PHP file and runs the PHPUnit tests. Pushes to **develop** and **phoenix**
-are then deployed automatically:
+every PHP file and runs the PHPUnit tests on PHP 8.4 and 8.5, and runs PHPStan.
+Pushes to **develop** and **phoenix** are then deployed automatically:
 
 | Branch  | Deployed to                                      |
 |---------|--------------------------------------------------|
@@ -97,8 +97,9 @@ with this repository mounted into the containers.
 
 1. Install the vendor files with `composer install`. The containers use the
    `lib/` directory from your checkout, so your host PHP needs the extensions
-   listed in `composer.json`. On Ubuntu 26.04, CI gets them from the
-   `php8.5-cli`, `php8.5-curl`, `php8.5-mbstring`, and `php8.5-xml` packages.
+   listed in `composer.json`. On Ubuntu 26.04 these come from the
+   `php8.5-cli`, `php8.5-curl`, `php8.5-mbstring`, `php8.5-mysql`, and
+   `php8.5-xml` packages.
 2. Copy [etc/config.sample.json](./etc/config.sample.json) to
    `etc/config.phoenix.json` and point the `mysql` section at the MariaDB
    container, using the credentials from `docker-compose.yml`:
@@ -158,12 +159,20 @@ before upgrading PHP.
 Run the same checks as CI before opening a pull request:
 
 ```bash
-# Lint every PHP and template file
-find src/ tests/ -name "*.php" -o -name "*.phtml" | xargs -I{} php -e -l -f {}
+# Lint every PHP and template file, showing deprecations as production does
+find src/ tests/ -name "*.php" -o -name "*.phtml" | xargs -I{} php -d error_reporting=-1 -d short_open_tag=On -l -f {}
 
 # Run the PHPUnit tests
 lib/bin/phpunit
+
+# Run PHPStan
+lib/bin/phpstan analyse --memory-limit=1G
 ```
+
+CI fails the lint on any `Deprecated:` line, and PHPUnit fails on any PHP
+deprecation, warning, or notice a test triggers. PHPStan runs at level 5;
+existing findings are recorded in `phpstan-baseline.neon`. Fix new findings
+rather than adding them to the baseline.
 
 If the tests behave differently from CI, run `composer install` first, since an
 old `lib/` directory can hold an older PHPUnit than the one `composer.lock`
