@@ -34,7 +34,7 @@ final class Router
    */
   public static function invoke(): void
   {
-    $uri = (\getenv('REQUEST_URI') ?? null);
+    $uri = \getenv('REQUEST_URI') ?: '';
     if (empty($uri) && \php_sapi_name() == 'cli') $uri = self::CLI_REQUEST_URI;
     if (\strpos($uri, '?') !== false) $uri = \explode('?', $uri)[0];
 
@@ -117,7 +117,7 @@ final class Router
     // Separate groups of MIME-types from "Accept" header.
     $preferred_mimetype = $default_view::mimeType();
     if (strpos($preferred_mimetype, ';') !== false) $preferred_mimetype = \explode(';', $preferred_mimetype)[0];
-    $accept_header = \getenv('HTTP_ACCEPT') ?? null;
+    $accept_header = \getenv('HTTP_ACCEPT') ?: '';
     if ((empty($accept_header) || $accept_header == '*/*') && \php_sapi_name() == 'cli') $accept_header = self::CLI_ACCEPT_MIMETYPE;
     if (empty($accept_header)) $accept_header = '*/*';
     $accept_header = \strtolower(\str_replace(' ', '', $accept_header));
@@ -150,7 +150,7 @@ final class Router
 
   public static function requestMethod(): string
   {
-    return \getenv('REQUEST_METHOD') ?? '';
+    return \getenv('REQUEST_METHOD') ?: '';
   }
 
   public static function query(): array
@@ -160,12 +160,12 @@ final class Router
     $url_args = [];
     $body_args = [];
 
-    \parse_str(\getenv('QUERY_STRING'), $url_args);
+    \parse_str(\getenv('QUERY_STRING') ?: '', $url_args);
 
     if (self::requestMethod() == self::METHOD_POST)
     {
       $body_str = \file_get_contents('php://input');
-      $body_mimetype = \getenv('HTTP_CONTENT_TYPE') ?? '';
+      $body_mimetype = \getenv('HTTP_CONTENT_TYPE') ?: '';
       if (\stripos($body_mimetype, 'application/json') !== false
         || \stripos($body_mimetype, 'text/json') !== false)
         $body_args = \json_decode($body_str, true);
@@ -179,9 +179,9 @@ final class Router
 
   public static function serverName(): string
   {
-    $name = \getenv('HTTP_HOST') ?? '';
-    if (empty($name)) $name = \getenv('SERVER_NAME') ?? '';
-    if (empty($name)) $name = \getenv('HOST') ?? '';
-    return $name ?? '';
+    $name = \getenv('HTTP_HOST') ?: '';
+    if (empty($name)) $name = \getenv('SERVER_NAME') ?: '';
+    if (empty($name)) $name = \getenv('HOST') ?: '';
+    return $name;
   }
 }

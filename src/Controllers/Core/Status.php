@@ -38,8 +38,8 @@ class Status extends \BNETDocs\Controllers\Base
    */
   protected static function getStatus(StatusModel $model) : bool
   {
-    $remote_address = getenv('REMOTE_ADDR') ?? '127.0.0.1';
-    $ua = substr(getenv('HTTP_USER_AGENT') ?? '', 0, self::MAX_USER_AGENT);
+    $remote_address = getenv('REMOTE_ADDR') ?: '127.0.0.1';
+    $ua = substr(getenv('HTTP_USER_AGENT') ?: '', 0, self::MAX_USER_AGENT);
     $utc = new \DateTimeZone('Etc/UTC');
 
     $geoip_enabled = Config::get('geoip.enabled');

@@ -28,7 +28,7 @@ class StringProcessor
     {
         return (1 === \preg_match(
             '#(?:AppleWebKit|Chrome|Edge|Firefox|Mozilla|MSIE|Opera|Safari|Trident|WebKit)#i',
-            $user_agent ?? \getenv('HTTP_USER_AGENT') ?? ''
+            $user_agent ?? (\getenv('HTTP_USER_AGENT') ?: '')
         ));
     }
 
