@@ -156,20 +156,20 @@ class ResultsTest extends TestCase
     {
         // We cannot construct a real Comment without DB, but we can verify the
         // method signature is callable and returns false on an empty collection.
-        // Use a mock to satisfy the type hint without hitting the database.
-        $mock = $this->createMock(\BNETDocs\Libraries\Comment::class);
-        $this->assertFalse($this->results->removeComment($mock));
+        // Use a stub to satisfy the type hint without hitting the database.
+        $stub = $this->createStub(\BNETDocs\Libraries\Comment::class);
+        $this->assertFalse($this->results->removeComment($stub));
     }
 
     public function testRemoveDocumentReturnsFalseWhenNotFound(): void
     {
-        $mock = $this->createMock(\BNETDocs\Libraries\Document::class);
-        $this->assertFalse($this->results->removeDocument($mock));
+        $stub = $this->createStub(\BNETDocs\Libraries\Document::class);
+        $this->assertFalse($this->results->removeDocument($stub));
     }
 
     public function testRemoveServerReturnsFalseWhenNotFound(): void
     {
-        $mock = $this->createMock(\BNETDocs\Libraries\Server\Server::class);
-        $this->assertFalse($this->results->removeServer($mock));
+        $stub = $this->createStub(\BNETDocs\Libraries\Server\Server::class);
+        $this->assertFalse($this->results->removeServer($stub));
     }
 }

@@ -14,7 +14,6 @@ class RouterTest extends TestCase
         // Reset the static query cache between tests so getenv changes take effect.
         $ref = new ReflectionClass(Router::class);
         $prop = $ref->getProperty('args');
-        $prop->setAccessible(true);
         $prop->setValue(null, null);
     }
 

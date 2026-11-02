@@ -96,7 +96,7 @@ class DateTimeImmutableTest extends TestCase
     public function testOriginalUnchangedAfterModify(): void
     {
         $original_ts = (int) $this->dt->format('U');
-        $this->dt->modify('+1 day');
+        $this->assertNotSame($this->dt, $this->dt->modify('+1 day'));
         $this->assertSame($original_ts, (int) $this->dt->format('U'));
     }
 
