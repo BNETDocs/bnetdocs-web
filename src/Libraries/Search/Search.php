@@ -155,7 +155,7 @@ class Search
         }
         finally
         {
-            if ($q) $q->closeCursor();
+            if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
         }
     }
 }

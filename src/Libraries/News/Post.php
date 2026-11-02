@@ -163,7 +163,7 @@ class Post implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     if (is_null($id)) return false;
     $q = MariaDb::instance()->prepare('DELETE FROM `news_posts` WHERE `id` = ? LIMIT 1;');
     try { return $q && $q->execute([$id]); }
-    finally { $q->closeCursor(); }
+    finally { if ($q) $q->closeCursor(); }
   }
 
   public static function getAllNews(bool $reverse): ?array

@@ -171,7 +171,7 @@ class Comment implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     if (is_null($id)) return false;
     $q = MariaDb::instance()->prepare('DELETE FROM `comments` WHERE `id` = ? LIMIT 1;');
     try { return $q && $q->execute([$id]); }
-    finally { $q->closeCursor(); }
+    finally { if ($q) $q->closeCursor(); }
   }
 
   public static function getAll(int $parent_type, int $parent_id): ?array

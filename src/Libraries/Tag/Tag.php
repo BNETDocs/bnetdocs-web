@@ -59,7 +59,7 @@ class Tag implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
         }
         finally
         {
-            if ($q) $q->closeCursor();
+            if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
         }
     }
 
@@ -91,7 +91,7 @@ class Tag implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
         }
         finally
         {
-            if ($q) $q->closeCursor();
+            if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
         }
     }
 
@@ -157,7 +157,7 @@ class Tag implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
         }
         finally
         {
-            if ($q) $q->closeCursor();
+            if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
         }
     }
 
@@ -183,7 +183,7 @@ class Tag implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
         }
         finally
         {
-            if ($q) $q->closeCursor();
+            if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
         }
     }
 

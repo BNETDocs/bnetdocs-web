@@ -71,7 +71,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
     finally
     {
-      if ($q) $q->closeCursor();
+      if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
     }
 
     return true;
@@ -106,7 +106,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
     finally
     {
-      if ($q) $q->closeCursor();
+      if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
     }
   }
 
@@ -165,7 +165,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
     finally
     {
-      if ($q) $q->closeCursor();
+      if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
     }
 
     return true;
@@ -195,7 +195,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     }
     finally
     {
-      if ($q) $q->closeCursor();
+      if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor();
     }
   }
 

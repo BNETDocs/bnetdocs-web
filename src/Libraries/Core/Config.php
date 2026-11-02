@@ -54,7 +54,7 @@ class Config
       }
       finally
       {
-        if ($p) $p->closeCursor();
+        if (isset($p) && $p instanceof \PDOStatement) $p->closeCursor();
       }
     }
 
@@ -136,6 +136,6 @@ class Config
       $json = \json_encode($value);
       return $q && $q->execute([':k' => $key, ':v' => $json]);
     }
-    finally { if ($q) $q->closeCursor(); }
+    finally { if (isset($q) && $q instanceof \PDOStatement) $q->closeCursor(); }
   }
 }
