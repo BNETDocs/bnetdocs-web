@@ -11,7 +11,8 @@ class DashboardPlain extends \BNETDocs\Views\Base\Plain
             throw new \BNETDocs\Exceptions\InvalidModelException($model);
         }
 
-        echo $model;
+        $serialized = $model->jsonSerialize(); /* to drop _responseCode, etc. from Base */
+        echo \BNETDocs\Libraries\Core\ArrayFlattener::flatten($serialized);
         $model->_responseHeaders['Content-Type'] = self::mimeType();
     }
 }

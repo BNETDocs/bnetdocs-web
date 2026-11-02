@@ -653,7 +653,7 @@ class User implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Retrieves the Date & Time this user record was verified.
    *
-   * @return string The Date & Time interface-compatible value.
+   * @return ?DateTimeInterface The Date & Time interface-compatible value.
    */
   public function getVerifiedDateTime(): ?DateTimeInterface
   {

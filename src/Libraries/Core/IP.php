@@ -54,7 +54,7 @@ class IP
         list ($subnet, $bits) = \explode("/", $cidr);
         $ip = \ip2long($ip);
         $subnet = \ip2long($subnet);
-        $mask = -1 << (32 - $bits);
+        $mask = -1 << (32 - (int) $bits);
         $subnet &= $mask;
         return ($ip & $mask) == $subnet;
     }
@@ -69,8 +69,8 @@ class IP
         $net = inet_pton($net);
         $binarynet = self::inet_to_bits($net);
 
-        $ip_net_bits = substr($binaryip, 0, $maskbits);
-        $net_bits = substr($binarynet, 0, $maskbits);
+        $ip_net_bits = substr($binaryip, 0, (int) $maskbits);
+        $net_bits = substr($binarynet, 0, (int) $maskbits);
 
         return ($ip_net_bits === $net_bits);
     }

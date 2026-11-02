@@ -99,7 +99,7 @@ class Config
   /**
    * Reads the JSON configuration file from disk into application memory.
    *
-   * @throws UnexpectedValueException when the JSON configuration file is unavailable.
+   * @throws \UnexpectedValueException when the JSON configuration file is unavailable.
    */
   public static function loadJson(): void
   {

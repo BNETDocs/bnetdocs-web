@@ -7,7 +7,7 @@ class ActiveUser extends \BNETDocs\Models\Core\Errorable implements \JsonSeriali
   /**
    * The current user that is logged in to the site, or null if not logged in.
    *
-   * @var \BNETDocs\Libraries\User|null
+   * @var \BNETDocs\Libraries\User\User|null
    */
   public ?\BNETDocs\Libraries\User\User $active_user = null;
 

@@ -473,7 +473,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Toggles the Markdown-format option, which alters how brief and content are parsed and printed.
    *
-   * @param bool @value If true, value is passed into the Parsedown class before being printed.
+   * @param bool $value If true, value is passed into the Parsedown class before being printed.
    *                    If false, value is *not* passed into Parsedown before being printed.
    */
   public function setMarkdown(bool $value): void
@@ -528,7 +528,7 @@ class Document implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Toggles draft status and visibility to non-editor user accounts.
    *
-   * @param bool @value If true, enables 'Draft' badge and disables visibility to non-editors.
+   * @param bool $value If true, enables 'Draft' badge and disables visibility to non-editors.
    *                    If false, disables 'Draft' badge and enables visibility to everyone.
    */
   public function setPublished(bool $value): void

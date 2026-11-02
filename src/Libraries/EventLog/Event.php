@@ -115,7 +115,7 @@ class Event implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $this->setDateTime($value->datetime);
     $this->setId($value->id);
     $this->setIPAddress($value->ip_address);
-    $this->setMetaData(\json_decode($value->meta_data, true, 512, \JSON_PRESERVE_ZERO_FRACTION | \JSON_THROW_ON_ERROR));
+    $this->setMetaData(\json_decode($value->meta_data, true, 512, \JSON_THROW_ON_ERROR));
     $this->setTypeId($value->type_id);
     $this->setUserId($value->user_id);
   }

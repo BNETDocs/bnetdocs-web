@@ -66,7 +66,7 @@ class Pagination implements \JsonSerializable
 
   public function pageCount(): int
   {
-    return ceil(count(array_keys($this->dataset)) / $this->limit);
+    return (int) ceil(count($this->dataset) / $this->limit);
   }
 
   public function previousPage(): int

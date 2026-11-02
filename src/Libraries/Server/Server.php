@@ -300,7 +300,7 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 
   public function isDisabled(): bool
   {
-    return ($this->status_bitmask & self::STATUS_DISABLED);
+    return ($this->status_bitmask & self::STATUS_DISABLED) !== 0;
   }
 
   public function isEnabled(): bool
@@ -315,7 +315,7 @@ class Server implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 
   public function isOnline(): bool
   {
-    return ($this->status_bitmask & self::STATUS_ONLINE);
+    return ($this->status_bitmask & self::STATUS_ONLINE) !== 0;
   }
 
   public function jsonSerialize(): mixed

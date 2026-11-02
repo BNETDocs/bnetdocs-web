@@ -549,7 +549,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Sets the Application layer (SID/MCP/BNLS/etc.) associated with this Packet.
    *
-   * @param int @value The application layer (id).
+   * @param int $value The application layer (id).
    */
   public function setApplicationLayerId(int $value): void
   {
@@ -705,7 +705,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Toggles the Markdown-format option, which alters how brief and remarks are parsed and printed.
    *
-   * @param bool @value If true, value is passed into the Parsedown class before being printed.
+   * @param bool $value If true, value is passed into the Parsedown class before being printed.
    *                    If false, value is *not* passed into Parsedown before being printed.
    */
   public function setMarkdown(bool $value): void
@@ -760,7 +760,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Sets the Packet name, e.g. 'SID_NULL'
    *
-   * @param string @value The name of the Packet.
+   * @param string $value The name of the Packet.
    * @param boolean $ignore_empty Whether an empty value should be accepted, defaults false.
    * @return void
    * @throws OutOfBoundsException if value must be between 1-MAX_NAME characters.
@@ -835,7 +835,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Toggles draft status and visibility to non-editor user accounts.
    *
-   * @param bool @value If true, enables 'Draft' badge and disables visibility to non-editors.
+   * @param bool $value If true, enables 'Draft' badge and disables visibility to non-editors.
    *                    If false, disables 'Draft' badge and enables visibility to everyone.
    */
   public function setPublished(bool $value): void
@@ -864,7 +864,7 @@ class Packet implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   /**
    * Sets the Transport layer (TCP/UDP/etc.) associated with this Packet.
    *
-   * @param int @value The transport layer (id).
+   * @param int $value The transport layer (id).
    * @throws OutOfBoundsException if value is not between zero and MAX_TRANSPORT_LAYER_ID.
    */
   public function setTransportLayerId(int $value): void

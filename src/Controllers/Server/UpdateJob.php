@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\Server;
 
+use \BNETDocs\Libraries\Core\Config;
 use \BNETDocs\Libraries\Core\DateTimeImmutable;
 use \BNETDocs\Libraries\Core\HttpCode;
 use \BNETDocs\Libraries\Core\Router;
@@ -61,11 +62,12 @@ class UpdateJob extends \BNETDocs\Controllers\Base
     $this->model->server->setStatusBitmask($status);
     if (!$this->model->server->commit()) return true;
 
-    $discord = $c->discord->forward_server_updates ?? null;
-    if ($discord && $discord->enabled && !in_array($server_id, $discord->ignore_server_ids))
+    $discord = Config::get('discord.forward_server_updates');
+    if (\is_array($discord) && ($discord['enabled'] ?? false) && !empty($discord['webhook'])
+      && !\in_array($server_id, $discord['ignore_server_ids'] ?? []))
     {
       self::dispatchDiscord(
-        $this->model->server, $discord->webhook, $this->model->old_status_bitmask, $status
+        $this->model->server, $discord['webhook'], $this->model->old_status_bitmask, $status
       );
     }
 
