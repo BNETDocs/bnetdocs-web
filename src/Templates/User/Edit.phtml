@@ -95,6 +95,14 @@ require('./Includes/header.inc.phtml'); ?>
 <? } else if ($model->saved) { ?>
   <div class="alert alert-success"><p class="mb-0">The user was saved.</p></div>
 <? } ?>
+<? switch ($model->verification_email) {
+     case EditModel::VERIFICATION_SENT: ?>
+  <div class="alert alert-success"><p class="mb-0">A new verification email was sent to <strong><?=$esc($target->getEmail())?></strong>.</p></div>
+<?   break; case EditModel::VERIFICATION_ALREADY_VERIFIED: ?>
+  <div class="alert alert-warning"><p class="mb-0">No email was sent because this user is already verified.</p></div>
+<?   break; case EditModel::VERIFICATION_FAILED: ?>
+  <div class="alert alert-danger"><p class="mb-0">The verification email could not be sent. Try again later.</p></div>
+<?   break; } ?>
 
   <form method="POST" action="?id=<?=rawurlencode($target->getId())?>" id="user_edit_form">
     <div class="row">
@@ -125,6 +133,15 @@ require('./Includes/header.inc.phtml'); ?>
           <div class="form-group">
             <?=$checkbox($bit, 'opt_' . $bit, sprintf('<strong>%s</strong>', $label), $bit === User::OPTION_DISABLED ? 'text-danger' : '')?>
             <small class="form-text text-muted ml-4"><?=$help?></small>
+<?          if ($bit === User::OPTION_VERIFIED) {
+              $is_verified = ($model->options_before & User::OPTION_VERIFIED) !== 0; ?>
+            <div class="ml-4 mt-2">
+              <button type="submit" form="resend_verification_form" class="btn btn-sm btn-outline-info"<?=$is_verified ? ' disabled' : ''?>>✉️ Resend verification email</button>
+              <small class="form-text text-muted"><?=$is_verified
+                ? 'Already verified. To have them verify again, untick Verified and save first.'
+                : sprintf('Sends a new verification link to %s.', $esc($target->getEmail()))?></small>
+            </div>
+<?          } ?>
           </div>
 <?        } ?>
           <dl class="row small mb-0">
@@ -211,6 +228,9 @@ require('./Includes/header.inc.phtml'); ?>
       <input class="btn btn-success" type="submit" value="Save"/>
     </div>
   </form>
+  <form method="POST" action="?id=<?=rawurlencode($target->getId())?>" id="resend_verification_form">
+    <input type="hidden" name="action" value="resend_verification"/>
+  </form>
   <script type="text/javascript">
   (function() {
     var form = document.getElementById('user_edit_form');
@@ -232,10 +252,17 @@ require('./Includes/header.inc.phtml'); ?>
           var bit = parseInt(b.dataset.bit, 10);
           if (!b.disabled && (bit & aclMask)) b.checked = !!(preset & bit);
         });
+        dirty = true;
         update();
       });
     });
     boxes.forEach(function(b) { b.addEventListener('change', update); });
+    var dirty = false;
+    form.addEventListener('input', function() { dirty = true; });
+    form.addEventListener('change', function() { dirty = true; });
+    document.getElementById('resend_verification_form').addEventListener('submit', function(e) {
+      if (dirty && !window.confirm('You have unsaved changes on this page, which will be lost. Send the verification email anyway?')) e.preventDefault();
+    });
     update();
   })();
   </script>

@@ -9,6 +9,10 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
     public const ERROR_NOT_FOUND = 'NOT_FOUND';
     public const ERROR_OUTRANKED = 'OUTRANKED';
 
+    public const VERIFICATION_ALREADY_VERIFIED = 'ALREADY_VERIFIED';
+    public const VERIFICATION_FAILED = 'FAILED';
+    public const VERIFICATION_SENT = 'SENT';
+
     /**
      * Account status flags, shown separately from the permission grid.
      */
@@ -93,6 +97,11 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
     public bool $is_self = false;
     public bool $saved = false;
 
+    /**
+     * The outcome of resending the verification email, one of VERIFICATION_*, or null if not requested.
+     */
+    public ?string $verification_email = null;
+
     public ?string $display_name = null;
     public int $display_name_max_len = User::MAX_DISPLAY_NAME;
     public ?string $email = null;
@@ -157,6 +166,7 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
             'target_id' => $this->target_id,
             'target_user' => $this->target_user,
             'username' => $this->username,
+            'verification_email' => $this->verification_email,
         ]);
     }
 }

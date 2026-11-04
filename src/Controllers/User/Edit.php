@@ -9,6 +9,7 @@ use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\User\Profile;
 use \BNETDocs\Libraries\User\User;
+use \BNETDocs\Libraries\User\VerificationEmail;
 use \BNETDocs\Models\User\Edit as EditModel;
 
 class Edit extends \BNETDocs\Controllers\Base
@@ -143,6 +144,12 @@ class Edit extends \BNETDocs\Controllers\Base
         $model = $this->model;
         $f = $model->form_fields;
         $target = $model->target_user;
+
+        if (($f['action'] ?? null) === 'resend_verification')
+        {
+            $this->resendVerification();
+            return;
+        }
 
         $username = \trim(\is_string($f['username'] ?? null) ? $f['username'] : '');
         $display_name = \trim(\is_string($f['display_name'] ?? null) ? $f['display_name'] : '');
@@ -309,6 +316,39 @@ class Edit extends \BNETDocs\Controllers\Base
         }
 
         $model->options_before = $options;
+    }
+
+    private function resendVerification(): void
+    {
+        /** @var EditModel $model */
+        $model = $this->model;
+        $target = $model->target_user;
+
+        if ($target->isVerified())
+        {
+            $model->_responseCode = HttpCode::HTTP_CONFLICT;
+            $model->verification_email = EditModel::VERIFICATION_ALREADY_VERIFIED;
+            return;
+        }
+
+        try
+        {
+            // an unverified user can lack a token, e.g. one unverified before tokens were kept in sync
+            if (empty($target->getVerifierToken()))
+            {
+                $target->setVerified(false, true);
+                if (!$target->commit()) throw new \RuntimeException('failed to save a new verifier token');
+            }
+
+            VerificationEmail::send($target, $model->active_user, true);
+            $model->verification_email = EditModel::VERIFICATION_SENT;
+        }
+        catch (\Throwable $e)
+        {
+            \error_log(\sprintf('Failed to resend verification email to user #%d: %s', $target->getId(), $e->getMessage()));
+            $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
+            $model->verification_email = EditModel::VERIFICATION_FAILED;
+        }
     }
 
     private function getProfileValue(string $field): ?string
