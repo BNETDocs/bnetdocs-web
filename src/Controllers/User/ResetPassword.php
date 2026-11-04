@@ -105,6 +105,8 @@ class ResetPassword extends \BNETDocs\Controllers\Base
 
     $this->model->user->setPassword($this->model->pw1);
     $this->model->user->setVerified(true);
+    // setVerified() leaves an already verified user's token alone, and the link must not work twice
+    $this->model->user->setVerifierToken(null);
     return $this->model->user->commit() ? false : ResetPasswordModel::ERROR_INTERNAL;
   }
 
