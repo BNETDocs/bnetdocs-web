@@ -236,7 +236,9 @@ class Edit extends \BNETDocs\Controllers\Base
             $target->setUsername($username);
             $target->setDisplayName($display_name);
             $target->setEmail($email);
-            $target->setOptions($options);
+            // toggle verified through setVerified() so its date and verifier token stay consistent
+            $target->setOptions(($options & ~User::OPTION_VERIFIED) | ($target->getOptions() & User::OPTION_VERIFIED));
+            $target->setVerified(($options & User::OPTION_VERIFIED) !== 0);
 
             if (!$target->commit())
             {
