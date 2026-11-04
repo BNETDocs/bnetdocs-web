@@ -103,6 +103,16 @@ require('./Includes/header.inc.phtml'); ?>
 <?   break; case EditModel::VERIFICATION_FAILED: ?>
   <div class="alert alert-danger"><p class="mb-0">The verification email could not be sent. Try again later with the resend button.</p></div>
 <?   break; } ?>
+<? switch ($model->password_reset) {
+     case EditModel::PASSWORD_RESET_DONE: ?>
+  <div class="alert alert-success"><p class="mb-0">The password was reset and <?=$model->sessions_expired === 1 ? '1 session was' : sprintf('%d sessions were', $model->sessions_expired)?> logged out. A link to choose a new password was sent to <strong><?=$esc($target->getEmail())?></strong>.</p></div>
+<?   break; case EditModel::PASSWORD_RESET_EMAIL_FAILED: ?>
+  <div class="alert alert-warning"><p class="mb-0">The password was reset and <?=$model->sessions_expired === 1 ? '1 session was' : sprintf('%d sessions were', $model->sessions_expired)?> logged out, but the email could not be sent. They can still choose a new password with the Recover Password button on the login page.</p></div>
+<?   break; case EditModel::PASSWORD_RESET_UNCONFIRMED: ?>
+  <div class="alert alert-danger"><p class="mb-0">Nothing was reset. Tick the confirmation box to reset the password.</p></div>
+<?   break; case EditModel::PASSWORD_RESET_SELF: ?>
+  <div class="alert alert-danger"><p class="mb-0">You cannot reset your own password here. Use the <a href="<?=UrlFormatter::format('/user/changepassword')?>">change password</a> page instead.</p></div>
+<?   break; } ?>
 
   <form method="POST" action="?id=<?=rawurlencode($target->getId())?>" id="user_edit_form">
     <div class="row">
@@ -145,6 +155,21 @@ require('./Includes/header.inc.phtml'); ?>
 <?          } ?>
           </div>
 <?        } ?>
+          <div class="form-group">
+            <strong>Password</strong>
+<?        if ($model->is_self) { ?>
+            <small class="form-text text-muted">To change your own password, use the <a href="<?=UrlFormatter::format('/user/changepassword')?>">change password</a> page.</small>
+<?        } else { ?>
+            <div class="custom-control custom-checkbox mt-1">
+              <input type="checkbox" class="custom-control-input" id="reset_password_confirm" name="confirm" value="1" form="reset_password_form" required/>
+              <label class="custom-control-label" for="reset_password_confirm">Log them out everywhere and make them choose a new password</label>
+            </div>
+            <div class="ml-4 mt-2">
+              <button type="submit" form="reset_password_form" class="btn btn-sm btn-outline-danger">🔑 Reset password</button>
+              <small class="form-text text-muted"><?=sprintf('Their current password stops working immediately, and a link to choose a new one is sent to %s.', $esc($target->getEmail()))?></small>
+            </div>
+<?        } ?>
+          </div>
           <dl class="row small mb-0">
             <dt class="col-sm-5">Member since</dt><dd class="col-sm-7"><?=$target->getCreatedDateTime() ? $target->getCreatedDateTime()->format('M j, Y') : '<em>unknown</em>'?></dd>
             <dt class="col-sm-5">Record updated</dt><dd class="col-sm-7"><?=$target->getRecordUpdated() ? $target->getRecordUpdated()->format('M j, Y g:ia T') : '<em>unknown</em>'?></dd>
@@ -217,6 +242,11 @@ require('./Includes/header.inc.phtml'); ?>
   <form method="POST" action="?id=<?=rawurlencode($target->getId())?>" id="resend_verification_form">
     <input type="hidden" name="action" value="resend_verification"/>
   </form>
+<? if (!$model->is_self) { ?>
+  <form method="POST" action="?id=<?=rawurlencode($target->getId())?>" id="reset_password_form">
+    <input type="hidden" name="action" value="reset_password"/>
+  </form>
+<? } ?>
   <script type="text/javascript">
   (function() {
     var form = document.getElementById('user_edit_form');
@@ -247,10 +277,16 @@ require('./Includes/header.inc.phtml'); ?>
     });
     boxes.forEach(function(b) { b.addEventListener('change', update); });
     var dirty = false;
-    form.addEventListener('input', function() { dirty = true; });
-    form.addEventListener('change', function() { dirty = true; });
+    // only fields of this form count, not ones placed inside it that belong to another form
+    function markDirty(e) { if (e.target.form === form) dirty = true; }
+    form.addEventListener('input', markDirty);
+    form.addEventListener('change', markDirty);
     document.getElementById('resend_verification_form').addEventListener('submit', function(e) {
       if (dirty && !window.confirm('You have unsaved changes on this page, which will be lost. Send the verification email anyway?')) e.preventDefault();
+    });
+    var resetForm = document.getElementById('reset_password_form');
+    if (resetForm) resetForm.addEventListener('submit', function(e) {
+      if (dirty && !window.confirm('You have unsaved changes on this page, which will be lost. Reset the password anyway?')) e.preventDefault();
     });
     update();
   })();

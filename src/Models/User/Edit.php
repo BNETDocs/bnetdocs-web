@@ -9,6 +9,11 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
     public const ERROR_NOT_FOUND = 'NOT_FOUND';
     public const ERROR_OUTRANKED = 'OUTRANKED';
 
+    public const PASSWORD_RESET_DONE = 'DONE';
+    public const PASSWORD_RESET_EMAIL_FAILED = 'EMAIL_FAILED';
+    public const PASSWORD_RESET_SELF = 'SELF';
+    public const PASSWORD_RESET_UNCONFIRMED = 'UNCONFIRMED';
+
     public const VERIFICATION_ALREADY_VERIFIED = 'ALREADY_VERIFIED';
     public const VERIFICATION_FAILED = 'FAILED';
     public const VERIFICATION_SENT = 'SENT';
@@ -85,6 +90,16 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
      */
     public ?string $verification_email = null;
 
+    /**
+     * The outcome of resetting the password, one of PASSWORD_RESET_*, or null if not requested.
+     */
+    public ?string $password_reset = null;
+
+    /**
+     * How many sessions the password reset logged out.
+     */
+    public int $sessions_expired = 0;
+
     public ?string $display_name = null;
     public int $display_name_max_len = User::MAX_DISPLAY_NAME;
     public ?string $email = null;
@@ -144,8 +159,10 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
             'is_self' => $this->is_self,
             'options' => $this->options,
             'options_before' => $this->options_before,
+            'password_reset' => $this->password_reset,
             'profile' => $this->profile,
             'saved' => $this->saved,
+            'sessions_expired' => $this->sessions_expired,
             'target_id' => $this->target_id,
             'target_user' => $this->target_user,
             'username' => $this->username,

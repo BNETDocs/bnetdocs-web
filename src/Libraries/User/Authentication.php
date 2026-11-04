@@ -56,6 +56,21 @@ class Authentication
   }
 
   /**
+   * expireUserSessions()
+   * Discards every session of a user server-side, logging them out everywhere.
+   *
+   * @param User $user The user whose sessions are discarded.
+   * @return int|false The number of sessions discarded, or false on error.
+   * @throws PDOException if a PDO error occurs.
+   */
+  public static function expireUserSessions(User $user): int|false
+  {
+    $q = MariaDb::instance()->prepare('DELETE FROM `user_sessions` WHERE `user_id` = ?;');
+    try { return ($q && $q->execute([$user->getId()])) ? $q->rowCount() : false; }
+    finally { if ($q) $q->closeCursor(); }
+  }
+
+  /**
    * getFingerprint()
    * Generates a fingerprint that may be used to identify a returning client.
    *

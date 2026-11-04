@@ -8,7 +8,9 @@ use \BNETDocs\Libraries\Core\HttpCode;
 use \BNETDocs\Libraries\Core\Router;
 use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\EventLog\Logger;
+use \BNETDocs\Libraries\User\Authentication;
 use \BNETDocs\Libraries\User\Profile;
+use \BNETDocs\Libraries\User\ResetPasswordEmail;
 use \BNETDocs\Libraries\User\User;
 use \BNETDocs\Libraries\User\VerificationEmail;
 use \BNETDocs\Models\User\Edit as EditModel;
@@ -128,6 +130,12 @@ class Edit extends \BNETDocs\Controllers\Base
         if (($f['action'] ?? null) === 'resend_verification')
         {
             $this->resendVerification();
+            return;
+        }
+
+        if (($f['action'] ?? null) === 'reset_password')
+        {
+            $this->resetPassword(($f['confirm'] ?? null) === '1');
             return;
         }
 
@@ -338,6 +346,82 @@ class Edit extends \BNETDocs\Controllers\Base
         if (!$this->sendVerification(VerificationEmail::REASON_STAFF_RESENT))
         {
             $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
+        }
+    }
+
+    /**
+     * Clears the edited user's password and logs them out everywhere, then emails them a link to choose a new one.
+     *
+     * @param bool $confirmed Whether the editor ticked the box confirming it.
+     * @return void
+     */
+    private function resetPassword(bool $confirmed): void
+    {
+        $model = $this->model();
+        $target = $model->target_user;
+
+        // staff change their own password on /user/changepassword instead
+        if ($model->is_self)
+        {
+            $model->_responseCode = HttpCode::HTTP_BAD_REQUEST;
+            $model->password_reset = EditModel::PASSWORD_RESET_SELF;
+            return;
+        }
+
+        if (!$confirmed)
+        {
+            $model->_responseCode = HttpCode::HTTP_BAD_REQUEST;
+            $model->password_reset = EditModel::PASSWORD_RESET_UNCONFIRMED;
+            return;
+        }
+
+        // without a password hash the user cannot log in until they finish the reset with this token
+        $target->setPasswordHash(null);
+        $target->setPasswordSalt(null);
+        $target->setVerifierToken(User::generateVerifierToken($target->getUsername(), $target->getEmail()));
+        if (!$target->commit())
+        {
+            $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
+            $model->error = EditModel::ERROR_INTERNAL;
+            return;
+        }
+
+        $expired = Authentication::expireUserSessions($target);
+        $model->sessions_expired = $expired === false ? 0 : $expired;
+
+        $email_sent = true;
+        try
+        {
+            ResetPasswordEmail::send($target, $model->active_user, ResetPasswordEmail::REASON_STAFF_RESET);
+        }
+        catch (\Throwable $e)
+        {
+            \error_log(\sprintf('Failed to send password reset email to user #%d: %s', $target->getId(), $e->getMessage()));
+            $email_sent = false;
+        }
+        $model->password_reset = $email_sent ? EditModel::PASSWORD_RESET_DONE : EditModel::PASSWORD_RESET_EMAIL_FAILED;
+
+        $event = Logger::initEvent(
+            EventTypes::USER_PASSWORD_RESET,
+            $model->active_user,
+            \getenv('REMOTE_ADDR'),
+            [
+                'user_id' => $target->getId(),
+                'reset_by_staff' => true,
+                'sessions_expired' => $expired,
+                'email_sent' => $email_sent,
+            ]
+        );
+
+        if ($event->commit())
+        {
+            $fields = [
+                'Reset by' => $model->active_user->getAsMarkdown(),
+                'Reset user' => $target->getAsMarkdown(),
+                'Sessions expired' => (string) $model->sessions_expired,
+                'Email sent' => $email_sent ? 'Yes' : 'No',
+            ];
+            Logger::logToDiscord($event, Logger::initDiscordEmbed($event, $target->getURI(), $fields));
         }
     }
 
