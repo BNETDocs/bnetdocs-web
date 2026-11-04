@@ -6,12 +6,11 @@ use \BNETDocs\Exceptions\UserNotFoundException;
 use \BNETDocs\Libraries\Core\Config;
 use \BNETDocs\Libraries\Core\Recaptcha;
 use \BNETDocs\Libraries\Core\Router;
-use \BNETDocs\Libraries\Core\Template;
 use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\User\User;
+use \BNETDocs\Libraries\User\VerificationEmail;
 use \BNETDocs\Models\User\Register as RegisterModel;
-use \PHPMailer\PHPMailer\PHPMailer;
 
 class Register extends \BNETDocs\Controllers\Base
 {
@@ -239,79 +238,11 @@ class Register extends \BNETDocs\Controllers\Base
         Logger::logToDiscord($event, $embed);
       }
 
-      $mail = new PHPMailer(true); // true enables exceptions
-
-      $state = new \StdClass();
-      $state->mail = &$mail;
-      $state->name = $user->getName();
-      $state->token = $user->getVerifierToken();
-      $state->user_id = $user_id;
-
       try
       {
-        //Server settings
-        $mail->Timeout = 10; // default is 300 per RFC2821 $ 4.5.3.2
-        $mail->SMTPDebug = 0;
-        $mail->isSMTP();
-        $mail->Host       = Config::get('email.smtp_host') ?? 'localhost';
-        $mail->Username   = Config::get('email.smtp_user') ?? '';
-        $mail->Password   = Config::get('email.smtp_password') ?? '';
-        $mail->SMTPAuth   = !empty($mail->Username);
-        $mail->SMTPSecure = (Config::get('email.smtp_tls') ?? false) ? 'tls' : '';
-        $mail->Port       = Config::get('email.smtp_port') ?? 25;
-
-        //Recipients
-        $recipient_from = Config::get('email.recipient_from') ?? [];
-        if (isset($recipient_from[0]))
-        {
-          $mail->setFrom($recipient_from[0], $recipient_from[1] ?? '');
-        }
-
-        $mail->addAddress($email, $username);
-
-        $recipient_reply_to = Config::get('email.recipient_reply_to') ?? [];
-        if (isset($recipient_reply_to[0]))
-        {
-          $mail->addReplyTo($recipient_reply_to[0], $recipient_reply_to[1] ?? '');
-        }
-
-        // Content
-        $mail->isHTML(true);
-        $mail->Subject = 'Account Verification';
-        $mail->CharSet = PHPMailer::CHARSET_UTF8;
-
-        ob_start();
-        (new Template($state, 'Email/User/Register.rich'))->invoke();
-        $mail->Body = ob_get_clean();
-
-        ob_start();
-        (new Template($state, 'Email/User/Register.plain'))->invoke();
-        $mail->AltBody = ob_get_clean();
-
-        $mail->send();
-
-        $event = Logger::initEvent(
-          EventTypes::EMAIL_SENT,
-          $user_id,
-          getenv('REMOTE_ADDR'),
-          [
-            'from' => $mail->From,
-            'to' => $mail->getToAddresses(),
-            'reply_to' => $mail->getReplyToAddresses(),
-            'subject' => $mail->Subject,
-            'content_type' => $mail->ContentType,
-            'body' => $mail->Body,
-            'alt_body' => $mail->AltBody,
-          ]
-        );
-
-        if ($event->commit())
-        {
-          $embed = Logger::initDiscordEmbed($event, $user->getURI());
-          Logger::logToDiscord($event, $embed);
-        }
+        VerificationEmail::send($user, $user_id);
       }
-      catch (\Throwable $e)
+      catch (\Throwable)
       {
         $this->model->error = RegisterModel::ERROR_EMAIL_FAILURE;
       }
