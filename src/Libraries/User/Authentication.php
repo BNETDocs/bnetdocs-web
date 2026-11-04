@@ -308,6 +308,13 @@ class Authentication
       self::$user = new User($lookup['user_id']);
     }
 
+    // logout and return if the user has since been disabled
+    if (self::$user && self::$user->isDisabled())
+    {
+      self::logout();
+      return false;
+    }
+
     // if IP is different, update session
     if ($lookup['ip_address'] !== $ip)
     {
