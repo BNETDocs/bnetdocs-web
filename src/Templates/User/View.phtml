@@ -173,8 +173,9 @@ require('./Includes/header.inc.phtml'); ?>
 <?    if ($is_self) { ?>
         <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update')?>">📝 Edit profile</a>
         <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>">🔑 Password</a>
-<?    } else { ?>
-        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update?id=' . rawurlencode($user->getId()))?>">📝 Edit user</a>
+<?    } ?>
+<?    if ($can_modify) { ?>
+        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/edit?id=' . rawurlencode($user->getId()))?>">🛡️ Edit user</a>
 <?    } ?>
       </div>
 <?  } ?>

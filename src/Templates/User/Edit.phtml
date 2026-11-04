@@ -1,0 +1,210 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates\User;
+use \BNETDocs\Libraries\Core\HttpCode;
+use \BNETDocs\Libraries\Core\UrlFormatter;
+use \BNETDocs\Libraries\User\User;
+use \BNETDocs\Models\User\Edit as EditModel;
+$model = $this->getContext();
+$title = 'Edit User';
+$description = 'This page allows staff to edit another user\'s account details and permissions.';
+$url = '/user/edit';
+switch ($model->error)
+{
+  case null: $message = null; break;
+  case EditModel::ERROR_ACL_NOT_SET: $message = 'You do not have the privilege to edit users.'; break;
+  case EditModel::ERROR_INTERNAL: $message = 'An internal error occurred while saving the user. Try again later.'; break;
+  case EditModel::ERROR_NOT_FOUND: $message = 'Cannot find a user by that id.'; break;
+  case EditModel::ERROR_NOT_LOGGED_IN: $message = 'You must be logged in to edit users.'; break;
+  case EditModel::ERROR_OUTRANKED: $message = 'This user holds permissions that you do not, so you cannot edit them. Ask a staff member who holds those permissions.'; break;
+  default: $message = 'Internal error: ' . filter_var($model->error, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+}
+$field_errors = [
+  'username' => [
+    'EMPTY' => 'The username cannot be blank.',
+    'TAKEN' => 'That username is already in use by another account.',
+    'TOO_LONG' => sprintf('The username must be at most %d characters.', $model->username_max_len),
+    'TOO_SHORT' => sprintf('The username must be at least %d characters.', $model->username_min_len),
+  ],
+  'display_name' => [
+    'TOO_LONG' => sprintf('The display name must be at most %d characters.', $model->display_name_max_len),
+  ],
+  'email' => [
+    'EMPTY' => 'The email address cannot be blank.',
+    'INVALID' => 'The email address is not formatted correctly.',
+    'TAKEN' => 'That email address is already in use by another account.',
+    'TOO_LONG' => sprintf('The email address must be at most %d characters.', $model->email_max_len),
+  ],
+];
+$field_error = function(string $field) use ($model, $field_errors): string {
+  $code = $model->errors[$field] ?? null;
+  if (is_null($code)) return '';
+  return sprintf('<div class="invalid-feedback d-block">%s</div>', $field_errors[$field][$code] ?? ('Internal error: ' . $code));
+};
+$field_invalid = fn(string $field): string => isset($model->errors[$field]) ? ' is-invalid' : '';
+$esc = fn(?string $v): string => filter_var($v ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$options = $model->options;
+$editable = $model->editable_mask;
+$checkbox = function(int $bit, string $id, string $label, string $label_class = '') use ($options, $editable): string {
+  $disabled = !($editable & $bit);
+  return sprintf(
+    '<div class="custom-control custom-checkbox"%s>'
+    . '<input type="checkbox" class="custom-control-input" id="%s" name="options[]" value="%d" data-bit="%d"%s%s/>'
+    . '<label class="custom-control-label%s" for="%s">%s</label></div>',
+    $disabled ? ' title="You cannot change this permission"' : '',
+    $id, $bit, $bit,
+    ($options & $bit) ? ' checked' : '',
+    $disabled ? ' disabled' : '',
+    $label_class ? ' ' . $label_class : '', $id, $label
+  );
+};
+$unknown_bits = $options & ~EditModel::KNOWN_MASK;
+$target = $model->target_user;
+require('./Includes/header.inc.phtml'); ?>
+<div class="container">
+<? if (!$target || $model->_responseCode == HttpCode::HTTP_FORBIDDEN) { ?>
+  <h1 class="text-danger"><?=$title?></h1>
+  <div class="alert alert-danger"><p class="mb-0"><?=$message?></p></div>
+<?  if ($model->error === EditModel::ERROR_NOT_LOGGED_IN) { ?>
+  <a class="btn btn-success" href="<?=UrlFormatter::format('/user/login')?>">Log in</a>
+<?  } else if ($target) { ?>
+  <a class="btn btn-primary" href="<?=$target->getURI()?>">Back to profile</a>
+<?  } else { ?>
+  <a class="btn btn-primary" href="<?=UrlFormatter::format('/user/index')?>">All users</a>
+<?  } ?>
+<? } else { ?>
+  <div class="d-flex align-items-center flex-wrap mb-3">
+    <img class="rounded shadow mr-3" src="<?=$target->getAvatarURI(64)?>" width="64" height="64" alt=""/>
+    <div>
+      <h1 class="mb-0"><?=$title?>: <?=$esc($target->getName())?></h1>
+      <div class="text-muted small">User #<?=$target->getId()?> &middot; <a href="<?=$target->getURI()?>">View profile</a> &middot; <a href="<?=UrlFormatter::format('/eventlog/index')?>">Event logs</a></div>
+    </div>
+  </div>
+
+<? if ($model->is_self) { ?>
+  <div class="alert alert-info"><p class="mb-0">You are editing your own account. To protect against locking yourself out, you cannot disable yourself or remove your own permission to modify users. Your public profile is edited on the <a href="<?=UrlFormatter::format('/user/update')?>">update profile</a> page.</p></div>
+<? } ?>
+<? if ($message) { ?>
+  <div class="alert alert-danger"><p class="mb-0"><?=$message?></p></div>
+<? } else if (!empty($model->errors)) { ?>
+  <div class="alert alert-danger"><p class="mb-0">Nothing was saved. Correct the highlighted fields and try again.</p></div>
+<? } else if ($model->saved) { ?>
+  <div class="alert alert-success"><p class="mb-0">The user was saved.</p></div>
+<? } ?>
+
+  <form method="POST" action="?id=<?=rawurlencode($target->getId())?>" id="user_edit_form">
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="card bg-dark border-primary h-100"><div class="card-body">
+          <h2 class="h4 card-title">Account</h2>
+          <div class="form-group">
+            <label class="font-weight-bold" for="username">Username:<span class="ml-2 small text-muted">(public, must be unique)</span></label>
+            <input class="border border-primary form-control bg-dark text-light<?=$field_invalid('username')?>" type="text" name="username" id="username" required maxlength="<?=$model->username_max_len?>" value="<?=$esc($model->username)?>" tabindex="1"/>
+            <?=$field_error('username')?>
+          </div>
+          <div class="form-group">
+            <label class="font-weight-bold" for="display_name">Display name:<span class="ml-2 small text-muted">(if blank, the username is shown)</span></label>
+            <input class="border border-primary form-control bg-dark text-light<?=$field_invalid('display_name')?>" type="text" name="display_name" id="display_name" maxlength="<?=$model->display_name_max_len?>" value="<?=$esc($model->display_name)?>" tabindex="2"/>
+            <?=$field_error('display_name')?>
+          </div>
+          <div class="form-group mb-0">
+            <label class="font-weight-bold" for="email">Email address:<span class="ml-2 small text-muted">(used to log in, must be unique, changes their Gravatar)</span></label>
+            <input class="border border-primary form-control bg-dark text-light<?=$field_invalid('email')?>" type="email" name="email" id="email" required autocomplete="off" maxlength="<?=$model->email_max_len?>" value="<?=$esc($model->email)?>" tabindex="3"/>
+            <?=$field_error('email')?>
+          </div>
+        </div></div>
+      </div>
+      <div class="col-lg-6 mb-4">
+        <div class="card bg-dark border-primary h-100"><div class="card-body">
+          <h2 class="h4 card-title">Status</h2>
+<?        foreach (EditModel::STATUS_OPTIONS as $bit => [$label, $help]) { ?>
+          <div class="form-group">
+            <?=$checkbox($bit, 'opt_' . $bit, sprintf('<strong>%s</strong>', $label), $bit === User::OPTION_DISABLED ? 'text-danger' : '')?>
+            <small class="form-text text-muted ml-4"><?=$help?></small>
+          </div>
+<?        } ?>
+          <dl class="row small mb-0">
+            <dt class="col-sm-5">Member since</dt><dd class="col-sm-7"><?=$target->getCreatedDateTime() ? $target->getCreatedDateTime()->format('M j, Y') : '<em>unknown</em>'?></dd>
+            <dt class="col-sm-5">Record updated</dt><dd class="col-sm-7"><?=$target->getRecordUpdated() ? $target->getRecordUpdated()->format('M j, Y g:ia T') : '<em>unknown</em>'?></dd>
+          </dl>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card bg-dark border-primary mb-4"><div class="card-body">
+      <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+        <h2 class="h4 card-title mb-0">Permissions</h2>
+        <div class="btn-group btn-group-sm my-1" role="group" aria-label="Permission presets">
+          <span class="btn btn-sm btn-outline-secondary disabled">Preset:</span>
+          <button type="button" class="btn btn-sm btn-outline-light" data-preset="0" title="Remove every permission you can change">None</button>
+          <button type="button" class="btn btn-sm btn-outline-light" data-preset="<?=User::DEFAULT_OPTION?>" title="The permissions given to newly registered users">Default</button>
+          <button type="button" class="btn btn-sm btn-outline-light" data-preset="<?=User::OPTION_STAFF?>" title="The standard staff permissions">Staff</button>
+        </div>
+      </div>
+      <p class="small text-muted">Permissions you do not hold yourself are shown greyed out and cannot be changed. Presets only change permissions you can change, and nothing is saved until you click Save.</p>
+      <div class="table-responsive">
+        <table class="table table-sm table-dark table-striped table-hover mb-3">
+          <thead><tr><th scope="col">Resource</th><? foreach (EditModel::ACL_COLUMNS as $col) { ?><th scope="col" class="text-center"><?=$col?></th><? } ?></tr></thead>
+          <tbody>
+<?          foreach (EditModel::ACL_ROWS as $row_label => $bits) { ?>
+            <tr><th scope="row" class="font-weight-normal"><?=$row_label?></th>
+<?            foreach ($bits as $i => $bit) { ?>
+              <td class="text-center"><?=is_null($bit) ? '<span class="text-muted" aria-hidden="true">&mdash;</span>' : '<div class="d-inline-block">' . $checkbox($bit, 'opt_' . $bit, sprintf('<span class="sr-only">%s %s</span>', EditModel::ACL_COLUMNS[$i], $row_label)) . '</div>'?></td>
+<?            } ?>
+            </tr>
+<?          } ?>
+          </tbody>
+        </table>
+      </div>
+      <div class="row">
+<?      foreach (EditModel::ACL_OTHER as $bit => [$label, $help]) { ?>
+        <div class="col-md-6 form-group">
+          <?=$checkbox($bit, 'opt_' . $bit, $label)?>
+          <small class="form-text text-muted ml-4"><?=$help?></small>
+        </div>
+<?      } ?>
+      </div>
+      <div class="small text-muted">
+        Options bitmask: <code id="options_before">0x<?=sprintf('%08X', $model->options_before)?></code>
+        <span id="options_change" class="d-none">&rarr; <code id="options_after"></code></span>
+<?      if ($unknown_bits) { ?>
+        <br/>Unrecognized bits <code>0x<?=sprintf('%08X', $unknown_bits)?></code> are kept unchanged.
+<?      } ?>
+      </div>
+    </div></div>
+
+    <div class="text-center mb-4">
+      <a class="btn btn-secondary" href="<?=$target->getURI()?>">Cancel</a>
+      <input class="btn btn-success" type="submit" value="Save"/>
+    </div>
+  </form>
+  <script type="text/javascript">
+  (function() {
+    var form = document.getElementById('user_edit_form');
+    var boxes = form.querySelectorAll('input[name="options[]"]');
+    var before = <?=(int) $model->options_before?>;
+    var hidden = before & ~<?=(int) EditModel::KNOWN_MASK?>;
+    var aclMask = <?=(int) EditModel::ACL_MASK?>;
+    function hex(v) { return '0x' + ('00000000' + v.toString(16).toUpperCase()).slice(-8); }
+    function update() {
+      var v = hidden;
+      boxes.forEach(function(b) { if (b.checked) v |= parseInt(b.dataset.bit, 10); });
+      document.getElementById('options_after').textContent = hex(v);
+      document.getElementById('options_change').classList.toggle('d-none', v === before);
+    }
+    form.querySelectorAll('[data-preset]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var preset = parseInt(btn.dataset.preset, 10);
+        boxes.forEach(function(b) {
+          var bit = parseInt(b.dataset.bit, 10);
+          if (!b.disabled && (bit & aclMask)) b.checked = !!(preset & bit);
+        });
+        update();
+      });
+    });
+    boxes.forEach(function(b) { b.addEventListener('change', update); });
+    update();
+  })();
+  </script>
+<? } ?>
+</div>
+<? require('./Includes/footer.inc.phtml'); ?>
