@@ -161,7 +161,7 @@ require('./Includes/header.inc.phtml'); ?>
     <div class="card bg-dark border-primary mb-4"><div class="card-body">
       <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
         <h2 class="h4 card-title mb-0">Permissions</h2>
-        <div class="btn-group btn-group-sm my-1" role="group" aria-label="Permission presets">
+        <div class="btn-group btn-group-sm my-1" role="group" aria-label="Permission presets" id="permission_presets" hidden>
           <span class="btn btn-sm btn-outline-secondary disabled">Preset:</span>
           <button type="button" class="btn btn-sm btn-outline-light" data-preset="0" title="Remove every permission you can change">None</button>
           <button type="button" class="btn btn-sm btn-outline-light" data-preset="<?=User::DEFAULT_OPTION?>" title="The permissions given to newly registered users">Default</button>
@@ -172,7 +172,7 @@ require('./Includes/header.inc.phtml'); ?>
 <?    if ($locked_mask & EditModel::ACL_MASK) { ?>
       <p class="small text-warning mb-1">Greyed-out permissions cannot be changed: <?=$model->is_self ? 'you cannot remove your own permission to modify users, and ' : ''?>only permissions you hold yourself can be granted or revoked.</p>
 <?    } ?>
-      <p class="small text-muted">Presets only change the permissions you can change. Nothing is saved until you click Save.</p>
+      <p class="small text-muted" id="permission_presets_note" hidden>Presets only change the permissions you can change. Nothing is saved until you click Save.</p>
       <div class="table-responsive">
         <table class="table table-sm table-dark table-striped table-hover mb-3">
           <thead><tr><th scope="col">Resource</th><? foreach (EditModel::ACL_COLUMNS as $col) { ?><th scope="col" class="text-center"><?=$col?></th><? } ?></tr></thead>
@@ -223,6 +223,9 @@ require('./Includes/header.inc.phtml'); ?>
     var before = <?=(int) $model->options_before?>;
     var hidden = before & ~<?=(int) EditModel::KNOWN_MASK?>;
     var aclMask = <?=(int) EditModel::ACL_MASK?>;
+    // presets need this script, so they are only shown when it runs
+    document.getElementById('permission_presets').hidden = false;
+    document.getElementById('permission_presets_note').hidden = false;
     function hex(v) { return '0x' + ('00000000' + v.toString(16).toUpperCase()).slice(-8); }
     function update() {
       var v = hidden;
