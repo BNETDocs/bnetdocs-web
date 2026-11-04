@@ -34,6 +34,14 @@ class Verify extends \BNETDocs\Controllers\Base
       catch (\UnexpectedValueException) { $this->model->user = null; }
     }
 
+    // e.g. the verification link was followed a second time
+    if ($this->model->user && $this->model->user->isVerified())
+    {
+      $this->model->error = VerifyModel::ERROR_ALREADY_VERIFIED;
+      $this->model->_responseCode = HttpCode::HTTP_CONFLICT;
+      return true;
+    }
+
     // a user without a pending token has nothing to verify, so a missing token must never match one
     $user_token = $this->model->user ? $this->model->user->getVerifierToken() : null;
     $token = $this->model->token;

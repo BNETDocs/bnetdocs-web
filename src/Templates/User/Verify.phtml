@@ -1,5 +1,6 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
+use \BNETDocs\Libraries\Core\UrlFormatter;
 use \BNETDocs\Models\User\Verify as VerifyModel;
 $title = 'Verify Account';
 $description = 'This form allows an individual to verify their account with a token.';
@@ -15,7 +16,17 @@ $token = filter_var($this->getContext()->token, FILTER_SANITIZE_FULL_SPECIAL_CHA
 $user_id = filter_var($this->getContext()->user_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
-<? if ($this->getContext()->error !== false) { ?>
+<? if ($error === VerifyModel::ERROR_ALREADY_VERIFIED) { ?>
+  <h1 class="text-success">Account Verified</h1>
+  <div class="alert alert-info">
+    <p class="mb-0">This account is already verified, so there is nothing more to do.</p>
+  </div>
+<?  if ($this->getContext()->active_user) { ?>
+  <a class="btn btn-primary" href="<?=$this->getContext()->active_user->getURI()?>">Go to your profile</a>
+<?  } else { ?>
+  <a class="btn btn-success" href="<?=UrlFormatter::format('/user/login')?>">Log in</a>
+<?  } ?>
+<? } else if ($this->getContext()->error !== false) { ?>
   <h1>Verify Account</h1>
 <? if (!empty($message)) { ?>
   <div class="alert alert-danger">

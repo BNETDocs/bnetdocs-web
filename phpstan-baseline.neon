@@ -2169,13 +2169,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$_responseCode\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 3
 			path: src/Controllers/User/Verify.php
 
 		-
 			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$error\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 4
 			path: src/Controllers/User/Verify.php
 
 		-
@@ -2187,7 +2187,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 4
 			path: src/Controllers/User/Verify.php
 
 		-
