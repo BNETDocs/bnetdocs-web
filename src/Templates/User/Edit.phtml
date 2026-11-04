@@ -101,7 +101,7 @@ require('./Includes/header.inc.phtml'); ?>
 <?   break; case EditModel::VERIFICATION_ALREADY_VERIFIED: ?>
   <div class="alert alert-warning"><p class="mb-0">No email was sent because this user is already verified.</p></div>
 <?   break; case EditModel::VERIFICATION_FAILED: ?>
-  <div class="alert alert-danger"><p class="mb-0">The verification email could not be sent. Try again later.</p></div>
+  <div class="alert alert-danger"><p class="mb-0">The verification email could not be sent. Try again later with the resend button.</p></div>
 <?   break; } ?>
 
   <form method="POST" action="?id=<?=rawurlencode($target->getId())?>" id="user_edit_form">
@@ -123,6 +123,7 @@ require('./Includes/header.inc.phtml'); ?>
             <label class="font-weight-bold" for="email">Email address:<span class="ml-2 small text-muted">(used to log in, must be unique, changes their Gravatar)</span></label>
             <input class="border border-primary form-control bg-dark text-light<?=$field_invalid('email')?>" type="email" name="email" id="email" required autocomplete="off" maxlength="<?=$model->email_max_len?>" value="<?=$esc($model->email)?>" tabindex="3"/>
             <?=$field_error('email')?>
+            <small class="form-text text-muted">Changing it unverifies the account and sends a verification link to the new address.</small>
           </div>
         </div></div>
       </div>

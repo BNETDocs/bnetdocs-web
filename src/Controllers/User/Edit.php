@@ -150,6 +150,10 @@ class Edit extends \BNETDocs\Controllers\Base
         $editable = $model->editable_mask;
         $options = ($model->options_before & ~$editable) | ($submitted & $editable);
 
+        // a new address must be verified by its owner, whatever the Verified box says
+        $email_changed = \strtolower($email) !== \strtolower($target->getEmail());
+        if ($email_changed) $options &= ~User::OPTION_VERIFIED;
+
         $model->username = $username;
         $model->display_name = $display_name;
         $model->email = $email;
@@ -173,7 +177,7 @@ class Edit extends \BNETDocs\Controllers\Base
         if ($email === '') $model->errors['email'] = 'EMPTY';
         else if (\strlen($email) > $model->email_max_len) $model->errors['email'] = 'TOO_LONG';
         else if (!\filter_var($email, \FILTER_VALIDATE_EMAIL)) $model->errors['email'] = 'INVALID';
-        else if (\strtolower($email) !== \strtolower($target->getEmail()))
+        else if ($email_changed)
         {
             $existing = User::findIdByEmail($email);
             if (!\is_null($existing) && $existing !== $target->getId()) $model->errors['email'] = 'TAKEN';
@@ -223,9 +227,10 @@ class Edit extends \BNETDocs\Controllers\Base
             $target->setUsername($username);
             $target->setDisplayName($display_name);
             $target->setEmail($email);
-            // toggle verified through setVerified() so its date and verifier token stay consistent
+            // toggle verified through setVerified() so its date and verifier token stay consistent,
+            // after setEmail() since a new verifier token is derived from the address
             $target->setOptions(($options & ~User::OPTION_VERIFIED) | ($target->getOptions() & User::OPTION_VERIFIED));
-            $target->setVerified(($options & User::OPTION_VERIFIED) !== 0);
+            $target->setVerified(($options & User::OPTION_VERIFIED) !== 0, $email_changed);
 
             if (!$target->commit())
             {
@@ -296,6 +301,9 @@ class Edit extends \BNETDocs\Controllers\Base
         }
 
         $model->options_before = $options;
+
+        // the save itself succeeded, so a failure here is only reported on the page
+        if ($email_changed) $this->sendVerification(VerificationEmail::REASON_EMAIL_CHANGED);
     }
 
     private function resendVerification(): void
@@ -318,15 +326,42 @@ class Edit extends \BNETDocs\Controllers\Base
                 $target->setVerified(false, true);
                 if (!$target->commit()) throw new \RuntimeException('failed to save a new verifier token');
             }
-
-            VerificationEmail::send($target, $model->active_user, VerificationEmail::REASON_STAFF_RESENT);
-            $model->verification_email = EditModel::VERIFICATION_SENT;
         }
         catch (\Throwable $e)
         {
-            \error_log(\sprintf('Failed to resend verification email to user #%d: %s', $target->getId(), $e->getMessage()));
+            \error_log(\sprintf('Failed to save a verifier token for user #%d: %s', $target->getId(), $e->getMessage()));
             $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
             $model->verification_email = EditModel::VERIFICATION_FAILED;
+            return;
+        }
+
+        if (!$this->sendVerification(VerificationEmail::REASON_STAFF_RESENT))
+        {
+            $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
+        }
+    }
+
+    /**
+     * Sends the edited user a verification email, recording the outcome for the template.
+     *
+     * @param string $reason One of the VerificationEmail::REASON_* constants.
+     * @return bool Whether it was sent.
+     */
+    private function sendVerification(string $reason): bool
+    {
+        $model = $this->model();
+
+        try
+        {
+            VerificationEmail::send($model->target_user, $model->active_user, $reason);
+            $model->verification_email = EditModel::VERIFICATION_SENT;
+            return true;
+        }
+        catch (\Throwable $e)
+        {
+            \error_log(\sprintf('Failed to send verification email to user #%d: %s', $model->target_user->getId(), $e->getMessage()));
+            $model->verification_email = EditModel::VERIFICATION_FAILED;
+            return false;
         }
     }
 
