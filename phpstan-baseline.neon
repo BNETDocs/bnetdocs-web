@@ -1881,7 +1881,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$active_user\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 3
 			path: src/Controllers/User/Update.php
 
 		-
@@ -2103,7 +2103,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property BNETDocs\\Interfaces\\Model\:\:\$user\.$#'
 			identifier: property.notFound
-			count: 20
+			count: 21
 			path: src/Controllers/User/Update.php
 
 		-

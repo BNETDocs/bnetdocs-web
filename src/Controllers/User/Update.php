@@ -129,6 +129,7 @@ class Update extends \BNETDocs\Controllers\Base
         if (empty($this->model->website)) $this->model->website = null;
 
         $req = Config::get('bnetdocs.user_register_requirements') ?? [];
+        $account_changed = false;
 
         // username change request
         if ($this->model->username !== $this->model->user->getUsername())
@@ -159,6 +160,7 @@ class Update extends \BNETDocs\Controllers\Base
                     $this->model->user->setUsername($this->model->username);
                     $this->model->user->commit();
                     $this->model->username_error = ['success', 'CHANGE_SUCCESS'];
+                    $account_changed = true;
                 }
                 catch (Throwable $e)
                 {
@@ -214,6 +216,7 @@ class Update extends \BNETDocs\Controllers\Base
                     $this->model->user->setEmail($this->model->email_2);
                     $this->model->user->commit();
                     $this->model->email_error = ['success', 'CHANGE_SUCCESS'];
+                    $account_changed = true;
                 }
                 catch (Throwable $e)
                 {
@@ -241,6 +244,7 @@ class Update extends \BNETDocs\Controllers\Base
                 $this->model->user->setDisplayName($display_name);
                 $this->model->user->commit();
                 $this->model->display_name_error = ['success', 'CHANGE_SUCCESS', $new_name];
+                $account_changed = true;
             }
             catch (Throwable $e)
             {
@@ -416,7 +420,12 @@ class Update extends \BNETDocs\Controllers\Base
             }
         }
 
-        if ($profile_changed && $this->model->profile->commit())
+        if ($profile_changed && !$this->model->profile->commit())
+        {
+            $profile_changed = false;
+        }
+
+        if ($account_changed || $profile_changed)
         {
             $event = Logger::initEvent(
                 \BNETDocs\Libraries\EventLog\EventTypes::USER_EDITED,
@@ -442,6 +451,7 @@ class Update extends \BNETDocs\Controllers\Base
                     'email_1'                  => $this->model->email_1,
                     'email_2'                  => $this->model->email_2,
                     'display_name'             => $display_name,
+                    'account_changed'          => $account_changed,
                     'profile_changed'          => $profile_changed,
                     'biography'                => $this->model->biography,
                     'discord_username'         => $this->model->discord_username,
@@ -459,7 +469,7 @@ class Update extends \BNETDocs\Controllers\Base
 
             if ($event->commit())
             {
-                $embed = Logger::initDiscordEmbed($event, $this->model->active_user->getURI(), [
+                $embed = Logger::initDiscordEmbed($event, $this->model->user->getURI(), [
                     'Edited by' => $this->model->active_user->getAsMarkdown(),
                     'Edited user' => $this->model->user->getAsMarkdown(),
                 ]);
