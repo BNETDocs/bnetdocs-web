@@ -3,13 +3,11 @@ namespace BNETDocs\Controllers\User;
 
 use \BNETDocs\Libraries\Core\Config;
 use \BNETDocs\Libraries\Core\Router;
-use \BNETDocs\Libraries\Core\Template;
 use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\EventLog\Logger;
+use \BNETDocs\Libraries\User\ResetPasswordEmail;
 use \BNETDocs\Libraries\User\User;
 use \BNETDocs\Models\User\ResetPassword as ResetPasswordModel;
-use \PHPMailer\PHPMailer\PHPMailer;
-use \StdClass;
 use \UnexpectedValueException;
 
 class ResetPassword extends \BNETDocs\Controllers\Base
@@ -112,77 +110,9 @@ class ResetPassword extends \BNETDocs\Controllers\Base
 
   protected function sendEmail(): mixed
   {
-    $mail = new PHPMailer(true); // true enables exceptions
-
-    $state = new StdClass();
-    $state->email = $this->model->user->getEmail();
-    $state->mail = &$mail;
-    $state->token = $this->model->user->getVerifierToken();
-    $state->username = $this->model->user->getName();
-
     try
     {
-      //Server settings
-      $mail->Timeout = 10; // default is 300 per RFC2821 $ 4.5.3.2
-      $mail->SMTPDebug = 0;
-      $mail->isSMTP();
-      $mail->Host       = Config::get('email.smtp_host') ?? 'localhost';
-      $mail->Username   = Config::get('email.smtp_user') ?? '';
-      $mail->Password   = Config::get('email.smtp_password') ?? '';
-      $mail->SMTPAuth   = !empty($mail->Username);
-      $mail->SMTPSecure = (Config::get('email.smtp_tls') ?? false) ? 'tls' : '';
-      $mail->Port       = Config::get('email.smtp_port') ?? 25;
-
-      //Recipients
-      $recipient_from = Config::get('email.recipient_from') ?? [];
-      if (isset($recipient_from[0]))
-      {
-        $mail->setFrom($recipient_from[0], $recipient_from[1] ?? '');
-      }
-
-      $mail->addAddress($this->model->user->getEmail(), $this->model->user->getName());
-
-      $recipient_reply_to = Config::get('email.recipient_reply_to') ?? [];
-      if (isset($recipient_reply_to[0]))
-      {
-        $mail->addReplyTo($recipient_reply_to[0], $recipient_reply_to[1] ?? '');
-      }
-
-      // Content
-      $mail->isHTML(true);
-      $mail->Subject = 'Reset Password';
-      $mail->CharSet = PHPMailer::CHARSET_UTF8;
-
-      ob_start();
-      (new Template($state, 'Email/User/ResetPassword.rich'))->invoke();
-      $mail->Body = ob_get_clean();
-
-      ob_start();
-      (new Template($state, 'Email/User/ResetPassword.plain'))->invoke();
-      $mail->AltBody = ob_get_clean();
-
-      $mail->send();
-
-      $event = Logger::initEvent(
-        EventTypes::EMAIL_SENT,
-        $this->model->user,
-        getenv('REMOTE_ADDR'),
-        [
-          'from' => $mail->From,
-          'to' => $mail->getToAddresses(),
-          'reply_to' => $mail->getReplyToAddresses(),
-          'subject' => $mail->Subject,
-          'content_type' => $mail->ContentType,
-          'body' => $mail->Body,
-          'alt_body' => $mail->AltBody,
-        ]
-      );
-
-      if ($event->commit())
-      {
-        $embed = Logger::initDiscordEmbed($event, $this->model->user->getURI());
-        Logger::logToDiscord($event, $embed);
-      }
+      ResetPasswordEmail::send($this->model->user, $this->model->user);
     }
     catch (\PHPMailer\PHPMailer\Exception)
     {
