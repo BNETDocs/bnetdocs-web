@@ -8,6 +8,7 @@ class Login extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
     public const ERROR_EMPTY_EMAIL = 'EMPTY_EMAIL';
     public const ERROR_EMPTY_PASSWORD = 'EMPTY_PASSWORD';
     public const ERROR_INCORRECT_PASSWORD = 'INCORRECT_PASSWORD';
+    public const ERROR_PASSWORD_RESET_REQUIRED = 'PASSWORD_RESET_REQUIRED';
     public const ERROR_SYSTEM_DISABLED = 'SYSTEM_DISABLED';
     public const ERROR_USER_DISABLED = 'USER_DISABLED';
     public const ERROR_USER_NOT_FOUND = 'USER_NOT_FOUND';
