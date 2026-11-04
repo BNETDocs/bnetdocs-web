@@ -1,265 +1,157 @@
 <?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
 namespace BNETDocs\Templates\User;
+use \BNETDocs\Libraries\Core\HttpCode;
 use \BNETDocs\Libraries\Core\UrlFormatter;
+use \BNETDocs\Models\User\Update as UpdateModel;
+$model = $this->getContext();
 $title = 'Update Profile';
 $description = 'This page updates your account and public profile information.';
 $url = '/user/update';
-switch ($this->getContext()->username_error[1] ?? null)
-{
-  case null: case '': $username_error = ''; break;
-  case 'USERNAME_LONG': $username_error = 'Your chosen username is too long.'; break;
-  case 'USERNAME_SHORT': $username_error = 'Your chosen username is too short.'; break;
-  case 'CHANGE_FAILED': $username_error = 'Failed to change username due to an internal error.'; break;
-  case 'CHANGE_SUCCESS': $username_error = 'Your username has been changed.'; break;
-  default: $username_error = 'Internal error: ' . $this->getContext()->username_error[1];
-}
-switch ($this->getContext()->email_error[1] ?? null)
-{
-  case null: case '': $email_error = ''; break;
-  case 'MISMATCH': $email_error = 'Emails do not match, check for typos.'; break;
-  case 'EMPTY': $email_error = 'Your new email address cannot be blank.'; break;
-  case 'INVALID': $email_error = 'Your new email address uses invalid formatting.'; break;
-  case 'NOT_ALLOWED': $email_error = 'Your new email address is not allowed, use a different one.'; break;
-  case 'CHANGE_FAILED': $email_error = 'Failed to change email due to an internal error.'; break;
-  case 'CHANGE_SUCCESS': $email_error = 'Your email has been changed.'; break;
-  default: $email_error = 'Internal error: ' . $this->getContext()->email_error[1];
-}
-switch ($this->getContext()->display_name_error[1] ?? null)
-{
-  case null: case '': $display_name_error = ''; break;
-  case 'CHANGE_FAILED': $display_name_error = 'Failed to change display name.'; break;
-  case 'CHANGE_SUCCESS': $display_name_error = sprintf('Your display name has been changed to <strong>%s</strong>.',
-    filter_var($this->getContext()->display_name_error[2], FILTER_SANITIZE_FULL_SPECIAL_CHARS)); break;
-  default: $display_name_error = 'Internal error: ' . $this->getContext()->display_name_error[1];
-}
-switch ($this->getContext()->biography_error[1] ?? null)
-{
-  case null: case '': $biography_error = ''; break;
-  case 'TOO_LONG': $biography_error = 'Your biography is too long.'; break;
-  case 'CHANGE_SUCCESS': $biography_error = 'Your biography was updated.'; break;
-  default: $biography_error = 'Internal error: ' . $this->getContext()->biography_error[1];
-}
-switch ($this->getContext()->discord_username_error[1] ?? null)
-{
-  case null: case '': $discord_username_error = ''; break;
-  case 'TOO_LONG': $discord_username_error = 'Your Discord username is too long.'; break;
-  case 'CHANGE_SUCCESS': $discord_username_error = 'Your Discord username was updated.'; break;
-  default: $discord_username_error = 'Internal error: ' . $this->getContext()->discord_username_error[1];
-}
-switch ($this->getContext()->facebook_username_error[1] ?? null)
-{
-  case null: case '': $facebook_username_error = ''; break;
-  case 'TOO_LONG': $facebook_username_error = 'Your Facebook username is too long.'; break;
-  case 'CHANGE_SUCCESS': $facebook_username_error = 'Your Facebook username was updated.'; break;
-  default: $facebook_username_error = 'Internal error: ' . $this->getContext()->facebook_username_error[1];
-}
-switch ($this->getContext()->github_username_error[1] ?? null)
-{
-  case null: case '': $github_username_error = ''; break;
-  case 'TOO_LONG': $github_username_error = 'Your Github username is too long.'; break;
-  case 'CHANGE_SUCCESS': $github_username_error = 'Your Github username was updated.'; break;
-  default: $github_username_error = 'Internal error: ' . $this->getContext()->github_username_error[1];
-}
-switch ($this->getContext()->instagram_username_error[1] ?? null)
-{
-  case null: case '': $instagram_username_error = ''; break;
-  case 'TOO_LONG': $instagram_username_error = 'Your Instagram username is too long.'; break;
-  case 'CHANGE_SUCCESS': $instagram_username_error = 'Your Instagram username was updated.'; break;
-  default: $instagram_username_error = 'Internal error: ' . $this->getContext()->instagram_username_error[1];
-}
-switch ($this->getContext()->phone_error[1] ?? null)
-{
-  case null: case '': $phone_error = ''; break;
-  case 'TOO_LONG': $phone_error = 'Your phone number is too long.'; break;
-  case 'CHANGE_SUCCESS': $phone_error = 'Your phone number was updated.'; break;
-  default: $phone_error = 'Internal error: ' . $this->getContext()->phone_error[1];
-}
-switch ($this->getContext()->reddit_username_error[1] ?? null)
-{
-  case null: case '': $reddit_username_error = ''; break;
-  case 'TOO_LONG': $reddit_username_error = 'Your Reddit username is too long.'; break;
-  case 'CHANGE_SUCCESS': $reddit_username_error = 'Your Reddit username was updated.'; break;
-  default: $reddit_username_error = 'Internal error: ' . $this->getContext()->reddit_username_error[1];
-}
-switch ($this->getContext()->skype_username_error[1] ?? null)
-{
-  case null: case '': $skype_username_error = ''; break;
-  case 'TOO_LONG': $skype_username_error = 'Your Skype username is too long.'; break;
-  case 'CHANGE_SUCCESS': $skype_username_error = 'Your Skype username was updated.'; break;
-  default: $skype_username_error = 'Internal error: ' . $this->getContext()->skype_username_error[1];
-}
-switch ($this->getContext()->steam_id_error[1] ?? null)
-{
-  case null: case '': $steam_id_error = ''; break;
-  case 'TOO_LONG': $steam_id_error = 'Your Steam Id is too long.'; break;
-  case 'CHANGE_SUCCESS': $steam_id_error = 'Your Steam Id was updated.'; break;
-  default: $steam_id_error = 'Internal error: ' . $this->getContext()->steam_id_error[1];
-}
-switch ($this->getContext()->twitter_username_error[1] ?? null)
-{
-  case null: case '': $twitter_username_error = ''; break;
-  case 'TOO_LONG': $twitter_username_error = 'Your Twitter username is too long.'; break;
-  case 'CHANGE_SUCCESS': $twitter_username_error = 'Your Twitter username was updated.'; break;
-  default: $twitter_username_error = 'Internal error: ' . $this->getContext()->twitter_username_error[1];
-}
-switch ($this->getContext()->website_error[1] ?? null)
-{
-  case null: case '': $website_error = ''; break;
-  case 'TOO_LONG': $website_error = 'Your website url is too long.'; break;
-  case 'CHANGE_SUCCESS': $website_error = 'Your website url was updated.'; break;
-  default: $website_error = 'Internal error: ' . $this->getContext()->website_error[1];
-}
-$avatar = ($this->getContext()->user ? $this->getContext()->user->getAvatarURI(512) : null);
+$user = $model->user;
+$esc = fn(?string $v): string => filter_var($v ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$field_errors = [
+  'username' => [
+    'EMPTY' => 'Your username cannot be blank.',
+    'TAKEN' => 'That username is already in use by another account.',
+    'TOO_LONG' => sprintf('Your username must be at most %d characters.', $model->username_max_len),
+    'TOO_SHORT' => sprintf('Your username must be at least %d characters.', $model->username_min_len),
+  ],
+  'display_name' => [
+    'TOO_LONG' => sprintf('Your display name must be at most %d characters.', $model->display_name_max_len),
+  ],
+  'email' => [
+    'EMPTY' => 'Your email address cannot be blank.',
+    'INVALID' => 'Your new email address is not formatted correctly.',
+    'NOT_ALLOWED' => 'That email address is not allowed, use a different one.',
+    'TAKEN' => 'That email address is already in use by another account.',
+    'TOO_LONG' => sprintf('Your email address must be at most %d characters.', $model->email_max_len),
+    'COOLDOWN' => 'A verification email was sent to you a moment ago. Wait a couple of minutes before changing your email address again.',
+  ],
+  'email_confirm' => [
+    'MISMATCH' => 'The email addresses do not match, check for typos.',
+  ],
+  'profile' => [
+    'TOO_LONG' => sprintf('Must be at most %d characters.', $model->profile_max_len),
+  ],
+];
+$field_error = function(string $field) use ($model, $field_errors): string {
+  $code = $model->errors[$field] ?? null;
+  if (is_null($code)) return '';
+  $messages = $field_errors[$field] ?? $field_errors['profile'];
+  return sprintf('<div class="invalid-feedback d-block">%s</div>', $messages[$code] ?? ('Internal error: ' . $code));
+};
+$field_invalid = fn(string $field): string => isset($model->errors[$field]) ? ' is-invalid' : '';
+$input_class = 'border border-primary form-control bg-dark text-light';
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
-<? if (!$this->getContext()->user || $this->getContext()->_responseCode == \BNETDocs\Libraries\Core\HttpCode::HTTP_FORBIDDEN) { ?>
+<? if (!$user || $model->_responseCode == HttpCode::HTTP_FORBIDDEN) { ?>
   <h1 class="text-danger"><?=$title?></h1>
-  <div class="alert alert-danger">
-    <p class="mb-0">You are not authorized to access this page.</p>
-  </div>
+  <div class="alert alert-danger"><p class="mb-0">You must be logged in to update your profile.</p></div>
   <a class="btn btn-success" href="<?=UrlFormatter::format('/user/login')?>">Log in</a>
 <? } else { ?>
-  <h1><?=$title?></h1>
-  <p><?=$description?></p>
+  <div class="d-flex align-items-center flex-wrap mb-3">
+    <img class="rounded shadow mr-3" src="<?=$user->getAvatarURI(64)?>" srcset="<?=$user->getAvatarURI(128)?> 2x" width="64" height="64" alt=""/>
+    <div>
+      <h1 class="mb-0"><?=$title?></h1>
+      <div class="text-muted small">Signed in as <?=$esc($user->getUsername())?> &middot; <a href="<?=$user->getURI()?>">View your profile</a></div>
+    </div>
+  </div>
 
-<? if ($this->getContext()->user->getId() !== $this->getContext()->active_user->getId()) { ?>
-  <div class="alert alert-danger"><p class="mb-0">You are changing the details for a different account than yours. Click <a href="<?=UrlFormatter::format('/user/update')?>">here</a> to change your account details.</p></div>
+<? if ($model->error === UpdateModel::ERROR_INTERNAL) { ?>
+  <div class="alert alert-danger"><p class="mb-0">An internal error occurred while saving your profile. Try again later.</p></div>
+<? } else if (!empty($model->errors)) { ?>
+  <div class="alert alert-danger"><p class="mb-0">Nothing was saved. Correct the highlighted fields and try again.</p></div>
+<? } else if ($model->saved) { ?>
+  <div class="alert alert-success"><p class="mb-0">Your profile was saved.</p></div>
+<? } ?>
+<? switch ($model->verification_email) {
+     case UpdateModel::VERIFICATION_SENT: ?>
+  <div class="alert alert-success"><p class="mb-0">We sent a verification link to <strong><?=$esc($user->getEmail())?></strong>. Follow it to verify your email address.</p></div>
+<?   break; case UpdateModel::VERIFICATION_FAILED: ?>
+  <div class="alert alert-danger"><p class="mb-0">We could not send a verification email to <strong><?=$esc($user->getEmail())?></strong>. Try again in a few minutes using the button below.</p></div>
+<?   break; case UpdateModel::VERIFICATION_COOLDOWN: ?>
+  <div class="alert alert-warning"><p class="mb-0">A verification email was sent to you a moment ago. Check your inbox, or wait a couple of minutes before asking for another.</p></div>
+<?   break; case UpdateModel::VERIFICATION_ALREADY_VERIFIED: ?>
+  <div class="alert alert-info"><p class="mb-0">Your email address is already verified.</p></div>
+<?   break; } ?>
+<? if (!$user->isVerified()) { ?>
+  <div class="alert alert-warning">
+    <p>Your email address <strong><?=$esc($user->getEmail())?></strong> is not verified yet. You can keep using this session, but you will not be able to log in again until you verify it. If the address is wrong, correct it below.</p>
+    <form method="POST" class="mb-0">
+      <input type="hidden" name="action" value="resend_verification"/>
+      <button type="submit" class="btn btn-sm btn-warning">✉️ Resend verification email</button>
+    </form>
+  </div>
 <? } ?>
 
-  <!-- This here notice below is for GDPR purposes -->
+  <!-- This notice is for GDPR purposes -->
   <div class="alert alert-info"><p class="mb-0">Our <a href="<?=UrlFormatter::format('/privacy')?>">privacy policy</a> page clarifies your data rights. You agree to giving (or not giving) the info contained herein on this page.</p></div>
 
-  <form method="POST">
-    <h2>Account</h2>
-    <p>Your account details.</p>
-    <div class="row justify-content-center"><div class="col-lg-6 form-group">
-<?    if ($username_error) { ?>
-      <div class="alert alert-<?=$this->getContext()->username_error[0]?>"><p class="mb-0"><?=$username_error?></p></div>
-<?    } ?>
-      <label class="form-input-label font-weight-bold" for="username">Username:<span class="ml-2 small text-muted">(what you log in with, must be unique)</span></label>
-      <input class="border border-primary form-control bg-dark text-light" tabindex="1" required type="text" name="username" id="username" placeholder="Enter the unique username here" maxlength="<?=$this->getContext()->username_max_len?>" value="<?=filter_var($this->getContext()->username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-    </div><div class="col-lg-6 form-group">
-<?    if ($display_name_error) { ?>
-      <div class="alert alert-<?=$this->getContext()->display_name_error[0]?>"><p class="mb-0"><?=$display_name_error?></p></div>
-<?    } ?>
-      <label class="form-input-label font-weight-bold" for="display_name">Custom name:<span class="ml-2 small text-muted">(your custom name around the site &ndash; if blank then your username is used)</span></label>
-      <input class="border border-primary form-control bg-dark text-light" tabindex="2" type="text" name="display_name" id="display_name" placeholder="Enter the custom name here" value="<?=filter_var($this->getContext()->display_name, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-    </div></div>
-    <div class="row"><div class="col-lg-6 form-group">
-      <label class="form-input-label font-weight-bold" for="email_1">Email address:<span class="ml-2 small text-muted">(required for identity and site functions)</span></label>
-      <input class="border border-primary form-control bg-dark text-light" tabindex="3" required autocomplete="email" type="email" name="email_1" id="email_1" placeholder="Enter the email address here" value="<?=filter_var($this->getContext()->email_1, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-    </div><div class="col-lg-6 form-group">
-<?    if ($email_error) { ?>
-      <div class="alert alert-<?=$this->getContext()->email_error[0]?>"><p class="mb-0"><?=$email_error?></p></div>
-<?    } ?>
-      <label class="form-input-label font-weight-bold" for="email_2">Confirm email address:<span class="ml-2 small text-muted">(required if changing email address &ndash; leave blank otherwise)</span></label>
-      <input class="border border-primary form-control bg-dark text-light" tabindex="4" autocomplete="email" type="email" name="email_2" id="email_2" placeholder="Confirm the new email address here if changing it" value="<?=filter_var($this->getContext()->email_2, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-    </div></div>
-    <div class="row"><div class="col form-group">
-      <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>" tabindex="5">🔑 Change Password</a>
-    </div></div>
-    <div class="row"><div class="col">
-      <h2>Gravatar</h2>
-      <img class="float-left m-2 rounded shadow" src="<?=$avatar?>" width="128px"/>
-      <p>This is your avatar around the site. It is generated using a <a href="https://www.gravatar.com/site/implement/hash/" rel="external">hashed</a> representation of your email address. <strong>To change it, go to <a href="https://www.gravatar.com/" rel="external">Gravatar.com</a></strong> or change your email address.</p>
-      <p>Your Gravatar url: <code class="language-plaintext"><?=$avatar?></code></p>
-    </div></div>
-    <h2>Public Profile</h2>
-    <p>This information will be displayed to everyone who views your profile page.</p>
+  <form method="POST" id="profile_update_form">
+    <div class="row">
+      <div class="col-lg-7 mb-4">
+        <div class="card bg-dark border-primary h-100"><div class="card-body">
+          <h2 class="h4 card-title">Account</h2>
+          <div class="form-group">
+            <label class="font-weight-bold" for="username">Username:<span class="ml-2 small text-muted">(public, must be unique)</span></label>
+            <input class="<?=$input_class . $field_invalid('username')?>" type="text" name="username" id="username" required autocomplete="username" maxlength="<?=$model->username_max_len?>" value="<?=$esc($model->username)?>"/>
+            <?=$field_error('username')?>
+          </div>
+          <div class="form-group">
+            <label class="font-weight-bold" for="display_name">Display name:<span class="ml-2 small text-muted">(shown around the site, your username if blank)</span></label>
+            <input class="<?=$input_class . $field_invalid('display_name')?>" type="text" name="display_name" id="display_name" autocomplete="nickname" maxlength="<?=$model->display_name_max_len?>" placeholder="<?=$esc($user->getUsername())?>" value="<?=$esc($model->display_name)?>"/>
+            <?=$field_error('display_name')?>
+          </div>
+          <div class="form-group">
+            <label class="font-weight-bold" for="email">Email address:<span class="ml-2 small text-muted">(private, used to log in and for your avatar)</span></label>
+            <input class="<?=$input_class . $field_invalid('email')?>" type="email" name="email" id="email" required autocomplete="email" maxlength="<?=$model->email_max_len?>" value="<?=$esc($model->email)?>" data-original="<?=$esc($user->getEmail())?>"/>
+            <?=$field_error('email')?>
+          </div>
+          <div class="form-group" id="email_confirm_group">
+            <label class="font-weight-bold" for="email_confirm">Confirm new email address:<span class="ml-2 small text-muted">(only needed when changing it)</span></label>
+            <small class="form-text text-warning mt-0 mb-1">Changing your email address unverifies your account until you follow the link we send to the new address.</small>
+            <input class="<?=$input_class . $field_invalid('email_confirm')?>" type="email" name="email_confirm" id="email_confirm" autocomplete="off" maxlength="<?=$model->email_max_len?>" value="<?=$esc($model->email_confirm)?>"/>
+            <?=$field_error('email_confirm')?>
+          </div>
+          <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>">🔑 Change password</a>
+        </div></div>
+      </div>
+      <div class="col-lg-5 mb-4">
+        <div class="card bg-dark border-primary h-100"><div class="card-body">
+          <h2 class="h4 card-title">Avatar</h2>
+          <img class="float-left rounded shadow mr-3 mb-2" src="<?=$user->getAvatarURI(96)?>" srcset="<?=$user->getAvatarURI(192)?> 2x" width="96" height="96" alt="Your avatar"/>
+          <p class="small">Your avatar comes from <a href="https://gravatar.com/" rel="external">Gravatar</a>, based on a <a href="https://docs.gravatar.com/api/avatars/hash/" rel="external">hash</a> of your email address. To change it, update your image on Gravatar, or change your email address.</p>
+          <p class="small text-muted mb-0">If you have no Gravatar, a generated pattern is shown instead.</p>
+        </div></div>
+      </div>
+    </div>
 
-    <div class="row justify-content-center">
-      <div class="col-md-10 form-group">
-<?      if ($biography_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->biography_error[0]?>"><p class="mb-0"><?=$biography_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="biography">Biography:</label>
-        <textarea class="border border-primary form-control bg-dark text-light" name="biography" id="biography" placeholder="Enter the brief biography here" maxlength="<?=$this->getContext()->biography_max_len?>" tabindex="6"><?=filter_var($this->getContext()->biography, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?></textarea>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-md-5 form-group">
-<?      if ($discord_username_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->discord_username_error[0]?>"><p class="mb-0"><?=$discord_username_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="discord_username">Discord username:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="discord_username" id="discord_username" placeholder="Enter your Discord tag here" maxlength="<?=$this->getContext()->discord_username_max_len?>" tabindex="7" type="text" value="<?=filter_var($this->getContext()->discord_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-      <div class="col-md-5 form-group">
-<?      if ($facebook_username_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->facebook_username_error[0]?>"><p class="mb-0"><?=$facebook_username_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="facebook_username">Facebook username:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="facebook_username" id="facebook_username" placeholder="Enter your Facebook username here" maxlength="<?=$this->getContext()->facebook_username_max_len?>" tabindex="8" type="text" value="<?=filter_var($this->getContext()->facebook_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-md-5 form-group">
-<?      if ($github_username_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->github_username_error[0]?>"><p class="mb-0"><?=$github_username_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="github_username">GitHub username:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="github_username" id="github_username" placeholder="Enter your GitHub username here" maxlength="<?=$this->getContext()->github_username_max_len?>" tabindex="9" type="text" value="<?=filter_var($this->getContext()->github_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-      <div class="col-md-5 form-group">
-<?      if ($instagram_username_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->instagram_username_error[0]?>"><p class="mb-0"><?=$instagram_username_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="instagram_username">Instagram username:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="instagram_username" id="instagram_username" placeholder="Enter your Instagram username here" maxlength="<?=$this->getContext()->instagram_username_max_len?>" tabindex="10" type="text" value="<?=filter_var($this->getContext()->instagram_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-md-5 form-group">
-<?      if ($phone_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->phone_error[0]?>"><p class="mb-0"><?=$phone_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="phone">Phone number:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="phone" id="phone" placeholder="Enter your phone number here" maxlength="<?=$this->getContext()->phone_max_len?>" tabindex="11" type="text" value="<?=filter_var($this->getContext()->phone, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-      <div class="col-md-5 form-group">
-<?      if ($reddit_username_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->reddit_username_error[0]?>"><p class="mb-0"><?=$reddit_username_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="reddit_username">Reddit username:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="reddit_username" id="reddit_username" placeholder="Enter your Reddit username here" maxlength="<?=$this->getContext()->reddit_username_max_len?>" tabindex="12" type="text" value="<?=filter_var($this->getContext()->reddit_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-md-5 form-group">
-<?      if ($skype_username_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->skype_username_error[0]?>"><p class="mb-0"><?=$skype_username_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="skype_username">Skype username:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="skype_username" id="skype_username" placeholder="Enter your Skype username here" maxlength="<?=$this->getContext()->skype_username_max_len?>" tabindex="13" type="text" value="<?=filter_var($this->getContext()->skype_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-      <div class="col-md-5 form-group">
-<?      if ($steam_id_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->steam_id_error[0]?>"><p class="mb-0"><?=$steam_id_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="steam_id">Steam id:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="steam_id" id="steam_id" placeholder="Enter your Steam id here" maxlength="<?=$this->getContext()->steam_id_max_len?>" tabindex="14" type="text" value="<?=filter_var($this->getContext()->steam_id, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-md-5 form-group">
-<?      if ($twitter_username_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->twitter_username_error[0]?>"><p class="mb-0"><?=$twitter_username_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="twitter_username">Twitter username:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="twitter_username" id="twitter_username" placeholder="Enter your Twitter username here" maxlength="<?=$this->getContext()->twitter_username_max_len?>" tabindex="15" type="text" value="<?=filter_var($this->getContext()->twitter_username, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-      <div class="col-md-5 form-group">
-<?      if ($website_error) { ?>
-        <div class="alert alert-<?=$this->getContext()->website_error[0]?>"><p class="mb-0"><?=$website_error?></p></div>
-<?      } ?>
-        <label class="form-input-label font-weight-bold" for="website">Website:</label>
-        <input class="border border-primary form-control bg-dark text-light" name="website" id="website" placeholder="Enter your website url here" maxlength="<?=$this->getContext()->website_max_len?>" tabindex="16" type="text" value="<?=filter_var($this->getContext()->website, FILTER_SANITIZE_FULL_SPECIAL_CHARS)?>"/>
-      </div>
-    </div>
-    <div class="row justify-content-center"><div class="col form-group text-center">
-      <input class="btn btn-success" type="submit" value="Save Profile" tabindex="17"/>
+    <div class="card bg-dark border-primary mb-4"><div class="card-body">
+      <h2 class="h4 card-title">Public Profile</h2>
+      <p class="small text-muted">Shown to everyone on <a href="<?=$user->getURI()?>">your profile page</a>. Leave a field blank to remove it.</p>
+<?    $profile_values = $model->profile; $profile_max_len = $model->profile_max_len; require('./User/ProfileFields.inc.phtml'); ?>
     </div></div>
+
+    <div class="text-center mb-4">
+      <a class="btn btn-secondary" href="<?=$user->getURI()?>">Cancel</a>
+      <input class="btn btn-success" type="submit" value="Save Profile"/>
+    </div>
   </form>
+  <script type="text/javascript">
+  (function() {
+    // the confirmation field is only needed, and only shown, once the email address is changed
+    var email = document.getElementById('email');
+    var group = document.getElementById('email_confirm_group');
+    var confirm = document.getElementById('email_confirm');
+    function update() {
+      var changed = email.value.trim().toLowerCase() !== email.dataset.original.toLowerCase();
+      group.classList.toggle('d-none', !changed);
+      confirm.required = changed;
+    }
+    email.addEventListener('input', update);
+    update();
+  })();
+  </script>
 <? } ?>
 </div>
 <? require('./Includes/footer.inc.phtml'); ?>

@@ -1,12 +1,19 @@
 <?php
 namespace BNETDocs\Templates\Email\User;
 $name = $this->getContext()->name;
+$intro = [
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_EMAIL_CHANGED => 'Your BNETDocs account email address was changed to this one, so it needs to be verified.',
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_RESENT => 'Here is the new verification link you asked for.',
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_STAFF_RESENT => 'A BNETDocs staff member has sent you a new link to verify your account.',
+][$this->getContext()->reason ?? ''] ?? null;
+$resend = !is_null($intro);
 $url = \BNETDocs\Libraries\Core\UrlFormatter::format('/user/verify?u=' . rawurlencode($this->getContext()->user_id) . '&t=' . rawurlencode($this->getContext()->token));
 require('./Email/header.plain.inc.phtml');
 ?>
 Hello <?=$name?>,
 
-Welcome to BNETDocs!
+<?=$intro ?? 'Welcome to BNETDocs!'?>
+
 
 Your account requires verification before being able to use this service. Click
 or copy and paste the link below into your web browser to verify your account.
@@ -14,9 +21,12 @@ or copy and paste the link below into your web browser to verify your account.
 <?=$url?>
 
 
-**Note:** This link will only be available for 24 hours after registering. If
-you wait until it expires, you will need to complete a password reset to verify
-your account.
+**Note:** This link is only kept for a limited time. If it stops working, you
+can still verify your account by completing a password reset.
+<? if ($resend) { ?>
+
+If you were not expecting this email, you can safely ignore it.
+<? } ?>
 
 You may also reply to this email if you believe there is an issue.
 <?php require('./Email/footer.plain.inc.phtml'); ?>

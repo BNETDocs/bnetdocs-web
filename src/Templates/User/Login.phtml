@@ -14,6 +14,7 @@ switch ($error)
   case LoginModel::ERROR_EMPTY_PASSWORD: $message = 'The password was left blank.'; break;
   case LoginModel::ERROR_USER_NOT_FOUND:
   case LoginModel::ERROR_INCORRECT_PASSWORD: $message = 'Incorrect email address or password.'; break;
+  case LoginModel::ERROR_PASSWORD_RESET_REQUIRED: $message = 'The account\'s password must be reset before logging in. Use the link emailed to you, or the Recover Password button, to choose a new one.'; break;
   case LoginModel::ERROR_INTERNAL: $message = 'Internal error.'; break;
   case LoginModel::ERROR_SYSTEM_DISABLED: $message = 'Logging in has been administratively disabled indefinitely.'; break;
   case LoginModel::ERROR_USER_DISABLED: $message = 'The account has been administratively disabled.'; break;

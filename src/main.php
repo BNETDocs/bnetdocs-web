@@ -136,6 +136,7 @@ class Main
         ['#^/user/changepassword/?$#', 'User\\ChangePassword', ['User\\ChangePasswordHtml']],
         ['#^/user/createpassword/?$#', 'User\\CreatePassword', ['User\\CreatePasswordHtml']],
         ['#^/user/delete/?#', 'User\\Delete', ['User\\DeleteHtml', 'User\\DeleteJson']],
+        ['#^/user/edit/?$#', 'User\\Edit', ['User\\EditHtml']],
         ['#^/user/index/?$#', 'User\\Index', ['User\\IndexHtml']],
         ['#^/user/login/?$#', 'User\\Login', ['User\\LoginHtml']],
         ['#^/user/logout/?$#', 'User\\Logout', ['User\\LogoutHtml']],

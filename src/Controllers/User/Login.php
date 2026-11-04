@@ -49,6 +49,8 @@ class Login extends \BNETDocs\Controllers\Base
       $this->model->error = LoginModel::ERROR_USER_NOT_FOUND;
     else if ($this->model->user->isDisabled())
       $this->model->error = LoginModel::ERROR_USER_DISABLED;
+    else if (\is_null($this->model->user->getPasswordHash()))
+      $this->model->error = LoginModel::ERROR_PASSWORD_RESET_REQUIRED;
     else if (!$this->model->user->checkPassword($this->model->password))
       $this->model->error = LoginModel::ERROR_INCORRECT_PASSWORD;
     else if (!$this->model->user->isVerified())

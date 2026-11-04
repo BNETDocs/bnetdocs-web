@@ -25,8 +25,8 @@ class Verify extends \BNETDocs\Controllers\Base
   public function invoke(?array $args): bool
   {
     $q = \BNETDocs\Libraries\Core\Router::query();
-    $this->model->token = $q['t'] ?? null;
-    $this->model->user_id = $q['u'] ?? null;
+    $this->model->token = \is_string($q['t'] ?? null) ? $q['t'] : null;
+    $this->model->user_id = \is_string($q['u'] ?? null) ? $q['u'] : null;
 
     if (is_numeric($this->model->user_id))
     {
@@ -34,8 +34,18 @@ class Verify extends \BNETDocs\Controllers\Base
       catch (\UnexpectedValueException) { $this->model->user = null; }
     }
 
+    // e.g. the verification link was followed a second time
+    if ($this->model->user && $this->model->user->isVerified())
+    {
+      $this->model->error = VerifyModel::ERROR_ALREADY_VERIFIED;
+      $this->model->_responseCode = HttpCode::HTTP_CONFLICT;
+      return true;
+    }
+
+    // a user without a pending token has nothing to verify, so a missing token must never match one
     $user_token = $this->model->user ? $this->model->user->getVerifierToken() : null;
-    if (!$this->model->user || $user_token !== $this->model->token)
+    $token = $this->model->token;
+    if (!$this->model->user || empty($user_token) || !\is_string($token) || !\hash_equals($user_token, $token))
     {
       $this->model->error = VerifyModel::ERROR_INVALID_TOKEN;
       $this->model->_responseCode = HttpCode::HTTP_BAD_REQUEST;
@@ -53,7 +63,7 @@ class Verify extends \BNETDocs\Controllers\Base
     {
       $event = Logger::initEvent(
         \BNETDocs\Libraries\EventLog\EventTypes::USER_VERIFIED,
-        $this->model->user_id,
+        $this->model->user,
         getenv('REMOTE_ADDR'),
         ['error' => $this->model->error]
       );

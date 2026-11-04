@@ -155,7 +155,7 @@ require('./Includes/header.inc.phtml'); ?>
 <?  if (!empty($links)) { ?>
         <ul class="profile-links">
 <?    foreach ($links as [$service, $value, $href]) { ?>
-          <li><span class="profile-link-service"><?=$service?></span>
+          <li class="profile-link-<?=strtolower($service)?>"><span class="profile-link-service"><?=$service?></span>
 <?      if ($href) { ?>
             <a class="profile-link-value" rel="external nofollow" href="<?=$e($href)?>"><?=$e($value)?></a></li>
 <?      } else { ?>
@@ -172,9 +172,10 @@ require('./Includes/header.inc.phtml'); ?>
       <div class="profile-actions">
 <?    if ($is_self) { ?>
         <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update')?>">📝 Edit profile</a>
-        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>">🔑 Password</a>
-<?    } else { ?>
-        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update?id=' . rawurlencode($user->getId()))?>">📝 Edit user</a>
+        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>">🔑 Change password</a>
+<?    } ?>
+<?    if ($can_modify) { ?>
+        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/edit?id=' . rawurlencode($user->getId()))?>">🛡️ Edit user</a>
 <?    } ?>
       </div>
 <?  } ?>

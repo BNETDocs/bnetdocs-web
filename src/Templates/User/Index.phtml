@@ -52,7 +52,7 @@ require('./Includes/header.inc.phtml'); ?>
         ($user->getCreatedEstimate() ?? '<em>(null)</em>'),
         ($acl_user_modify || $acl_user_delete ? (
           sprintf('<td>%s%s</td>', (
-            $acl_user_modify ? sprintf('<a class="mr-1 btn btn-sm btn-secondary" href="%s" title="Modify">📝</a>', UrlFormatter::format('/user/update?id=' . rawurlencode($user->getId()))) : ''
+            $acl_user_modify ? sprintf('<a class="mr-1 btn btn-sm btn-secondary" href="%s" title="Edit user">🛡️</a>', UrlFormatter::format('/user/edit?id=' . rawurlencode($user->getId()))) : ''
           ), (
             $acl_user_delete ? sprintf('<a class="ml-1 btn btn-sm btn-danger" href="%s" title="Delete">❌</a>', UrlFormatter::format('/user/delete?id=' . rawurlencode($user->getId()))) : ''
           ))

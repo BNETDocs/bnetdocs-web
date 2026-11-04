@@ -4,6 +4,7 @@ namespace BNETDocs\Models\User;
 
 class Verify extends \BNETDocs\Models\ActiveUser implements \JsonSerializable
 {
+    public const ERROR_ALREADY_VERIFIED = 'ALREADY_VERIFIED';
     public const ERROR_INVALID_TOKEN = 'INVALID_TOKEN';
 
     public ?string $token = null;
