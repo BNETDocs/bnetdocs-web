@@ -172,7 +172,7 @@ require('./Includes/header.inc.phtml'); ?>
       <div class="profile-actions">
 <?    if ($is_self) { ?>
         <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/update')?>">📝 Edit profile</a>
-        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>">🔑 Password</a>
+        <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/changepassword')?>">🔑 Change password</a>
 <?    } ?>
 <?    if ($can_modify) { ?>
         <a class="btn btn-sm btn-secondary" href="<?=UrlFormatter::format('/user/edit?id=' . rawurlencode($user->getId()))?>">🛡️ Edit user</a>
