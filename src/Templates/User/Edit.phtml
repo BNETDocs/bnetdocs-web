@@ -58,6 +58,7 @@ $checkbox = function(int $bit, string $id, string $label, string $label_class = 
   );
 };
 $unknown_bits = $options & ~EditModel::KNOWN_MASK;
+$locked_mask = EditModel::KNOWN_MASK & ~$editable;
 $target = $model->target_user;
 require('./Includes/header.inc.phtml'); ?>
 <div class="container">
@@ -140,7 +141,11 @@ require('./Includes/header.inc.phtml'); ?>
           <button type="button" class="btn btn-sm btn-outline-light" data-preset="<?=User::OPTION_STAFF?>" title="The standard staff permissions">Staff</button>
         </div>
       </div>
-      <p class="small text-muted">Permissions you do not hold yourself are shown greyed out and cannot be changed. Presets only change permissions you can change, and nothing is saved until you click Save.</p>
+      <p class="small text-muted mb-1"><em>Public</em> and <em>Automatic</em> cells have no permission to grant: anyone can view those resources, and event logs are recorded by the site.</p>
+<?    if ($locked_mask & EditModel::ACL_MASK) { ?>
+      <p class="small text-warning mb-1">Greyed-out permissions cannot be changed: <?=$model->is_self ? 'you cannot remove your own permission to modify users, and ' : ''?>only permissions you hold yourself can be granted or revoked.</p>
+<?    } ?>
+      <p class="small text-muted">Presets only change the permissions you can change. Nothing is saved until you click Save.</p>
       <div class="table-responsive">
         <table class="table table-sm table-dark table-striped table-hover mb-3">
           <thead><tr><th scope="col">Resource</th><? foreach (EditModel::ACL_COLUMNS as $col) { ?><th scope="col" class="text-center"><?=$col?></th><? } ?></tr></thead>
@@ -148,7 +153,11 @@ require('./Includes/header.inc.phtml'); ?>
 <?          foreach (EditModel::ACL_ROWS as $row_label => $bits) { ?>
             <tr><th scope="row" class="font-weight-normal"><?=$row_label?></th>
 <?            foreach ($bits as $i => $bit) { ?>
-              <td class="text-center"><?=is_null($bit) ? '<span class="text-muted" aria-hidden="true">&mdash;</span>' : '<div class="d-inline-block">' . $checkbox($bit, 'opt_' . $bit, sprintf('<span class="sr-only">%s %s</span>', EditModel::ACL_COLUMNS[$i], $row_label)) . '</div>'?></td>
+<?              if (is_string($bit)) { [$note, $note_help] = EditModel::ACL_NONE_LABELS[$bit]; ?>
+              <td class="text-center"><span class="small text-muted font-italic" title="<?=$note_help?>"><?=$note?></span></td>
+<?              } else { ?>
+              <td class="text-center"><div class="d-inline-block"><?=$checkbox($bit, 'opt_' . $bit, sprintf('<span class="sr-only">%s %s</span>', EditModel::ACL_COLUMNS[$i], $row_label))?></div></td>
+<?              } ?>
 <?            } ?>
             </tr>
 <?          } ?>

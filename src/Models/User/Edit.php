@@ -23,16 +23,26 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
     public const ACL_COLUMNS = ['Create', 'View', 'Modify', 'Delete'];
 
     /**
-     * Rows of the permission grid, one option per column, null where it does not apply.
+     * Grid cells that have no permission bit, shown as a note instead of a checkbox.
+     */
+    public const ACL_NONE_AUTOMATIC = 'AUTOMATIC';
+    public const ACL_NONE_PUBLIC = 'PUBLIC';
+    public const ACL_NONE_LABELS = [
+        self::ACL_NONE_AUTOMATIC => ['Automatic', 'Recorded automatically by the site; there is no permission for this.'],
+        self::ACL_NONE_PUBLIC => ['Public', 'Anyone can view these; there is no permission for this.'],
+    ];
+
+    /**
+     * Rows of the permission grid, one option per column, or an ACL_NONE_* note where no option exists.
      */
     public const ACL_ROWS = [
-        'Comments'   => [User::OPTION_ACL_COMMENT_CREATE, null, User::OPTION_ACL_COMMENT_MODIFY, User::OPTION_ACL_COMMENT_DELETE],
-        'Documents'  => [User::OPTION_ACL_DOCUMENT_CREATE, null, User::OPTION_ACL_DOCUMENT_MODIFY, User::OPTION_ACL_DOCUMENT_DELETE],
-        'Event logs' => [null, User::OPTION_ACL_EVENT_LOG_VIEW, User::OPTION_ACL_EVENT_LOG_MODIFY, User::OPTION_ACL_EVENT_LOG_DELETE],
-        'News posts' => [User::OPTION_ACL_NEWS_CREATE, null, User::OPTION_ACL_NEWS_MODIFY, User::OPTION_ACL_NEWS_DELETE],
-        'Packets'    => [User::OPTION_ACL_PACKET_CREATE, null, User::OPTION_ACL_PACKET_MODIFY, User::OPTION_ACL_PACKET_DELETE],
-        'Servers'    => [User::OPTION_ACL_SERVER_CREATE, null, User::OPTION_ACL_SERVER_MODIFY, User::OPTION_ACL_SERVER_DELETE],
-        'Users'      => [User::OPTION_ACL_USER_CREATE, null, User::OPTION_ACL_USER_MODIFY, User::OPTION_ACL_USER_DELETE],
+        'Comments'   => [User::OPTION_ACL_COMMENT_CREATE, self::ACL_NONE_PUBLIC, User::OPTION_ACL_COMMENT_MODIFY, User::OPTION_ACL_COMMENT_DELETE],
+        'Documents'  => [User::OPTION_ACL_DOCUMENT_CREATE, self::ACL_NONE_PUBLIC, User::OPTION_ACL_DOCUMENT_MODIFY, User::OPTION_ACL_DOCUMENT_DELETE],
+        'Event logs' => [self::ACL_NONE_AUTOMATIC, User::OPTION_ACL_EVENT_LOG_VIEW, User::OPTION_ACL_EVENT_LOG_MODIFY, User::OPTION_ACL_EVENT_LOG_DELETE],
+        'News posts' => [User::OPTION_ACL_NEWS_CREATE, self::ACL_NONE_PUBLIC, User::OPTION_ACL_NEWS_MODIFY, User::OPTION_ACL_NEWS_DELETE],
+        'Packets'    => [User::OPTION_ACL_PACKET_CREATE, self::ACL_NONE_PUBLIC, User::OPTION_ACL_PACKET_MODIFY, User::OPTION_ACL_PACKET_DELETE],
+        'Servers'    => [User::OPTION_ACL_SERVER_CREATE, self::ACL_NONE_PUBLIC, User::OPTION_ACL_SERVER_MODIFY, User::OPTION_ACL_SERVER_DELETE],
+        'Users'      => [User::OPTION_ACL_USER_CREATE, self::ACL_NONE_PUBLIC, User::OPTION_ACL_USER_MODIFY, User::OPTION_ACL_USER_DELETE],
     ];
 
     /**
