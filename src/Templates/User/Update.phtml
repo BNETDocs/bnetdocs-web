@@ -122,10 +122,6 @@ require('./Includes/header.inc.phtml'); ?>
   <h1><?=$title?></h1>
   <p><?=$description?></p>
 
-<? if ($this->getContext()->user->getId() !== $this->getContext()->active_user->getId()) { ?>
-  <div class="alert alert-danger"><p class="mb-0">You are changing the details for a different account than yours. Click <a href="<?=UrlFormatter::format('/user/update')?>">here</a> to change your account details.</p></div>
-<? } ?>
-
   <!-- This here notice below is for GDPR purposes -->
   <div class="alert alert-info"><p class="mb-0">Our <a href="<?=UrlFormatter::format('/privacy')?>">privacy policy</a> page clarifies your data rights. You agree to giving (or not giving) the info contained herein on this page.</p></div>
 

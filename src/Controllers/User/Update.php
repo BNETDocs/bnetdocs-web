@@ -7,7 +7,6 @@ use \BNETDocs\Libraries\Core\Router;
 use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\User\User;
 use \Throwable;
-use \UnexpectedValueException;
 
 class Update extends \BNETDocs\Controllers\Base
 {
@@ -27,19 +26,19 @@ class Update extends \BNETDocs\Controllers\Base
         $this->model->_responseCode = \BNETDocs\Libraries\Core\HttpCode::HTTP_OK;
         $query = Router::query();
 
-        $id = isset($query['id']) ? ((int) $query['id']) : null;
-        if (\is_int($id) && $this->model->active_user->getOption(User::OPTION_ACL_USER_MODIFY))
+        // this page only edits the active user's own profile, staff edit other users at /user/edit
+        $this->model->user = $this->model->active_user;
+        $this->fillModel();
+
+        $id = $query['id'] ?? null;
+        if (\is_numeric($id) && (int) $id !== $this->model->active_user->getId()
+            && $this->model->active_user->getOption(User::OPTION_ACL_USER_MODIFY))
         {
-            try { $this->model->user = new User($id); }
-            catch (UnexpectedValueException) { $this->model->user = null; }
-        }
-        if (!$this->model->user)
-        {
-            $id = $this->model->active_user->getId();
-            $this->model->user = $this->model->active_user;
+            $this->model->_responseCode = \BNETDocs\Libraries\Core\HttpCode::HTTP_FOUND;
+            $this->model->_responseHeaders['Location'] = \BNETDocs\Libraries\Core\UrlFormatter::format('/user/edit?id=' . (int) $id);
+            return true;
         }
 
-        $this->fillModel();
         if (Router::requestMethod() == Router::METHOD_POST)
         {
             $this->handlePost($query);
