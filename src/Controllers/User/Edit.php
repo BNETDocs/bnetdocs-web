@@ -2,6 +2,7 @@
 
 namespace BNETDocs\Controllers\User;
 
+use \BNETDocs\Exceptions\InvalidModelException;
 use \BNETDocs\Libraries\Core\Config;
 use \BNETDocs\Libraries\Core\HttpCode;
 use \BNETDocs\Libraries\Core\Router;
@@ -40,8 +41,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
     public function invoke(?array $args): bool
     {
-        /** @var EditModel $model */
-        $model = $this->model;
+        $model = $this->model();
 
         if (!$model->active_user)
         {
@@ -140,8 +140,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
     private function handlePost(): void
     {
-        /** @var EditModel $model */
-        $model = $this->model;
+        $model = $this->model();
         $f = $model->form_fields;
         $target = $model->target_user;
 
@@ -320,8 +319,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
     private function resendVerification(): void
     {
-        /** @var EditModel $model */
-        $model = $this->model;
+        $model = $this->model();
         $target = $model->target_user;
 
         if ($target->isVerified())
@@ -349,6 +347,21 @@ class Edit extends \BNETDocs\Controllers\Base
             $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
             $model->verification_email = EditModel::VERIFICATION_FAILED;
         }
+    }
+
+    /**
+     * Retrieves this controller's model as its concrete type.
+     *
+     * @return EditModel The model.
+     * @throws InvalidModelException if the model is not an EditModel.
+     */
+    private function model(): EditModel
+    {
+        if (!$this->model instanceof EditModel)
+        {
+            throw new InvalidModelException($this->model ?? EditModel::class);
+        }
+        return $this->model;
     }
 
     private function getProfileValue(string $field): ?string
