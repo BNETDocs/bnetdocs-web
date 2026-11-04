@@ -249,7 +249,7 @@ $url = \BNETDocs\Libraries\Core\UrlFormatter::format('/user/verify?u=' . rawurle
 <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px; font-family: Arial, sans-serif"><![endif]-->
 <div style="color:#DDD;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%;padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;">
 <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 12px; line-height: 14px; color: #DDD;">
-<p style="font-size: 14px; line-height: 16px; margin: 0;"><? if ($resend) { ?><span style="font-size: 14px; line-height: 16px;">If you were not expecting this email, you can safely ignore it.</span><? } else { ?><span style="font-size: 14px;"><strong>Note:</strong></span><span style="font-size: 14px; line-height: 16px;"> This link will only be available for 24 hours after registering. If you wait until it expires, you will need to complete a password reset to verify your account.</span><? } ?></p>
+<p style="font-size: 14px; line-height: 16px; margin: 0;"><span style="font-size: 14px;"><strong>Note:</strong></span><span style="font-size: 14px; line-height: 16px;"> This link is only kept for a limited time. If it stops working, you can still verify your account by completing a password reset.<?=$resend ? '<br/><br/>If you were not expecting this email, you can safely ignore it.' : ''?></span></p>
 </div>
 </div>
 <!--[if mso]></td></tr></table><![endif]-->
