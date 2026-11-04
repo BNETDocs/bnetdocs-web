@@ -15,23 +15,6 @@ use \BNETDocs\Models\User\Edit as EditModel;
 
 class Edit extends \BNETDocs\Controllers\Base
 {
-    /**
-     * Profile getter and setter for each of EditModel::PROFILE_FIELDS.
-     */
-    private const PROFILE_ACCESSORS = [
-        'biography'          => ['getBiography', 'setBiography'],
-        'discord_username'   => ['getDiscordUsername', 'setDiscordUsername'],
-        'facebook_username'  => ['getFacebookUsername', 'setFacebookUsername'],
-        'github_username'    => ['getGitHubUsername', 'setGitHubUsername'],
-        'instagram_username' => ['getInstagramUsername', 'setInstagramUsername'],
-        'phone'              => ['getPhone', 'setPhone'],
-        'reddit_username'    => ['getRedditUsername', 'setRedditUsername'],
-        'skype_username'     => ['getSkypeUsername', 'setSkypeUsername'],
-        'steam_id'           => ['getSteamId', 'setSteamId'],
-        'twitter_username'   => ['getTwitterUsername', 'setTwitterUsername'],
-        'website'            => ['getWebsite', 'setWebsite'],
-    ];
-
     private ?Profile $profile = null;
 
     public function __construct()
@@ -117,14 +100,12 @@ class Edit extends \BNETDocs\Controllers\Base
         $this->profile = $target->getUserProfile();
         if (!$this->profile)
         {
-            // a new profile leaves its fields uninitialized, so start them all empty
             $this->profile = new Profile(null);
             $this->profile->setUserId($target->getId());
-            foreach (self::PROFILE_ACCESSORS as [, $setter]) $this->profile->$setter(null);
         }
-        foreach (\array_keys(self::PROFILE_ACCESSORS) as $field)
+        foreach (\array_keys(Profile::FIELDS) as $field)
         {
-            $model->profile[$field] = $this->getProfileValue($field);
+            $model->profile[$field] = $this->profile->getField($field);
         }
 
         $model->error = null;
@@ -200,7 +181,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
         $submitted_profile = $f['profile'] ?? [];
         if (!\is_array($submitted_profile)) $submitted_profile = [];
-        foreach (\array_keys(self::PROFILE_ACCESSORS) as $field)
+        foreach (\array_keys(Profile::FIELDS) as $field)
         {
             $value = \trim(\is_string($submitted_profile[$field] ?? null) ? $submitted_profile[$field] : '');
             if ($value === '') $value = null;
@@ -227,7 +208,7 @@ class Edit extends \BNETDocs\Controllers\Base
 
         foreach ($model->profile as $field => $value)
         {
-            $old = $this->getProfileValue($field);
+            $old = $this->profile->getField($field);
             if ($value !== $old) $changes['profile'][$field] = [$old, $value];
         }
 
@@ -258,7 +239,7 @@ class Edit extends \BNETDocs\Controllers\Base
         {
             foreach ($changes['profile'] as $field => [, $value])
             {
-                $this->profile->{self::PROFILE_ACCESSORS[$field][1]}($value);
+                $this->profile->setField($field, $value);
             }
 
             if (!$this->profile->commit())
@@ -362,12 +343,5 @@ class Edit extends \BNETDocs\Controllers\Base
             throw new InvalidModelException($this->model ?? EditModel::class);
         }
         return $this->model;
-    }
-
-    private function getProfileValue(string $field): ?string
-    {
-        $getter = self::PROFILE_ACCESSORS[$field][0];
-        // the website getter normalizes to a url by default, so ask for the raw value
-        return $field === 'website' ? $this->profile->getWebsite(false) : $this->profile->$getter();
     }
 }

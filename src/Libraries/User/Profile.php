@@ -9,6 +9,23 @@ use \UnexpectedValueException;
 
 class Profile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
+  /**
+   * Each editable profile field => [getter, setter]. Getters return the value as stored.
+   */
+  public const FIELDS = [
+    'biography'          => ['getBiography', 'setBiography'],
+    'discord_username'   => ['getDiscordUsername', 'setDiscordUsername'],
+    'facebook_username'  => ['getFacebookUsername', 'setFacebookUsername'],
+    'github_username'    => ['getGitHubUsername', 'setGitHubUsername'],
+    'instagram_username' => ['getInstagramUsername', 'setInstagramUsername'],
+    'phone'              => ['getPhone', 'setPhone'],
+    'reddit_username'    => ['getRedditUsername', 'setRedditUsername'],
+    'skype_username'     => ['getSkypeUsername', 'setSkypeUsername'],
+    'steam_id'           => ['getSteamId', 'setSteamId'],
+    'twitter_username'   => ['getTwitterUsername', 'setTwitterUsername'],
+    'website'            => ['getWebsite', 'setWebsite'],
+  ];
+
   public const MAX_LEN = 0xFF; // table design: varchar(255)
   public const MAX_USER_ID = User::MAX_ID;
 
@@ -46,7 +63,6 @@ class Profile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
   public function allocate(): bool
   {
     $user_id = $this->getUserId();
-    if (is_null($user_id)) return true;
 
     $this->setBiography(null);
     $this->setDiscordUsername(null);
@@ -59,6 +75,9 @@ class Profile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     $this->setSteamId(null);
     $this->setTwitterUsername(null);
     $this->setWebsite(null);
+
+    // a new profile has nothing to look up
+    if (is_null($user_id)) return true;
 
     $q = MariaDb::instance()->prepare('
       SELECT
@@ -195,6 +214,19 @@ class Profile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
     return $this->discord_username;
   }
 
+  /**
+   * Retrieves one of the FIELDS by name, as stored (the website is not normalized to a url).
+   *
+   * @param string $field A key of FIELDS.
+   * @return string|null The value.
+   * @throws UnexpectedValueException if the field is not one of FIELDS.
+   */
+  public function getField(string $field): ?string
+  {
+    if (!isset(self::FIELDS[$field])) throw new UnexpectedValueException(sprintf('not a profile field: %s', $field));
+    return $field === 'website' ? $this->getWebsite(false) : $this->{self::FIELDS[$field][0]}();
+  }
+
   public function getFacebookURI(): ?string
   {
     $value = $this->getFacebookUsername();
@@ -325,6 +357,20 @@ class Profile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
       'user_id' => $this->getUserId(),
       'website' => $this->getWebsiteURI(),
     ];
+  }
+
+  /**
+   * Sets one of the FIELDS by name.
+   *
+   * @param string $field A key of FIELDS.
+   * @param string|null $value The value.
+   * @return void
+   * @throws UnexpectedValueException if the field is not one of FIELDS, or the value is too long.
+   */
+  public function setField(string $field, ?string $value): void
+  {
+    if (!isset(self::FIELDS[$field])) throw new UnexpectedValueException(sprintf('not a profile field: %s', $field));
+    $this->{self::FIELDS[$field][1]}($value);
   }
 
   public function setBiography(?string $value): void
