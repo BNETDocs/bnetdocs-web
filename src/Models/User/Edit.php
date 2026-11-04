@@ -64,6 +64,23 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
     public const KNOWN_MASK = self::ACL_MASK | User::OPTION_DISABLED | User::OPTION_VERIFIED;
 
     /**
+     * Public profile fields: form field => [label, placeholder].
+     */
+    public const PROFILE_FIELDS = [
+        'biography'          => ['Biography', 'A brief biography'],
+        'discord_username'   => ['Discord username', 'Discord username'],
+        'facebook_username'  => ['Facebook username', 'Facebook username'],
+        'github_username'    => ['GitHub username', 'GitHub username'],
+        'instagram_username' => ['Instagram username', 'Instagram username'],
+        'phone'              => ['Phone number', 'Phone number'],
+        'reddit_username'    => ['Reddit username', 'Reddit username'],
+        'skype_username'     => ['Skype username', 'Skype username'],
+        'steam_id'           => ['Steam id', 'Steam id'],
+        'twitter_username'   => ['Twitter username', 'Twitter username'],
+        'website'            => ['Website', 'Website url'],
+    ];
+
+    /**
      * Bits the active user is permitted to change on the target user.
      */
     public int $editable_mask = 0;
@@ -85,6 +102,12 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
     public ?string $username = null;
     public int $username_max_len = User::MAX_USERNAME;
     public int $username_min_len = 3;
+
+    /**
+     * Public profile field => value, keyed by PROFILE_FIELDS.
+     */
+    public array $profile = [];
+    public int $profile_max_len = \BNETDocs\Libraries\User\Profile::MAX_LEN;
 
     public ?int $target_id = null;
     public ?User $target_user = null;
@@ -129,6 +152,7 @@ class Edit extends \BNETDocs\Models\Core\HttpForm implements \JsonSerializable
             'is_self' => $this->is_self,
             'options' => $this->options,
             'options_before' => $this->options_before,
+            'profile' => $this->profile,
             'saved' => $this->saved,
             'target_id' => $this->target_id,
             'target_user' => $this->target_user,

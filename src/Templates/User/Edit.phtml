@@ -28,6 +28,9 @@ $field_errors = [
   'display_name' => [
     'TOO_LONG' => sprintf('The display name must be at most %d characters.', $model->display_name_max_len),
   ],
+  'profile' => [
+    'TOO_LONG' => sprintf('Must be at most %d characters.', $model->profile_max_len),
+  ],
   'email' => [
     'EMPTY' => 'The email address cannot be blank.',
     'INVALID' => 'The email address is not formatted correctly.',
@@ -38,7 +41,8 @@ $field_errors = [
 $field_error = function(string $field) use ($model, $field_errors): string {
   $code = $model->errors[$field] ?? null;
   if (is_null($code)) return '';
-  return sprintf('<div class="invalid-feedback d-block">%s</div>', $field_errors[$field][$code] ?? ('Internal error: ' . $code));
+  $messages = $field_errors[$field] ?? $field_errors['profile'];
+  return sprintf('<div class="invalid-feedback d-block">%s</div>', $messages[$code] ?? ('Internal error: ' . $code));
 };
 $field_invalid = fn(string $field): string => isset($model->errors[$field]) ? ' is-invalid' : '';
 $esc = fn(?string $v): string => filter_var($v ?? '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -130,6 +134,27 @@ require('./Includes/header.inc.phtml'); ?>
         </div></div>
       </div>
     </div>
+
+    <div class="card bg-dark border-primary mb-4"><div class="card-body">
+      <h2 class="h4 card-title">Public Profile</h2>
+      <p class="small text-muted">Shown to everyone on <a href="<?=$target->getURI()?>">their profile page</a>. Leave a field blank to remove it.</p>
+      <div class="row">
+<?    foreach (EditModel::PROFILE_FIELDS as $pf => [$pf_label, $pf_placeholder]) {
+        $pf_id = 'profile_' . $pf;
+        $pf_attrs = sprintf('class="border border-primary form-control bg-dark text-light%s" name="profile[%s]" id="%s" maxlength="%d" placeholder="%s"',
+          $field_invalid($pf_id), $pf, $pf_id, $model->profile_max_len, $esc($pf_placeholder)); ?>
+        <div class="<?=$pf === 'biography' ? 'col-12' : 'col-md-6'?> form-group">
+          <label class="font-weight-bold" for="<?=$pf_id?>"><?=$pf_label?>:</label>
+<?      if ($pf === 'biography') { ?>
+          <textarea <?=$pf_attrs?> rows="3"><?=$esc($model->profile[$pf] ?? null)?></textarea>
+<?      } else { ?>
+          <input type="text" <?=$pf_attrs?> value="<?=$esc($model->profile[$pf] ?? null)?>"/>
+<?      } ?>
+          <?=$field_error($pf_id)?>
+        </div>
+<?    } ?>
+      </div>
+    </div></div>
 
     <div class="card bg-dark border-primary mb-4"><div class="card-body">
       <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">

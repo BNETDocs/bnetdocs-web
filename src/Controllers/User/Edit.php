@@ -7,11 +7,31 @@ use \BNETDocs\Libraries\Core\HttpCode;
 use \BNETDocs\Libraries\Core\Router;
 use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\EventLog\Logger;
+use \BNETDocs\Libraries\User\Profile;
 use \BNETDocs\Libraries\User\User;
 use \BNETDocs\Models\User\Edit as EditModel;
 
 class Edit extends \BNETDocs\Controllers\Base
 {
+    /**
+     * Profile getter and setter for each of EditModel::PROFILE_FIELDS.
+     */
+    private const PROFILE_ACCESSORS = [
+        'biography'          => ['getBiography', 'setBiography'],
+        'discord_username'   => ['getDiscordUsername', 'setDiscordUsername'],
+        'facebook_username'  => ['getFacebookUsername', 'setFacebookUsername'],
+        'github_username'    => ['getGitHubUsername', 'setGitHubUsername'],
+        'instagram_username' => ['getInstagramUsername', 'setInstagramUsername'],
+        'phone'              => ['getPhone', 'setPhone'],
+        'reddit_username'    => ['getRedditUsername', 'setRedditUsername'],
+        'skype_username'     => ['getSkypeUsername', 'setSkypeUsername'],
+        'steam_id'           => ['getSteamId', 'setSteamId'],
+        'twitter_username'   => ['getTwitterUsername', 'setTwitterUsername'],
+        'website'            => ['getWebsite', 'setWebsite'],
+    ];
+
+    private ?Profile $profile = null;
+
     public function __construct()
     {
         $this->model = new EditModel();
@@ -93,6 +113,19 @@ class Edit extends \BNETDocs\Controllers\Base
         $model->options_before = $target->getOptions();
         $model->username = $target->getUsername();
 
+        $this->profile = $target->getUserProfile();
+        if (!$this->profile)
+        {
+            // a new profile leaves its fields uninitialized, so start them all empty
+            $this->profile = new Profile(null);
+            $this->profile->setUserId($target->getId());
+            foreach (self::PROFILE_ACCESSORS as [, $setter]) $this->profile->$setter(null);
+        }
+        foreach (\array_keys(self::PROFILE_ACCESSORS) as $field)
+        {
+            $model->profile[$field] = $this->getProfileValue($field);
+        }
+
         $model->error = null;
         $model->_responseCode = HttpCode::HTTP_OK;
 
@@ -159,6 +192,20 @@ class Edit extends \BNETDocs\Controllers\Base
             if (!\is_null($existing) && $existing !== $target->getId()) $model->errors['email'] = 'TAKEN';
         }
 
+        $submitted_profile = $f['profile'] ?? [];
+        if (!\is_array($submitted_profile)) $submitted_profile = [];
+        foreach (\array_keys(self::PROFILE_ACCESSORS) as $field)
+        {
+            $value = \trim(\is_string($submitted_profile[$field] ?? null) ? $submitted_profile[$field] : '');
+            if ($value === '') $value = null;
+            $model->profile[$field] = $value;
+
+            if (\strlen($value ?? '') > $model->profile_max_len)
+            {
+                $model->errors['profile_' . $field] = 'TOO_LONG';
+            }
+        }
+
         if (!empty($model->errors))
         {
             $model->_responseCode = HttpCode::HTTP_BAD_REQUEST;
@@ -170,6 +217,13 @@ class Edit extends \BNETDocs\Controllers\Base
         if ($display_name !== $target->getDisplayName()) $changes['display_name'] = [$target->getDisplayName(), $display_name];
         if ($email !== $target->getEmail()) $changes['email'] = [$target->getEmail(), $email];
         if ($options !== $target->getOptions()) $changes['options'] = [$target->getOptions(), $options];
+        $user_changed = !empty($changes);
+
+        foreach ($model->profile as $field => $value)
+        {
+            $old = $this->getProfileValue($field);
+            if ($value !== $old) $changes['profile'][$field] = [$old, $value];
+        }
 
         if (empty($changes))
         {
@@ -177,16 +231,34 @@ class Edit extends \BNETDocs\Controllers\Base
             return;
         }
 
-        $target->setUsername($username);
-        $target->setDisplayName($display_name);
-        $target->setEmail($email);
-        $target->setOptions($options);
-
-        if (!$target->commit())
+        if ($user_changed)
         {
-            $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
-            $model->error = EditModel::ERROR_INTERNAL;
-            return;
+            $target->setUsername($username);
+            $target->setDisplayName($display_name);
+            $target->setEmail($email);
+            $target->setOptions($options);
+
+            if (!$target->commit())
+            {
+                $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
+                $model->error = EditModel::ERROR_INTERNAL;
+                return;
+            }
+        }
+
+        if (isset($changes['profile']))
+        {
+            foreach ($changes['profile'] as $field => [, $value])
+            {
+                $this->profile->{self::PROFILE_ACCESSORS[$field][1]}($value);
+            }
+
+            if (!$this->profile->commit())
+            {
+                $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
+                $model->error = EditModel::ERROR_INTERNAL;
+                return;
+            }
         }
 
         $model->saved = true;
@@ -220,6 +292,13 @@ class Edit extends \BNETDocs\Controllers\Base
             }
             // the address itself stays in the event log, out of Discord
             if (isset($changes['email'])) $fields['Email'] = 'Changed';
+            if (isset($changes['profile']))
+            {
+                $fields['Profile'] = \implode(', ', \array_map(
+                    fn(string $field): string => EditModel::PROFILE_FIELDS[$field][0],
+                    \array_keys($changes['profile'])
+                ));
+            }
             if (!empty($granted)) $fields['Granted'] = \implode(', ', $granted);
             if (!empty($revoked)) $fields['Revoked'] = \implode(', ', $revoked);
 
@@ -228,5 +307,12 @@ class Edit extends \BNETDocs\Controllers\Base
         }
 
         $model->options_before = $options;
+    }
+
+    private function getProfileValue(string $field): ?string
+    {
+        $getter = self::PROFILE_ACCESSORS[$field][0];
+        // the website getter normalizes to a url by default, so ask for the raw value
+        return $field === 'website' ? $this->profile->getWebsite(false) : $this->profile->$getter();
     }
 }
