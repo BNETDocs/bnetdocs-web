@@ -1,7 +1,12 @@
 <?php
 namespace BNETDocs\Templates\Email\User;
 $name = $this->getContext()->name;
-$resend = $this->getContext()->resend ?? false;
+$intro = [
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_EMAIL_CHANGED => 'Your BNETDocs account email address was changed to this one, so it needs to be verified.',
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_RESENT => 'Here is the new verification link you asked for.',
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_STAFF_RESENT => 'A BNETDocs staff member has sent you a new link to verify your account.',
+][$this->getContext()->reason ?? ''] ?? null;
+$resend = !is_null($intro);
 $url = \BNETDocs\Libraries\Core\UrlFormatter::format('/user/verify?u=' . rawurlencode($this->getContext()->user_id) . '&t=' . rawurlencode($this->getContext()->token));
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -194,7 +199,7 @@ $url = \BNETDocs\Libraries\Core\UrlFormatter::format('/user/verify?u=' . rawurle
 <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 12px; line-height: 14px; color: #DDD;">
 <p style="font-size: 12px; line-height: 16px; margin: 0;"><span style="font-size: 14px;">Hello <?=$name?>,</span></p>
 <p style="font-size: 12px; line-height: 14px; margin: 0;"> </p>
-<p style="font-size: 12px; line-height: 16px; margin: 0;"><span style="font-size: 14px;"><?=$resend ? 'A BNETDocs staff member has sent you a new link to verify your account.' : 'Welcome to BNETDocs!'?></span></p>
+<p style="font-size: 12px; line-height: 16px; margin: 0;"><span style="font-size: 14px;"><?=$intro ?? 'Welcome to BNETDocs!'?></span></p>
 <p style="font-size: 12px; line-height: 14px; margin: 0;"> </p>
 <p style="font-size: 12px; line-height: 16px; margin: 0;"><span style="font-size: 14px;">Your account requires verification before being able to use this service. Click the button below to verify your account.</span></p>
 </div>

@@ -25,6 +25,7 @@ $field_errors = [
     'NOT_ALLOWED' => 'That email address is not allowed, use a different one.',
     'TAKEN' => 'That email address is already in use by another account.',
     'TOO_LONG' => sprintf('Your email address must be at most %d characters.', $model->email_max_len),
+    'COOLDOWN' => 'A verification email was sent to you a moment ago. Wait a couple of minutes before changing your email address again.',
   ],
   'email_confirm' => [
     'MISMATCH' => 'The email addresses do not match, check for typos.',
@@ -63,6 +64,25 @@ require('./Includes/header.inc.phtml'); ?>
 <? } else if ($model->saved) { ?>
   <div class="alert alert-success"><p class="mb-0">Your profile was saved.</p></div>
 <? } ?>
+<? switch ($model->verification_email) {
+     case UpdateModel::VERIFICATION_SENT: ?>
+  <div class="alert alert-success"><p class="mb-0">We sent a verification link to <strong><?=$esc($user->getEmail())?></strong>. Follow it to verify your email address.</p></div>
+<?   break; case UpdateModel::VERIFICATION_FAILED: ?>
+  <div class="alert alert-danger"><p class="mb-0">We could not send a verification email to <strong><?=$esc($user->getEmail())?></strong>. Try again in a few minutes using the button below.</p></div>
+<?   break; case UpdateModel::VERIFICATION_COOLDOWN: ?>
+  <div class="alert alert-warning"><p class="mb-0">A verification email was sent to you a moment ago. Check your inbox, or wait a couple of minutes before asking for another.</p></div>
+<?   break; case UpdateModel::VERIFICATION_ALREADY_VERIFIED: ?>
+  <div class="alert alert-info"><p class="mb-0">Your email address is already verified.</p></div>
+<?   break; } ?>
+<? if (!$user->isVerified()) { ?>
+  <div class="alert alert-warning">
+    <p>Your email address <strong><?=$esc($user->getEmail())?></strong> is not verified yet. You can keep using this session, but you will not be able to log in again until you verify it. If the address is wrong, correct it below.</p>
+    <form method="POST" class="mb-0">
+      <input type="hidden" name="action" value="resend_verification"/>
+      <button type="submit" class="btn btn-sm btn-warning">✉️ Resend verification email</button>
+    </form>
+  </div>
+<? } ?>
 
   <!-- This notice is for GDPR purposes -->
   <div class="alert alert-info"><p class="mb-0">Our <a href="<?=UrlFormatter::format('/privacy')?>">privacy policy</a> page clarifies your data rights. You agree to giving (or not giving) the info contained herein on this page.</p></div>
@@ -89,6 +109,7 @@ require('./Includes/header.inc.phtml'); ?>
           </div>
           <div class="form-group" id="email_confirm_group">
             <label class="font-weight-bold" for="email_confirm">Confirm new email address:<span class="ml-2 small text-muted">(only needed when changing it)</span></label>
+            <small class="form-text text-warning mt-0 mb-1">Changing your email address unverifies your account until you follow the link we send to the new address.</small>
             <input class="<?=$input_class . $field_invalid('email_confirm')?>" type="email" name="email_confirm" id="email_confirm" autocomplete="off" maxlength="<?=$model->email_max_len?>" value="<?=$esc($model->email_confirm)?>"/>
             <?=$field_error('email_confirm')?>
           </div>

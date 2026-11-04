@@ -2,8 +2,10 @@
 
 namespace BNETDocs\Libraries\User;
 
+use \BNETDocs\Interfaces\DatabaseObject;
 use \BNETDocs\Libraries\Core\Config;
 use \BNETDocs\Libraries\Core\Template;
+use \BNETDocs\Libraries\Db\MariaDb;
 use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\EventLog\Logger;
 use \PHPMailer\PHPMailer\PHPMailer;
@@ -14,19 +16,53 @@ use \UnexpectedValueException;
  */
 class VerificationEmail
 {
+  /**
+   * Seconds a user must wait between verification emails they send themselves.
+   */
+  public const COOLDOWN = 120;
+
+  /**
+   * Why the email is being sent, which changes its wording.
+   */
+  public const REASON_EMAIL_CHANGED = 'EMAIL_CHANGED'; // the user changed their email address
+  public const REASON_REGISTERED = 'REGISTERED'; // the user just registered
+  public const REASON_RESENT = 'RESENT'; // the user asked for a new link
+  public const REASON_STAFF_RESENT = 'STAFF_RESENT'; // a staff member sent a new link
+
   private function __construct() {}
+
+  /**
+   * Whether an email was sent on behalf of a user within the last COOLDOWN seconds.
+   *
+   * @param User $actor The user the EMAIL_SENT events are attributed to.
+   * @return bool Whether they must wait before sending another.
+   */
+  public static function sentRecently(User $actor): bool
+  {
+    $cutoff = (new \DateTimeImmutable('now', new \DateTimeZone(DatabaseObject::DATE_TZ)))
+      ->modify(\sprintf('-%d seconds', self::COOLDOWN))->format(DatabaseObject::DATE_SQL);
+    $q = MariaDb::instance()->prepare('
+      SELECT 1 FROM `event_log`
+      WHERE `event_type_id` = ? AND `user_id` = ? AND `event_datetime` >= ? LIMIT 1;
+    ');
+    try
+    {
+      return $q && $q->execute([EventTypes::EMAIL_SENT, $actor->getId(), $cutoff]) && $q->rowCount() > 0;
+    }
+    finally { if ($q) $q->closeCursor(); }
+  }
 
   /**
    * Sends the verification email to the user's current email address, and logs it as EMAIL_SENT.
    *
    * @param User $user The user to verify, which must have a pending verifier token.
    * @param User|int|null $actor Who the EMAIL_SENT event is attributed to.
-   * @param bool $resend Whether this resends a verification email after registration, which changes its wording.
+   * @param string $reason One of the REASON_* constants, which changes its wording.
    * @return void
    * @throws UnexpectedValueException if the user has no pending verifier token.
    * @throws \PHPMailer\PHPMailer\Exception if the email could not be sent.
    */
-  public static function send(User $user, User|int|null $actor, bool $resend = false): void
+  public static function send(User $user, User|int|null $actor, string $reason = self::REASON_REGISTERED): void
   {
     $token = $user->getVerifierToken();
     if (empty($token)) throw new UnexpectedValueException('user has no pending verifier token');
@@ -36,7 +72,7 @@ class VerificationEmail
     $state = new \StdClass();
     $state->mail = &$mail;
     $state->name = $user->getName();
-    $state->resend = $resend;
+    $state->reason = $reason;
     $state->token = $token;
     $state->user_id = $user->getId();
 

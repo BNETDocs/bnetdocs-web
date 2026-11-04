@@ -1,13 +1,18 @@
 <?php
 namespace BNETDocs\Templates\Email\User;
 $name = $this->getContext()->name;
-$resend = $this->getContext()->resend ?? false;
+$intro = [
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_EMAIL_CHANGED => 'Your BNETDocs account email address was changed to this one, so it needs to be verified.',
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_RESENT => 'Here is the new verification link you asked for.',
+  \BNETDocs\Libraries\User\VerificationEmail::REASON_STAFF_RESENT => 'A BNETDocs staff member has sent you a new link to verify your account.',
+][$this->getContext()->reason ?? ''] ?? null;
+$resend = !is_null($intro);
 $url = \BNETDocs\Libraries\Core\UrlFormatter::format('/user/verify?u=' . rawurlencode($this->getContext()->user_id) . '&t=' . rawurlencode($this->getContext()->token));
 require('./Email/header.plain.inc.phtml');
 ?>
 Hello <?=$name?>,
 
-<?=$resend ? 'A BNETDocs staff member has sent you a new link to verify your account.' : 'Welcome to BNETDocs!'?>
+<?=$intro ?? 'Welcome to BNETDocs!'?>
 
 
 Your account requires verification before being able to use this service. Click

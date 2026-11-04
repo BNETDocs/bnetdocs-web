@@ -11,6 +11,7 @@ use \BNETDocs\Libraries\EventLog\EventTypes;
 use \BNETDocs\Libraries\EventLog\Logger;
 use \BNETDocs\Libraries\User\Profile;
 use \BNETDocs\Libraries\User\User;
+use \BNETDocs\Libraries\User\VerificationEmail;
 use \BNETDocs\Models\User\Update as UpdateModel;
 
 class Update extends \BNETDocs\Controllers\Base
@@ -80,6 +81,12 @@ class Update extends \BNETDocs\Controllers\Base
         $model = $this->model();
         $user = $model->user;
 
+        if (($f['action'] ?? null) === 'resend_verification')
+        {
+            $this->resendVerification();
+            return;
+        }
+
         $string = fn(string $key): string => \trim(\is_string($f[$key] ?? null) ? $f[$key] : '');
         $username = $string('username');
         $display_name = $string('display_name');
@@ -125,6 +132,12 @@ class Update extends \BNETDocs\Controllers\Base
             {
                 $model->errors['email_confirm'] = 'MISMATCH';
             }
+
+            // a new address must be verified, and the email sent to it is rate limited
+            if (empty($model->errors['email']) && VerificationEmail::sentRecently($user))
+            {
+                $model->errors['email'] = 'COOLDOWN';
+            }
         }
 
         $submitted_profile = $f['profile'] ?? [];
@@ -168,6 +181,8 @@ class Update extends \BNETDocs\Controllers\Base
             $user->setUsername($username);
             $user->setDisplayName($display_name);
             $user->setEmail($email);
+            // after setEmail(), since the new verifier token is derived from the address
+            if ($email_changed) $user->setVerified(false, true);
 
             if (!$user->commit())
             {
@@ -191,6 +206,68 @@ class Update extends \BNETDocs\Controllers\Base
         }
 
         $this->logEdit($changes);
+
+        // the save itself succeeded, so a failure here is only reported on the page
+        if ($email_changed) $this->sendVerification(VerificationEmail::REASON_EMAIL_CHANGED);
+    }
+
+    private function resendVerification(): void
+    {
+        $model = $this->model();
+        $user = $model->user;
+
+        if ($user->isVerified())
+        {
+            $model->_responseCode = HttpCode::HTTP_CONFLICT;
+            $model->verification_email = UpdateModel::VERIFICATION_ALREADY_VERIFIED;
+            return;
+        }
+
+        if (VerificationEmail::sentRecently($user))
+        {
+            $model->_responseCode = HttpCode::HTTP_TOO_MANY_REQUESTS;
+            $model->verification_email = UpdateModel::VERIFICATION_COOLDOWN;
+            return;
+        }
+
+        if (empty($user->getVerifierToken()))
+        {
+            $user->setVerified(false, true);
+            if (!$user->commit())
+            {
+                $this->failInternal();
+                return;
+            }
+        }
+
+        if (!$this->sendVerification(VerificationEmail::REASON_RESENT))
+        {
+            $model->_responseCode = HttpCode::HTTP_INTERNAL_SERVER_ERROR;
+        }
+    }
+
+    /**
+     * Sends the active user a verification email, recording the outcome for the template.
+     *
+     * @param string $reason One of the VerificationEmail::REASON_* constants.
+     * @return bool Whether it was sent.
+     */
+    private function sendVerification(string $reason): bool
+    {
+        $model = $this->model();
+
+        try
+        {
+            VerificationEmail::send($model->user, $model->active_user, $reason);
+            $model->verification_email = UpdateModel::VERIFICATION_SENT;
+            return true;
+        }
+        catch (\Throwable $e)
+        {
+            \error_log(\sprintf('Failed to send verification email to user #%d: %s', $model->user->getId(), $e->getMessage()));
+            $model->verification_email = UpdateModel::VERIFICATION_FAILED;
+            return false;
+        }
     }
 
     private function failInternal(): void
@@ -219,7 +296,7 @@ class Update extends \BNETDocs\Controllers\Base
             EventTypes::USER_EDITED,
             $model->active_user,
             \getenv('REMOTE_ADDR'),
-            ['user_id' => $user->getId(), 'changes' => $changes]
+            ['user_id' => $user->getId(), 'changes' => $changes, 'unverified' => isset($changes['email']) && !$user->isVerified()]
         );
 
         if (!$event->commit()) return;

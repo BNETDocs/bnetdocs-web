@@ -319,7 +319,7 @@ class Edit extends \BNETDocs\Controllers\Base
                 if (!$target->commit()) throw new \RuntimeException('failed to save a new verifier token');
             }
 
-            VerificationEmail::send($target, $model->active_user, true);
+            VerificationEmail::send($target, $model->active_user, VerificationEmail::REASON_STAFF_RESENT);
             $model->verification_email = EditModel::VERIFICATION_SENT;
         }
         catch (\Throwable $e)
