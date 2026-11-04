@@ -24,6 +24,7 @@ class Update extends \BNETDocs\Controllers\Base
             return true;
         }
 
+        $this->model->_responseCode = \BNETDocs\Libraries\Core\HttpCode::HTTP_OK;
         $query = Router::query();
 
         $id = isset($query['id']) ? ((int) $query['id']) : null;
