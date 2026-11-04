@@ -58,6 +58,32 @@
   max-width: 100%;
 }
 .profile-links .profile-link-service { color: #8e959c; }
+
+/* Platform colors: a dot and tint in the brand color, with the service name
+   lightened toward white so it stays above 4.5:1 contrast on the dark theme. */
+.profile-links li[class^="profile-link-"] {
+  border-color: color-mix(in srgb, var(--brand) 55%, transparent);
+  background: color-mix(in srgb, var(--brand) 15%, rgba(0,0,0,0.2));
+}
+.profile-links li[class^="profile-link-"]::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--brand);
+}
+.profile-links li[class^="profile-link-"] .profile-link-service { color: color-mix(in srgb, var(--brand) 70%, #fff); }
+.profile-link-discord   { --brand: #5865f2; }
+.profile-link-facebook  { --brand: #1877f2; }
+.profile-link-github    { --brand: #e6edf3; } /* GitHub's dark-mode foreground; its black brand color would vanish here */
+.profile-link-instagram { --brand: #e4405f; }
+.profile-link-instagram::before { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888) !important; }
+.profile-link-reddit    { --brand: #ff4500; }
+.profile-link-skype     { --brand: #00aff0; }
+.profile-link-steam     { --brand: #66c0f4; }
+.profile-link-twitter   { --brand: #1da1f2; }
+.profile-link-website   { --brand: #8e959c; }
 .profile-links .profile-link-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .profile-stats {

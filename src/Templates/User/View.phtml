@@ -155,7 +155,7 @@ require('./Includes/header.inc.phtml'); ?>
 <?  if (!empty($links)) { ?>
         <ul class="profile-links">
 <?    foreach ($links as [$service, $value, $href]) { ?>
-          <li><span class="profile-link-service"><?=$service?></span>
+          <li class="profile-link-<?=strtolower($service)?>"><span class="profile-link-service"><?=$service?></span>
 <?      if ($href) { ?>
             <a class="profile-link-value" rel="external nofollow" href="<?=$e($href)?>"><?=$e($value)?></a></li>
 <?      } else { ?>
