@@ -284,7 +284,7 @@ class Edit extends \BNETDocs\Controllers\Base
             if (isset($changes['profile']))
             {
                 $fields['Profile'] = \implode(', ', \array_map(
-                    fn(string $field): string => EditModel::PROFILE_FIELDS[$field][0],
+                    fn(string $field): string => Profile::FIELDS[$field][2],
                     \array_keys($changes['profile'])
                 ));
             }

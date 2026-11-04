@@ -155,22 +155,7 @@ require('./Includes/header.inc.phtml'); ?>
     <div class="card bg-dark border-primary mb-4"><div class="card-body">
       <h2 class="h4 card-title">Public Profile</h2>
       <p class="small text-muted">Shown to everyone on <a href="<?=$target->getURI()?>">their profile page</a>. Leave a field blank to remove it.</p>
-      <div class="row">
-<?    foreach (EditModel::PROFILE_FIELDS as $pf => [$pf_label, $pf_placeholder]) {
-        $pf_id = 'profile_' . $pf;
-        $pf_attrs = sprintf('class="border border-primary form-control bg-dark text-light%s" name="profile[%s]" id="%s" maxlength="%d" placeholder="%s"',
-          $field_invalid($pf_id), $pf, $pf_id, $model->profile_max_len, $esc($pf_placeholder)); ?>
-        <div class="<?=$pf === 'biography' ? 'col-12' : 'col-md-6'?> form-group">
-          <label class="font-weight-bold" for="<?=$pf_id?>"><?=$pf_label?>:</label>
-<?      if ($pf === 'biography') { ?>
-          <textarea <?=$pf_attrs?> rows="3"><?=$esc($model->profile[$pf] ?? null)?></textarea>
-<?      } else { ?>
-          <input type="text" <?=$pf_attrs?> value="<?=$esc($model->profile[$pf] ?? null)?>"/>
-<?      } ?>
-          <?=$field_error($pf_id)?>
-        </div>
-<?    } ?>
-      </div>
+<?    $profile_values = $model->profile; $profile_max_len = $model->profile_max_len; require('./User/ProfileFields.inc.phtml'); ?>
     </div></div>
 
     <div class="card bg-dark border-primary mb-4"><div class="card-body">

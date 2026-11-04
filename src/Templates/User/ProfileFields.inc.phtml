@@ -1,0 +1,31 @@
+<?php /* vim: set colorcolumn= expandtab shiftwidth=2 softtabstop=2 tabstop=4 smarttab: */
+namespace BNETDocs\Templates\User;
+use \BNETDocs\Libraries\User\Profile;
+/**
+ * Public profile inputs, shared by the profile update page and the staff user editor.
+ *
+ * Expects: $profile_values (field => value), $profile_max_len, and the closures
+ * $esc(value), $field_invalid(id), and $field_error(id), where id is 'profile_' . field.
+ */
+$profile_help = [
+  'phone' => 'Not shown on the profile page.',
+]; ?>
+      <div class="row">
+<?    foreach (Profile::FIELDS as $pf => [, , $pf_label]) {
+        $pf_id = 'profile_' . $pf;
+        $pf_attrs = sprintf('class="border border-primary form-control bg-dark text-light%s" name="profile[%s]" id="%s" maxlength="%d" placeholder="%s" data-profile-field="%s"',
+          $field_invalid($pf_id), $pf, $pf_id, $profile_max_len, $esc($pf_label), $pf); ?>
+        <div class="<?=$pf === 'biography' ? 'col-12' : 'col-md-6'?> form-group">
+          <label class="font-weight-bold" for="<?=$pf_id?>"><?=$pf_label?>:</label>
+<?      if ($pf === 'biography') { ?>
+          <textarea <?=$pf_attrs?> rows="3"><?=$esc($profile_values[$pf] ?? null)?></textarea>
+<?      } else { ?>
+          <input type="text" <?=$pf_attrs?> value="<?=$esc($profile_values[$pf] ?? null)?>"/>
+<?      } ?>
+<?      if (isset($profile_help[$pf])) { ?>
+          <small class="form-text text-muted"><?=$profile_help[$pf]?></small>
+<?      } ?>
+          <?=$field_error($pf_id)?>
+        </div>
+<?    } ?>
+      </div>

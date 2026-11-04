@@ -10,20 +10,20 @@ use \UnexpectedValueException;
 class Profile implements \BNETDocs\Interfaces\DatabaseObject, \JsonSerializable
 {
   /**
-   * Each editable profile field => [getter, setter]. Getters return the value as stored.
+   * Each editable profile field => [getter, setter, label]. Getters return the value as stored.
    */
   public const FIELDS = [
-    'biography'          => ['getBiography', 'setBiography'],
-    'discord_username'   => ['getDiscordUsername', 'setDiscordUsername'],
-    'facebook_username'  => ['getFacebookUsername', 'setFacebookUsername'],
-    'github_username'    => ['getGitHubUsername', 'setGitHubUsername'],
-    'instagram_username' => ['getInstagramUsername', 'setInstagramUsername'],
-    'phone'              => ['getPhone', 'setPhone'],
-    'reddit_username'    => ['getRedditUsername', 'setRedditUsername'],
-    'skype_username'     => ['getSkypeUsername', 'setSkypeUsername'],
-    'steam_id'           => ['getSteamId', 'setSteamId'],
-    'twitter_username'   => ['getTwitterUsername', 'setTwitterUsername'],
-    'website'            => ['getWebsite', 'setWebsite'],
+    'biography'          => ['getBiography', 'setBiography', 'Biography'],
+    'discord_username'   => ['getDiscordUsername', 'setDiscordUsername', 'Discord username'],
+    'facebook_username'  => ['getFacebookUsername', 'setFacebookUsername', 'Facebook username'],
+    'github_username'    => ['getGitHubUsername', 'setGitHubUsername', 'GitHub username'],
+    'instagram_username' => ['getInstagramUsername', 'setInstagramUsername', 'Instagram username'],
+    'phone'              => ['getPhone', 'setPhone', 'Phone number'],
+    'reddit_username'    => ['getRedditUsername', 'setRedditUsername', 'Reddit username'],
+    'skype_username'     => ['getSkypeUsername', 'setSkypeUsername', 'Skype username'],
+    'steam_id'           => ['getSteamId', 'setSteamId', 'Steam id'],
+    'twitter_username'   => ['getTwitterUsername', 'setTwitterUsername', 'Twitter username'],
+    'website'            => ['getWebsite', 'setWebsite', 'Website'],
   ];
 
   public const MAX_LEN = 0xFF; // table design: varchar(255)
