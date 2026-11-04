@@ -229,7 +229,7 @@ class Authentication
     $q = MariaDb::instance()->prepare(
      'SELECT `ip_address`, `user_agent`, `user_id`
       FROM `user_sessions` WHERE `id` = UNHEX(:id) AND
-        (`expires_datetime` = NULL OR `expires_datetime` > :dt)
+        (`expires_datetime` IS NULL OR `expires_datetime` > :dt)
       LIMIT 1;'
     );
     if (!$q || !$q->execute([':dt' => $now, ':id' => $key])) return false;
