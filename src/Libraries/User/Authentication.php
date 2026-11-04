@@ -41,33 +41,56 @@ class Authentication
   private function __construct() {}
 
   /**
-   * discard()
-   * Discards fingerprint server-side so lookup cannot succeed.
+   * expire()
+   * Expires a session server-side so lookup cannot succeed. The record is kept;
+   * removing expired sessions is left to a separate cleanup job.
    *
-   * @param string $key The secret key.
+   * @param string $key The secret key, hexadecimal-formatted and 64 characters in length.
+   *                    Any other value matches no session and is ignored.
    * @return bool Indicates if the operation succeeded.
    * @throws PDOException if a PDO error occurs.
    */
-  protected static function discard(string $key): bool
+  protected static function expire(string $key): bool
   {
-    $q = MariaDb::instance()->prepare('DELETE FROM `user_sessions` WHERE `id` = ? LIMIT 1;');
-    try { return $q && $q->execute([$key]); }
+    if (strlen($key) !== 64 || !ctype_xdigit($key)) return true;
+
+    $q = MariaDb::instance()->prepare(
+     'UPDATE `user_sessions` SET `expires_datetime` = :dt
+      WHERE `id` = UNHEX(:id) AND (`expires_datetime` IS NULL OR `expires_datetime` > :dt)
+      LIMIT 1;'
+    );
+    try { return $q && $q->execute([':dt' => self::now(), ':id' => $key]); }
     finally { if ($q) $q->closeCursor(); }
   }
 
   /**
    * expireUserSessions()
-   * Discards every session of a user server-side, logging them out everywhere.
+   * Expires every active session of a user server-side, logging them out everywhere.
+   * The records are kept; removing expired sessions is left to a separate cleanup job.
    *
-   * @param User $user The user whose sessions are discarded.
-   * @return int|false The number of sessions discarded, or false on error.
+   * @param User $user The user whose sessions are expired.
+   * @return int|false The number of active sessions expired, or false on error.
    * @throws PDOException if a PDO error occurs.
    */
   public static function expireUserSessions(User $user): int|false
   {
-    $q = MariaDb::instance()->prepare('DELETE FROM `user_sessions` WHERE `user_id` = ?;');
-    try { return ($q && $q->execute([$user->getId()])) ? $q->rowCount() : false; }
+    $q = MariaDb::instance()->prepare(
+     'UPDATE `user_sessions` SET `expires_datetime` = :dt
+      WHERE `user_id` = :uid AND (`expires_datetime` IS NULL OR `expires_datetime` > :dt);'
+    );
+    try { return ($q && $q->execute([':dt' => self::now(), ':uid' => $user->getId()])) ? $q->rowCount() : false; }
     finally { if ($q) $q->closeCursor(); }
+  }
+
+  /**
+   * now()
+   * The current date and time, formatted for comparing with session columns.
+   *
+   * @return string The SQL-formatted date and time.
+   */
+  protected static function now(): string
+  {
+    return (new DateTimeImmutable('now', new DateTimeZone(DatabaseObject::DATE_TZ)))->format(DatabaseObject::DATE_SQL);
   }
 
   /**
@@ -164,7 +187,7 @@ class Authentication
    */
   public static function logout(): bool
   {
-    self::discard(self::$key);
+    self::expire(self::$key);
     self::$key = '';
     self::$user = null;
 
